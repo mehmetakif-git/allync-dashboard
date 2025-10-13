@@ -16,7 +16,6 @@ import ServiceDashboard from './pages/ServiceDashboard';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import SuperAdminSidebar from './components/SuperAdminSidebar';
-import RoleSwitcher from './components/RoleSwitcher';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 
 function AppContent() {
@@ -72,7 +71,6 @@ function AppContent() {
         <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
           <Header onMenuClick={() => setIsSidebarOpen(true)} />
           <main className="flex-1 p-6">
-            <RoleSwitcher />
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
             {superAdminPage === 'services-catalog' && <Services />}
             {superAdminPage === 'service-whatsapp' && <WhatsApp />}
@@ -121,7 +119,6 @@ function AppContent() {
       <div className="flex-1 flex flex-col min-h-screen">
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
         <main className="flex-1">
-          <RoleSwitcher />
           {activePage === 'dashboard' && <Dashboard />}
           {activePage === 'services' && <Services />}
           {activePage === 'whatsapp' && <WhatsApp />}
