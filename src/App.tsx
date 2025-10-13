@@ -17,6 +17,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import SuperAdminSidebar from './components/SuperAdminSidebar';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
+import MaintenanceMode from './pages/admin/MaintenanceMode';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -95,12 +96,7 @@ function AppContent() {
             {superAdminPage === 'users-management' && <Admin />}
             {superAdminPage === 'revenue-analytics' && <Admin />}
             {superAdminPage === 'system-settings' && <Settings />}
-            {superAdminPage === 'maintenance-mode' && (
-              <div className="text-center py-16">
-                <h1 className="text-3xl font-bold text-white mb-4">Maintenance Mode</h1>
-                <p className="text-gray-400">Coming in next update</p>
-              </div>
-            )}
+            {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
             {superAdminPage === 'activity-logs' && <Admin />}
           </main>
         </div>
