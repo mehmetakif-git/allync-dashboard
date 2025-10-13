@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
-import { getCurrentMockUser } from './utils/mockAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
@@ -15,25 +14,13 @@ import Admin from './pages/Admin';
 import ServiceDashboard from './pages/ServiceDashboard';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import SuperAdminSidebar from './components/SuperAdminSidebar';
 import RoleSwitcher from './components/RoleSwitcher';
-import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
-import ServicesCatalog from './pages/admin/ServicesCatalog';
-import CompaniesManagement from './pages/admin/CompaniesManagement';
-import UsersManagement from './pages/admin/UsersManagement';
-import RevenueAnalytics from './pages/admin/RevenueAnalytics';
-import SystemSettings from './pages/admin/SystemSettings';
-import ActivityLogs from './pages/admin/ActivityLogs';
-import MaintenanceMode from './pages/admin/MaintenanceMode';
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
   const [activePage, setActivePage] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [serviceSlug, setServiceSlug] = useState<string>('');
-  const [superAdminPage, setSuperAdminPage] = useState('admin-dashboard');
-  const mockUser = getCurrentMockUser();
-  const isSuperAdmin = mockUser.role === 'super_admin';
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -64,48 +51,6 @@ function AppContent() {
 
   if (!isAuthenticated) {
     return <Login />;
-  }
-
-  if (isSuperAdmin) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex">
-        <SuperAdminSidebar
-          activePage={superAdminPage}
-          onPageChange={setSuperAdminPage}
-        />
-        <div className="flex-1 ml-64">
-          <Header onMenuClick={() => {}} />
-          <main className="p-6">
-            {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
-            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
-            {superAdminPage === 'service-whatsapp' && <WhatsApp />}
-            {superAdminPage === 'service-instagram' && <Instagram />}
-            {superAdminPage === 'service-text-to-video' && <TextToVideo />}
-            {superAdminPage === 'service-text-to-image' && <ServiceDashboard slug="text-to-image" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-voice-cloning' && <ServiceDashboard slug="voice-cloning" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-document-ai' && <ServiceDashboard slug="document-ai" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-image-to-video' && <ServiceDashboard slug="image-to-video" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-video-to-video' && <ServiceDashboard slug="video-to-video" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-data-analysis' && <ServiceDashboard slug="data-analysis" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-custom-ai' && <ServiceDashboard slug="custom-ai" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-ecommerce' && <ServiceDashboard slug="ecommerce" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-corporate-website' && <ServiceDashboard slug="corporate-website" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-mobile-app' && <ServiceDashboard slug="mobile-app" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-digital-marketing' && <ServiceDashboard slug="digital-marketing" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-iot-solutions' && <ServiceDashboard slug="iot-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-cloud-solutions' && <ServiceDashboard slug="cloud-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-ui-ux-design' && <ServiceDashboard slug="ui-ux-design" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-maintenance-support' && <ServiceDashboard slug="maintenance-support" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'companies-management' && <CompaniesManagement />}
-            {superAdminPage === 'users-management' && <UsersManagement />}
-            {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
-            {superAdminPage === 'system-settings' && <SystemSettings />}
-            {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
-            {superAdminPage === 'activity-logs' && <ActivityLogs />}
-          </main>
-        </div>
-      </div>
-    );
   }
 
   return (
