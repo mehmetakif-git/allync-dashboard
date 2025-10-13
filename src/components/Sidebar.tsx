@@ -14,6 +14,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getCurrentMockUser } from '../utils/mockAuth';
+import { serviceTypes } from '../data/services';
+import { mockCompanyRequests } from '../pages/Services';
 
 interface SidebarProps {
   activePage: string;
@@ -35,10 +37,17 @@ export default function Sidebar({ activePage, onPageChange, isOpen, onClose }: S
       .toUpperCase();
   };
 
+  const activeServices = Object.keys(mockCompanyRequests)
+    .filter(serviceId => mockCompanyRequests[serviceId].status === 'approved')
+    .map(serviceId => serviceTypes.find(s => s.id === serviceId))
+    .filter(Boolean);
+
   const navigationItems = [
     { id: 'dashboard', icon: Home, labelKey: 'nav.dashboard', roles: ['super_admin', 'company_admin', 'user'] },
     { id: 'services', icon: Zap, labelKey: 'nav.services', roles: ['super_admin', 'company_admin', 'user'] },
-    { id: 'whatsapp', icon: MessageCircle, labelKey: 'nav.whatsapp', roles: ['super_admin', 'company_admin'] },
+  ];
+
+  const bottomNavigationItems = [
     { id: 'invoices', icon: FileText, labelKey: 'nav.invoices', roles: ['super_admin', 'company_admin'] },
     { id: 'support', icon: HelpCircle, labelKey: 'nav.support', roles: ['super_admin', 'company_admin', 'user'] },
     { id: 'settings', icon: Settings, labelKey: 'nav.settings', roles: ['super_admin', 'company_admin', 'user'] },
@@ -46,6 +55,10 @@ export default function Sidebar({ activePage, onPageChange, isOpen, onClose }: S
   ];
 
   const visibleItems = navigationItems.filter((item) =>
+    item.roles.includes(mockUser.role)
+  );
+
+  const visibleBottomItems = bottomNavigationItems.filter((item) =>
     item.roles.includes(mockUser.role)
   );
 
@@ -85,6 +98,58 @@ export default function Sidebar({ activePage, onPageChange, isOpen, onClose }: S
         <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
             {visibleItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activePage === item.id;
+              return (
+                <li key={item.id}>
+                  <button
+                    onClick={() => handleNavClick(item.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                      isActive
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'text-gray-400 hover:bg-gray-800'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{t(item.labelKey)}</span>
+                  </button>
+                </li>
+              );
+            })}
+
+            {activeServices.length > 0 && (
+              <>
+                <li className="pt-4 pb-2">
+                  <div className="text-xs font-semibold text-gray-500 uppercase px-4">Active Services</div>
+                </li>
+                {activeServices.map((service: any) => {
+                  const Icon = service.icon;
+                  const pageId = service.id === 'whatsapp-automation' ? 'whatsapp' : `service/${service.slug}`;
+                  const isActive = activePage === pageId || activePage === service.id;
+                  return (
+                    <li key={service.id}>
+                      <button
+                        onClick={() => handleNavClick(pageId)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'text-gray-400 hover:bg-gray-800'
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                        <span className="font-medium">{service.name_en}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </>
+            )}
+
+            <li className="pt-6">
+              <div className="border-t border-gray-800 mb-2"></div>
+            </li>
+
+            {visibleBottomItems.map((item) => {
               const Icon = item.icon;
               const isActive = activePage === item.id;
               return (

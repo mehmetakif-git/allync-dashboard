@@ -29,6 +29,7 @@ function AppContent() {
         setActivePage('service-dashboard');
       } else if (hash) {
         setActivePage(hash);
+        setServiceSlug('');
       }
     };
 
@@ -36,6 +37,15 @@ function AppContent() {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  const handlePageChange = (page: string) => {
+    if (page.startsWith('service/')) {
+      window.location.hash = page;
+    } else {
+      setActivePage(page);
+      window.location.hash = page;
+    }
+  };
 
   if (!isAuthenticated) {
     return <Login />;
@@ -45,7 +55,7 @@ function AppContent() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
       <Sidebar
         activePage={activePage}
-        onPageChange={setActivePage}
+        onPageChange={handlePageChange}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />

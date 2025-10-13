@@ -4,25 +4,9 @@ import { getCurrentMockUser } from '../utils/mockAuth';
 import { serviceTypes } from '../data/services';
 import { mockServiceRequests } from '../data/serviceRequests';
 
-const mockCompanyRequests: Record<string, { status: 'approved' | 'pending' | 'rejected'; requestId: string; package: string }> = {
+export const mockCompanyRequests: Record<string, { status: 'approved' | 'pending' | 'rejected'; requestId: string; package: string }> = {
   'whatsapp-automation': { status: 'approved', requestId: 'sr-002', package: 'pro' },
   'instagram-automation': { status: 'approved', requestId: 'sr-001', package: 'basic' },
-  'text-to-video': { status: 'approved', requestId: 'sr-003', package: 'pro' },
-  'text-to-image': { status: 'approved', requestId: 'sr-004', package: 'basic' },
-  'voice-cloning': { status: 'approved', requestId: 'sr-005', package: 'premium' },
-  'document-ai': { status: 'approved', requestId: 'sr-006', package: 'pro' },
-  'image-to-video': { status: 'approved', requestId: 'sr-007', package: 'basic' },
-  'video-to-video': { status: 'approved', requestId: 'sr-008', package: 'pro' },
-  'data-analysis': { status: 'approved', requestId: 'sr-009', package: 'premium' },
-  'custom-ai': { status: 'approved', requestId: 'sr-010', package: 'custom' },
-  'ecommerce': { status: 'approved', requestId: 'sr-011', package: 'pro' },
-  'corporate-website': { status: 'approved', requestId: 'sr-012', package: 'basic' },
-  'mobile-app': { status: 'approved', requestId: 'sr-013', package: 'premium' },
-  'digital-marketing': { status: 'approved', requestId: 'sr-014', package: 'pro' },
-  'iot-solutions': { status: 'approved', requestId: 'sr-015', package: 'custom' },
-  'cloud-solutions': { status: 'approved', requestId: 'sr-016', package: 'pro' },
-  'ui-ux-design': { status: 'approved', requestId: 'sr-017', package: 'basic' },
-  'maintenance-support': { status: 'approved', requestId: 'sr-018', package: 'pro' },
 };
 
 export default function Services() {
@@ -193,20 +177,6 @@ export default function Services() {
                 {status ? (
                   <div className="mt-4">
                     {getStatusBadge(status.status)}
-                    {status.status === 'approved' && (
-                      <button
-                        onClick={() => {
-                          if (service.id === 'whatsapp-automation') {
-                            window.location.hash = 'whatsapp';
-                          } else {
-                            window.location.hash = `service/${service.slug}`;
-                          }
-                        }}
-                        className="w-full mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                      >
-                        Open Dashboard
-                      </button>
-                    )}
                   </div>
                 ) : (
                   <button
