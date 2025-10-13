@@ -276,7 +276,7 @@ export default function Services() {
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
                 <p className="text-sm text-blue-300">
                   <strong>Note:</strong> Your request will be sent to the administrator for approval.
-                  You'll receive a notification once it's reviewed.
+                  You'll receive a notification once it\'s reviewed.
                 </p>
               </div>
 
