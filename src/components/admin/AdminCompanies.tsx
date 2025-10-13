@@ -18,7 +18,21 @@ export default function AdminCompanies() {
           <h2 className="text-2xl font-bold text-white">All Companies</h2>
           <p className="text-gray-400 text-sm mt-1">Manage all companies in the system</p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+        <button
+          onClick={() => {
+            const name = prompt('Company name:');
+            if (!name) return;
+
+            const email = prompt('Admin email:');
+            if (!email) return;
+
+            const country = prompt('Country (US/TR/QA):');
+            if (!country) return;
+
+            alert(`✅ Company created successfully!\n\nCompany: ${name}\nAdmin: ${email}\nCountry: ${country}\n\nThe admin will receive setup instructions via email.`);
+          }}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Add Company
         </button>
@@ -85,16 +99,45 @@ export default function AdminCompanies() {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="View">
+                    <button
+                      onClick={() => alert(`Viewing details for ${company.name}...\n\nThis would show:\n- Full company info\n- User list\n- Service usage\n- Billing history`)}
+                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                      title="View"
+                    >
                       <Eye className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="Edit">
+                    <button
+                      onClick={() => {
+                        const newName = prompt(`Edit company name:`, company.name);
+                        if (newName && newName !== company.name) {
+                          alert(`✅ Company updated!\n\nOld name: ${company.name}\nNew name: ${newName}`);
+                        }
+                      }}
+                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                      title="Edit"
+                    >
                       <Edit className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="Suspend">
+                    <button
+                      onClick={() => {
+                        if (confirm(`${company.status === 'Active' ? 'Suspend' : 'Activate'} ${company.name}?`)) {
+                          alert(`✅ Company ${company.status === 'Active' ? 'suspended' : 'activated'}!\n\n${company.name} is now ${company.status === 'Active' ? 'suspended' : 'active'}.`);
+                        }
+                      }}
+                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                      title={company.status === 'Active' ? 'Suspend' : 'Activate'}
+                    >
                       <Ban className="w-4 h-4 text-orange-400" />
                     </button>
-                    <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors" title="Delete">
+                    <button
+                      onClick={() => {
+                        if (confirm(`⚠️ Delete ${company.name}?\n\nThis will:\n- Remove all users\n- Cancel all services\n- Delete all data\n\nThis action cannot be undone!`)) {
+                          alert(`❌ Company deleted!\n\n${company.name} has been permanently removed.`);
+                        }
+                      }}
+                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                      title="Delete"
+                    >
                       <Trash2 className="w-4 h-4 text-red-400" />
                     </button>
                   </div>

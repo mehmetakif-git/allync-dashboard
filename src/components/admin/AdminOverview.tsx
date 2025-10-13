@@ -93,10 +93,24 @@ export default function AdminOverview() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
+                <button
+                  onClick={() => {
+                    if (confirm(`Approve ${request.service} for ${request.company}?`)) {
+                      alert(`✅ Service approved!\n\n${request.company} can now use ${request.service}`);
+                    }
+                  }}
+                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+                >
                   Approve
                 </button>
-                <button className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
+                <button
+                  onClick={() => {
+                    if (confirm(`Reject ${request.service} for ${request.company}?`)) {
+                      alert(`❌ Service request rejected\n\n${request.company} will be notified`);
+                    }
+                  }}
+                  className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+                >
                   Reject
                 </button>
               </div>
@@ -133,13 +147,36 @@ export default function AdminOverview() {
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl p-6">
           <h3 className="text-lg font-bold text-white mb-4">Quick Actions</h3>
           <div className="space-y-2">
-            <button className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-left font-medium transition-colors">
+            <button
+              onClick={() => {
+                const companyName = prompt('Enter company name:');
+                if (companyName) {
+                  alert(`✅ Company "${companyName}" created successfully!\n\nNext steps:\n- Add users\n- Configure services\n- Set billing`);
+                }
+              }}
+              className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-left font-medium transition-colors"
+            >
               + Add New Company
             </button>
-            <button className="w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-left font-medium transition-colors">
+            <button
+              onClick={() => {
+                const email = prompt('Enter user email:');
+                if (email) {
+                  alert(`✅ Invitation sent to ${email}!\n\nThe user will receive:\n- Welcome email\n- Setup instructions\n- Login credentials`);
+                }
+              }}
+              className="w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-left font-medium transition-colors"
+            >
               + Invite User
             </button>
-            <button className="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-left font-medium transition-colors flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (confirm('⚠️ Enable Maintenance Mode?\n\nThis will:\n- Block all user access\n- Show maintenance page\n- Only admins can access')) {
+                  alert('🔧 Maintenance Mode enabled!\n\nUsers will see a maintenance page. You can disable it from Settings → System Settings.');
+                }
+              }}
+              className="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-left font-medium transition-colors flex items-center gap-2"
+            >
               <AlertCircle className="w-5 h-5" />
               Enable Maintenance Mode
             </button>

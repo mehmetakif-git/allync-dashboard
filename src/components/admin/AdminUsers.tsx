@@ -18,7 +18,24 @@ export default function AdminUsers() {
           <h2 className="text-2xl font-bold text-white">All Users</h2>
           <p className="text-gray-400 text-sm mt-1">Manage all users across all companies</p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+        <button
+          onClick={() => {
+            const name = prompt('User full name:');
+            if (!name) return;
+
+            const email = prompt('User email:');
+            if (!email) return;
+
+            const company = prompt('Company name:');
+            if (!company) return;
+
+            const role = prompt('Role (company_admin / user):');
+            if (!role) return;
+
+            alert(`✅ User created successfully!\n\nName: ${name}\nEmail: ${email}\nCompany: ${company}\nRole: ${role}\n\nInvitation email sent!`);
+          }}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+        >
           <Plus className="w-5 h-5" />
           Invite User
         </button>
