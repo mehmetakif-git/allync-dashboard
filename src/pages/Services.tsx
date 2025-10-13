@@ -22,7 +22,7 @@ export default function Services() {
   };
 
   const handleSubmitRequest = () => {
-    alert(`Service request sent to admin!\n\nService: ${selectedService.name}\nPackage: ${selectedPackage}\nStatus: Pending Approval\n\nYou'll be notified once the admin reviews your request.`);
+    alert(`Service request sent to admin!\n\nService: ${selectedService.name_en}\nPackage: ${selectedPackage}\nStatus: Pending Approval\n\nYou'll be notified once the admin reviews your request.`);
     setShowRequestModal(false);
     setRequestNote('');
     setSelectedPackage('pro');
@@ -60,16 +60,6 @@ export default function Services() {
     }
   };
 
-  const getPriceDisplay = (service: any) => {
-    if (service.pricing.custom) {
-      return 'Custom Pricing';
-    }
-    const prices = [];
-    if (service.pricing.basic) prices.push(`$${service.pricing.basic}`);
-    if (service.pricing.pro) prices.push(`$${service.pricing.pro}`);
-    if (service.pricing.premium) prices.push(`$${service.pricing.premium}`);
-    return prices.length > 0 ? `From ${prices[0]}/mo` : 'Contact Us';
-  };
 
   return (
     <>
@@ -89,7 +79,7 @@ export default function Services() {
                 key={service.id}
                 className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:shadow-xl hover:shadow-black/50 transition-all group"
               >
-                <div className={`w-16 h-16 bg-gradient-to-br ${service.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <Icon className="w-8 h-8 text-white" />
                 </div>
 
@@ -103,8 +93,8 @@ export default function Services() {
                   </span>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
-                <p className="text-gray-400 text-sm mb-4">{service.description}</p>
+                <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
+                <p className="text-gray-400 text-sm mb-4">{service.description_en}</p>
 
                 <ul className="space-y-2 mb-4">
                   {service.features.slice(0, 3).map((feature, idx) => (
@@ -116,8 +106,8 @@ export default function Services() {
                 </ul>
 
                 <div className="mb-4">
-                  <p className="text-lg font-bold text-white">
-                    {getPriceDisplay(service)}
+                  <p className="text-sm font-medium text-gray-400">
+                    Contact for Pricing
                   </p>
                 </div>
 
@@ -160,7 +150,7 @@ export default function Services() {
             onClick={() => setShowRequestModal(false)}
           />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
-            <div className={`bg-gradient-to-r ${selectedService.gradient} px-6 py-4`}>
+            <div className={`bg-gradient-to-r ${selectedService.color} px-6 py-4`}>
               <h2 className="text-2xl font-bold text-white">Request Service</h2>
               <p className="text-white/80 text-sm mt-1">{selectedService.name}</p>
             </div>
@@ -168,11 +158,11 @@ export default function Services() {
             <div className="p-6 space-y-4">
               <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${selectedService.gradient} rounded-lg flex items-center justify-center`}>
+                  <div className={`w-12 h-12 bg-gradient-to-br ${selectedService.color} rounded-lg flex items-center justify-center`}>
                     <selectedService.icon className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-bold text-white">{selectedService.name}</p>
+                    <p className="font-bold text-white">{selectedService.name_en}</p>
                     <p className="text-sm text-gray-400">{selectedService.category.toUpperCase()}</p>
                   </div>
                 </div>
@@ -189,63 +179,6 @@ export default function Services() {
                   </ul>
                 </div>
 
-                {!selectedService.pricing.custom && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">
-                      Select Package
-                    </label>
-                    <div className="space-y-2">
-                      {selectedService.pricing.basic && (
-                        <label className="flex items-center gap-3 p-3 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-800/70">
-                          <input
-                            type="radio"
-                            name="package"
-                            value="basic"
-                            checked={selectedPackage === 'basic'}
-                            onChange={(e) => setSelectedPackage(e.target.value as any)}
-                            className="text-blue-600"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-white">Basic</p>
-                            <p className="text-sm text-gray-400">${selectedService.pricing.basic}/month</p>
-                          </div>
-                        </label>
-                      )}
-                      {selectedService.pricing.pro && (
-                        <label className="flex items-center gap-3 p-3 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-800/70">
-                          <input
-                            type="radio"
-                            name="package"
-                            value="pro"
-                            checked={selectedPackage === 'pro'}
-                            onChange={(e) => setSelectedPackage(e.target.value as any)}
-                            className="text-blue-600"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-white">Pro</p>
-                            <p className="text-sm text-gray-400">${selectedService.pricing.pro}/month</p>
-                          </div>
-                        </label>
-                      )}
-                      {selectedService.pricing.premium && (
-                        <label className="flex items-center gap-3 p-3 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-800/70">
-                          <input
-                            type="radio"
-                            name="package"
-                            value="premium"
-                            checked={selectedPackage === 'premium'}
-                            onChange={(e) => setSelectedPackage(e.target.value as any)}
-                            className="text-blue-600"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-white">Premium</p>
-                            <p className="text-sm text-gray-400">${selectedService.pricing.premium}/month</p>
-                          </div>
-                        </label>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
 
               <div>
