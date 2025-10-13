@@ -1,4 +1,4 @@
-import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Settings, Activity, AlertTriangle, LogOut } from 'lucide-react';
+import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
 
 interface MenuItem {
   id?: string;
@@ -8,7 +8,14 @@ interface MenuItem {
   type?: string;
 }
 
-export default function SuperAdminSidebar({ activePage, onPageChange }: { activePage: string; onPageChange: (page: string) => void }) {
+interface SuperAdminSidebarProps {
+  activePage: string;
+  onPageChange: (page: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, onClose }: SuperAdminSidebarProps) {
   const menuItems: MenuItem[] = [
     { id: 'admin-dashboard', label: 'Dashboard', icon: Home, section: 'main' },
     { id: 'services-catalog', label: 'Services Catalog', icon: Zap, section: 'main' },
@@ -45,19 +52,41 @@ export default function SuperAdminSidebar({ activePage, onPageChange }: { active
     { id: 'activity-logs', label: 'Activity Logs', icon: Activity, section: 'management' },
   ];
 
+  const handleNavClick = (pageId: string) => {
+    onPageChange(pageId);
+    if (window.innerWidth < 1024) {
+      onClose();
+    }
+  };
+
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto z-30">
-      <div className="p-4 border-b border-gray-800">
-        <div className="flex items-center gap-3">
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        ></div>
+      )}
+
+      <aside
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto transition-transform duration-300 z-50 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        } w-64`}
+      >
+        <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
             SA
           </div>
-          <div>
-            <p className="font-bold text-white">Super Admin</p>
-            <p className="text-xs text-gray-400">Full System Access</p>
+            <div>
+              <p className="font-bold text-white">Super Admin</p>
+              <p className="text-xs text-gray-400">Full System Access</p>
+            </div>
           </div>
+          <button onClick={onClose} className="lg:hidden p-2 hover:bg-gray-800 rounded-lg">
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
         </div>
-      </div>
 
       <nav className="flex-1 p-4">
         <ul className="space-y-1">
@@ -76,7 +105,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange }: { active
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => onPageChange(item.id!)}
+                  onClick={() => handleNavClick(item.id!)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
                     isActive
                       ? 'bg-red-600 text-white shadow-lg'
@@ -97,7 +126,8 @@ export default function SuperAdminSidebar({ activePage, onPageChange }: { active
           <LogOut className="w-4 h-4" />
           Logout
         </button>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </>
   );
 }

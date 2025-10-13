@@ -18,20 +18,14 @@ import Sidebar from './components/Sidebar';
 import SuperAdminSidebar from './components/SuperAdminSidebar';
 import RoleSwitcher from './components/RoleSwitcher';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
-import ServicesCatalog from './pages/admin/ServicesCatalog';
-import CompaniesManagement from './pages/admin/CompaniesManagement';
-import UsersManagement from './pages/admin/UsersManagement';
-import RevenueAnalytics from './pages/admin/RevenueAnalytics';
-import SystemSettings from './pages/admin/SystemSettings';
-import ActivityLogs from './pages/admin/ActivityLogs';
-import MaintenanceMode from './pages/admin/MaintenanceMode';
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [activePage, setActivePage] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [serviceSlug, setServiceSlug] = useState<string>('');
   const [superAdminPage, setSuperAdminPage] = useState('admin-dashboard');
+
   const mockUser = getCurrentMockUser();
   const isSuperAdmin = mockUser.role === 'super_admin';
 
@@ -72,12 +66,15 @@ function AppContent() {
         <SuperAdminSidebar
           activePage={superAdminPage}
           onPageChange={setSuperAdminPage}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
-        <div className="flex-1 ml-64">
-          <Header onMenuClick={() => {}} />
-          <main className="p-6">
+        <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+          <Header onMenuClick={() => setIsSidebarOpen(true)} />
+          <main className="flex-1 p-6">
+            <RoleSwitcher />
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
-            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
+            {superAdminPage === 'services-catalog' && <Services />}
             {superAdminPage === 'service-whatsapp' && <WhatsApp />}
             {superAdminPage === 'service-instagram' && <Instagram />}
             {superAdminPage === 'service-text-to-video' && <TextToVideo />}
@@ -96,12 +93,17 @@ function AppContent() {
             {superAdminPage === 'service-cloud-solutions' && <ServiceDashboard slug="cloud-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-ui-ux-design' && <ServiceDashboard slug="ui-ux-design" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-maintenance-support' && <ServiceDashboard slug="maintenance-support" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'companies-management' && <CompaniesManagement />}
-            {superAdminPage === 'users-management' && <UsersManagement />}
-            {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
-            {superAdminPage === 'system-settings' && <SystemSettings />}
-            {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
-            {superAdminPage === 'activity-logs' && <ActivityLogs />}
+            {superAdminPage === 'companies-management' && <Admin />}
+            {superAdminPage === 'users-management' && <Admin />}
+            {superAdminPage === 'revenue-analytics' && <Admin />}
+            {superAdminPage === 'system-settings' && <Settings />}
+            {superAdminPage === 'maintenance-mode' && (
+              <div className="text-center py-16">
+                <h1 className="text-3xl font-bold text-white mb-4">Maintenance Mode</h1>
+                <p className="text-gray-400">Coming in next update</p>
+              </div>
+            )}
+            {superAdminPage === 'activity-logs' && <Admin />}
           </main>
         </div>
       </div>
