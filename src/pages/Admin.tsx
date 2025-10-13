@@ -2,17 +2,19 @@ import { useState } from 'react';
 import AdminOverview from '../components/admin/AdminOverview';
 import AdminCompanies from '../components/admin/AdminCompanies';
 import AdminUsers from '../components/admin/AdminUsers';
+import AdminServices from '../components/admin/AdminServices';
 import AdminSystemSettings from '../components/admin/AdminSystemSettings';
 import AdminActivityLogs from '../components/admin/AdminActivityLogs';
 import AdminRevenue from '../components/admin/AdminRevenue';
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'companies' | 'users' | 'revenue' | 'settings' | 'logs'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'companies' | 'users' | 'services' | 'revenue' | 'settings' | 'logs'>('overview');
 
   const tabs = [
     { id: 'overview', label: '📊 Overview', desc: 'System overview' },
     { id: 'companies', label: '🏢 Companies', desc: 'Manage all companies' },
     { id: 'users', label: '👥 Users', desc: 'Manage all users' },
+    { id: 'services', label: '⚡ Services', desc: 'Manage all services' },
     { id: 'revenue', label: '💰 Revenue', desc: 'Financial analytics' },
     { id: 'settings', label: '⚙️ Settings', desc: 'System configuration' },
     { id: 'logs', label: '📋 Activity Logs', desc: 'System activity' },
@@ -58,6 +60,7 @@ export default function Admin() {
           {activeTab === 'overview' && <AdminOverview />}
           {activeTab === 'companies' && <AdminCompanies />}
           {activeTab === 'users' && <AdminUsers />}
+          {activeTab === 'services' && <AdminServices />}
           {activeTab === 'revenue' && <AdminRevenue />}
           {activeTab === 'settings' && <AdminSystemSettings />}
           {activeTab === 'logs' && <AdminActivityLogs />}

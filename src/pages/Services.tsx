@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Clock, X, Sparkles, Cpu } from 'lucide-react';
+import { Check, Clock, X, Sparkles, Cpu, Eye } from 'lucide-react';
 import { getCurrentMockUser } from '../utils/mockAuth';
 import { serviceTypes } from '../data/services';
 import { mockServiceRequests } from '../data/serviceRequests';
@@ -178,6 +178,24 @@ export default function Services() {
                   <div className="mt-4">
                     {getStatusBadge(status.status)}
                   </div>
+                ) : mockUser.role === 'super_admin' ? (
+                  <button
+                    onClick={() => {
+                      if (service.id === 'whatsapp-automation') {
+                        window.location.hash = 'whatsapp';
+                      } else if (service.id === 'instagram-automation') {
+                        window.location.hash = 'service/instagram-automation';
+                      } else if (service.id === 'text-to-video') {
+                        window.location.hash = 'service/text-to-video';
+                      } else {
+                        window.location.hash = `service/${service.slug}`;
+                      }
+                    }}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Dashboard (Admin)
+                  </button>
                 ) : (
                   <button
                     onClick={() => handleRequestService(service)}
