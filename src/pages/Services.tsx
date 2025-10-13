@@ -1,91 +1,19 @@
 import { useState } from 'react';
-import { MessageCircle, Instagram, Video, Image, Mic, FileText, BarChart, Sparkles, Check, Clock, X } from 'lucide-react';
+import { Check, Clock, X } from 'lucide-react';
 import { getCurrentMockUser } from '../utils/mockAuth';
+import { serviceTypes } from '../data/services';
+import { mockServiceRequests } from '../data/serviceRequests';
 
-const services = [
-  {
-    id: 'whatsapp',
-    name: 'WhatsApp Automation',
-    description: 'Automate customer conversations with AI',
-    icon: MessageCircle,
-    gradient: 'from-green-500 to-emerald-600',
-    price: 299,
-    features: ['Unlimited messages', 'AI responses', 'Analytics dashboard', 'Multi-agent support'],
-  },
-  {
-    id: 'instagram',
-    name: 'Instagram Automation',
-    description: 'Automate DMs and comments with AI',
-    icon: Instagram,
-    gradient: 'from-pink-500 to-purple-600',
-    price: 399,
-    features: ['Auto-reply DMs', 'Comment management', 'Story replies', 'Analytics'],
-  },
-  {
-    id: 'text-to-video',
-    name: 'Text to Video AI',
-    description: 'Convert text to professional videos',
-    icon: Video,
-    gradient: 'from-blue-500 to-cyan-600',
-    price: 499,
-    features: ['HD video generation', 'Custom avatars', 'Voice synthesis', 'Multi-language'],
-  },
-  {
-    id: 'text-to-image',
-    name: 'Text to Image AI',
-    description: 'Generate images from text descriptions',
-    icon: Image,
-    gradient: 'from-violet-500 to-purple-600',
-    price: 399,
-    features: ['4K generation', 'Style transfer', 'Batch processing', 'API access'],
-  },
-  {
-    id: 'voice-cloning',
-    name: 'Voice Cloning',
-    description: 'Clone and synthesize realistic voices',
-    icon: Mic,
-    gradient: 'from-orange-500 to-red-600',
-    price: 599,
-    features: ['Voice cloning', 'Text-to-speech', 'Multi-language', 'Emotion control'],
-  },
-  {
-    id: 'document-ai',
-    name: 'Document AI',
-    description: 'Extract and analyze document data',
-    icon: FileText,
-    gradient: 'from-gray-500 to-gray-600',
-    price: 299,
-    features: ['OCR', 'Data extraction', 'Classification', 'Batch processing'],
-  },
-  {
-    id: 'data-analysis',
-    name: 'Data Analysis AI',
-    description: 'Automated insights from your data',
-    icon: BarChart,
-    gradient: 'from-yellow-500 to-orange-600',
-    price: 799,
-    features: ['Predictive analytics', 'Visualization', 'Reports', 'Real-time insights'],
-  },
-  {
-    id: 'custom-ai',
-    name: 'Custom AI Development',
-    description: 'Tailored AI solutions for your needs',
-    icon: Sparkles,
-    gradient: 'from-fuchsia-500 to-pink-600',
-    price: 1999,
-    features: ['Custom models', 'Dedicated support', 'Full integration', 'Training included'],
-  },
-];
-
-const mockCompanyRequests: Record<string, { status: 'approved' | 'pending' | 'rejected'; requestId: string }> = {
-  whatsapp: { status: 'approved', requestId: 'REQ-002' },
-  instagram: { status: 'pending', requestId: 'REQ-001' },
+const mockCompanyRequests: Record<string, { status: 'approved' | 'pending' | 'rejected'; requestId: string; package: string }> = {
+  'whatsapp-automation': { status: 'approved', requestId: 'sr-002', package: 'pro' },
+  'instagram-automation': { status: 'pending', requestId: 'sr-001', package: 'basic' },
 };
 
 export default function Services() {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [requestNote, setRequestNote] = useState('');
+  const [selectedPackage, setSelectedPackage] = useState<'basic' | 'pro' | 'premium' | 'custom'>('pro');
   const mockUser = getCurrentMockUser();
 
   const handleRequestService = (service: any) => {
@@ -94,9 +22,10 @@ export default function Services() {
   };
 
   const handleSubmitRequest = () => {
-    alert(`Service request sent to admin!\n\nService: ${selectedService.name}\nStatus: Pending Approval\n\nYou'll be notified once the admin reviews your request.`);
+    alert(`Service request sent to admin!\n\nService: ${selectedService.name}\nPackage: ${selectedPackage}\nStatus: Pending Approval\n\nYou'll be notified once the admin reviews your request.`);
     setShowRequestModal(false);
     setRequestNote('');
+    setSelectedPackage('pro');
   };
 
   const getServiceStatus = (serviceId: string) => {
@@ -131,6 +60,17 @@ export default function Services() {
     }
   };
 
+  const getPriceDisplay = (service: any) => {
+    if (service.pricing.custom) {
+      return 'Custom Pricing';
+    }
+    const prices = [];
+    if (service.pricing.basic) prices.push(`$${service.pricing.basic}`);
+    if (service.pricing.pro) prices.push(`$${service.pricing.pro}`);
+    if (service.pricing.premium) prices.push(`$${service.pricing.premium}`);
+    return prices.length > 0 ? `From ${prices[0]}/mo` : 'Contact Us';
+  };
+
   return (
     <>
       <div className="p-6 space-y-6 bg-gray-950">
@@ -140,7 +80,7 @@ export default function Services() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {services.map((service) => {
+          {serviceTypes.map((service) => {
             const status = getServiceStatus(service.id);
             const Icon = service.icon;
 
@@ -151,6 +91,16 @@ export default function Services() {
               >
                 <div className={`w-16 h-16 bg-gradient-to-br ${service.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <Icon className="w-8 h-8 text-white" />
+                </div>
+
+                <div className="mb-2">
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    service.category === 'ai'
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : 'bg-green-500/20 text-green-400'
+                  }`}>
+                    {service.category.toUpperCase()}
+                  </span>
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
@@ -166,9 +116,8 @@ export default function Services() {
                 </ul>
 
                 <div className="mb-4">
-                  <p className="text-2xl font-bold text-white">
-                    ${service.price}
-                    <span className="text-sm text-gray-400 font-normal">/month</span>
+                  <p className="text-lg font-bold text-white">
+                    {getPriceDisplay(service)}
                   </p>
                 </div>
 
@@ -178,7 +127,7 @@ export default function Services() {
                     {status.status === 'approved' && (
                       <button
                         onClick={() => {
-                          if (service.id === 'whatsapp') {
+                          if (service.id === 'whatsapp-automation') {
                             window.location.hash = 'whatsapp';
                           } else {
                             alert(`${service.name} dashboard coming soon!`);
@@ -222,16 +171,13 @@ export default function Services() {
                   <div className={`w-12 h-12 bg-gradient-to-br ${selectedService.gradient} rounded-lg flex items-center justify-center`}>
                     <selectedService.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-bold text-white">{selectedService.name}</p>
-                    <p className="text-2xl font-bold text-white">
-                      ${selectedService.price}
-                      <span className="text-sm text-gray-400 font-normal">/month</span>
-                    </p>
+                    <p className="text-sm text-gray-400">{selectedService.category.toUpperCase()}</p>
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 mb-4">
                   <p className="text-sm text-gray-400 font-medium">Features included:</p>
                   <ul className="space-y-1">
                     {selectedService.features.map((feature: string, idx: number) => (
@@ -242,6 +188,64 @@ export default function Services() {
                     ))}
                   </ul>
                 </div>
+
+                {!selectedService.pricing.custom && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                      Select Package
+                    </label>
+                    <div className="space-y-2">
+                      {selectedService.pricing.basic && (
+                        <label className="flex items-center gap-3 p-3 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-800/70">
+                          <input
+                            type="radio"
+                            name="package"
+                            value="basic"
+                            checked={selectedPackage === 'basic'}
+                            onChange={(e) => setSelectedPackage(e.target.value as any)}
+                            className="text-blue-600"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-white">Basic</p>
+                            <p className="text-sm text-gray-400">${selectedService.pricing.basic}/month</p>
+                          </div>
+                        </label>
+                      )}
+                      {selectedService.pricing.pro && (
+                        <label className="flex items-center gap-3 p-3 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-800/70">
+                          <input
+                            type="radio"
+                            name="package"
+                            value="pro"
+                            checked={selectedPackage === 'pro'}
+                            onChange={(e) => setSelectedPackage(e.target.value as any)}
+                            className="text-blue-600"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-white">Pro</p>
+                            <p className="text-sm text-gray-400">${selectedService.pricing.pro}/month</p>
+                          </div>
+                        </label>
+                      )}
+                      {selectedService.pricing.premium && (
+                        <label className="flex items-center gap-3 p-3 bg-gray-900/50 border border-gray-700 rounded-lg cursor-pointer hover:bg-gray-800/70">
+                          <input
+                            type="radio"
+                            name="package"
+                            value="premium"
+                            checked={selectedPackage === 'premium'}
+                            onChange={(e) => setSelectedPackage(e.target.value as any)}
+                            className="text-blue-600"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-white">Premium</p>
+                            <p className="text-sm text-gray-400">${selectedService.pricing.premium}/month</p>
+                          </div>
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
