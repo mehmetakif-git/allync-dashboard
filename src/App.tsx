@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Login from './pages/Login';
@@ -9,6 +9,7 @@ import Invoices from './pages/Invoices';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
+import ServiceDashboard from './pages/ServiceDashboard';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import RoleSwitcher from './components/RoleSwitcher';
@@ -17,6 +18,24 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
   const [activePage, setActivePage] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [serviceSlug, setServiceSlug] = useState<string>('');
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash.startsWith('service/')) {
+        const slug = hash.replace('service/', '');
+        setServiceSlug(slug);
+        setActivePage('service-dashboard');
+      } else if (hash) {
+        setActivePage(hash);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   if (!isAuthenticated) {
     return <Login />;
@@ -37,6 +56,15 @@ function AppContent() {
           {activePage === 'dashboard' && <Dashboard />}
           {activePage === 'services' && <Services />}
           {activePage === 'whatsapp' && <WhatsApp />}
+          {activePage === 'service-dashboard' && (
+            <ServiceDashboard
+              slug={serviceSlug}
+              onBack={() => {
+                window.location.hash = 'services';
+                setActivePage('services');
+              }}
+            />
+          )}
           {activePage === 'invoices' && <Invoices />}
           {activePage === 'support' && <Support />}
           {activePage === 'settings' && <Settings />}

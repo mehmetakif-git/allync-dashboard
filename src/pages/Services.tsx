@@ -1,20 +1,44 @@
 import { useState } from 'react';
-import { Check, Clock, X } from 'lucide-react';
+import { Check, Clock, X, Sparkles, Cpu } from 'lucide-react';
 import { getCurrentMockUser } from '../utils/mockAuth';
 import { serviceTypes } from '../data/services';
 import { mockServiceRequests } from '../data/serviceRequests';
 
 const mockCompanyRequests: Record<string, { status: 'approved' | 'pending' | 'rejected'; requestId: string; package: string }> = {
   'whatsapp-automation': { status: 'approved', requestId: 'sr-002', package: 'pro' },
-  'instagram-automation': { status: 'pending', requestId: 'sr-001', package: 'basic' },
+  'instagram-automation': { status: 'approved', requestId: 'sr-001', package: 'basic' },
+  'text-to-video': { status: 'approved', requestId: 'sr-003', package: 'pro' },
+  'text-to-image': { status: 'approved', requestId: 'sr-004', package: 'basic' },
+  'voice-cloning': { status: 'approved', requestId: 'sr-005', package: 'premium' },
+  'document-ai': { status: 'approved', requestId: 'sr-006', package: 'pro' },
+  'image-to-video': { status: 'approved', requestId: 'sr-007', package: 'basic' },
+  'video-to-video': { status: 'approved', requestId: 'sr-008', package: 'pro' },
+  'data-analysis': { status: 'approved', requestId: 'sr-009', package: 'premium' },
+  'custom-ai': { status: 'approved', requestId: 'sr-010', package: 'custom' },
+  'ecommerce': { status: 'approved', requestId: 'sr-011', package: 'pro' },
+  'corporate-website': { status: 'approved', requestId: 'sr-012', package: 'basic' },
+  'mobile-app': { status: 'approved', requestId: 'sr-013', package: 'premium' },
+  'digital-marketing': { status: 'approved', requestId: 'sr-014', package: 'pro' },
+  'iot-solutions': { status: 'approved', requestId: 'sr-015', package: 'custom' },
+  'cloud-solutions': { status: 'approved', requestId: 'sr-016', package: 'pro' },
+  'ui-ux-design': { status: 'approved', requestId: 'sr-017', package: 'basic' },
+  'maintenance-support': { status: 'approved', requestId: 'sr-018', package: 'pro' },
 };
 
 export default function Services() {
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [requestNote, setRequestNote] = useState('');
   const [selectedPackage, setSelectedPackage] = useState<'basic' | 'pro' | 'premium' | 'custom'>('pro');
   const mockUser = getCurrentMockUser();
+
+  const filteredServices = selectedCategory === 'all'
+    ? serviceTypes
+    : serviceTypes.filter(s => s.category === selectedCategory);
+
+  const aiCount = serviceTypes.filter(s => s.category === 'ai').length;
+  const digitalCount = serviceTypes.filter(s => s.category === 'digital').length;
 
   const handleRequestService = (service: any) => {
     setSelectedService(service);
@@ -69,8 +93,63 @@ export default function Services() {
           <p className="text-gray-400 mt-1">Explore and request AI services for your business</p>
         </div>
 
+        <div className="flex gap-3 border-b border-gray-800">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-6 py-3 font-medium transition-colors relative ${
+              selectedCategory === 'all'
+                ? 'text-white'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            All Services
+            <span className="ml-2 px-2 py-0.5 bg-gray-800 rounded-full text-xs">
+              {serviceTypes.length}
+            </span>
+            {selectedCategory === 'all' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setSelectedCategory('ai')}
+            className={`px-6 py-3 font-medium transition-colors relative flex items-center gap-2 ${
+              selectedCategory === 'ai'
+                ? 'text-white'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            AI Services
+            <span className="ml-1 px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded-full text-xs">
+              {aiCount}
+            </span>
+            {selectedCategory === 'ai' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setSelectedCategory('digital')}
+            className={`px-6 py-3 font-medium transition-colors relative flex items-center gap-2 ${
+              selectedCategory === 'digital'
+                ? 'text-white'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            <Cpu className="w-4 h-4" />
+            Digital Services
+            <span className="ml-1 px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded-full text-xs">
+              {digitalCount}
+            </span>
+            {selectedCategory === 'digital' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-500" />
+            )}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {serviceTypes.map((service) => {
+          {filteredServices.map((service) => {
             const status = getServiceStatus(service.id);
             const Icon = service.icon;
 
@@ -86,8 +165,8 @@ export default function Services() {
                 <div className="mb-2">
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     service.category === 'ai'
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : 'bg-green-500/20 text-green-400'
+                      ? 'bg-purple-500/20 text-purple-400'
+                      : 'bg-cyan-500/20 text-cyan-400'
                   }`}>
                     {service.category.toUpperCase()}
                   </span>
@@ -120,7 +199,7 @@ export default function Services() {
                           if (service.id === 'whatsapp-automation') {
                             window.location.hash = 'whatsapp';
                           } else {
-                            alert(`${service.name} dashboard coming soon!`);
+                            window.location.hash = `service/${service.slug}`;
                           }
                         }}
                         className="w-full mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
