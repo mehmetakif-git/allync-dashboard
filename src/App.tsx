@@ -1,0 +1,78 @@
+import { useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Services from './pages/Services';
+import WhatsApp from './pages/WhatsApp';
+import Invoices from './pages/Invoices';
+import Support from './pages/Support';
+import Settings from './pages/Settings';
+import Admin from './pages/Admin';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import RoleSwitcher from './components/RoleSwitcher';
+
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+  const [activePage, setActivePage] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
+      <Sidebar
+        activePage={activePage}
+        onPageChange={setActivePage}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+      <div className="flex-1 flex flex-col min-h-screen">
+        <Header onMenuClick={() => setIsSidebarOpen(true)} />
+        <main className="flex-1">
+          <RoleSwitcher />
+          {activePage === 'dashboard' && <Dashboard />}
+          {activePage === 'services' && <Services />}
+          {activePage === 'whatsapp' && <WhatsApp />}
+          {activePage === 'invoices' && <Invoices />}
+          {activePage === 'support' && <Support />}
+          {activePage === 'settings' && <Settings />}
+          {activePage === 'admin' && <Admin />}
+          {activePage === 'maintenance' && (
+            <div className="p-6">
+              <div className="max-w-2xl mx-auto text-center py-16">
+                <div className="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-4xl">🔧</span>
+                </div>
+                <h1 className="text-3xl font-bold text-white mb-4">Maintenance Mode</h1>
+                <p className="text-gray-400 mb-8">
+                  Configure and schedule system maintenance windows from this page.
+                </p>
+                <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl shadow-sm border border-gray-700 p-8 text-left">
+                  <h2 className="text-xl font-bold text-white mb-4">No Active Maintenance</h2>
+                  <p className="text-gray-400 mb-6">There is currently no scheduled maintenance.</p>
+                  <button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all transition-colors font-medium">
+                    Schedule Maintenance
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LanguageProvider>
+  );
+}

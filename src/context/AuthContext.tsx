@@ -1,0 +1,76 @@
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { User } from '../types';
+
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const mockUsers: Record<string, User> = {
+  'admin@allync.com': {
+    id: '1',
+    name: 'John Doe',
+    email: 'admin@allync.com',
+    role: 'SUPER_ADMIN',
+    companyId: '0',
+    companyName: 'Allync Platform',
+    phone: '+1 555 999 8888',
+    language: 'EN',
+  },
+  'company@example.com': {
+    id: '2',
+    name: 'Sarah Smith',
+    email: 'company@example.com',
+    role: 'COMPANY_ADMIN',
+    companyId: '1',
+    companyName: 'Tech Corp',
+    phone: '+90 555 123 4567',
+    language: 'EN',
+  },
+  'user@example.com': {
+    id: '3',
+    name: 'Ahmed Ali',
+    email: 'user@example.com',
+    role: 'USER',
+    companyId: '1',
+    companyName: 'Tech Corp',
+    phone: '+90 555 777 8888',
+    language: 'EN',
+  },
+};
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  const login = async (email: string, password: string) => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const foundUser = mockUsers[email];
+    if (foundUser) {
+      setUser(foundUser);
+    } else {
+      throw new Error('Invalid credentials');
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
