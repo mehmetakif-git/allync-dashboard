@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
 import WhatsApp from './pages/WhatsApp';
 import Instagram from './pages/Instagram';
+import TextToVideo from './pages/TextToVideo';
 import Invoices from './pages/Invoices';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
@@ -68,6 +69,7 @@ function AppContent() {
           {activePage === 'services' && <Services />}
           {activePage === 'whatsapp' && <WhatsApp />}
           {activePage === 'service/instagram-automation' && <Instagram />}
+          {activePage === 'service/text-to-video' && <TextToVideo />}
           {activePage === 'service-dashboard' && (
             <ServiceDashboard
               slug={serviceSlug}
