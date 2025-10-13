@@ -19,6 +19,7 @@ import SuperAdminSidebar from './components/SuperAdminSidebar';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import MaintenanceMode from './pages/admin/MaintenanceMode';
 import CompaniesManagement from './pages/admin/CompaniesManagement';
+import UsersManagement from './pages/admin/UsersManagement';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -94,7 +95,7 @@ function AppContent() {
             {superAdminPage === 'service-ui-ux-design' && <ServiceDashboard slug="ui-ux-design" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-maintenance-support' && <ServiceDashboard slug="maintenance-support" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
-            {superAdminPage === 'users-management' && <Admin />}
+            {superAdminPage === 'users-management' && <UsersManagement />}
             {superAdminPage === 'revenue-analytics' && <Admin />}
             {superAdminPage === 'system-settings' && <Settings />}
             {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
