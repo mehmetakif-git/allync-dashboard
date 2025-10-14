@@ -2,8 +2,19 @@ import { useState } from 'react';
 import { Search, Filter, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 import { serviceTypes, mockCompanyRequests } from '../data/services';
 import { getCurrentMockUser } from '../utils/mockAuth';
+import { useAuth } from '../context/AuthContext';
 
 export default function Services() {
+  console.log('🔵 RENDERING SERVICES - COMPANY/USER');
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
+  if (isSuperAdmin) {
+    window.location.hash = '#services-catalog';
+    return null;
+  }
+
   const mockUser = getCurrentMockUser();
   const isCompanyAdmin = mockUser.role === 'company_admin';
   const [search, setSearch] = useState('');

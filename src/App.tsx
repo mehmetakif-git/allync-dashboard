@@ -44,6 +44,7 @@ import RevenueAnalytics from './pages/admin/RevenueAnalytics';
 import InvoicesManagement from './pages/admin/InvoicesManagement';
 import SupportTickets from './pages/admin/SupportTickets';
 import UserInvite from './pages/admin/UserInvite';
+import ServicesCatalog from './pages/admin/ServicesCatalog';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -106,7 +107,7 @@ function AppContent() {
           <Header onMenuClick={() => setIsSidebarOpen(true)} />
           <main className="flex-1 p-6">
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
-            {superAdminPage === 'services-catalog' && <Services />}
+            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'service-whatsapp' && <WhatsApp />}
             {superAdminPage === 'service-instagram' && <Instagram />}
             {superAdminPage === 'service-text-to-video' && <TextToVideoAI />}

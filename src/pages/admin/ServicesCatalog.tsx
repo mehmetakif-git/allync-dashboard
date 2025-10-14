@@ -16,6 +16,8 @@ interface Service {
 }
 
 export default function ServicesCatalog() {
+  console.log('🔴 RENDERING SERVICESCATALOG - SUPER ADMIN');
+
   const [services, setServices] = useState<Service[]>(
     serviceTypes.map(s => ({ ...s, status: (s.status || 'active') as 'active' | 'inactive' | 'maintenance' | 'coming-soon' }))
   );
