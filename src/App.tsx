@@ -20,6 +20,9 @@ import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import MaintenanceMode from './pages/admin/MaintenanceMode';
 import CompaniesManagement from './pages/admin/CompaniesManagement';
 import UsersManagement from './pages/admin/UsersManagement';
+import CompanyAdminSidebar from './components/CompanyAdminSidebar';
+import RegularUserSidebar from './components/RegularUserSidebar';
+import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -30,6 +33,8 @@ function AppContent() {
 
   const mockUser = getCurrentMockUser();
   const isSuperAdmin = mockUser.role === 'super_admin';
+  const isCompanyAdmin = mockUser.role === 'company_admin';
+  const isRegularUser = mockUser.role === 'user';
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -106,59 +111,73 @@ function AppContent() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
-      <Sidebar
-        activePage={activePage}
-        onPageChange={handlePageChange}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
-      <div className="flex-1 flex flex-col min-h-screen">
-        <Header onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="flex-1">
-          {activePage === 'dashboard' && <Dashboard />}
-          {activePage === 'services' && <Services />}
-          {activePage === 'whatsapp' && <WhatsApp />}
-          {activePage === 'service/instagram-automation' && <Instagram />}
-          {activePage === 'service/text-to-video' && <TextToVideo />}
-          {activePage === 'service-dashboard' && (
-            <ServiceDashboard
-              slug={serviceSlug}
-              onBack={() => {
-                window.location.hash = 'services';
-                setActivePage('services');
-              }}
-            />
-          )}
-          {activePage === 'invoices' && <Invoices />}
-          {activePage === 'support' && <Support />}
-          {activePage === 'settings' && <Settings />}
-          {activePage === 'admin' && <Admin />}
-          {activePage === 'maintenance' && (
-            <div className="p-6">
-              <div className="max-w-2xl mx-auto text-center py-16">
-                <div className="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-4xl">🔧</span>
-                </div>
-                <h1 className="text-3xl font-bold text-white mb-4">Maintenance Mode</h1>
-                <p className="text-gray-400 mb-8">
-                  Configure and schedule system maintenance windows from this page.
-                </p>
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl shadow-sm border border-gray-700 p-8 text-left">
-                  <h2 className="text-xl font-bold text-white mb-4">No Active Maintenance</h2>
-                  <p className="text-gray-400 mb-6">There is currently no scheduled maintenance.</p>
-                  <button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all transition-colors font-medium">
-                    Schedule Maintenance
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </main>
+  if (isCompanyAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
+        <CompanyAdminSidebar
+          activePage={activePage}
+          onPageChange={handlePageChange}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+        <div className="flex-1 flex flex-col min-h-screen">
+          <Header onMenuClick={() => setIsSidebarOpen(true)} />
+          <main className="flex-1">
+            {activePage === 'dashboard' && <CompanyAdminDashboard />}
+            {activePage === 'services' && <Services />}
+            {activePage === 'whatsapp' && <WhatsApp />}
+            {activePage === 'service/instagram-automation' && <Instagram />}
+            {activePage === 'service-dashboard' && (
+              <ServiceDashboard
+                slug={serviceSlug}
+                onBack={() => {
+                  window.location.hash = 'services';
+                  setActivePage('services');
+                }}
+              />
+            )}
+            {activePage === 'invoices' && <Invoices />}
+            {activePage === 'support' && <Support />}
+            {activePage === 'settings' && <Settings />}
+          </main>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (isRegularUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
+        <RegularUserSidebar
+          activePage={activePage}
+          onPageChange={handlePageChange}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+        <div className="flex-1 flex flex-col min-h-screen">
+          <Header onMenuClick={() => setIsSidebarOpen(true)} />
+          <main className="flex-1">
+            {activePage === 'dashboard' && <Dashboard />}
+            {activePage === 'whatsapp' && <WhatsApp />}
+            {activePage === 'service/instagram-automation' && <Instagram />}
+            {activePage === 'service-dashboard' && (
+              <ServiceDashboard
+                slug={serviceSlug}
+                onBack={() => {
+                  window.location.hash = 'dashboard';
+                  setActivePage('dashboard');
+                }}
+              />
+            )}
+            {activePage === 'support' && <Support />}
+            {activePage === 'settings' && <Settings />}
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
 
 export default function App() {
