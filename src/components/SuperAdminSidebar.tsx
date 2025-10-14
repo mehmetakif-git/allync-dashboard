@@ -49,6 +49,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
     { id: 'users-management', label: 'Users', icon: Users, section: 'management' },
     { id: 'revenue-analytics', label: 'Revenue', icon: DollarSign, section: 'management' },
     { id: 'invoices-management', label: 'Invoices', icon: Receipt, section: 'management' },
+    { id: 'support-tickets', label: 'Support Tickets', icon: MessageCircle, section: 'management', badge: 3 },
     { id: 'system-settings', label: 'System Settings', icon: Settings, section: 'management' },
     { id: 'maintenance-mode', label: 'Maintenance Mode', icon: AlertTriangle, section: 'management' },
     { id: 'activity-logs', label: 'Activity Logs', icon: Activity, section: 'management' },

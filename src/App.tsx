@@ -42,6 +42,7 @@ import UIUXDesign from './pages/services/UIUXDesign';
 import MaintenanceSupport from './pages/services/MaintenanceSupport';
 import RevenueAnalytics from './pages/admin/RevenueAnalytics';
 import InvoicesManagement from './pages/admin/InvoicesManagement';
+import SupportTickets from './pages/admin/SupportTickets';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -132,6 +133,7 @@ function AppContent() {
             {superAdminPage === 'users-management' && <UsersManagement />}
             {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
             {superAdminPage === 'invoices-management' && <InvoicesManagement />}
+            {superAdminPage === 'support-tickets' && <SupportTickets />}
             {superAdminPage === 'system-settings' && <SystemSettings />}
             {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
             {superAdminPage === 'activity-logs' && <ActivityLogs />}
