@@ -28,6 +28,10 @@ import ActivityLogs from './pages/admin/ActivityLogs';
 import TextToVideoAI from './pages/services/TextToVideoAI';
 import ImageToVideoAI from './pages/services/ImageToVideoAI';
 import VideoToVideoAI from './pages/services/VideoToVideoAI';
+import TextToImageAI from './pages/services/TextToImageAI';
+import VoiceCloning from './pages/services/VoiceCloning';
+import DocumentAI from './pages/services/DocumentAI';
+import DataAnalysisAI from './pages/services/DataAnalysisAI';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -89,11 +93,12 @@ function AppContent() {
             {superAdminPage === 'service-whatsapp' && <WhatsApp />}
             {superAdminPage === 'service-instagram' && <Instagram />}
             {superAdminPage === 'service-text-to-video' && <TextToVideoAI />}
-            {superAdminPage === 'service-text-to-image' && <ServiceDashboard slug="text-to-image" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-voice-cloning' && <ServiceDashboard slug="voice-cloning" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-document-ai' && <ServiceDashboard slug="document-ai" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'service-text-to-image' && <TextToImageAI />}
+            {superAdminPage === 'service-voice-cloning' && <VoiceCloning />}
+            {superAdminPage === 'service-document-ai' && <DocumentAI />}
             {superAdminPage === 'service-image-to-video' && <ImageToVideoAI />}
             {superAdminPage === 'service-video-to-video' && <VideoToVideoAI />}
+            {superAdminPage === 'service-data-analysis' && <DataAnalysisAI />}
             {superAdminPage === 'service-data-analysis' && <ServiceDashboard slug="data-analysis" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-custom-ai' && <ServiceDashboard slug="custom-ai" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-ecommerce' && <ServiceDashboard slug="ecommerce" onBack={() => setSuperAdminPage('services-catalog')} />}
