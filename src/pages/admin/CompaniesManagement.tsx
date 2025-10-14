@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Plus, Eye, Edit, Ban, Trash2, Building2, ArrowLeft, Mail, Phone, Globe, Calendar, Users, Zap } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Ban, Trash2, Building2, ArrowLeft, Mail, Phone, Globe, Calendar, Users, Zap, AlertCircle, DollarSign } from 'lucide-react';
 
 type ViewMode = 'list' | 'add' | 'edit' | 'view';
 
@@ -489,6 +489,108 @@ export default function CompaniesManagement() {
   }
 
   if (viewMode === 'view' && selectedCompany) {
+    const [detailTab, setDetailTab] = useState<'overview' | 'services' | 'tickets' | 'billing'>('overview');
+
+    const companyServices = [
+      {
+        id: 'whatsapp-automation',
+        name: 'WhatsApp Automation',
+        plan: 'Pro',
+        price: 499,
+        startDate: '2024-03-15',
+        status: 'Active',
+        users: 8,
+        usage: '8,420 messages',
+      },
+      {
+        id: 'instagram-automation',
+        name: 'Instagram Automation',
+        plan: 'Basic',
+        price: 149,
+        startDate: '2024-05-22',
+        status: 'Active',
+        users: 3,
+        usage: '245 posts',
+      },
+      {
+        id: 'text-to-video',
+        name: 'Text-to-Video AI',
+        plan: 'Enterprise',
+        price: 1499,
+        startDate: '2024-01-10',
+        status: 'Trial',
+        users: 2,
+        usage: '34 videos',
+      },
+    ];
+
+    const supportTickets = [
+      {
+        id: 'T-001',
+        subject: 'WhatsApp Integration Issue',
+        status: 'open',
+        priority: 'high',
+        created: '2024-12-14 10:30',
+        lastUpdate: '2024-12-14 15:45',
+        messages: 3,
+        assignedTo: 'Support Team',
+        description: 'Having trouble connecting WhatsApp Business API. Error code 401 appears when trying to authenticate.',
+      },
+      {
+        id: 'T-002',
+        subject: 'Request for Instagram Analytics',
+        status: 'in-progress',
+        priority: 'medium',
+        created: '2024-12-10 14:20',
+        lastUpdate: '2024-12-12 09:15',
+        messages: 7,
+        assignedTo: 'Tech Support',
+        description: 'Would like to access detailed analytics for Instagram engagement metrics.',
+      },
+      {
+        id: 'T-003',
+        subject: 'Billing Question',
+        status: 'resolved',
+        priority: 'low',
+        created: '2024-12-05 08:45',
+        lastUpdate: '2024-12-06 16:30',
+        messages: 5,
+        assignedTo: 'Billing Team',
+        description: 'Question about invoice #INV-2024-1245 charges.',
+      },
+    ];
+
+    const billingHistory = [
+      { id: 'INV-2024-1247', date: '2024-12-01', amount: 2147, status: 'Paid', services: 3, dueDate: '2024-12-15' },
+      { id: 'INV-2024-1198', date: '2024-11-01', amount: 2147, status: 'Paid', services: 3, dueDate: '2024-11-15' },
+      { id: 'INV-2024-1156', date: '2024-10-01', amount: 1648, status: 'Paid', services: 2, dueDate: '2024-10-15' },
+      { id: 'INV-2024-1089', date: '2024-09-01', amount: 1648, status: 'Paid', services: 2, dueDate: '2024-09-15' },
+    ];
+
+    const getStatusColor = (status: string) => {
+      switch (status.toLowerCase()) {
+        case 'active': return 'bg-green-500/20 text-green-400';
+        case 'trial': return 'bg-blue-500/20 text-blue-400';
+        case 'suspended': return 'bg-red-500/20 text-red-400';
+        case 'open': return 'bg-red-500/20 text-red-400';
+        case 'in-progress': return 'bg-yellow-500/20 text-yellow-400';
+        case 'resolved': return 'bg-green-500/20 text-green-400';
+        case 'paid': return 'bg-green-500/20 text-green-400';
+        case 'pending': return 'bg-yellow-500/20 text-yellow-400';
+        case 'overdue': return 'bg-red-500/20 text-red-400';
+        default: return 'bg-gray-500/20 text-gray-400';
+      }
+    };
+
+    const getPriorityColor = (priority: string) => {
+      switch (priority.toLowerCase()) {
+        case 'high': return 'text-red-400';
+        case 'medium': return 'text-yellow-400';
+        case 'low': return 'text-green-400';
+        default: return 'text-gray-400';
+      }
+    };
+
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
@@ -500,7 +602,7 @@ export default function CompaniesManagement() {
           </button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-white">{selectedCompany.name}</h1>
-            <p className="text-gray-400 mt-1">Company details and statistics</p>
+            <p className="text-gray-400 mt-1">Complete company information and activity</p>
           </div>
           <button
             onClick={() => handleEdit(selectedCompany)}
@@ -511,77 +613,317 @@ export default function CompaniesManagement() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <Zap className="w-5 h-5 text-blue-400" />
-              <p className="text-sm text-gray-400">Active Services</p>
-            </div>
-            <p className="text-3xl font-bold text-white">{selectedCompany.activeServicesCount}</p>
-          </div>
-          <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <Users className="w-5 h-5 text-green-400" />
-              <p className="text-sm text-gray-400">Total Users</p>
-            </div>
-            <p className="text-3xl font-bold text-white">{selectedCompany.usersCount}</p>
-          </div>
-          <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-2">
-              <Calendar className="w-5 h-5 text-purple-400" />
-              <p className="text-sm text-gray-400">Member Since</p>
-            </div>
-            <p className="text-xl font-bold text-white">{selectedCompany.createdAt}</p>
+        <div className="border-b border-gray-800">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setDetailTab('overview')}
+              className={`px-4 py-2 font-medium transition-colors border-b-2 ${
+                detailTab === 'overview'
+                  ? 'text-white border-blue-500'
+                  : 'text-gray-400 border-transparent hover:text-gray-300'
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setDetailTab('services')}
+              className={`px-4 py-2 font-medium transition-colors border-b-2 flex items-center gap-2 ${
+                detailTab === 'services'
+                  ? 'text-white border-blue-500'
+                  : 'text-gray-400 border-transparent hover:text-gray-300'
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              Services ({companyServices.length})
+            </button>
+            <button
+              onClick={() => setDetailTab('tickets')}
+              className={`px-4 py-2 font-medium transition-colors border-b-2 flex items-center gap-2 ${
+                detailTab === 'tickets'
+                  ? 'text-white border-blue-500'
+                  : 'text-gray-400 border-transparent hover:text-gray-300'
+              }`}
+            >
+              <AlertCircle className="w-4 h-4" />
+              Support Tickets ({supportTickets.filter(t => t.status !== 'resolved').length})
+            </button>
+            <button
+              onClick={() => setDetailTab('billing')}
+              className={`px-4 py-2 font-medium transition-colors border-b-2 flex items-center gap-2 ${
+                detailTab === 'billing'
+                  ? 'text-white border-blue-500'
+                  : 'text-gray-400 border-transparent hover:text-gray-300'
+              }`}
+            >
+              <DollarSign className="w-4 h-4" />
+              Billing
+            </button>
           </div>
         </div>
 
-        <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-          <h3 className="text-lg font-bold text-white mb-4">Company Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Email</p>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-gray-400" />
-                <p className="text-white">{selectedCompany.email}</p>
+        {detailTab === 'overview' && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                  <p className="text-sm text-gray-400">Active Services</p>
+                </div>
+                <p className="text-3xl font-bold text-white">{companyServices.filter(s => s.status === 'Active').length}</p>
+                <p className="text-sm text-gray-400 mt-2">Total: {companyServices.length} services</p>
+              </div>
+              <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <Users className="w-5 h-5 text-green-400" />
+                  <p className="text-sm text-gray-400">Total Users</p>
+                </div>
+                <p className="text-3xl font-bold text-white">{selectedCompany.usersCount}</p>
+                <p className="text-sm text-gray-400 mt-2">Across all services</p>
+              </div>
+              <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <Calendar className="w-5 h-5 text-purple-400" />
+                  <p className="text-sm text-gray-400">Member Since</p>
+                </div>
+                <p className="text-xl font-bold text-white">{selectedCompany.createdAt}</p>
+                <p className="text-sm text-gray-400 mt-2">{Math.floor((new Date().getTime() - new Date(selectedCompany.createdAt).getTime()) / (1000 * 60 * 60 * 24))} days</p>
               </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Phone</p>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-gray-400" />
-                <p className="text-white">{selectedCompany.phone}</p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Country</p>
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-gray-400" />
-                <p className="text-white">{selectedCompany.country}</p>
-              </div>
-            </div>
-            {selectedCompany.website && (
-              <div>
-                <p className="text-sm text-gray-400 mb-1">Website</p>
-                <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-gray-400" />
-                  <a href={`https://${selectedCompany.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-                    {selectedCompany.website}
-                  </a>
+
+            <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-white mb-4">Company Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Email</p>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-gray-400" />
+                    <p className="text-white">{selectedCompany.email}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Phone</p>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <p className="text-white">{selectedCompany.phone}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Country</p>
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-gray-400" />
+                    <p className="text-white">{selectedCompany.country}</p>
+                  </div>
+                </div>
+                {selectedCompany.website && (
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Website</p>
+                    <div className="flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-gray-400" />
+                      <a href={`https://${selectedCompany.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                        {selectedCompany.website}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Status</p>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedCompany.status)}`}>
+                    {selectedCompany.status}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Monthly Spend</p>
+                  <p className="text-white font-bold">${companyServices.reduce((sum, s) => sum + s.price, 0).toLocaleString()}</p>
                 </div>
               </div>
-            )}
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Status</p>
-              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                selectedCompany.status === 'Active'
-                  ? 'bg-green-500/20 text-green-400'
-                  : 'bg-red-500/20 text-red-400'
-              }`}>
-                {selectedCompany.status}
-              </span>
+            </div>
+          </>
+        )}
+
+        {detailTab === 'services' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400">Detailed breakdown of all active and trial services</p>
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Total Monthly</p>
+                <p className="text-2xl font-bold text-white">${companyServices.reduce((sum, s) => sum + s.price, 0).toLocaleString()}/mo</p>
+              </div>
+            </div>
+
+            {companyServices.map((service) => (
+              <div key={service.id} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-white">{service.name}</h4>
+                      <p className="text-sm text-gray-400">Plan: {service.plan} • Started {service.startDate}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-white">${service.price}</p>
+                    <p className="text-sm text-gray-400">per month</p>
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${getStatusColor(service.status)}`}>
+                      {service.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
+                  <div>
+                    <p className="text-sm text-gray-400">Active Users</p>
+                    <p className="text-lg font-bold text-white">{service.users} users</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Usage This Month</p>
+                    <p className="text-lg font-bold text-white">{service.usage}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Subscription Duration</p>
+                    <p className="text-lg font-bold text-white">
+                      {Math.floor((new Date().getTime() - new Date(service.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mt-4">
+                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                    View Analytics
+                  </button>
+                  <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors">
+                    Change Plan
+                  </button>
+                  <button className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-sm font-medium transition-colors">
+                    Cancel Service
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {detailTab === 'tickets' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400">All support tickets from this company</p>
+              <div className="flex gap-2">
+                <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium">
+                  {supportTickets.filter(t => t.status === 'open').length} Open
+                </span>
+                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-lg text-sm font-medium">
+                  {supportTickets.filter(t => t.status === 'in-progress').length} In Progress
+                </span>
+                <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">
+                  {supportTickets.filter(t => t.status === 'resolved').length} Resolved
+                </span>
+              </div>
+            </div>
+
+            {supportTickets.map((ticket) => (
+              <div key={ticket.id} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="px-2 py-1 bg-gray-800 text-gray-300 rounded text-sm font-mono">
+                        {ticket.id}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
+                        {ticket.status}
+                      </span>
+                      <span className={`text-sm font-medium ${getPriorityColor(ticket.priority)}`}>
+                        {ticket.priority.toUpperCase()} Priority
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">{ticket.subject}</h4>
+                    <p className="text-gray-400 text-sm mb-3">{ticket.description}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span>Created: {ticket.created}</span>
+                      <span>•</span>
+                      <span>Last Update: {ticket.lastUpdate}</span>
+                      <span>•</span>
+                      <span>{ticket.messages} messages</span>
+                      <span>•</span>
+                      <span>Assigned to: {ticket.assignedTo}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4 border-t border-gray-800">
+                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                    View Conversation
+                  </button>
+                  {ticket.status !== 'resolved' && (
+                    <>
+                      <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors">
+                        Reply
+                      </button>
+                      <button className="px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg text-sm font-medium transition-colors">
+                        Mark Resolved
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {detailTab === 'billing' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-400">Complete billing history and invoices</p>
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Total Revenue</p>
+                <p className="text-2xl font-bold text-white">
+                  ${billingHistory.filter(b => b.status === 'Paid').reduce((sum, b) => sum + b.amount, 0).toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            <div className="border border-gray-800 rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-900/50 border-b border-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Invoice</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Amount</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Services</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Due Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {billingHistory.map((invoice) => (
+                    <tr key={invoice.id} className="bg-gray-900/30 hover:bg-gray-800/70 transition-colors">
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-white">{invoice.id}</span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-300">{invoice.date}</td>
+                      <td className="px-6 py-4">
+                        <span className="text-white font-bold">${invoice.amount.toLocaleString()}</span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-300">{invoice.services} services</td>
+                      <td className="px-6 py-4 text-gray-300">{invoice.dueDate}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
+                          {invoice.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">
+                          Download PDF
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
