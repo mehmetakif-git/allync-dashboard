@@ -43,6 +43,7 @@ import MaintenanceSupport from './pages/services/MaintenanceSupport';
 import RevenueAnalytics from './pages/admin/RevenueAnalytics';
 import InvoicesManagement from './pages/admin/InvoicesManagement';
 import SupportTickets from './pages/admin/SupportTickets';
+import UserInvite from './pages/admin/UserInvite';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -131,6 +132,7 @@ function AppContent() {
             {superAdminPage === 'service-maintenance-support' && <ServiceDashboard slug="maintenance-support" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'users-management' && <UsersManagement />}
+            {superAdminPage === 'user-invite' && <UserInvite />}
             {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
             {superAdminPage === 'invoices-management' && <InvoicesManagement />}
             {superAdminPage === 'support-tickets' && <SupportTickets />}
