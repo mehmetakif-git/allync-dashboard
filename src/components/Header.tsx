@@ -147,9 +147,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
       </header>
 
-      {showNotifications && (
-        <NotificationsPanel onClose={() => setShowNotifications(false)} />
-      )}
+      <NotificationsPanel
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </>
   );
 }
