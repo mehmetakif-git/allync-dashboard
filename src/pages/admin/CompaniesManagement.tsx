@@ -514,12 +514,28 @@ export default function CompaniesManagement() {
       {
         id: 'text-to-video',
         name: 'Text-to-Video AI',
-        plan: 'Enterprise',
+        plan: '',
         price: 1499,
-        startDate: '2024-01-10',
-        status: 'Trial',
-        users: 2,
-        usage: '34 videos',
+        startDate: '',
+        status: 'Pending Request',
+        requestDate: '2024-12-14 10:30',
+        requestedPlan: 'Enterprise',
+        requestMessage: 'We need this service for our marketing campaigns. Looking forward to generating video content from our blog posts.',
+        users: 0,
+        usage: 'N/A',
+      },
+      {
+        id: 'voice-cloning',
+        name: 'Voice Cloning',
+        plan: '',
+        price: 1199,
+        startDate: '',
+        status: 'Pending Request',
+        requestDate: '2024-12-13 16:45',
+        requestedPlan: 'Pro',
+        requestMessage: 'Interested in voice cloning for our customer service automation.',
+        users: 0,
+        usage: 'N/A',
       },
     ];
 
@@ -571,6 +587,7 @@ export default function CompaniesManagement() {
         case 'active': return 'bg-green-500/20 text-green-400';
         case 'trial': return 'bg-blue-500/20 text-blue-400';
         case 'suspended': return 'bg-red-500/20 text-red-400';
+        case 'pending request': return 'bg-yellow-500/20 text-yellow-400';
         case 'open': return 'bg-red-500/20 text-red-400';
         case 'in-progress': return 'bg-yellow-500/20 text-yellow-400';
         case 'resolved': return 'bg-green-500/20 text-green-400';
@@ -740,66 +757,173 @@ export default function CompaniesManagement() {
         )}
 
         {detailTab === 'services' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-gray-400">Detailed breakdown of all active and trial services</p>
-              <div className="text-right">
-                <p className="text-sm text-gray-400">Total Monthly</p>
-                <p className="text-2xl font-bold text-white">${companyServices.reduce((sum, s) => sum + s.price, 0).toLocaleString()}/mo</p>
+          <div className="space-y-6">
+            {companyServices.filter(s => s.status === 'Pending Request').length > 0 && (
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-yellow-400" />
+                    Pending Service Requests
+                  </h3>
+                  <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-medium">
+                    {companyServices.filter(s => s.status === 'Pending Request').length} pending
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {companyServices.filter(s => s.status === 'Pending Request').map((service: any) => (
+                    <div key={service.id} className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                            <Zap className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-white">{service.name}</h4>
+                            <p className="text-sm text-gray-400">Requested: {service.requestDate}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 rounded-lg p-3 mb-3">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-400">Requested Plan</p>
+                            <p className="text-white font-medium">{service.requestedPlan}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400">Price</p>
+                            <p className="text-white font-medium">${service.price}/mo</p>
+                          </div>
+                        </div>
+                        {service.requestMessage && (
+                          <div className="mt-3 pt-3 border-t border-gray-700">
+                            <p className="text-gray-400 text-xs mb-1">Company Message:</p>
+                            <p className="text-white text-sm">{service.requestMessage}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            if (confirm(`Approve ${service.name} (${service.requestedPlan} plan) for ${selectedCompany?.name}?`)) {
+                              alert(`✅ Service Approved!\n\n${service.name} has been activated for ${selectedCompany?.name}.\n\nThe company will be notified via email.`);
+                            }
+                          }}
+                          className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => {
+                            const reason = prompt('Rejection reason (will be sent to company):');
+                            if (reason) {
+                              alert(`❌ Service Request Rejected\n\nCompany: ${selectedCompany?.name}\nService: ${service.name}\nReason: ${reason}\n\nThe company will be notified.`);
+                            }
+                          }}
+                          className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white">Active Services</h3>
+                <div className="text-right">
+                  <p className="text-sm text-gray-400">Total Monthly</p>
+                  <p className="text-2xl font-bold text-white">
+                    ${companyServices.filter(s => s.status === 'Active').reduce((sum: number, s: any) => sum + s.price, 0).toLocaleString()}/mo
+                  </p>
+                </div>
+              </div>
+
+              {companyServices.filter(s => s.status === 'Active').length === 0 ? (
+                <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-12 text-center">
+                  <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-8 h-8 text-gray-600" />
+                  </div>
+                  <p className="text-gray-400">No active services yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {companyServices.filter(s => s.status === 'Active').map((service: any) => (
+                    <div key={service.id} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
+                            <Zap className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-bold text-white">{service.name}</h4>
+                            <p className="text-sm text-gray-400">Plan: {service.plan} • Started {service.startDate}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-white">${service.price}</p>
+                          <p className="text-sm text-gray-400">per month</p>
+                          <span className="inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 bg-green-500/20 text-green-400">
+                            Active
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
+                        <div>
+                          <p className="text-sm text-gray-400">Active Users</p>
+                          <p className="text-lg font-bold text-white">{service.users} users</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-400">Usage This Month</p>
+                          <p className="text-lg font-bold text-white">{service.usage}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-400">Duration</p>
+                          <p className="text-lg font-bold text-white">
+                            {Math.floor((new Date().getTime() - new Date(service.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 mt-4">
+                        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                          View Analytics
+                        </button>
+                        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors">
+                          Change Plan
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(`Suspend ${service.name} for ${selectedCompany?.name}?\n\nThe service will be temporarily disabled. The company can request reactivation.`)) {
+                              alert(`⏸️ Service Suspended\n\n${service.name} has been suspended for ${selectedCompany?.name}.`);
+                            }
+                          }}
+                          className="px-4 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Suspend
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(`⚠️ Cancel ${service.name} for ${selectedCompany?.name}?\n\nThis will:\n- Stop the service immediately\n- Cancel future billing\n- Archive all data\n\nThis action cannot be undone!`)) {
+                              alert(`❌ Service Cancelled\n\n${service.name} has been cancelled for ${selectedCompany?.name}.`);
+                            }
+                          }}
+                          className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Cancel Service
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {companyServices.map((service) => (
-              <div key={service.id} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
-                      <Zap className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-white">{service.name}</h4>
-                      <p className="text-sm text-gray-400">Plan: {service.plan} • Started {service.startDate}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-white">${service.price}</p>
-                    <p className="text-sm text-gray-400">per month</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mt-2 ${getStatusColor(service.status)}`}>
-                      {service.status}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-800">
-                  <div>
-                    <p className="text-sm text-gray-400">Active Users</p>
-                    <p className="text-lg font-bold text-white">{service.users} users</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400">Usage This Month</p>
-                    <p className="text-lg font-bold text-white">{service.usage}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400">Subscription Duration</p>
-                    <p className="text-lg font-bold text-white">
-                      {Math.floor((new Date().getTime() - new Date(service.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-4">
-                  <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
-                    View Analytics
-                  </button>
-                  <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors">
-                    Change Plan
-                  </button>
-                  <button className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-sm font-medium transition-colors">
-                    Cancel Service
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         )}
 

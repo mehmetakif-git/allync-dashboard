@@ -6,6 +6,7 @@ interface MenuItem {
   icon?: any;
   section?: string;
   type?: string;
+  badge?: number;
 }
 
 interface SuperAdminSidebarProps {
@@ -44,7 +45,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
 
     { type: 'divider', label: 'SYSTEM MANAGEMENT' },
 
-    { id: 'companies-management', label: 'Companies', icon: Building2, section: 'management' },
+    { id: 'companies-management', label: 'Companies', icon: Building2, section: 'management', badge: 2 },
     { id: 'users-management', label: 'Users', icon: Users, section: 'management' },
     { id: 'revenue-analytics', label: 'Revenue', icon: DollarSign, section: 'management' },
     { id: 'system-settings', label: 'System Settings', icon: Settings, section: 'management' },
@@ -114,6 +115,11 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span className="font-medium truncate">{item.label}</span>
+                  {item.badge && item.badge > 0 && (
+                    <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
                 </button>
               </li>
             );
