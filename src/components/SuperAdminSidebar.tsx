@@ -1,4 +1,4 @@
-import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
+import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
 
 interface MenuItem {
   id?: string;
@@ -48,6 +48,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
     { id: 'companies-management', label: 'Companies', icon: Building2, section: 'management', badge: 2 },
     { id: 'users-management', label: 'Users', icon: Users, section: 'management' },
     { id: 'user-invite', label: 'Invite Users', icon: UserPlus, section: 'management' },
+    { id: 'notifications-management', label: 'Notifications', icon: Bell, section: 'management' },
     { id: 'revenue-analytics', label: 'Revenue', icon: DollarSign, section: 'management' },
     { id: 'invoices-management', label: 'Invoices', icon: Receipt, section: 'management' },
     { id: 'support-tickets', label: 'Support Tickets', icon: MessageCircle, section: 'management', badge: 3 },

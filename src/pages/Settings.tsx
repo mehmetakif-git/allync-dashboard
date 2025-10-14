@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Save, Upload, Camera } from 'lucide-react';
+import { Save, Upload, Camera, Bell } from 'lucide-react';
 
 export default function Settings() {
   const { user } = useAuth();
@@ -222,6 +222,19 @@ export default function Settings() {
 
           {activeTab === 'notifications' && (
             <div className="max-w-2xl space-y-6">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <div className="flex gap-3">
+                  <Bell className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-bold text-blue-300 mb-1">System Notifications</h3>
+                    <p className="text-sm text-blue-300">
+                      System notifications are <strong>mandatory</strong> and cannot be disabled.
+                      They contain important updates about services, maintenance, and system announcements.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <h3 className="text-lg font-bold text-white mb-4">Email Notifications</h3>
                 <div className="space-y-3">
@@ -234,25 +247,6 @@ export default function Settings() {
                   ].map((notif, idx) => (
                     <label key={idx} className="flex items-center gap-3 p-3 border border-gray-800 rounded-lg hover:bg-gray-700/50 cursor-pointer">
                       <input type="checkbox" defaultChecked={idx < 3} className="w-5 h-5 text-blue-400" />
-                      <div>
-                        <p className="font-medium text-white">{notif.label}</p>
-                        <p className="text-sm text-gray-400">{notif.description}</p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Push Notifications</h3>
-                <div className="space-y-3">
-                  {[
-                    { label: 'New messages', description: 'Get notified of new WhatsApp messages' },
-                    { label: 'Urgent tickets', description: 'Immediate alerts for urgent support tickets' },
-                    { label: 'System maintenance', description: 'Alerts about scheduled maintenance' },
-                  ].map((notif, idx) => (
-                    <label key={idx} className="flex items-center gap-3 p-3 border border-gray-800 rounded-lg hover:bg-gray-700/50 cursor-pointer">
-                      <input type="checkbox" defaultChecked className="w-5 h-5 text-blue-400" />
                       <div>
                         <p className="font-medium text-white">{notif.label}</p>
                         <p className="text-sm text-gray-400">{notif.description}</p>

@@ -45,6 +45,7 @@ import InvoicesManagement from './pages/admin/InvoicesManagement';
 import SupportTickets from './pages/admin/SupportTickets';
 import UserInvite from './pages/admin/UserInvite';
 import ServicesCatalog from './pages/admin/ServicesCatalog';
+import NotificationsManagement from './pages/admin/NotificationsManagement';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -134,6 +135,7 @@ function AppContent() {
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'users-management' && <UsersManagement />}
             {superAdminPage === 'user-invite' && <UserInvite />}
+            {superAdminPage === 'notifications-management' && <NotificationsManagement />}
             {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
             {superAdminPage === 'invoices-management' && <InvoicesManagement />}
             {superAdminPage === 'support-tickets' && <SupportTickets />}
