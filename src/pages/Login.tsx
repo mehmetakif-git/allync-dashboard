@@ -32,9 +32,13 @@ export default function Login() {
     setError('');
     setLoading(true);
 
+    console.log('Demo login clicked:', demoEmail);
+
     try {
       await login(demoEmail, demoPassword);
+      console.log('Demo login successful!');
     } catch (err) {
+      console.error('Demo login failed:', err);
       setError('Demo login failed');
     } finally {
       setLoading(false);

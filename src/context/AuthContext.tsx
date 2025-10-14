@@ -47,12 +47,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const foundUser = mockUsers[email];
-    if (foundUser) {
-      setUser(foundUser);
-    } else {
-      throw new Error('Invalid credentials');
+    try {
+      console.log('Attempting login with:', email);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const foundUser = mockUsers[email];
+      if (foundUser) {
+        console.log('Login successful! User role:', foundUser.role);
+        setUser(foundUser);
+      } else {
+        throw new Error('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
     }
   };
 

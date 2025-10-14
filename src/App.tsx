@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
-import { getCurrentMockUser } from './utils/mockAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
@@ -49,10 +48,14 @@ function AppContent() {
   const [serviceSlug, setServiceSlug] = useState<string>('');
   const [superAdminPage, setSuperAdminPage] = useState('admin-dashboard');
 
-  const mockUser = getCurrentMockUser();
-  const isSuperAdmin = mockUser.role === 'super_admin';
-  const isCompanyAdmin = mockUser.role === 'company_admin';
-  const isRegularUser = mockUser.role === 'user';
+  console.log('Current user:', user);
+  console.log('Is authenticated:', isAuthenticated);
+
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const isCompanyAdmin = user?.role === 'COMPANY_ADMIN';
+  const isRegularUser = user?.role === 'USER';
+
+  console.log('Role checks:', { isSuperAdmin, isCompanyAdmin, isRegularUser });
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -86,6 +89,7 @@ function AppContent() {
   }
 
   if (isSuperAdmin) {
+    console.log('Rendering Super Admin layout');
     return (
       <div className="min-h-screen bg-gray-950 flex">
         <SuperAdminSidebar
@@ -135,6 +139,7 @@ function AppContent() {
   }
 
   if (isCompanyAdmin) {
+    console.log('Rendering Company Admin layout');
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
         <CompanyAdminSidebar
@@ -169,6 +174,7 @@ function AppContent() {
   }
 
   if (isRegularUser) {
+    console.log('Rendering Regular User layout');
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
         <RegularUserSidebar
@@ -200,7 +206,25 @@ function AppContent() {
     );
   }
 
-  return null;
+  console.error('No role matched! User:', user);
+  return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="text-center p-8 bg-gray-900 border border-gray-800 rounded-xl max-w-md">
+        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl">⚠️</span>
+        </div>
+        <h1 className="text-2xl font-bold text-white mb-4">Error: Invalid Role</h1>
+        <p className="text-gray-400 mb-2">User role: <span className="text-white font-mono">{user?.role || 'undefined'}</span></p>
+        <p className="text-gray-400 mb-6">Email: <span className="text-white">{user?.email || 'undefined'}</span></p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+        >
+          Reload Page
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default function App() {
