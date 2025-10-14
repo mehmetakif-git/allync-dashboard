@@ -32,6 +32,10 @@ import TextToImageAI from './pages/services/TextToImageAI';
 import VoiceCloning from './pages/services/VoiceCloning';
 import DocumentAI from './pages/services/DocumentAI';
 import DataAnalysisAI from './pages/services/DataAnalysisAI';
+import CustomAI from './pages/services/CustomAI';
+import ECommerce from './pages/services/ECommerce';
+import CorporateWebsite from './pages/services/CorporateWebsite';
+import MobileApp from './pages/services/MobileApp';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -99,11 +103,10 @@ function AppContent() {
             {superAdminPage === 'service-image-to-video' && <ImageToVideoAI />}
             {superAdminPage === 'service-video-to-video' && <VideoToVideoAI />}
             {superAdminPage === 'service-data-analysis' && <DataAnalysisAI />}
-            {superAdminPage === 'service-data-analysis' && <ServiceDashboard slug="data-analysis" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-custom-ai' && <ServiceDashboard slug="custom-ai" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-ecommerce' && <ServiceDashboard slug="ecommerce" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-corporate-website' && <ServiceDashboard slug="corporate-website" onBack={() => setSuperAdminPage('services-catalog')} />}
-            {superAdminPage === 'service-mobile-app' && <ServiceDashboard slug="mobile-app" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'service-custom-ai' && <CustomAI />}
+            {superAdminPage === 'service-ecommerce' && <ECommerce />}
+            {superAdminPage === 'service-corporate-website' && <CorporateWebsite />}
+            {superAdminPage === 'service-mobile-app' && <MobileApp />}
             {superAdminPage === 'service-digital-marketing' && <ServiceDashboard slug="digital-marketing" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-iot-solutions' && <ServiceDashboard slug="iot-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-cloud-solutions' && <ServiceDashboard slug="cloud-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
