@@ -40,6 +40,8 @@ import IoTSolutions from './pages/services/IoTSolutions';
 import CloudSolutions from './pages/services/CloudSolutions';
 import UIUXDesign from './pages/services/UIUXDesign';
 import MaintenanceSupport from './pages/services/MaintenanceSupport';
+import RevenueAnalytics from './pages/admin/RevenueAnalytics';
+import InvoicesManagement from './pages/admin/InvoicesManagement';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -128,7 +130,8 @@ function AppContent() {
             {superAdminPage === 'service-maintenance-support' && <ServiceDashboard slug="maintenance-support" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'users-management' && <UsersManagement />}
-            {superAdminPage === 'revenue-analytics' && <Admin />}
+            {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
+            {superAdminPage === 'invoices-management' && <InvoicesManagement />}
             {superAdminPage === 'system-settings' && <SystemSettings />}
             {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
             {superAdminPage === 'activity-logs' && <ActivityLogs />}
