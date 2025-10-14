@@ -29,6 +29,7 @@ export default function CompaniesManagement() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'Active' | 'Suspended'>('all');
   const [filterCountry, setFilterCountry] = useState('all');
+  const [detailTab, setDetailTab] = useState<'overview' | 'services' | 'tickets' | 'billing'>('overview');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -489,8 +490,6 @@ export default function CompaniesManagement() {
   }
 
   if (viewMode === 'view' && selectedCompany) {
-    const [detailTab, setDetailTab] = useState<'overview' | 'services' | 'tickets' | 'billing'>('overview');
-
     const companyServices = [
       {
         id: 'whatsapp-automation',
