@@ -36,6 +36,11 @@ import CustomAI from './pages/services/CustomAI';
 import ECommerce from './pages/services/ECommerce';
 import CorporateWebsite from './pages/services/CorporateWebsite';
 import MobileApp from './pages/services/MobileApp';
+import DigitalMarketing from './pages/services/DigitalMarketing';
+import IoTSolutions from './pages/services/IoTSolutions';
+import CloudSolutions from './pages/services/CloudSolutions';
+import UIUXDesign from './pages/services/UIUXDesign';
+import MaintenanceSupport from './pages/services/MaintenanceSupport';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -107,6 +112,11 @@ function AppContent() {
             {superAdminPage === 'service-ecommerce' && <ECommerce />}
             {superAdminPage === 'service-corporate-website' && <CorporateWebsite />}
             {superAdminPage === 'service-mobile-app' && <MobileApp />}
+            {superAdminPage === 'service-digital-marketing' && <DigitalMarketing />}
+            {superAdminPage === 'service-iot-solutions' && <IoTSolutions />}
+            {superAdminPage === 'service-cloud-solutions' && <CloudSolutions />}
+            {superAdminPage === 'service-ui-ux-design' && <UIUXDesign />}
+            {superAdminPage === 'service-maintenance-support' && <MaintenanceSupport />}
             {superAdminPage === 'service-digital-marketing' && <ServiceDashboard slug="digital-marketing" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-iot-solutions' && <ServiceDashboard slug="iot-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
             {superAdminPage === 'service-cloud-solutions' && <ServiceDashboard slug="cloud-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
