@@ -23,6 +23,8 @@ import UsersManagement from './pages/admin/UsersManagement';
 import CompanyAdminSidebar from './components/CompanyAdminSidebar';
 import RegularUserSidebar from './components/RegularUserSidebar';
 import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
+import SystemSettings from './pages/admin/SystemSettings';
+import ActivityLogs from './pages/admin/ActivityLogs';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -102,9 +104,9 @@ function AppContent() {
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'users-management' && <UsersManagement />}
             {superAdminPage === 'revenue-analytics' && <Admin />}
-            {superAdminPage === 'system-settings' && <Settings />}
+            {superAdminPage === 'system-settings' && <SystemSettings />}
             {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
-            {superAdminPage === 'activity-logs' && <Admin />}
+            {superAdminPage === 'activity-logs' && <ActivityLogs />}
           </main>
         </div>
       </div>
