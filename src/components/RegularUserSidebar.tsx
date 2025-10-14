@@ -1,6 +1,5 @@
 import { Home, MessageCircle, Instagram, HelpCircle, Settings, LogOut, X } from 'lucide-react';
-import { mockCompanyRequests } from '../pages/Services';
-import { serviceTypes } from '../data/services';
+import { mockCompanyRequests, serviceTypes } from '../data/services';
 
 interface RegularUserSidebarProps {
   activePage: string;

@@ -1,291 +1,338 @@
 import { useState } from 'react';
-import { Check, Clock, X, Sparkles, Cpu, Eye } from 'lucide-react';
+import { Search, Filter, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+import { serviceTypes, mockCompanyRequests } from '../data/services';
 import { getCurrentMockUser } from '../utils/mockAuth';
-import { serviceTypes } from '../data/services';
-import { mockServiceRequests } from '../data/serviceRequests';
-
-export const mockCompanyRequests: Record<string, { status: 'approved' | 'pending' | 'rejected'; requestId: string; package: string }> = {
-  'whatsapp-automation': { status: 'approved', requestId: 'sr-002', package: 'pro' },
-  'instagram-automation': { status: 'approved', requestId: 'sr-001', package: 'basic' },
-};
 
 export default function Services() {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [selectedService, setSelectedService] = useState<any>(null);
-  const [requestNote, setRequestNote] = useState('');
-  const [selectedPackage, setSelectedPackage] = useState<'basic' | 'pro' | 'premium' | 'custom'>('pro');
   const mockUser = getCurrentMockUser();
+  const isCompanyAdmin = mockUser.role === 'company_admin';
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
-  const filteredServices = selectedCategory === 'all'
-    ? serviceTypes
-    : serviceTypes.filter(s => s.category === selectedCategory);
+  const filteredServices = serviceTypes.filter(service => {
+    const matchesSearch = service.name_en.toLowerCase().includes(search.toLowerCase()) ||
+                         service.description_en.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || service.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
-  const aiCount = serviceTypes.filter(s => s.category === 'ai').length;
-  const digitalCount = serviceTypes.filter(s => s.category === 'digital').length;
+  const getServiceStatus = (serviceId: string) => {
+    const request = mockCompanyRequests[serviceId];
+    if (!request) return 'not-requested';
+    return request.status;
+  };
 
   const handleRequestService = (service: any) => {
     setSelectedService(service);
     setShowRequestModal(true);
   };
 
-  const handleSubmitRequest = () => {
-    alert(`Service request sent to admin!\n\nService: ${selectedService.name_en}\nPackage: ${selectedPackage}\nStatus: Pending Approval\n\nYou'll be notified once the admin reviews your request.`);
+  const handleSendRequest = (plan: string, message: string) => {
+    console.log('Request sent:', { service: selectedService.id, plan, message });
+    alert(
+      `✅ Service Request Sent!\n\n` +
+      `Service: ${selectedService.name_en}\n` +
+      `Plan: ${plan}\n` +
+      `Message: ${message}\n\n` +
+      `Your request has been sent to Super Admin for approval.`
+    );
     setShowRequestModal(false);
-    setRequestNote('');
-    setSelectedPackage('pro');
-  };
-
-  const getServiceStatus = (serviceId: string) => {
-    return mockCompanyRequests[serviceId] || null;
+    setSelectedService(null);
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
         return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">
-            <Check className="w-4 h-4" />
+          <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium flex items-center gap-1">
+            <CheckCircle className="w-3 h-3" />
             Active
-          </div>
+          </span>
         );
       case 'pending':
         return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-medium">
-            <Clock className="w-4 h-4" />
-            Pending Approval
-          </div>
+          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            Pending
+          </span>
         );
       case 'rejected':
         return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm font-medium">
-            <X className="w-4 h-4" />
+          <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium flex items-center gap-1">
+            <XCircle className="w-3 h-3" />
             Rejected
-          </div>
+          </span>
         );
       default:
         return null;
     }
   };
 
+  const categories = [
+    { id: 'all', name: 'All Services' },
+    { id: 'ai', name: 'AI Services' },
+    { id: 'digital', name: 'Digital Services' },
+  ];
 
   return (
-    <>
-      <div className="p-6 space-y-6 bg-gray-950">
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Services</h1>
-          <p className="text-gray-400 mt-1">Explore and request AI services for your business</p>
-        </div>
-
-        <div className="flex gap-3 border-b border-gray-800">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-6 py-3 font-medium transition-colors relative ${
-              selectedCategory === 'all'
-                ? 'text-white'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
-          >
-            All Services
-            <span className="ml-2 px-2 py-0.5 bg-gray-800 rounded-full text-xs">
-              {serviceTypes.length}
-            </span>
-            {selectedCategory === 'all' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('ai')}
-            className={`px-6 py-3 font-medium transition-colors relative flex items-center gap-2 ${
-              selectedCategory === 'ai'
-                ? 'text-white'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            AI Services
-            <span className="ml-1 px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded-full text-xs">
-              {aiCount}
-            </span>
-            {selectedCategory === 'ai' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setSelectedCategory('digital')}
-            className={`px-6 py-3 font-medium transition-colors relative flex items-center gap-2 ${
-              selectedCategory === 'digital'
-                ? 'text-white'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
-          >
-            <Cpu className="w-4 h-4" />
-            Digital Services
-            <span className="ml-1 px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded-full text-xs">
-              {digitalCount}
-            </span>
-            {selectedCategory === 'digital' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-500" />
-            )}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredServices.map((service) => {
-            const status = getServiceStatus(service.id);
-            const Icon = service.icon;
-
-            return (
-              <div
-                key={service.id}
-                className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:shadow-xl hover:shadow-black/50 transition-all group"
-              >
-                <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <Icon className="w-8 h-8 text-white" />
-                </div>
-
-                <div className="mb-2">
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    service.category === 'ai'
-                      ? 'bg-purple-500/20 text-purple-400'
-                      : 'bg-cyan-500/20 text-cyan-400'
-                  }`}>
-                    {service.category.toUpperCase()}
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
-                <p className="text-gray-400 text-sm mb-4">{service.description_en}</p>
-
-                <ul className="space-y-2 mb-4">
-                  {service.features.slice(0, 3).map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-gray-400">
-                      <Check className="w-4 h-4 text-green-400" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-400">
-                    Contact for Pricing
-                  </p>
-                </div>
-
-                {status ? (
-                  <div className="mt-4">
-                    {getStatusBadge(status.status)}
-                  </div>
-                ) : mockUser.role === 'super_admin' ? (
-                  <button
-                    onClick={() => {
-                      if (service.id === 'whatsapp-automation') {
-                        window.location.hash = 'whatsapp';
-                      } else if (service.id === 'instagram-automation') {
-                        window.location.hash = 'service/instagram-automation';
-                      } else if (service.id === 'text-to-video') {
-                        window.location.hash = 'service/text-to-video';
-                      } else {
-                        window.location.hash = `service/${service.slug}`;
-                      }
-                    }}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
-                  >
-                    <Eye className="w-4 h-4" />
-                    View Dashboard (Admin)
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleRequestService(service)}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
-                  >
-                    Request Service
-                  </button>
-                )}
-              </div>
-            );
-          })}
+          <h1 className="text-3xl font-bold text-white">Services Catalog</h1>
+          <p className="text-gray-400 mt-1">
+            {isCompanyAdmin ? 'Browse and request services for your company' : 'All available services'}
+          </p>
         </div>
       </div>
 
-      {showRequestModal && selectedService && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
-            onClick={() => setShowRequestModal(false)}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search services..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500"
           />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
-            <div className={`bg-gradient-to-r ${selectedService.color} px-6 py-4`}>
-              <h2 className="text-2xl font-bold text-white">Request Service</h2>
-              <p className="text-white/80 text-sm mt-1">{selectedService.name}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Filter className="w-5 h-5 text-gray-400" />
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoryFilter(cat.id)}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                categoryFilter === cat.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredServices.map((service) => {
+          const Icon = service.icon;
+          const status = getServiceStatus(service.id);
+          const isApproved = status === 'approved';
+          const isPending = status === 'pending';
+          const isRejected = status === 'rejected';
+          const canRequest = isCompanyAdmin && status === 'not-requested';
+
+          return (
+            <div
+              key={service.id}
+              className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:bg-gray-800/50 transition-all"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-12 h-12 bg-gradient-to-br ${service.gradient} rounded-lg flex items-center justify-center`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                {getStatusBadge(status)}
+              </div>
+
+              <h3 className="text-lg font-bold text-white mb-2">{service.name_en}</h3>
+              <p className="text-sm text-gray-400 mb-4 line-clamp-2">{service.description_en}</p>
+
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs text-gray-500">Starting from</p>
+                  <p className="text-xl font-bold text-white">${service.pricing.basic}</p>
+                  <p className="text-xs text-gray-400">/month</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Delivery</p>
+                  <p className="text-sm font-medium text-white">{service.delivery}</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setSelectedService(service)}
+                  className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  View Details
+                </button>
+
+                {canRequest && (
+                  <button
+                    onClick={() => handleRequestService(service)}
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Request
+                  </button>
+                )}
+
+                {isPending && (
+                  <button
+                    disabled
+                    className="flex-1 px-4 py-2 bg-yellow-500/10 text-yellow-400 rounded-lg text-sm font-medium cursor-not-allowed"
+                  >
+                    Pending...
+                  </button>
+                )}
+
+                {isRejected && (
+                  <button
+                    onClick={() => handleRequestService(service)}
+                    className="flex-1 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Re-Request
+                  </button>
+                )}
+
+                {isApproved && (
+                  <button
+                    className="flex-1 px-4 py-2 bg-green-500/10 text-green-400 rounded-lg text-sm font-medium cursor-default"
+                  >
+                    Active
+                  </button>
+                )}
+              </div>
+
+              {!isCompanyAdmin && status === 'not-requested' && (
+                <div className="mt-3 p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                  <p className="text-xs text-orange-400 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Contact Company Admin to request this service
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedService && !showRequestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start gap-4 mb-6">
+              <div className={`w-16 h-16 bg-gradient-to-br ${selectedService.gradient} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                <selectedService.icon className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-white mb-2">{selectedService.name_en}</h2>
+                <p className="text-gray-400">{selectedService.description_en}</p>
+              </div>
             </div>
 
-            <div className="p-6 space-y-4">
-              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${selectedService.color} rounded-lg flex items-center justify-center`}>
-                    <selectedService.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-white">{selectedService.name_en}</p>
-                    <p className="text-sm text-gray-400">{selectedService.category.toUpperCase()}</p>
-                  </div>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-bold text-white mb-3">Pricing Plans</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {Object.entries(selectedService.pricing).map(([plan, price]) => (
+                    <div key={plan} className="border border-gray-700 rounded-lg p-4">
+                      <p className="text-sm text-gray-400 mb-1 capitalize">{plan}</p>
+                      <p className="text-2xl font-bold text-white">${price}</p>
+                      <p className="text-xs text-gray-500">/month</p>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                <div className="space-y-2 mb-4">
-                  <p className="text-sm text-gray-400 font-medium">Features included:</p>
-                  <ul className="space-y-1">
-                    {selectedService.features.map((feature: string, idx: number) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm text-gray-300">
-                        <Check className="w-4 h-4 text-green-400" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-3">Features</h3>
+                <ul className="space-y-2">
+                  {selectedService.features?.map((feature: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-300">
+                      <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
 
+            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-800">
+              <button
+                onClick={() => setSelectedService(null)}
+                className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Close
+              </button>
+              {isCompanyAdmin && getServiceStatus(selectedService.id) === 'not-requested' && (
+                <button
+                  onClick={() => {
+                    setShowRequestModal(true);
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Request This Service
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRequestModal && selectedService && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-lg w-full">
+            <h2 className="text-2xl font-bold text-white mb-6">Request Service</h2>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Service</p>
+                <p className="text-white font-medium">{selectedService.name_en}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Additional Notes (Optional)
+                  Select Plan
+                </label>
+                <select
+                  id="plan"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500"
+                >
+                  <option value="basic">Basic - ${selectedService.pricing.basic}/mo</option>
+                  <option value="pro">Pro - ${selectedService.pricing.pro}/mo</option>
+                  <option value="enterprise">Enterprise - ${selectedService.pricing.enterprise}/mo</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Additional Message (Optional)
                 </label>
                 <textarea
-                  rows={3}
-                  value={requestNote}
-                  onChange={(e) => setRequestNote(e.target.value)}
+                  id="message"
+                  rows={4}
                   placeholder="Any specific requirements or questions..."
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500"
                 />
               </div>
+            </div>
 
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                <p className="text-sm text-blue-300">
-                  <strong>Note:</strong> Your request will be sent to the administrator for approval.
-                  You'll receive a notification once it\'s reviewed.
-                </p>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowRequestModal(false)}
-                  className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitRequest}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
-                >
-                  Send Request
-                </button>
-              </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowRequestModal(false);
+                  setSelectedService(null);
+                }}
+                className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const plan = (document.getElementById('plan') as HTMLSelectElement).value;
+                  const message = (document.getElementById('message') as HTMLTextAreaElement).value;
+                  handleSendRequest(plan, message);
+                }}
+                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Send Request
+              </button>
             </div>
           </div>
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 }
