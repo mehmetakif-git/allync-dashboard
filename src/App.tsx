@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
 import WhatsApp from './pages/WhatsApp';
 import Instagram from './pages/Instagram';
@@ -19,8 +18,7 @@ import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import MaintenanceMode from './pages/admin/MaintenanceMode';
 import CompaniesManagement from './pages/admin/CompaniesManagement';
 import UsersManagement from './pages/admin/UsersManagement';
-import CompanyAdminSidebar from './components/CompanyAdminSidebar';
-import RegularUserSidebar from './components/RegularUserSidebar';
+import CompanySidebar from './components/CompanySidebar';
 import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
 import SystemSettings from './pages/admin/SystemSettings';
 import ActivityLogs from './pages/admin/ActivityLogs';
@@ -148,11 +146,11 @@ function AppContent() {
     );
   }
 
-  if (isCompanyAdmin) {
-    console.log('Rendering Company Admin layout');
+  if (isCompanyAdmin || isRegularUser) {
+    console.log('Rendering Company/User layout');
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
-        <CompanyAdminSidebar
+        <CompanySidebar
           activePage={activePage}
           onPageChange={handlePageChange}
           isOpen={isSidebarOpen}
@@ -174,42 +172,28 @@ function AppContent() {
                 }}
               />
             )}
-            {activePage === 'invoices' && <Invoices />}
-            {activePage === 'support' && <Support />}
-            {activePage === 'settings' && <Settings />}
-          </main>
-        </div>
-      </div>
-    );
-  }
 
-  if (isRegularUser) {
-    console.log('Rendering Regular User layout');
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
-        <RegularUserSidebar
-          activePage={activePage}
-          onPageChange={handlePageChange}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-        />
-        <div className="flex-1 flex flex-col min-h-screen">
-          <Header onMenuClick={() => setIsSidebarOpen(true)} />
-          <main className="flex-1">
-            {activePage === 'dashboard' && <Dashboard />}
-            {activePage === 'whatsapp' && <WhatsApp />}
-            {activePage === 'service/instagram-automation' && <Instagram />}
-            {activePage === 'service-dashboard' && (
-              <ServiceDashboard
-                slug={serviceSlug}
-                onBack={() => {
-                  window.location.hash = 'dashboard';
-                  setActivePage('dashboard');
-                }}
-              />
+            {activePage === 'settings' && isCompanyAdmin && <Settings />}
+            {activePage === 'settings' && isRegularUser && (
+              <div className="p-6">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+                  <p className="text-gray-400">Only Company Admins can access Settings.</p>
+                </div>
+              </div>
             )}
+
+            {activePage === 'invoices' && isCompanyAdmin && <Invoices />}
+            {activePage === 'invoices' && isRegularUser && (
+              <div className="p-6">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+                  <p className="text-gray-400">Only Company Admins can access Invoices. Contact your admin for billing information.</p>
+                </div>
+              </div>
+            )}
+
             {activePage === 'support' && <Support />}
-            {activePage === 'settings' && <Settings />}
           </main>
         </div>
       </div>

@@ -1,15 +1,20 @@
-import { Home, Zap, MessageCircle, Instagram, FileText, HelpCircle, Settings, LogOut, X } from 'lucide-react';
+import { Home, Zap, MessageCircle, Instagram, FileText, HelpCircle, Settings, LogOut, X, Package } from 'lucide-react';
 import { useState } from 'react';
 import { mockCompanyRequests, serviceTypes } from '../data/services';
+import { useAuth } from '../context/AuthContext';
 
-interface CompanyAdminSidebarProps {
+interface CompanySidebarProps {
   activePage: string;
   onPageChange: (page: string) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function CompanyAdminSidebar({ activePage, onPageChange, isOpen, onClose }: CompanyAdminSidebarProps) {
+export default function CompanySidebar({ activePage, onPageChange, isOpen, onClose }: CompanySidebarProps) {
+  const { user } = useAuth();
+  const isCompanyAdmin = user?.role === 'COMPANY_ADMIN';
+  const isRegularUser = user?.role === 'USER';
+
   const activeServices = Object.keys(mockCompanyRequests)
     .filter(serviceId => mockCompanyRequests[serviceId].status === 'approved')
     .map(serviceId => serviceTypes.find(s => s.id === serviceId))
@@ -17,13 +22,13 @@ export default function CompanyAdminSidebar({ activePage, onPageChange, isOpen, 
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: 'services', label: 'Services Catalog', icon: Zap },
+    { id: 'services', label: 'Services', icon: Package },
   ];
 
   const bottomItems = [
-    { id: 'invoices', label: 'Invoices', icon: FileText },
+    ...(isCompanyAdmin ? [{ id: 'invoices', label: 'Invoices', icon: FileText }] : []),
     { id: 'support', label: 'Support', icon: HelpCircle },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    ...(isCompanyAdmin ? [{ id: 'settings', label: 'Settings', icon: Settings }] : []),
   ];
 
   const handleNavClick = (pageId: string) => {
@@ -31,6 +36,18 @@ export default function CompanyAdminSidebar({ activePage, onPageChange, isOpen, 
     if (window.innerWidth < 1024) {
       onClose();
     }
+  };
+
+  const getUserInitials = () => {
+    if (isCompanyAdmin) return 'CA';
+    if (isRegularUser) return 'U';
+    return 'U';
+  };
+
+  const getUserRole = () => {
+    if (isCompanyAdmin) return 'Company Admin';
+    if (isRegularUser) return 'User';
+    return 'User';
   };
 
   return (
@@ -138,10 +155,10 @@ export default function CompanyAdminSidebar({ activePage, onPageChange, isOpen, 
         <div className="p-4 border-t border-gray-800">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-sm font-medium">
-              CA
+              {getUserInitials()}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-white truncate">Company Admin</div>
+              <div className="text-sm font-medium text-white truncate">{getUserRole()}</div>
               <div className="text-xs text-gray-400">Tech Corp</div>
             </div>
           </div>
