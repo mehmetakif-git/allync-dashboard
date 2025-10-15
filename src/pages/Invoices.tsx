@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Download, Calendar, DollarSign, CreditCard, CheckCircle, Clock, AlertCircle, Filter } from 'lucide-react';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 interface Invoice {
   id: string;
@@ -62,6 +63,7 @@ export default function Invoices() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'paid' | 'pending' | 'overdue'>('all');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   const filteredInvoices = mockInvoices.filter(inv =>
     filterStatus === 'all' || inv.status === filterStatus
@@ -90,7 +92,9 @@ export default function Invoices() {
     setShowPaymentModal(true);
   };
 
-  const handlePayment = (gateway: string) => {
+  const handlePayment = async (gateway: string) => {
+    if (!selectedInvoice) return;
+
     if (!confirm(
       `💳 Confirm Payment\n\n` +
       `Are you sure you want to proceed with payment?\n\n` +
@@ -102,15 +106,18 @@ export default function Invoices() {
       return;
     }
 
+    setPaymentLoading(true);
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     console.log('Processing payment:', { invoice: selectedInvoice?.invoiceNumber, gateway });
     alert(
-      `💳 Payment Processing\n\n` +
-      `Invoice: ${selectedInvoice?.invoiceNumber}\n` +
-      `Amount: $${selectedInvoice?.amount}\n` +
-      `Gateway: ${gateway}\n\n` +
-      `Redirecting to ${gateway} payment page...\n\n` +
-      `⚠️ This is a demo. In production, this will redirect to the actual payment gateway.`
+      `✅ Payment Successful!\n\n` +
+      `Invoice: ${selectedInvoice.invoiceNumber}\n` +
+      `Amount: $${selectedInvoice.amount} paid via ${gateway}`
     );
+
+    setPaymentLoading(false);
     setShowPaymentModal(false);
     setSelectedInvoice(null);
   };
@@ -342,13 +349,14 @@ export default function Invoices() {
             <div className="space-y-3 mb-6">
               <button
                 onClick={() => handlePayment('Stripe')}
-                className="w-full p-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition-all flex items-center justify-between group"
+                disabled={paymentLoading}
+                className="w-full p-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
-                  <CreditCard className="w-6 h-6 text-white" />
+                  {paymentLoading ? <LoadingSpinner size="sm" /> : <CreditCard className="w-6 h-6 text-white" />}
                   <div className="text-left">
                     <p className="text-white font-bold">Stripe</p>
-                    <p className="text-sm text-purple-200">Global payments (Credit/Debit)</p>
+                    <p className="text-sm text-purple-200">{paymentLoading ? 'Processing...' : 'Global payments (Credit/Debit)'}</p>
                   </div>
                 </div>
                 <span className="text-white group-hover:translate-x-1 transition-transform">→</span>
@@ -356,13 +364,14 @@ export default function Invoices() {
 
               <button
                 onClick={() => handlePayment('PayTR')}
-                className="w-full p-4 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 rounded-lg transition-all flex items-center justify-between group"
+                disabled={paymentLoading}
+                className="w-full p-4 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
-                  <CreditCard className="w-6 h-6 text-white" />
+                  {paymentLoading ? <LoadingSpinner size="sm" /> : <CreditCard className="w-6 h-6 text-white" />}
                   <div className="text-left">
                     <p className="text-white font-bold">PayTR</p>
-                    <p className="text-sm text-red-200">Turkey (Credit/Debit/Bank)</p>
+                    <p className="text-sm text-red-200">{paymentLoading ? 'Processing...' : 'Turkey (Credit/Debit/Bank)'}</p>
                   </div>
                 </div>
                 <span className="text-white group-hover:translate-x-1 transition-transform">→</span>
@@ -370,13 +379,14 @@ export default function Invoices() {
 
               <button
                 onClick={() => handlePayment('Tappay/Qpay')}
-                className="w-full p-4 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 rounded-lg transition-all flex items-center justify-between group"
+                disabled={paymentLoading}
+                className="w-full p-4 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
-                  <CreditCard className="w-6 h-6 text-white" />
+                  {paymentLoading ? <LoadingSpinner size="sm" /> : <CreditCard className="w-6 h-6 text-white" />}
                   <div className="text-left">
                     <p className="text-white font-bold">Tappay / Qpay</p>
-                    <p className="text-sm text-green-200">Qatar (Credit/Debit)</p>
+                    <p className="text-sm text-green-200">{paymentLoading ? 'Processing...' : 'Qatar (Credit/Debit)'}</p>
                   </div>
                 </div>
                 <span className="text-white group-hover:translate-x-1 transition-transform">→</span>
