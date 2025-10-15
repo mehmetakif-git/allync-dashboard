@@ -1,123 +1,363 @@
-import { Zap, MessageCircle, FileText, AlertCircle, TrendingUp, Calendar } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Zap, TrendingUp, AlertCircle, Clock, CheckCircle, CreditCard, MessageSquare, ArrowRight, Activity } from 'lucide-react';
+import { serviceTypes } from '../data/services';
+
+// MOCK DATA - NO DB YET
+// To change active services, simply edit this array:
+// - Add/remove services from mockActiveServices
+// - Change status: 'active' | 'pending-setup'
+// - Update usage numbers
+// When DB is connected, this will be replaced with real API calls
+const mockActiveServices = [
+  {
+    id: 'whatsapp-automation',
+    name: 'WhatsApp Automation',
+    plan: 'Pro',
+    status: 'active',
+    monthlyUsage: {
+      current: 8420,
+      limit: 15000,
+      unit: 'messages',
+    },
+    lastActivity: '2 minutes ago',
+    growth: '+15.3%',
+  },
+  {
+    id: 'instagram-automation',
+    name: 'Instagram Automation',
+    plan: 'Basic',
+    status: 'active',
+    monthlyUsage: {
+      current: 245,
+      limit: 500,
+      unit: 'posts',
+    },
+    lastActivity: '1 hour ago',
+    growth: '+8.7%',
+  },
+  {
+    id: 'text-to-video',
+    name: 'Text-to-Video AI',
+    plan: 'Enterprise',
+    status: 'pending-setup',
+    monthlyUsage: {
+      current: 0,
+      limit: 1000,
+      unit: 'videos',
+    },
+    lastActivity: 'Not started',
+    growth: 'N/A',
+  },
+];
+
+const mockPendingRequests = [
+  {
+    id: '1',
+    service: 'Voice Cloning',
+    plan: 'Pro',
+    requestedAt: '2024-12-13 16:45',
+    status: 'pending',
+  },
+];
+
+const mockRecentActivity = [
+  {
+    id: '1',
+    type: 'service',
+    title: 'WhatsApp message sent',
+    description: 'Automated response to customer inquiry',
+    timestamp: '2 minutes ago',
+  },
+  {
+    id: '2',
+    type: 'invoice',
+    title: 'Invoice paid',
+    description: 'INV-2024-1247 - $2,147.00',
+    timestamp: '3 hours ago',
+  },
+  {
+    id: '3',
+    type: 'ticket',
+    title: 'Support ticket resolved',
+    description: 'TKT-2024-1589 - WhatsApp API issue',
+    timestamp: '5 hours ago',
+  },
+];
 
 export default function CompanyAdminDashboard() {
-  const stats = [
-    { label: 'Active Services', value: '2', icon: Zap, color: 'blue' },
-    { label: 'Messages Today', value: '247', icon: MessageCircle, color: 'green' },
-    { label: 'Open Tickets', value: '1', icon: AlertCircle, color: 'orange' },
-    { label: 'Next Billing', value: 'Feb 15', icon: Calendar, color: 'purple' },
-  ];
+  const activeServicesCount = mockActiveServices.filter(s => s.status === 'active').length;
+  const pendingSetupCount = mockActiveServices.filter(s => s.status === 'pending-setup').length;
 
-  const usageData = [
-    { day: 'Mon', messages: 180 },
-    { day: 'Tue', messages: 220 },
-    { day: 'Wed', messages: 195 },
-    { day: 'Thu', messages: 247 },
-    { day: 'Fri', messages: 210 },
-    { day: 'Sat', messages: 165 },
-    { day: 'Sun', messages: 140 },
-  ];
+  const getServiceIcon = (serviceId: string) => {
+    const service = serviceTypes.find(s => s.id === serviceId);
+    return service ? service.icon : Zap;
+  };
+
+  const getServiceGradient = (serviceId: string) => {
+    const service = serviceTypes.find(s => s.id === serviceId);
+    return service ? service.gradient : 'from-blue-500 to-blue-700';
+  };
+
+  const handleViewService = (serviceId: string) => {
+    window.location.hash = `service/${serviceId}`;
+  };
 
   return (
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-400 mt-1">Welcome back! Here's your company overview</p>
+        <p className="text-gray-400 mt-1">Welcome back! Here's your services overview</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <div key={stat.label} className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className={`w-12 h-12 bg-${stat.color}-500/20 rounded-lg flex items-center justify-center`}>
-                <stat.icon className={`w-6 h-6 text-${stat.color}-400`} />
-              </div>
+        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <Zap className="w-6 h-6" />
             </div>
-            <p className="text-sm text-gray-400">{stat.label}</p>
-            <p className="text-3xl font-bold text-white mt-2">{stat.value}</p>
+            <TrendingUp className="w-5 h-5 text-blue-200" />
           </div>
-        ))}
+          <p className="text-blue-200 text-sm mb-1">Active Services</p>
+          <p className="text-3xl font-bold">{activeServicesCount}</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-yellow-600 to-orange-600 rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-6 h-6" />
+            </div>
+          </div>
+          <p className="text-yellow-200 text-sm mb-1">Pending Setup</p>
+          <p className="text-3xl font-bold">{pendingSetupCount}</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-6 h-6" />
+            </div>
+          </div>
+          <p className="text-green-200 text-sm mb-1">Service Requests</p>
+          <p className="text-3xl font-bold">{mockPendingRequests.length}</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <CreditCard className="w-6 h-6" />
+            </div>
+          </div>
+          <p className="text-purple-200 text-sm mb-1">Monthly Cost</p>
+          <p className="text-3xl font-bold">$2,147</p>
+        </div>
       </div>
 
-      <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Your Active Services</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800 transition-all">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                <MessageCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-white">WhatsApp Automation</h4>
-                <p className="text-sm text-gray-400">Pro Plan</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-400">Messages Today:</span>
-              <span className="font-bold text-white">247</span>
-            </div>
-          </div>
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-white">Active Services</h2>
+          <button
+            onClick={() => window.location.hash = 'services'}
+            className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors flex items-center gap-1"
+          >
+            View All Services
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
 
-          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800 transition-all">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153a4.908 4.908 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 0 1-1.153 1.772 4.915 4.915 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 0 1-1.772-1.153 4.904 4.904 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 0 1 1.153-1.772A4.897 4.897 0 0 1 5.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2z"/>
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-bold text-white">Instagram Automation</h4>
-                <p className="text-sm text-gray-400">Basic Plan</p>
-              </div>
+        {mockActiveServices.length === 0 ? (
+          <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-12 text-center">
+            <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Zap className="w-8 h-8 text-gray-600" />
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-400">Engagement Rate:</span>
-              <span className="font-bold text-white">8.5%</span>
+            <h3 className="text-xl font-bold text-white mb-2">No Active Services</h3>
+            <p className="text-gray-400 mb-4">You don't have any active services yet. Browse our catalog to get started!</p>
+            <button
+              onClick={() => window.location.hash = 'services'}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+            >
+              Browse Services
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockActiveServices.map((service) => {
+              const Icon = getServiceIcon(service.id);
+              const gradient = getServiceGradient(service.id);
+              const usagePercent = (service.monthlyUsage.current / service.monthlyUsage.limit) * 100;
+
+              return (
+                <div
+                  key={service.id}
+                  className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:bg-gray-800/50 transition-all hover:scale-105 cursor-pointer"
+                  onClick={() => handleViewService(service.id)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    {service.status === 'active' ? (
+                      <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
+                        Setup Required
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="text-lg font-bold text-white mb-1">{service.name}</h3>
+                  <p className="text-sm text-gray-400 mb-4">Plan: {service.plan}</p>
+
+                  {service.status === 'active' ? (
+                    <>
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-gray-400">Monthly Usage</span>
+                          <span className="text-white font-medium">
+                            {service.monthlyUsage.current.toLocaleString()} / {service.monthlyUsage.limit.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-800 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              usagePercent > 80 ? 'bg-red-500' : usagePercent > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-800">
+                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <Activity className="w-3 h-3" />
+                          {service.lastActivity}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-green-400">
+                          <TrendingUp className="w-3 h-3" />
+                          {service.growth}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="pt-3 border-t border-gray-800">
+                      <p className="text-sm text-yellow-400 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        Service approved, setup required
+                      </p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewService(service.id);
+                    }}
+                    className="w-full mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                  >
+                    View Details
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+            <h3 className="font-bold text-white">Pending Service Requests</h3>
+            <button
+              onClick={() => window.location.hash = 'services'}
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              View All
+            </button>
+          </div>
+          <div className="p-4">
+            {mockPendingRequests.length === 0 ? (
+              <p className="text-gray-400 text-center py-4">No pending requests</p>
+            ) : (
+              <div className="space-y-3">
+                {mockPendingRequests.map((request) => (
+                  <div key={request.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                    <div>
+                      <p className="font-medium text-white">{request.service}</p>
+                      <p className="text-sm text-gray-400">Plan: {request.plan}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
+                        Pending
+                      </span>
+                      <p className="text-xs text-gray-500 mt-1">{request.requestedAt.split(' ')[0]}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-gray-800">
+            <h3 className="font-bold text-white">Recent Activity</h3>
+          </div>
+          <div className="p-4">
+            <div className="space-y-3">
+              {mockRecentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    {activity.type === 'service' && <Zap className="w-4 h-4 text-blue-400" />}
+                    {activity.type === 'invoice' && <CreditCard className="w-4 h-4 text-green-400" />}
+                    {activity.type === 'ticket' && <MessageSquare className="w-4 h-4 text-purple-400" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white">{activity.title}</p>
+                    <p className="text-xs text-gray-400">{activity.description}</p>
+                    <p className="text-xs text-gray-500 mt-1">{activity.timestamp}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Service Usage This Week</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={usageData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="day" stroke="#9CA3AF" />
-            <YAxis stroke="#9CA3AF" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#1F2937',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                color: '#fff',
-              }}
-            />
-            <Line type="monotone" dataKey="messages" stroke="#3B82F6" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button
+          onClick={() => window.location.hash = 'services'}
+          className="p-6 bg-blue-600 hover:bg-blue-700 rounded-xl text-white transition-all hover:scale-105 flex items-center justify-between"
+        >
+          <div className="text-left">
+            <p className="font-bold text-lg mb-1">Browse Services</p>
+            <p className="text-sm text-blue-200">Discover new features</p>
+          </div>
+          <ArrowRight className="w-6 h-6" />
+        </button>
 
-      <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Recent Activity</h3>
-        <div className="space-y-3">
-          {[
-            { icon: MessageCircle, text: 'WhatsApp: 247 messages handled today', time: '2 hours ago', color: 'text-green-500' },
-            { icon: FileText, text: 'New invoice generated: $599', time: '5 hours ago', color: 'text-blue-500' },
-            { icon: AlertCircle, text: 'Support ticket opened', time: '1 day ago', color: 'text-orange-500' },
-          ].map((activity, idx) => (
-            <div key={idx} className="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors">
-              <div className={`w-10 h-10 ${activity.color} bg-opacity-20 rounded-lg flex items-center justify-center`}>
-                <activity.icon className={`w-5 h-5 ${activity.color}`} />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-white">{activity.text}</p>
-                <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <button
+          onClick={() => window.location.hash = 'invoices'}
+          className="p-6 bg-green-600 hover:bg-green-700 rounded-xl text-white transition-all hover:scale-105 flex items-center justify-between"
+        >
+          <div className="text-left">
+            <p className="font-bold text-lg mb-1">Pay Invoices</p>
+            <p className="text-sm text-green-200">Manage billing</p>
+          </div>
+          <ArrowRight className="w-6 h-6" />
+        </button>
+
+        <button
+          onClick={() => window.location.hash = 'support'}
+          className="p-6 bg-purple-600 hover:bg-purple-700 rounded-xl text-white transition-all hover:scale-105 flex items-center justify-between"
+        >
+          <div className="text-left">
+            <p className="font-bold text-lg mb-1">Get Support</p>
+            <p className="text-sm text-purple-200">Contact our team</p>
+          </div>
+          <ArrowRight className="w-6 h-6" />
+        </button>
       </div>
     </div>
   );
