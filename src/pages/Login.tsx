@@ -48,7 +48,8 @@ export default function Login() {
   const demoAccounts = [
     {
       role: 'Super Admin',
-      email: 'admin@allync.com',
+      email: 'info@allyncai.com',
+      name: 'Allync',
       description: 'Full system access - manage all companies and services',
       icon: Shield,
       gradient: 'from-red-600 to-orange-600',
@@ -204,7 +205,10 @@ export default function Login() {
                           <div className="flex-1 min-w-0">
                             <h3 className={`font-bold ${account.textColor} mb-1`}>{account.role}</h3>
                             <p className="text-sm text-gray-400 mb-2">{account.description}</p>
-                            <p className="text-xs text-gray-500 font-mono">{account.email}</p>
+                            {account.name && (
+                              <p className="text-xs text-gray-500">👤 {account.name}</p>
+                            )}
+                            <p className="text-xs text-gray-500 font-mono">📧 {account.email}</p>
                           </div>
                         </div>
                       </button>

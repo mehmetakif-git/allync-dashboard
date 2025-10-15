@@ -52,7 +52,7 @@ const mockTickets: Ticket[] = [
       {
         id: 'm2',
         sender: 'admin',
-        senderName: 'Support Team',
+        senderName: 'Allync Support Team',
         text: 'Hello! Thank you for reaching out. I\'ve checked your account and I can see the issue. Our team is working on it. We\'ll have this resolved within 2 hours.',
         timestamp: '2024-12-14 11:15',
         isRead: true,
@@ -206,7 +206,7 @@ export default function SupportTickets() {
     const message: Message = {
       id: `m${Date.now()}`,
       sender: 'admin',
-      senderName: 'Support Team',
+      senderName: 'Allync Support Team',
       text: newMessage,
       timestamp: new Date().toLocaleString('en-US', {
         year: 'numeric',

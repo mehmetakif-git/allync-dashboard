@@ -4,10 +4,10 @@ import { Search, Filter, Download, AlertCircle, CheckCircle, XCircle, Info } fro
 const mockLogs = [
   { id: 1, type: 'success', action: 'User Login', user: 'john@techcorp.com', company: 'Tech Corp', details: 'Successful login from 192.168.1.1', time: '2 min ago' },
   { id: 2, type: 'warning', action: 'Failed Payment', user: 'System', company: 'Startup Inc', details: 'Payment failed for invoice #1234', time: '15 min ago' },
-  { id: 3, type: 'info', action: 'Company Created', user: 'admin@allync.com', company: 'Beauty Salon TR', details: 'New company registration completed', time: '1 hour ago' },
+  { id: 3, type: 'info', action: 'Company Created', user: 'info@allyncai.com', company: 'Beauty Salon TR', details: 'New company registration completed', time: '1 hour ago' },
   { id: 4, type: 'error', action: 'API Error', user: 'System', company: 'Law Firm Qatar', details: 'WhatsApp API connection failed', time: '2 hours ago' },
   { id: 5, type: 'success', action: 'Service Activated', user: 'sarah@techcorp.com', company: 'Tech Corp', details: 'WhatsApp automation service enabled', time: '3 hours ago' },
-  { id: 6, type: 'warning', action: 'Account Suspended', user: 'admin@allync.com', company: 'Startup Inc', details: 'Account suspended due to non-payment', time: '5 hours ago' },
+  { id: 6, type: 'warning', action: 'Account Suspended', user: 'info@allyncai.com', company: 'Startup Inc', details: 'Account suspended due to non-payment', time: '5 hours ago' },
 ];
 
 export default function AdminActivityLogs() {
