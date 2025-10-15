@@ -78,14 +78,19 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } w-64`}
       >
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+        <div className="p-6 border-b border-gray-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
-            SA
-          </div>
+            <img
+              src="/logo-white.svg"
+              alt="Allync"
+              className="h-10 w-auto"
+              onError={(e) => {
+                e.currentTarget.src = '/logo-white.png';
+              }}
+            />
             <div>
-              <p className="font-bold text-white">Super Admin</p>
-              <p className="text-xs text-gray-400">Full System Access</p>
+              <h2 className="text-white font-bold text-xl">Allync</h2>
+              <p className="text-xs text-red-400">Super Admin</p>
             </div>
           </div>
           <button onClick={onClose} className="lg:hidden p-2 hover:bg-gray-800 rounded-lg">

@@ -36,15 +36,28 @@ export default function Header({ onMenuClick }: HeaderProps) {
   return (
     <>
       <header className="bg-gray-900/80 backdrop-blur-xl border-b border-gray-800 h-16 flex items-center px-4 lg:px-6 sticky top-0 z-40">
-        <button
-          onClick={onMenuClick}
-          className="lg:hidden mr-4 p-2 hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          <Menu className="w-6 h-6 text-gray-400" />
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <Menu className="w-6 h-6 text-gray-400" />
+          </button>
 
-        <div className="hidden lg:flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 text-white text-sm font-bold mr-6">
-          ALLYNC
+          <div className="hidden lg:flex items-center gap-3">
+            <img
+              src="/logo-white.svg"
+              alt="Allync Logo"
+              className="h-8 w-auto"
+              onError={(e) => {
+                e.currentTarget.src = '/logo-white.png';
+              }}
+            />
+            <div className="hidden md:block">
+              <h1 className="text-white font-bold text-lg">Allync</h1>
+              <p className="text-gray-400 text-xs">Control Panel</p>
+            </div>
+          </div>
         </div>
 
         <div className="flex-1 max-w-2xl hidden md:block">

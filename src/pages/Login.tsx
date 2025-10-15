@@ -91,7 +91,18 @@ export default function Login() {
 
         <div className={`grid grid-cols-1 ${isDevelopment ? 'lg:grid-cols-2' : ''} gap-6`}>
           <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl shadow-black/70 p-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Sign In</h2>
+            <div className="text-center mb-8">
+              <img
+                src="/logo-white.svg"
+                alt="Allync"
+                className="h-16 w-auto mx-auto mb-4"
+                onError={(e) => {
+                  e.currentTarget.src = '/logo-white.png';
+                }}
+              />
+              <h2 className="text-3xl font-bold text-white mb-2">Welcome to Allync</h2>
+              <p className="text-gray-400">Sign in to your account to continue</p>
+            </div>
 
             {error && (
               <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
