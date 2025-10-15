@@ -203,6 +203,17 @@ export default function SupportTickets() {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedTicket) return;
 
+    if (!confirm(
+      `📤 Send Message?\n\n` +
+      `Are you sure you want to send this message?\n\n` +
+      `Ticket: ${selectedTicket.ticketNumber}\n` +
+      `Company: ${selectedTicket.company}\n` +
+      `Message: ${newMessage.substring(0, 100)}${newMessage.length > 100 ? '...' : ''}\n\n` +
+      `The company will be notified immediately.`
+    )) {
+      return;
+    }
+
     const message: Message = {
       id: `m${Date.now()}`,
       sender: 'admin',
@@ -237,6 +248,19 @@ export default function SupportTickets() {
 
   const handleChangeStatus = (status: Ticket['status']) => {
     if (!selectedTicket) return;
+
+    let confirmMessage = '';
+    if (status === 'closed') {
+      confirmMessage = `🔒 Close Ticket?\n\nTicket: ${selectedTicket.ticketNumber}\nCompany: ${selectedTicket.company}\n\nThe company will NOT be able to reply after closing.\n\nContinue?`;
+    } else if (status === 'resolved') {
+      confirmMessage = `✅ Mark as Resolved?\n\nTicket: ${selectedTicket.ticketNumber}\nCompany: ${selectedTicket.company}\n\nThis will notify the company that the issue is resolved.\n\nContinue?`;
+    } else if (status === 'in-progress') {
+      confirmMessage = `🔄 Mark as In Progress?\n\nTicket: ${selectedTicket.ticketNumber}\nCompany: ${selectedTicket.company}\n\nThis will notify the company that you're working on it.\n\nContinue?`;
+    }
+
+    if (confirmMessage && !confirm(confirmMessage)) {
+      return;
+    }
 
     setTickets(tickets.map(t =>
       t.id === selectedTicket.id
@@ -504,11 +528,7 @@ export default function SupportTickets() {
                     )}
                     {selectedTicket.status !== 'closed' && (
                       <button
-                        onClick={() => {
-                          if (confirm('Close this ticket? The company will not be able to reply.')) {
-                            handleChangeStatus('closed');
-                          }
-                        }}
+                        onClick={() => handleChangeStatus('closed')}
                         className="px-3 py-1 text-xs bg-gray-500/10 hover:bg-gray-500/20 text-gray-400 rounded-lg transition-colors"
                       >
                         Close Ticket

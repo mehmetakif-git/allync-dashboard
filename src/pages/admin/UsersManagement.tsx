@@ -128,14 +128,60 @@ export default function UsersManagement() {
   };
 
   const handleDelete = (user: User) => {
-    if (confirm(`⚠️ Delete ${user.name}?\n\nThis will:\n- Remove user access\n- Revoke all permissions\n- Cannot be undone\n\nAre you sure?`)) {
-      alert(`❌ ${user.name} has been deleted.`);
+    if (!confirm(
+      `⚠️ DELETE USER?\n\n` +
+      `Are you ABSOLUTELY SURE you want to delete:\n\n` +
+      `User: ${user.name}\n` +
+      `Email: ${user.email}\n\n` +
+      `This action CANNOT be undone!\n` +
+      `- User will lose all access immediately\n` +
+      `- All user data will be deleted\n` +
+      `- Activity history will be lost\n\n` +
+      `Type "DELETE" in the next prompt to confirm.`
+    )) {
+      return;
     }
+
+    const confirmation = prompt('Type "DELETE" to confirm:');
+    if (confirmation !== 'DELETE') {
+      alert('❌ Deletion cancelled. User was not deleted.');
+      return;
+    }
+
+    alert(`✅ User ${user.name} has been deleted.`);
   };
 
   const handleToggleStatus = (user: User) => {
-    if (confirm(`${user.status === 'Active' ? 'Suspend' : 'Activate'} ${user.name}?`)) {
-      alert(`✅ ${user.name} is now ${user.status === 'Active' ? 'suspended' : 'active'}.`);
+    if (user.status === 'Active') {
+      const reason = prompt(
+        `⏸️ Suspend User: ${user.name}\n\n` +
+        `Please enter suspension reason (required):`
+      );
+
+      if (!reason) {
+        alert('❌ Suspension cancelled. Reason is required.');
+        return;
+      }
+
+      if (!confirm(
+        `⏸️ Confirm Suspension?\n\n` +
+        `User: ${user.name}\n` +
+        `Reason: ${reason}\n\n` +
+        `User will see this reason when trying to login.`
+      )) {
+        return;
+      }
+
+      alert(`✅ User ${user.name} has been suspended.\nReason: ${reason}`);
+    } else {
+      if (!confirm(
+        `✅ Activate User?\n\n` +
+        `User: ${user.name}\n\n` +
+        `This will restore full access for this user.`
+      )) {
+        return;
+      }
+      alert(`✅ ${user.name} is now active.`);
     }
   };
 

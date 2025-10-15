@@ -807,9 +807,21 @@ export default function CompaniesManagement() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => {
-                            if (confirm(`Approve ${service.name} (${service.requestedPlan} plan) for ${selectedCompany?.name}?`)) {
-                              alert(`✅ Service Approved!\n\n${service.name} has been activated for ${selectedCompany?.name}.\n\nThe company will be notified via email.`);
+                            if (!confirm(
+                              `✅ Approve Service Request?\n\n` +
+                              `Company: ${selectedCompany?.name}\n` +
+                              `Service: ${service.name}\n` +
+                              `Plan: ${service.requestedPlan}\n` +
+                              `Price: $${service.price}/month\n\n` +
+                              `This will:\n` +
+                              `- Activate the service immediately\n` +
+                              `- Start billing from today\n` +
+                              `- Notify the company via email\n\n` +
+                              `Continue?`
+                            )) {
+                              return;
                             }
+                            alert(`✅ Service Approved!\n\n${service.name} has been activated for ${selectedCompany?.name}.\n\nThe company will be notified via email.`);
                           }}
                           className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
                         >
@@ -817,10 +829,27 @@ export default function CompaniesManagement() {
                         </button>
                         <button
                           onClick={() => {
-                            const reason = prompt('Rejection reason (will be sent to company):');
-                            if (reason) {
-                              alert(`❌ Service Request Rejected\n\nCompany: ${selectedCompany?.name}\nService: ${service.name}\nReason: ${reason}\n\nThe company will be notified.`);
+                            const reason = prompt(
+                              `❌ Reject Service Request?\n\n` +
+                              `Company: ${selectedCompany?.name}\n` +
+                              `Service: ${service.name}\n\n` +
+                              `Please enter rejection reason (will be sent to company):`
+                            );
+
+                            if (!reason) {
+                              alert('❌ Rejection cancelled. Reason is required.');
+                              return;
                             }
+
+                            if (!confirm(
+                              `❌ Confirm Rejection?\n\n` +
+                              `Company will receive this message:\n"${reason}"\n\n` +
+                              `Continue?`
+                            )) {
+                              return;
+                            }
+
+                            alert(`❌ Service Request Rejected\n\nCompany: ${selectedCompany?.name}\nService: ${service.name}\nReason: ${reason}\n\nThe company will be notified.`);
                           }}
                           className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
                         >

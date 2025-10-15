@@ -174,8 +174,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
                     <button
                       onClick={() => {
-                        setShowUserMenu(false);
-                        logout();
+                        if (confirm('🚪 Logout?\n\nAre you sure you want to sign out?')) {
+                          setShowUserMenu(false);
+                          logout();
+                        }
                       }}
                       className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                     >

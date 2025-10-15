@@ -91,6 +91,17 @@ export default function Invoices() {
   };
 
   const handlePayment = (gateway: string) => {
+    if (!confirm(
+      `💳 Confirm Payment\n\n` +
+      `Are you sure you want to proceed with payment?\n\n` +
+      `Invoice: ${selectedInvoice?.invoiceNumber}\n` +
+      `Amount: $${selectedInvoice?.amount}\n` +
+      `Gateway: ${gateway}\n\n` +
+      `You will be redirected to the payment page.`
+    )) {
+      return;
+    }
+
     console.log('Processing payment:', { invoice: selectedInvoice?.invoiceNumber, gateway });
     alert(
       `💳 Payment Processing\n\n` +

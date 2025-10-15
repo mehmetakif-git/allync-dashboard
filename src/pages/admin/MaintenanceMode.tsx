@@ -125,7 +125,44 @@ export default function MaintenanceMode() {
             <input
               type="checkbox"
               checked={isMaintenanceActive}
-              onChange={(e) => setIsMaintenanceActive(e.target.checked)}
+              onChange={(e) => {
+                const newValue = e.target.checked;
+
+                if (newValue) {
+                  if (!confirm(
+                    `🔴🔴🔴 ENABLE MAINTENANCE MODE? 🔴🔴🔴\n\n` +
+                    `THIS WILL:\n` +
+                    `- BLOCK ALL USER ACCESS immediately\n` +
+                    `- LOG OUT all active users\n` +
+                    `- Show maintenance message to everyone\n` +
+                    `- Only Super Admin can access the system\n\n` +
+                    `CRITICAL: This affects ALL USERS!\n\n` +
+                    `Are you ABSOLUTELY CERTAIN?`
+                  )) {
+                    return;
+                  }
+
+                  const confirmation = prompt('Type "MAINTENANCE" to confirm:');
+                  if (confirmation !== 'MAINTENANCE') {
+                    alert('❌ Maintenance mode NOT enabled. Operation cancelled.');
+                    return;
+                  }
+
+                  alert('🔴 Maintenance Mode ENABLED\n\nAll users have been logged out.\nSystem is now in maintenance mode.');
+                  setIsMaintenanceActive(true);
+                } else {
+                  if (!confirm(
+                    `✅ Disable Maintenance Mode?\n\n` +
+                    `This will restore normal system access for all users.\n\n` +
+                    `Continue?`
+                  )) {
+                    return;
+                  }
+
+                  alert('✅ Maintenance Mode DISABLED\n\nSystem is now accessible to all users.');
+                  setIsMaintenanceActive(false);
+                }
+              }}
               className="sr-only peer"
             />
             <div className="w-20 h-10 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-8 after:w-8 after:transition-all peer-checked:bg-red-600"></div>

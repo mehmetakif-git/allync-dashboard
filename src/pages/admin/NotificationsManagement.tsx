@@ -47,6 +47,19 @@ export default function NotificationsManagement() {
   const [previewNotification, setPreviewNotification] = useState<any>(null);
 
   const handleSendNotification = (data: any) => {
+    if (!confirm(
+      `📢 Send Global Notification?\n\n` +
+      `Type: ${data.type.toUpperCase()}\n` +
+      `Title: ${data.title}\n\n` +
+      `This notification will be sent to ALL USERS immediately!\n\n` +
+      `- All Company Admins will see it\n` +
+      `- All Regular Users will see it\n` +
+      `- It cannot be recalled\n\n` +
+      `Are you sure you want to send this?`
+    )) {
+      return;
+    }
+
     const newNotification: Notification = {
       id: Date.now().toString(),
       type: data.type,
@@ -75,10 +88,16 @@ export default function NotificationsManagement() {
   };
 
   const handleDeleteNotification = (id: string) => {
-    if (confirm('Delete this notification? Users who already saw it will still have it in their history.')) {
-      setNotifications(notifications.filter(n => n.id !== id));
-      alert('✅ Notification deleted from the system.');
+    if (!confirm(
+      `🗑️ Delete Notification?\n\n` +
+      `Users who already saw it will still have it in their history.\n\n` +
+      `Continue with deletion?`
+    )) {
+      return;
     }
+
+    setNotifications(notifications.filter(n => n.id !== id));
+    alert('✅ Notification deleted from the system.');
   };
 
   const getTypeColor = (type: string) => {

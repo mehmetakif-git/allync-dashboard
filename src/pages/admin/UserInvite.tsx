@@ -111,6 +111,18 @@ export default function UserInvite() {
 
     const companyName = mockCompanies.find(c => c.id === inviteData.company)?.name;
 
+    if (!confirm(
+      `📧 Send Invitation Email?\n\n` +
+      `To: ${inviteData.firstName} ${inviteData.lastName}\n` +
+      `Email: ${inviteData.email}\n` +
+      `Company: ${companyName}\n` +
+      `Role: ${inviteData.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'Regular User'}\n\n` +
+      `An invitation email will be sent from info@allyncai.com\n\n` +
+      `Continue?`
+    )) {
+      return;
+    }
+
     console.log('Sending invite via Resend.com API:', {
       from: 'info@allyncai.com',
       to: inviteData.email,

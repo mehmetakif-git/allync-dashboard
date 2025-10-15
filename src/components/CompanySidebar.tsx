@@ -165,7 +165,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
         <div className="p-4 border-t border-gray-800 bg-gray-900/50">
           <button
             onClick={() => {
-              if (confirm('Are you sure you want to logout?')) {
+              if (confirm('🚪 Logout?\n\nAre you sure you want to sign out?')) {
                 logout();
               }
             }}

@@ -41,6 +41,17 @@ export default function Services() {
   };
 
   const handleSendRequest = (plan: string, message: string) => {
+    if (!confirm(
+      `📨 Send Service Request?\n\n` +
+      `Service: ${selectedService.name_en}\n` +
+      `Plan: ${plan.toUpperCase()}\n` +
+      `Price: $${selectedService.pricing[plan]}/month\n\n` +
+      `This request will be sent to Super Admin for approval.\n\n` +
+      `Continue?`
+    )) {
+      return;
+    }
+
     console.log('Request sent:', { service: selectedService.id, plan, message });
     alert(
       `✅ Service Request Sent!\n\n` +

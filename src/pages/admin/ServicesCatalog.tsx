@@ -32,6 +32,31 @@ export default function ServicesCatalog() {
   });
 
   const handleStatusChange = (serviceId: string, newStatus: Service['status']) => {
+    const service = services.find(s => s.id === serviceId);
+
+    let warningMessage = '';
+    if (newStatus === 'inactive') {
+      warningMessage = `⚠️ This will HIDE the service from all companies!\nActive users will NOT be affected.`;
+    } else if (newStatus === 'maintenance') {
+      warningMessage = `🔧 This will mark the service as under maintenance.\nNew requests will be blocked.`;
+    } else if (newStatus === 'active') {
+      warningMessage = `✅ This will make the service available for requests.`;
+    } else if (newStatus === 'coming-soon') {
+      warningMessage = `📅 This will show the service as coming soon.\nRequests will be disabled.`;
+    }
+
+    if (!confirm(
+      `🔄 Change Service Status?\n\n` +
+      `Service: ${service?.name_en}\n` +
+      `Current: ${service?.status.toUpperCase()}\n` +
+      `New: ${newStatus.toUpperCase()}\n\n` +
+      `${warningMessage}\n\n` +
+      `All companies will see this change immediately.\n\n` +
+      `Continue?`
+    )) {
+      return;
+    }
+
     setServices(services.map(s =>
       s.id === serviceId ? { ...s, status: newStatus } : s
     ));

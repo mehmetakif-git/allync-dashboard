@@ -168,6 +168,15 @@ export default function Support() {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedTicket) return;
 
+    if (!confirm(
+      `📤 Send Message?\n\n` +
+      `Are you sure you want to send this message?\n\n` +
+      `Ticket: ${selectedTicket.ticketNumber}\n` +
+      `Message: ${newMessage.substring(0, 100)}${newMessage.length > 100 ? '...' : ''}`
+    )) {
+      return;
+    }
+
     const message: Message = {
       id: `m${Date.now()}`,
       sender: 'user',
@@ -200,6 +209,15 @@ export default function Support() {
   };
 
   const handleCreateTicket = (data: any) => {
+    if (!confirm(
+      `🎫 Create Support Ticket?\n\n` +
+      `Subject: ${data.subject}\n` +
+      `Priority: ${data.priority.toUpperCase()}\n\n` +
+      `This will notify our support team immediately.`
+    )) {
+      return;
+    }
+
     const newTicket: Ticket = {
       id: `t${Date.now()}`,
       ticketNumber: `TKT-2024-${Math.floor(Math.random() * 9000) + 1000}`,
