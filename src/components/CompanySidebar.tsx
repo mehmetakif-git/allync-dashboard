@@ -11,7 +11,7 @@ interface CompanySidebarProps {
 }
 
 export default function CompanySidebar({ activePage, onPageChange, isOpen, onClose }: CompanySidebarProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const isCompanyAdmin = user?.role === 'COMPANY_ADMIN';
   const isRegularUser = user?.role === 'USER';
 
@@ -162,19 +162,17 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-gray-800">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-sm font-medium">
-              {getUserInitials()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-white truncate">{getUserRole()}</div>
-              <div className="text-xs text-gray-400">Tech Corp</div>
-            </div>
-          </div>
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors font-medium">
+        <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+          <button
+            onClick={() => {
+              if (confirm('Are you sure you want to logout?')) {
+                logout();
+              }
+            }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+          >
             <LogOut className="w-4 h-4" />
-            Logout
+            <span className="font-medium">Logout</span>
           </button>
         </div>
       </aside>

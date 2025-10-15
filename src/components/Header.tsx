@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Bell, Menu, LogOut, User as UserIcon, Settings } from 'lucide-react';
+import { Search, Bell, Menu, LogOut, User as UserIcon, Settings, Building2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import NotificationsPanel from './NotificationsPanel';
@@ -119,40 +119,70 @@ export default function Header({ onMenuClick }: HeaderProps) {
                   className="fixed inset-0 z-40"
                   onClick={() => setShowUserMenu(false)}
                 ></div>
-                <div className="absolute right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-xl border border-gray-700 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-gray-700">
-                    <div className="font-medium text-white">{user?.name}</div>
-                    <div className="text-sm text-gray-400">{user?.email}</div>
-                    <span
-                      className={`inline-block mt-2 px-2 py-1 rounded text-xs font-medium ${getRoleBadgeColor(
-                        user?.role || ''
-                      )}`}
-                    >
-                      {user?.role.replace('_', ' ')}
-                    </span>
+                <div className="absolute right-0 top-full mt-2 w-64 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-50 overflow-hidden">
+                  <div className="p-4 border-b border-gray-800 bg-gray-800/50">
+                    <p className="text-white font-medium">{user?.name}</p>
+                    <p className="text-gray-400 text-sm">{user?.email}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Building2 className="w-4 h-4 text-gray-400" />
+                      <span className="text-gray-400 text-sm">{user?.company}</span>
+                    </div>
+                    <div className="mt-2">
+                      <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                        user?.role === 'SUPER_ADMIN'
+                          ? 'bg-red-500/20 text-red-400'
+                          : user?.role === 'COMPANY_ADMIN'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : 'bg-green-500/20 text-green-400'
+                      }`}>
+                        {user?.role === 'SUPER_ADMIN' ? 'Super Admin' :
+                         user?.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'User'}
+                      </span>
+                    </div>
                   </div>
-                  <a
-                    href="#profile"
-                    className="flex items-center gap-3 px-4 py-2 hover:bg-gray-700/50 text-gray-300"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    Profile
-                  </a>
-                  <a
-                    href="#settings"
-                    className="flex items-center gap-3 px-4 py-2 hover:bg-gray-700/50 text-gray-300"
-                  >
-                    <Settings className="w-4 h-4" />
-                    Settings
-                  </a>
-                  <div className="border-t border-gray-700 my-2"></div>
-                  <button
-                    onClick={logout}
-                    className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-500/10 text-red-400"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </button>
+
+                  <div className="p-2">
+                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'COMPANY_ADMIN') && (
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          if (user?.role === 'SUPER_ADMIN') {
+                            window.location.hash = 'system-settings';
+                          } else {
+                            window.location.hash = 'settings';
+                          }
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">Profile</span>
+                      </button>
+                    )}
+
+                    {user?.role === 'COMPANY_ADMIN' && (
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          window.location.hash = 'settings';
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span className="text-sm font-medium">Settings</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="text-sm font-medium">Logout</span>
+                    </button>
+                  </div>
                 </div>
               </>
             )}

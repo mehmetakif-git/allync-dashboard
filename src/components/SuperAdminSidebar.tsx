@@ -1,4 +1,5 @@
 import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface MenuItem {
   id?: string;
@@ -17,6 +18,7 @@ interface SuperAdminSidebarProps {
 }
 
 export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, onClose }: SuperAdminSidebarProps) {
+  const { logout } = useAuth();
   const menuItems: MenuItem[] = [
     { id: 'admin-dashboard', label: 'Dashboard', icon: Home, section: 'main' },
     { id: 'services-catalog', label: 'Services Catalog', icon: Zap, section: 'main' },
@@ -136,12 +138,19 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-800">
-        <button className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors font-medium">
+      <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+        <button
+          onClick={() => {
+            if (confirm('Are you sure you want to logout?')) {
+              logout();
+            }
+          }}
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+        >
           <LogOut className="w-4 h-4" />
-          Logout
+          <span className="font-medium">Logout</span>
         </button>
-        </div>
+      </div>
       </aside>
     </>
   );
