@@ -49,6 +49,7 @@ export default function SuperAdminDashboard() {
 
   const handleNavigate = (page: string) => {
     window.location.hash = page;
+    window.scrollTo(0, 0);
   };
 
   const revenueData = [
