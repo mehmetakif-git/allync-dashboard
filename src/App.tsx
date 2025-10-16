@@ -17,6 +17,17 @@ import SuperAdminSidebar from './components/SuperAdminSidebar';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import CompanySidebar from './components/CompanySidebar';
 import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
+import CompaniesManagement from './pages/admin/CompaniesManagement';
+import UsersManagement from './pages/admin/UsersManagement';
+import UserInvite from './pages/admin/UserInvite';
+import NotificationsManagement from './pages/admin/NotificationsManagement';
+import RevenueAnalytics from './pages/admin/RevenueAnalytics';
+import InvoicesManagement from './pages/admin/InvoicesManagement';
+import SupportTicketsManagement from './pages/admin/SupportTicketsManagement';
+import SystemSettings from './pages/admin/SystemSettings';
+import MaintenanceMode from './pages/admin/MaintenanceMode';
+import ActivityLogs from './pages/admin/ActivityLogs';
+import ServicesCatalog from './pages/admin/ServicesCatalog';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -79,6 +90,17 @@ function AppContent() {
           <Header onMenuClick={() => setIsSidebarOpen(true)} />
           <main className="flex-1 p-6">
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
+            {superAdminPage === 'companies-management' && <CompaniesManagement />}
+            {superAdminPage === 'users-management' && <UsersManagement />}
+            {superAdminPage === 'invite-users' && <UserInvite />}
+            {superAdminPage === 'notifications-management' && <NotificationsManagement />}
+            {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
+            {superAdminPage === 'invoices-management' && <InvoicesManagement />}
+            {superAdminPage === 'support-tickets-management' && <SupportTicketsManagement />}
+            {superAdminPage === 'system-settings' && <SystemSettings />}
+            {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
+            {superAdminPage === 'activity-logs' && <ActivityLogs />}
+            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'service-whatsapp' && <WhatsApp />}
             {superAdminPage === 'service-instagram' && <Instagram />}
             {superAdminPage.startsWith('service-') && <ServiceDashboard slug={superAdminPage.replace('service-', '')} onBack={() => setSuperAdminPage('admin-dashboard')} />}
