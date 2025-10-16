@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { serviceTypes } from '../../data/services';
 import { mockServiceRequests } from '../../data/serviceRequests';
 import { Edit3, Users, Clock, CheckCircle, Building2 } from 'lucide-react';
+import EditServiceModal from '../../components/admin/EditServiceModal';
 
 export default function ServicesCatalog() {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
+  const [services, setServices] = useState(serviceTypes);
 
-  const filteredServices = serviceTypes.filter(service => {
+  const filteredServices = services.filter(service => {
     if (selectedCategory === 'all') return true;
     return service.category === selectedCategory;
   });
@@ -199,23 +201,21 @@ export default function ServicesCatalog() {
         </div>
 
         {showEditModal && selectedService && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6">
-              <h2 className="text-2xl font-bold text-white mb-4">Edit Service</h2>
-              <p className="text-gray-400 mb-4">
-                Service: <span className="text-white font-medium">{selectedService.name_en}</span>
-              </p>
-              <p className="text-sm text-gray-500 mb-6">
-                Edit modal will be fully implemented in the next step. This is a placeholder.
-              </p>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-all"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+          <EditServiceModal
+            service={selectedService}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedService(null);
+            }}
+            onSave={(updatedService) => {
+              const updatedServices = services.map(s =>
+                s.id === updatedService.id ? updatedService : s
+              );
+              setServices(updatedServices);
+
+              console.log('Service Updated:', updatedService);
+            }}
+          />
         )}
       </div>
     </div>
