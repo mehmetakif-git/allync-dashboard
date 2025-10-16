@@ -9,10 +9,8 @@ import TextToVideo from './pages/TextToVideo';
 import Invoices from './pages/Invoices';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
-import Admin from './pages/Admin';
 import ServiceDashboard from './pages/ServiceDashboard';
 import Header from './components/Header';
-import Sidebar from './components/Sidebar';
 import SuperAdminSidebar from './components/SuperAdminSidebar';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import CompanySidebar from './components/CompanySidebar';
@@ -90,20 +88,19 @@ function AppContent() {
           <Header onMenuClick={() => setIsSidebarOpen(true)} />
           <main className="flex-1 p-6">
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
+            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'users-management' && <UsersManagement />}
-            {superAdminPage === 'invite-users' && <UserInvite />}
+            {superAdminPage === 'user-invite' && <UserInvite />}
             {superAdminPage === 'notifications-management' && <NotificationsManagement />}
             {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
             {superAdminPage === 'invoices-management' && <InvoicesManagement />}
-            {superAdminPage === 'support-tickets-management' && <SupportTicketsManagement />}
+            {superAdminPage === 'support-tickets' && <SupportTicketsManagement />}
             {superAdminPage === 'system-settings' && <SystemSettings />}
             {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
             {superAdminPage === 'activity-logs' && <ActivityLogs />}
-            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
-            {superAdminPage === 'service-whatsapp' && <WhatsApp />}
-            {superAdminPage === 'service-instagram' && <Instagram />}
-            {superAdminPage.startsWith('service-') && <ServiceDashboard slug={superAdminPage.replace('service-', '')} onBack={() => setSuperAdminPage('admin-dashboard')} />}
+            {superAdminPage === 'service-whatsapp' && <div className="p-6"><h1 className="text-white text-2xl">WhatsApp Dashboard (Coming Soon)</h1></div>}
+            {superAdminPage === 'service-instagram' && <div className="p-6"><h1 className="text-white text-2xl">Instagram Dashboard (Coming Soon)</h1></div>}
           </main>
         </div>
       </div>
