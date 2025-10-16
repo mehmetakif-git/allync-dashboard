@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { serviceTypes } from '../data/services';
 import { mockCompanyRequests } from '../data/services';
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import RequestServiceModal from '../components/RequestServiceModal';
 
 export default function Services() {
   const { user } = useAuth();
@@ -178,24 +179,25 @@ export default function Services() {
           })}
         </div>
 
-        {showRequestModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
-              <h2 className="text-2xl font-bold text-white mb-4">Request Service</h2>
-              <p className="text-gray-400 mb-4">
-                Service: <span className="text-white font-medium">{selectedService?.name_en}</span>
-              </p>
-              <p className="text-sm text-gray-500 mb-6">
-                Request modal will be implemented in the next step. This is a placeholder.
-              </p>
-              <button
-                onClick={() => setShowRequestModal(false)}
-                className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-all"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+        {showRequestModal && selectedService && (
+          <RequestServiceModal
+            service={selectedService}
+            onClose={() => {
+              setShowRequestModal(false);
+              setSelectedService(null);
+            }}
+            onSubmit={(packageType, notes) => {
+              console.log('Service Request Submitted:', {
+                service: selectedService.slug,
+                package: packageType,
+                notes: notes,
+                companyId: user?.companyId,
+                companyName: user?.companyName,
+                requestedBy: user?.name,
+              });
+              alert(`Request submitted for ${selectedService.name_en} (${packageType} package)`);
+            }}
+          />
         )}
       </div>
     </div>
