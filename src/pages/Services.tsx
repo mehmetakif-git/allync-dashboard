@@ -114,10 +114,21 @@ export default function Services() {
                   </ul>
                 </div>
 
-                <div className="mb-4 p-3 bg-gray-900/50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Starting from</p>
-                  <p className="text-2xl font-bold text-white">${service.pricing.basic}<span className="text-sm text-gray-400">/month</span></p>
-                </div>
+                {service.status === 'maintenance' ? (
+                  <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                    <p className="text-sm text-orange-500 font-medium text-center">
+                      🔧 Service Under Maintenance
+                    </p>
+                    <p className="text-xs text-orange-400/70 text-center mt-1">
+                      Pricing temporarily unavailable
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mb-4 p-3 bg-gray-900/50 rounded-lg">
+                    <p className="text-xs text-gray-500 mb-1">Starting from</p>
+                    <p className="text-2xl font-bold text-white">${service.pricing.basic}<span className="text-sm text-gray-400">/month</span></p>
+                  </div>
+                )}
 
                 {isActive && (
                   <div className="mb-4 flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
