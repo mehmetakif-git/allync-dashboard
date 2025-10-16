@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MessageSquare, Send, Plus, Clock, CheckCircle, XCircle, AlertCircle, Search } from 'lucide-react';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 interface Message {
   id: string;
@@ -157,6 +158,8 @@ export default function Support() {
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'open' | 'in-progress' | 'waiting-response' | 'resolved' | 'closed'>('all');
   const [search, setSearch] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [creatingTicket, setCreatingTicket] = useState(false);
 
   const filteredTickets = tickets.filter(ticket => {
     const matchesStatus = filterStatus === 'all' || ticket.status === filterStatus;
@@ -165,7 +168,7 @@ export default function Support() {
     return matchesStatus && matchesSearch;
   });
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedTicket) return;
 
     if (!confirm(
@@ -176,6 +179,10 @@ export default function Support() {
     )) {
       return;
     }
+
+    setSendingMessage(true);
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const message: Message = {
       id: `m${Date.now()}`,
@@ -206,9 +213,10 @@ export default function Support() {
     });
 
     setNewMessage('');
+    setSendingMessage(false);
   };
 
-  const handleCreateTicket = (data: any) => {
+  const handleCreateTicket = async (data: any) => {
     if (!confirm(
       `🎫 Create Support Ticket?\n\n` +
       `Subject: ${data.subject}\n` +
@@ -217,6 +225,10 @@ export default function Support() {
     )) {
       return;
     }
+
+    setCreatingTicket(true);
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     const newTicket: Ticket = {
       id: `t${Date.now()}`,
@@ -242,6 +254,7 @@ export default function Support() {
 
     setTickets([newTicket, ...tickets]);
     setShowNewTicketModal(false);
+    setCreatingTicket(false);
     alert(`✅ Ticket Created!\n\nTicket Number: ${newTicket.ticketNumber}\n\nOur support team will respond shortly.`);
   };
 
@@ -423,11 +436,11 @@ export default function Support() {
                   />
                   <button
                     onClick={handleSendMessage}
-                    disabled={!newMessage.trim()}
+                    disabled={!newMessage.trim() || sendingMessage}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                   >
-                    <Send className="w-4 h-4" />
-                    Send
+                    {sendingMessage ? <LoadingSpinner size="sm" /> : <Send className="w-4 h-4" />}
+                    {sendingMessage ? 'Sending...' : 'Send'}
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">Press Enter to send, Shift+Enter for new line</p>
@@ -532,9 +545,11 @@ export default function Support() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  disabled={creatingTicket}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  Create Ticket
+                  {creatingTicket && <LoadingSpinner size="sm" />}
+                  {creatingTicket ? 'Creating...' : 'Create Ticket'}
                 </button>
               </div>
             </form>
