@@ -2,6 +2,7 @@ import { Home, Zap, MessageCircle, Instagram, FileText, HelpCircle, Settings, Lo
 import { useState } from 'react';
 import { mockCompanyRequests, serviceTypes } from '../data/services';
 import { useAuth } from '../context/AuthContext';
+import ConfirmationDialog from './ConfirmationDialog';
 
 interface CompanySidebarProps {
   activePage: string;
@@ -14,6 +15,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
   const { user, logout } = useAuth();
   const isCompanyAdmin = user?.role === 'COMPANY_ADMIN';
   const isRegularUser = user?.role === 'USER';
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const activeServices = Object.keys(mockCompanyRequests)
     .filter(serviceId => mockCompanyRequests[serviceId].status === 'approved')
@@ -164,11 +166,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
 
         <div className="p-4 border-t border-gray-800 bg-gray-900/50">
           <button
-            onClick={() => {
-              if (confirm('🚪 Logout?\n\nAre you sure you want to sign out?')) {
-                logout();
-              }
-            }}
+            onClick={() => setShowLogoutConfirm(true)}
             className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
           >
             <LogOut className="w-4 h-4" />
@@ -176,6 +174,19 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
           </button>
         </div>
       </aside>
+
+      <ConfirmationDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          logout();
+        }}
+        title="Logout"
+        message="Are you sure you want to logout?"
+        confirmText="Logout"
+        confirmColor="from-red-600 to-red-700"
+      />
     </>
   );
 }

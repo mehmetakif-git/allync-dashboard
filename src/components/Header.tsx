@@ -3,6 +3,7 @@ import { Search, Bell, Menu, LogOut, User as UserIcon, Settings, Building2 } fro
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import NotificationsPanel from './NotificationsPanel';
+import ConfirmationDialog from './ConfirmationDialog';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -13,6 +14,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { language, setLanguage } = useLanguage();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -174,10 +176,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
                     <button
                       onClick={() => {
-                        if (confirm('🚪 Logout?\n\nAre you sure you want to sign out?')) {
-                          setShowUserMenu(false);
-                          logout();
-                        }
+                        setShowUserMenu(false);
+                        setShowLogoutConfirm(true);
                       }}
                       className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                     >
@@ -195,6 +195,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <NotificationsPanel
         isOpen={showNotifications}
         onClose={() => setShowNotifications(false)}
+      />
+
+      <ConfirmationDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          logout();
+        }}
+        title="Logout"
+        message="Are you sure you want to logout? You will need to login again to access the system."
+        confirmText="Logout"
+        confirmColor="from-red-600 to-red-700"
       />
     </>
   );

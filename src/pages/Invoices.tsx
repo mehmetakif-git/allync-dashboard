@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Download, Calendar, DollarSign, CreditCard, CheckCircle, Clock, AlertCircle, Filter } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 interface Invoice {
   id: string;
@@ -64,6 +65,8 @@ export default function Invoices() {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [showPaymentConfirm, setShowPaymentConfirm] = useState(false);
+  const [selectedGateway, setSelectedGateway] = useState<string>('');
 
   const filteredInvoices = mockInvoices.filter(inv =>
     filterStatus === 'all' || inv.status === filterStatus
@@ -92,34 +95,32 @@ export default function Invoices() {
     setShowPaymentModal(true);
   };
 
-  const handlePayment = async (gateway: string) => {
+  const handlePayment = (gateway: string) => {
     if (!selectedInvoice) return;
 
-    if (!confirm(
-      `💳 Confirm Payment\n\n` +
-      `Are you sure you want to proceed with payment?\n\n` +
-      `Invoice: ${selectedInvoice?.invoiceNumber}\n` +
-      `Amount: $${selectedInvoice?.amount}\n` +
-      `Gateway: ${gateway}\n\n` +
-      `You will be redirected to the payment page.`
-    )) {
-      return;
-    }
+    setSelectedGateway(gateway);
+    setShowPaymentConfirm(true);
+  };
+
+  const handlePaymentConfirm = async () => {
+    if (!selectedInvoice) return;
 
     setPaymentLoading(true);
+    setShowPaymentConfirm(false);
 
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    console.log('Processing payment:', { invoice: selectedInvoice?.invoiceNumber, gateway });
+    console.log('Processing payment:', { invoice: selectedInvoice?.invoiceNumber, gateway: selectedGateway });
     alert(
       `✅ Payment Successful!\n\n` +
       `Invoice: ${selectedInvoice.invoiceNumber}\n` +
-      `Amount: $${selectedInvoice.amount} paid via ${gateway}`
+      `Amount: $${selectedInvoice.amount} paid via ${selectedGateway}`
     );
 
     setPaymentLoading(false);
     setShowPaymentModal(false);
     setSelectedInvoice(null);
+    setSelectedGateway('');
   };
 
   const handleDownloadPDF = (invoice: Invoice) => {
@@ -411,6 +412,17 @@ export default function Invoices() {
           </div>
         </div>
       )}
+
+      <ConfirmationDialog
+        isOpen={showPaymentConfirm}
+        onClose={() => setShowPaymentConfirm(false)}
+        onConfirm={handlePaymentConfirm}
+        title="Confirm Payment"
+        message={`Are you sure you want to pay $${selectedInvoice?.amount.toFixed(2)} for invoice ${selectedInvoice?.invoiceNumber} via ${selectedGateway}? You will be redirected to the payment page.`}
+        confirmText="Pay Now"
+        confirmColor="from-green-600 to-emerald-600"
+        isLoading={paymentLoading}
+      />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import ConfirmationDialog from './ConfirmationDialog';
 
 interface MenuItem {
   id?: string;
@@ -19,6 +21,7 @@ interface SuperAdminSidebarProps {
 
 export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, onClose }: SuperAdminSidebarProps) {
   const { logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const menuItems: MenuItem[] = [
     { id: 'admin-dashboard', label: 'Dashboard', icon: Home, section: 'main' },
 
@@ -149,11 +152,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
 
       <div className="p-4 border-t border-gray-800 bg-gray-900/50">
         <button
-          onClick={() => {
-            if (confirm('🚪 Logout?\n\nAre you sure you want to sign out?')) {
-              logout();
-            }
-          }}
+          onClick={() => setShowLogoutConfirm(true)}
           className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
         >
           <LogOut className="w-4 h-4" />
@@ -161,6 +160,19 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
         </button>
       </div>
       </aside>
+
+      <ConfirmationDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          logout();
+        }}
+        title="Logout"
+        message="Are you sure you want to logout?"
+        confirmText="Logout"
+        confirmColor="from-red-600 to-red-700"
+      />
     </>
   );
 }
