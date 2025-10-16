@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Mail, Lock, Loader2, Shield, Building2, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -153,10 +152,16 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {loading && <LoadingSpinner size="sm" />}
-                {loading ? 'Signing in...' : t('auth.signInButton')}
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {t('auth.signingIn')}
+                  </>
+                ) : (
+                  t('auth.signInButton')
+                )}
               </button>
             </form>
 

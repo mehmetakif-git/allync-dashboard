@@ -3,7 +3,6 @@ import { Search, Filter, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide
 import { serviceTypes, mockCompanyRequests } from '../data/services';
 import { getCurrentMockUser } from '../utils/mockAuth';
 import { useAuth } from '../context/AuthContext';
-import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Services() {
   console.log('🔵 RENDERING SERVICES - COMPANY/USER');
@@ -22,7 +21,6 @@ export default function Services() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedService, setSelectedService] = useState<any>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [requestLoading, setRequestLoading] = useState(false);
 
   const filteredServices = serviceTypes.filter(service => {
     const matchesSearch = service.name_en.toLowerCase().includes(search.toLowerCase()) ||
@@ -42,7 +40,7 @@ export default function Services() {
     setShowRequestModal(true);
   };
 
-  const handleSendRequest = async (plan: string, message: string) => {
+  const handleSendRequest = (plan: string, message: string) => {
     if (!confirm(
       `📨 Send Service Request?\n\n` +
       `Service: ${selectedService.name_en}\n` +
@@ -54,10 +52,6 @@ export default function Services() {
       return;
     }
 
-    setRequestLoading(true);
-
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
     console.log('Request sent:', { service: selectedService.id, plan, message });
     alert(
       `✅ Service Request Sent!\n\n` +
@@ -66,8 +60,6 @@ export default function Services() {
       `Message: ${message}\n\n` +
       `Your request has been sent to Super Admin for approval.`
     );
-
-    setRequestLoading(false);
     setShowRequestModal(false);
     setSelectedService(null);
   };
@@ -355,11 +347,9 @@ export default function Services() {
                   const message = (document.getElementById('message') as HTMLTextAreaElement).value;
                   handleSendRequest(plan, message);
                 }}
-                disabled={requestLoading}
-                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
               >
-                {requestLoading && <LoadingSpinner size="sm" />}
-                {requestLoading ? 'Sending...' : 'Send Request'}
+                Send Request
               </button>
             </div>
           </div>

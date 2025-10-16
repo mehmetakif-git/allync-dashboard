@@ -15,8 +15,35 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import SuperAdminSidebar from './components/SuperAdminSidebar';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
+import MaintenanceMode from './pages/admin/MaintenanceMode';
+import CompaniesManagement from './pages/admin/CompaniesManagement';
+import UsersManagement from './pages/admin/UsersManagement';
 import CompanySidebar from './components/CompanySidebar';
 import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
+import SystemSettings from './pages/admin/SystemSettings';
+import ActivityLogs from './pages/admin/ActivityLogs';
+import TextToVideoAI from './pages/services/TextToVideoAI';
+import ImageToVideoAI from './pages/services/ImageToVideoAI';
+import VideoToVideoAI from './pages/services/VideoToVideoAI';
+import TextToImageAI from './pages/services/TextToImageAI';
+import VoiceCloning from './pages/services/VoiceCloning';
+import DocumentAI from './pages/services/DocumentAI';
+import DataAnalysisAI from './pages/services/DataAnalysisAI';
+import CustomAI from './pages/services/CustomAI';
+import ECommerce from './pages/services/ECommerce';
+import CorporateWebsite from './pages/services/CorporateWebsite';
+import MobileApp from './pages/services/MobileApp';
+import DigitalMarketing from './pages/services/DigitalMarketing';
+import IoTSolutions from './pages/services/IoTSolutions';
+import CloudSolutions from './pages/services/CloudSolutions';
+import UIUXDesign from './pages/services/UIUXDesign';
+import MaintenanceSupport from './pages/services/MaintenanceSupport';
+import RevenueAnalytics from './pages/admin/RevenueAnalytics';
+import InvoicesManagement from './pages/admin/InvoicesManagement';
+import SupportTickets from './pages/admin/SupportTickets';
+import UserInvite from './pages/admin/UserInvite';
+import ServicesCatalog from './pages/admin/ServicesCatalog';
+import NotificationsManagement from './pages/admin/NotificationsManagement';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -79,9 +106,40 @@ function AppContent() {
           <Header onMenuClick={() => setIsSidebarOpen(true)} />
           <main className="flex-1 p-6">
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
+            {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'service-whatsapp' && <WhatsApp />}
             {superAdminPage === 'service-instagram' && <Instagram />}
-            {superAdminPage.startsWith('service-') && <ServiceDashboard slug={superAdminPage.replace('service-', '')} onBack={() => setSuperAdminPage('admin-dashboard')} />}
+            {superAdminPage === 'service-text-to-video' && <TextToVideoAI />}
+            {superAdminPage === 'service-text-to-image' && <TextToImageAI />}
+            {superAdminPage === 'service-voice-cloning' && <VoiceCloning />}
+            {superAdminPage === 'service-document-ai' && <DocumentAI />}
+            {superAdminPage === 'service-image-to-video' && <ImageToVideoAI />}
+            {superAdminPage === 'service-video-to-video' && <VideoToVideoAI />}
+            {superAdminPage === 'service-data-analysis' && <DataAnalysisAI />}
+            {superAdminPage === 'service-custom-ai' && <CustomAI />}
+            {superAdminPage === 'service-ecommerce' && <ECommerce />}
+            {superAdminPage === 'service-corporate-website' && <CorporateWebsite />}
+            {superAdminPage === 'service-mobile-app' && <MobileApp />}
+            {superAdminPage === 'service-digital-marketing' && <DigitalMarketing />}
+            {superAdminPage === 'service-iot-solutions' && <IoTSolutions />}
+            {superAdminPage === 'service-cloud-solutions' && <CloudSolutions />}
+            {superAdminPage === 'service-ui-ux-design' && <UIUXDesign />}
+            {superAdminPage === 'service-maintenance-support' && <MaintenanceSupport />}
+            {superAdminPage === 'service-digital-marketing' && <ServiceDashboard slug="digital-marketing" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'service-iot-solutions' && <ServiceDashboard slug="iot-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'service-cloud-solutions' && <ServiceDashboard slug="cloud-solutions" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'service-ui-ux-design' && <ServiceDashboard slug="ui-ux-design" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'service-maintenance-support' && <ServiceDashboard slug="maintenance-support" onBack={() => setSuperAdminPage('services-catalog')} />}
+            {superAdminPage === 'companies-management' && <CompaniesManagement />}
+            {superAdminPage === 'users-management' && <UsersManagement />}
+            {superAdminPage === 'user-invite' && <UserInvite />}
+            {superAdminPage === 'notifications-management' && <NotificationsManagement />}
+            {superAdminPage === 'revenue-analytics' && <RevenueAnalytics />}
+            {superAdminPage === 'invoices-management' && <InvoicesManagement />}
+            {superAdminPage === 'support-tickets' && <SupportTickets />}
+            {superAdminPage === 'system-settings' && <SystemSettings />}
+            {superAdminPage === 'maintenance-mode' && <MaintenanceMode />}
+            {superAdminPage === 'activity-logs' && <ActivityLogs />}
           </main>
         </div>
       </div>
