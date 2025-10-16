@@ -3,13 +3,9 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Login from './pages/Login';
 import Services from './pages/Services';
-import WhatsApp from './pages/WhatsApp';
-import Instagram from './pages/Instagram';
-import TextToVideo from './pages/TextToVideo';
 import Invoices from './pages/Invoices';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
-import ServiceDashboard from './pages/ServiceDashboard';
 import Header from './components/Header';
 import SuperAdminSidebar from './components/SuperAdminSidebar';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
@@ -122,17 +118,6 @@ function AppContent() {
           <main className="flex-1">
             {activePage === 'dashboard' && <CompanyAdminDashboard />}
             {activePage === 'services' && <Services />}
-            {activePage === 'whatsapp' && <WhatsApp />}
-            {activePage === 'service/instagram-automation' && <Instagram />}
-            {activePage === 'service-dashboard' && (
-              <ServiceDashboard
-                slug={serviceSlug}
-                onBack={() => {
-                  window.location.hash = 'services';
-                  setActivePage('services');
-                }}
-              />
-            )}
 
             {activePage === 'settings' && isCompanyAdmin && <Settings />}
             {activePage === 'settings' && isRegularUser && (
