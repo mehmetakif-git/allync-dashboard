@@ -227,7 +227,6 @@ export default function Services() {
                 companyName: user?.companyName,
                 requestedBy: user?.name,
               });
-              alert(`Request submitted for ${selectedService.name_en} (${packageType} package)`);
             }}
           />
         )}

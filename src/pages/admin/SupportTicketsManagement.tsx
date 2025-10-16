@@ -12,6 +12,8 @@ export default function SupportTicketsManagement() {
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [newMessage, setNewMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const [editStatus, setEditStatus] = useState('');
   const [editPriority, setEditPriority] = useState('');
@@ -57,8 +59,12 @@ export default function SupportTicketsManagement() {
     setShowTicketModal(true);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (!selectedTicket) return;
+
+    setIsSaving(true);
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     const updatedTickets = tickets.map(t => {
       if (t.id === selectedTicket.id) {
@@ -75,8 +81,13 @@ export default function SupportTicketsManagement() {
     setTickets(updatedTickets);
     setSelectedTicket({ ...selectedTicket, status: editStatus, priority: editPriority });
     setHasChanges(false);
+    setIsSaving(false);
+    setShowSuccessMessage(true);
 
-    alert('Ticket updated successfully! Changes are now visible to all users.');
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+      setShowTicketModal(false);
+    }, 2000);
 
     console.log('Ticket Updated:', {
       ticketId: selectedTicket.id,
@@ -322,11 +333,24 @@ export default function SupportTicketsManagement() {
                 <div className="mb-6">
                   <button
                     onClick={handleSaveChanges}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                    disabled={isSaving}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:cursor-not-allowed"
                   >
                     <Save className="w-4 h-4" />
-                    Save Changes (Visible to All Users)
+                    {isSaving ? 'Saving Changes...' : 'Save Changes (Visible to All Users)'}
                   </button>
+                </div>
+              )}
+
+              {showSuccessMessage && (
+                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  </div>
+                  <div>
+                    <p className="text-green-500 font-medium">Ticket Updated Successfully!</p>
+                    <p className="text-green-400/70 text-sm">Changes are now visible to all users</p>
+                  </div>
                 </div>
               )}
 
