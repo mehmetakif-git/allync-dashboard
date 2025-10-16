@@ -16,7 +16,7 @@ export default function EditServiceModal({ service, onClose, onSave }: EditServi
     description_tr: service.description_tr,
     category: service.category,
     delivery: service.delivery,
-    is_active: service.is_active,
+    status: service.status,
     features: [...service.features],
     pricing: { ...service.pricing },
   });
@@ -286,24 +286,65 @@ export default function EditServiceModal({ service, onClose, onSave }: EditServi
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
-            <div>
-              <p className="text-white font-medium">Service Status</p>
-              <p className="text-sm text-gray-400">
-                {formData.is_active ? 'Service is currently active' : 'Service is currently inactive'}
-              </p>
+          <div className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+            <label className="block text-sm font-medium text-gray-300 mb-3">
+              Service Status *
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, status: 'active' })}
+                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  formData.status === 'active'
+                    ? 'border-green-500 bg-green-500/10'
+                    : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <span className="font-medium text-white">Active</span>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Visible to all users and can be requested
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, status: 'maintenance' })}
+                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  formData.status === 'maintenance'
+                    ? 'border-orange-500 bg-orange-500/10'
+                    : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-orange-500" />
+                  <span className="font-medium text-white">Maintenance</span>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Visible but cannot be requested
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, status: 'inactive' })}
+                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  formData.status === 'inactive'
+                    ? 'border-red-500 bg-red-500/10'
+                    : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <span className="font-medium text-white">Inactive</span>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Hidden from all users except Super Admin
+                </p>
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
-              className={`relative w-14 h-7 rounded-full transition-colors ${
-                formData.is_active ? 'bg-green-600' : 'bg-gray-600'
-              }`}
-            >
-              <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                formData.is_active ? 'translate-x-7' : 'translate-x-0'
-              }`} />
-            </button>
           </div>
 
           <div className="flex gap-3 pt-4 border-t border-gray-700">

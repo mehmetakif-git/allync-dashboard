@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { serviceTypes } from '../data/services';
 import { mockCompanyRequests } from '../data/services';
-import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';
 import RequestServiceModal from '../components/RequestServiceModal';
 
 export default function Services() {
@@ -15,6 +15,8 @@ export default function Services() {
   const isRegularUser = user?.role === 'USER';
 
   const filteredServices = serviceTypes.filter(service => {
+    if (service.status === 'inactive') return false;
+
     if (selectedCategory === 'all') return true;
     return service.category === selectedCategory;
   });
@@ -131,6 +133,13 @@ export default function Services() {
                   </div>
                 )}
 
+                {service.status === 'maintenance' && (
+                  <div className="mb-4 flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                    <Wrench className="w-4 h-4 text-orange-500" />
+                    <span className="text-sm text-orange-500 font-medium">Under Maintenance</span>
+                  </div>
+                )}
+
                 <div className="mt-4">
                   {isActive ? (
                     <button
@@ -139,6 +148,18 @@ export default function Services() {
                     >
                       View Details & Dashboard
                     </button>
+                  ) : service.status === 'maintenance' ? (
+                    <div>
+                      <button
+                        disabled
+                        className="w-full px-4 py-3 bg-gray-700 text-gray-400 rounded-lg font-medium cursor-not-allowed mb-2"
+                      >
+                        Service Under Maintenance
+                      </button>
+                      <p className="text-xs text-center text-gray-500">
+                        This service is temporarily unavailable
+                      </p>
+                    </div>
                   ) : (
                     <>
                       {isCompanyAdmin && !status && (

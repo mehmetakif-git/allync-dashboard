@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { serviceTypes } from '../../data/services';
 import { mockServiceRequests } from '../../data/serviceRequests';
-import { Edit3, Users, Clock, CheckCircle, Building2 } from 'lucide-react';
+import { Edit3, Users, Clock, CheckCircle, Building2, Wrench, Power } from 'lucide-react';
 import EditServiceModal from '../../components/admin/EditServiceModal';
 
 export default function ServicesCatalog() {
@@ -151,6 +151,27 @@ export default function ServicesCatalog() {
                     ${service.pricing.basic}
                     <span className="text-sm text-gray-400">/month</span>
                   </p>
+                </div>
+
+                <div className="mb-4">
+                  {service.status === 'active' && (
+                    <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-green-500 font-medium">Active</span>
+                    </div>
+                  )}
+                  {service.status === 'maintenance' && (
+                    <div className="flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                      <Wrench className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm text-orange-500 font-medium">Under Maintenance</span>
+                    </div>
+                  )}
+                  {service.status === 'inactive' && (
+                    <div className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <Power className="w-4 h-4 text-red-500" />
+                      <span className="text-sm text-red-500 font-medium">Inactive (Hidden)</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2 mb-4">
