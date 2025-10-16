@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { serviceTypes } from '../../data/services';
 import { mockServiceRequests } from '../../data/serviceRequests';
-import { Edit3, Users, Clock, CheckCircle, Building2, Wrench, Power } from 'lucide-react';
+import { CreditCard as Edit3, Users, Clock, CheckCircle, Building2, Wrench, Power } from 'lucide-react';
 import EditServiceModal from '../../components/admin/EditServiceModal';
 
 export default function ServicesCatalog() {
