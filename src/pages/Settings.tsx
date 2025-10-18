@@ -1,387 +1,302 @@
 import { useState } from 'react';
+import { User, Building2, Shield, Globe, Calendar, MapPin, Mail, Phone, CheckCircle, Clock, Monitor } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Save, Upload, Camera, Bell } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Settings() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'notifications' | 'billing' | 'security'>('profile');
+  const { language, setLanguage } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'preferences'>('account');
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map((n) => n[0]).join('').toUpperCase();
-  };
-
-  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'COMPANY_ADMIN';
-
-  const tabs = [
-    { id: 'profile', label: 'Profile', roles: ['SUPER_ADMIN', 'COMPANY_ADMIN', 'USER'] },
-    { id: 'company', label: 'Company', roles: ['SUPER_ADMIN', 'COMPANY_ADMIN'] },
-    { id: 'notifications', label: 'Notifications', roles: ['SUPER_ADMIN', 'COMPANY_ADMIN', 'USER'] },
-    { id: 'billing', label: 'Billing', roles: ['SUPER_ADMIN', 'COMPANY_ADMIN'] },
-    { id: 'security', label: 'Security', roles: ['SUPER_ADMIN', 'COMPANY_ADMIN', 'USER'] },
+  const loginHistory = [
+    {
+      id: '1',
+      date: '2025-01-18 14:32',
+      ip: '192.168.1.105',
+      device: 'Chrome on Windows',
+      location: 'Doha, Qatar',
+      status: 'success',
+    },
+    {
+      id: '2',
+      date: '2025-01-17 09:15',
+      ip: '192.168.1.105',
+      device: 'Chrome on Windows',
+      location: 'Doha, Qatar',
+      status: 'success',
+    },
+    {
+      id: '3',
+      date: '2025-01-16 16:45',
+      ip: '192.168.1.105',
+      device: 'Safari on iPhone',
+      location: 'Doha, Qatar',
+      status: 'success',
+    },
+    {
+      id: '4',
+      date: '2025-01-15 11:20',
+      ip: '192.168.1.105',
+      device: 'Chrome on Windows',
+      location: 'Doha, Qatar',
+      status: 'success',
+    },
   ];
 
-  const visibleTabs = tabs.filter((tab) => tab.roles.includes(user?.role || ''));
+  const tabs = [
+    { id: 'account', label: 'Account Overview', icon: User },
+    { id: 'security', label: 'Security & Login History', icon: Shield },
+    { id: 'preferences', label: 'Preferences', icon: Globe },
+  ];
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-white">Settings</h1>
-        <p className="text-gray-400 mt-1">Manage your account and preferences</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
+          <p className="text-gray-400">View your account information and preferences</p>
+        </div>
 
-      <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl shadow-sm border border-gray-700">
-        <div className="border-b border-gray-800">
-          <nav className="flex gap-2 p-4">
-            {visibleTabs.map((tab) => (
+        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+          <p className="text-blue-400 text-sm">
+            <strong>Note:</strong> Contact your Super Admin to update company information, change password, or modify account settings.
+          </p>
+        </div>
+
+        <div className="flex gap-2 mb-6 overflow-x-auto">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg'
-                    : 'text-gray-400 hover:bg-gray-800'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                 }`}
               >
+                <Icon className="w-5 h-5" />
                 {tab.label}
               </button>
-            ))}
-          </nav>
+            );
+          })}
         </div>
 
-        <div className="p-6">
-          {activeTab === 'profile' && (
-            <div className="max-w-2xl space-y-6">
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Profile Picture</h3>
-                <div className="flex items-center gap-6">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-3xl font-medium">
-                    {user && getInitials(user.name)}
-                  </div>
-                  <div className="space-y-2">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500/20 transition-colors font-medium">
-                      <Upload className="w-4 h-4" />
-                      Upload Avatar
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
-                      Remove
-                    </button>
-                  </div>
-                </div>
+        {activeTab === 'account' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white">Profile Information</h2>
+                <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-medium text-blue-500">
+                  Read-Only
+                </span>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
-                <input
-                  type="text"
-                  defaultValue={user?.name}
-                  className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  defaultValue={user?.email}
-                  readOnly
-                  className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-gray-400 cursor-not-allowed"
-                />
-                <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
-                <input
-                  type="tel"
-                  defaultValue={user?.phone}
-                  className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Language</label>
-                <div className="flex gap-2">
-                  <button className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg font-medium">
-                    🇬🇧 English
-                  </button>
-                  <button className="px-4 py-2 text-gray-400 hover:bg-gray-800 rounded-lg font-medium">
-                    🇹🇷 Türkçe
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-800">
-                <h3 className="text-lg font-bold text-white mb-4">Change Password</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Current Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 pb-4 border-b border-gray-700">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-white">
+                      {user?.name?.charAt(0) || 'U'}
+                    </span>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                    <h3 className="text-xl font-bold text-white">{user?.name}</h3>
+                    <p className="text-gray-400">{user?.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'User'}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Mail className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-400">Email</span>
+                    </div>
+                    <p className="text-white font-medium">{user?.email}</p>
+                  </div>
+
+                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Phone className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-400">Phone</span>
+                    </div>
+                    <p className="text-white font-medium">{user?.phone || 'Not set'}</p>
+                  </div>
+
+                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Building2 className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-400">Company</span>
+                    </div>
+                    <p className="text-white font-medium">{user?.companyName}</p>
+                  </div>
+
+                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-gray-400">Account Status</span>
+                    </div>
+                    <p className="text-green-500 font-medium">Active</p>
+                  </div>
+
+                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-400">Member Since</span>
+                    </div>
+                    <p className="text-white font-medium">March 15, 2024</p>
+                  </div>
+
+                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Globe className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-400">Language</span>
+                    </div>
+                    <p className="text-white font-medium">{language === 'en' ? 'English' : 'Türkçe'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white">Company Information</h2>
+                <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-medium text-blue-500">
+                  Read-Only
+                </span>
+              </div>
+
+              <div className="p-6 bg-gray-900/50 rounded-lg">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                    <Building2 className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Confirm New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                    <h3 className="text-2xl font-bold text-white">{user?.companyName}</h3>
+                    <p className="text-gray-400">Company ID: {user?.companyId}</p>
                   </div>
-                  <button className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-medium">
-                    Update Password
-                  </button>
                 </div>
-              </div>
 
-              <div className="flex gap-3 pt-4 border-t border-gray-800">
-                <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors transition-all transition-colors font-medium">
-                  <Save className="w-5 h-5" />
-                  Save Changes
-                </button>
+                <p className="text-sm text-gray-400 mb-4">
+                  Company details are managed by the Super Admin. Contact support if you need to update company information.
+                </p>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === 'company' && isAdmin && (
-            <div className="max-w-2xl space-y-6">
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Company Logo</h3>
-                <div className="flex items-center gap-6">
-                  <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-xl font-bold">
-                    ALLYNC
+        {activeTab === 'security' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Security Overview</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Password</span>
+                    <CheckCircle className="w-4 h-4 text-green-500" />
                   </div>
-                  <div className="space-y-2">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500/20 transition-colors font-medium">
-                      <Camera className="w-4 h-4" />
-                      Upload Logo
-                    </button>
-                    <p className="text-xs text-gray-400">Recommended size: 200x200px</p>
+                  <p className="text-white font-medium">Protected</p>
+                  <p className="text-xs text-gray-500 mt-1">Contact Super Admin to change password</p>
+                </div>
+
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Last Login</span>
+                    <Clock className="w-4 h-4 text-blue-500" />
                   </div>
+                  <p className="text-white font-medium">{loginHistory[0].date}</p>
+                  <p className="text-xs text-gray-500 mt-1">{loginHistory[0].location}</p>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Company Name</label>
-                <input
-                  type="text"
-                  defaultValue={user?.companyName}
-                  className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Company Email</label>
-                <input
-                  type="email"
-                  defaultValue="contact@techcorp.com"
-                  className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
-                <input
-                  type="tel"
-                  defaultValue="+1 555 100 2000"
-                  className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Country</label>
-                <select className="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option>United States</option>
-                  <option>Turkey</option>
-                  <option>United Kingdom</option>
-                  <option>Germany</option>
-                </select>
-              </div>
-
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="font-medium text-green-400">Account Status: Active</span>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4 border-t border-gray-800">
-                <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors transition-all transition-colors font-medium">
-                  <Save className="w-5 h-5" />
-                  Save Changes
-                </button>
               </div>
             </div>
-          )}
 
-          {activeTab === 'notifications' && (
-            <div className="max-w-2xl space-y-6">
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                <div className="flex gap-3">
-                  <Bell className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-bold text-blue-300 mb-1">System Notifications</h3>
-                    <p className="text-sm text-blue-300">
-                      System notifications are <strong>mandatory</strong> and cannot be disabled.
-                      They contain important updates about services, maintenance, and system announcements.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Email Notifications</h3>
-                <div className="space-y-3">
-                  {[
-                    { label: 'New invoice created', description: 'Get notified when a new invoice is generated' },
-                    { label: 'Payment received', description: 'Receive confirmation when payment is processed' },
-                    { label: 'Support ticket updated', description: 'Get updates on your support tickets' },
-                    { label: 'Service usage alert', description: 'Alerts when approaching usage limits' },
-                    { label: 'Weekly report', description: 'Receive weekly analytics reports' },
-                  ].map((notif, idx) => (
-                    <label key={idx} className="flex items-center gap-3 p-3 border border-gray-800 rounded-lg hover:bg-gray-700/50 cursor-pointer">
-                      <input type="checkbox" defaultChecked={idx < 3} className="w-5 h-5 text-blue-400" />
-                      <div>
-                        <p className="font-medium text-white">{notif.label}</p>
-                        <p className="text-sm text-gray-400">{notif.description}</p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4 border-t border-gray-800">
-                <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors transition-all transition-colors font-medium">
-                  <Save className="w-5 h-5" />
-                  Save Preferences
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'billing' && isAdmin && (
-            <div className="max-w-2xl space-y-6">
-              <div className="p-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl">
-                <h3 className="text-2xl font-bold mb-2">Total Monthly Cost</h3>
-                <p className="text-4xl font-bold">$1,247.00</p>
-                <p className="text-blue-300 mt-2">Next billing date: March 15, 2025</p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Active Services</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 border border-gray-800 rounded-lg">
-                    <div>
-                      <p className="font-medium text-white">WhatsApp Automation - Pro Plan</p>
-                      <p className="text-sm text-gray-400">Renewed monthly</p>
-                    </div>
-                    <span className="font-bold text-white">$299.00</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 border border-gray-800 rounded-lg">
-                    <div>
-                      <p className="font-medium text-white">Text to Video AI - Basic Plan</p>
-                      <p className="text-sm text-gray-400">Renewed monthly</p>
-                    </div>
-                    <span className="font-bold text-white">$499.00</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 border border-gray-800 rounded-lg">
-                    <div>
-                      <p className="font-medium text-white">Text to Image AI - Pro Plan</p>
-                      <p className="text-sm text-gray-400">Renewed monthly</p>
-                    </div>
-                    <span className="font-bold text-white">$449.00</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Payment Information</h3>
-                <div className="p-6 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                  <p className="text-gray-400 mb-2">Payments are processed securely through Stripe/PayTR</p>
-                  <p className="text-sm text-gray-400">All payments in USD</p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Recent Invoices</h3>
-                <div className="space-y-2">
-                  {[
-                    { number: 'INV-2025-0023', date: 'Feb 15, 2025', amount: 599.00, status: 'Pending' },
-                    { number: 'INV-2025-0001', date: 'Jan 15, 2025', amount: 352.82, status: 'Paid' },
-                  ].map((invoice) => (
-                    <div key={invoice.number} className="flex items-center justify-between p-3 border border-gray-800 rounded-lg">
-                      <div>
-                        <p className="font-medium text-white">{invoice.number}</p>
-                        <p className="text-sm text-gray-400">{invoice.date}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-white">${invoice.amount}</p>
-                        <span className={`text-xs px-2 py-1 rounded-full ${invoice.status === 'Paid' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                          {invoice.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button className="w-full mt-3 px-4 py-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors font-medium">
-                  View All Invoices
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'security' && (
-            <div className="max-w-2xl space-y-6">
-              <div className="p-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <h3 className="font-bold text-yellow-400 mb-2">Two-Factor Authentication</h3>
-                <p className="text-sm text-yellow-400 mb-4">Add an extra layer of security to your account</p>
-                <button className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium">
-                  Coming Soon
-                </button>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Login History</h3>
-                <div className="space-y-3">
-                  {[
-                    { date: 'Feb 13, 2025 2:30 PM', device: 'Chrome on Windows', location: 'New York, USA', ip: '192.168.1.100' },
-                    { date: 'Feb 12, 2025 9:15 AM', device: 'Safari on iPhone', location: 'New York, USA', ip: '192.168.1.101' },
-                    { date: 'Feb 10, 2025 4:45 PM', device: 'Chrome on Windows', location: 'New York, USA', ip: '192.168.1.100' },
-                  ].map((login, idx) => (
-                    <div key={idx} className="p-4 border border-gray-800 rounded-lg">
-                      <div className="flex items-center justify-between">
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Login History</h2>
+              <div className="space-y-3">
+                {loginHistory.map((login) => (
+                  <div
+                    key={login.id}
+                    className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                          <Monitor className="w-5 h-5 text-green-500" />
+                        </div>
                         <div>
-                          <p className="font-medium text-white">{login.device}</p>
-                          <p className="text-sm text-gray-400">{login.location}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-white">{login.date}</p>
-                          <p className="text-xs text-gray-400">{login.ip}</p>
+                          <p className="text-white font-medium">{login.device}</p>
+                          <p className="text-sm text-gray-400">{login.date}</p>
                         </div>
                       </div>
+                      <span className="px-2 py-1 bg-green-500/10 border border-green-500/30 rounded text-xs text-green-500">
+                        Success
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4">Active Sessions</h3>
-                <div className="p-4 border border-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-4">You are currently signed in on 2 devices</p>
-                  <button className="px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors font-medium">
-                    Sign Out All Devices
-                  </button>
-                </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-400 pl-13">
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {login.location}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Globe className="w-3 h-3" />
+                        {login.ip}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {activeTab === 'preferences' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Language Preference</h2>
+              <p className="text-gray-400 text-sm mb-6">
+                Select your preferred language for the interface
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  onClick={() => setLanguage('en')}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    language === 'en'
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-lg font-semibold text-white">English</span>
+                    {language === 'en' && <CheckCircle className="w-5 h-5 text-blue-500" />}
+                  </div>
+                  <p className="text-sm text-gray-400">Default language</p>
+                </button>
+
+                <button
+                  onClick={() => setLanguage('tr')}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    language === 'tr'
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-lg font-semibold text-white">Türkçe</span>
+                    {language === 'tr' && <CheckCircle className="w-5 h-5 text-blue-500" />}
+                  </div>
+                  <p className="text-sm text-gray-400">Turkish language</p>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+              <p className="text-blue-400 text-sm">
+                <strong>Note:</strong> More preferences (timezone, date format, etc.) will be added in future updates.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
