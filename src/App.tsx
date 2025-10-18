@@ -33,6 +33,8 @@ import DriveServiceManagement from './pages/admin/services/DriveServiceManagemen
 import PhotosServiceManagement from './pages/admin/services/PhotosServiceManagement';
 import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
 import InstagramAutomation from './pages/services/InstagramAutomation';
+import GoogleCalendar from './pages/services/GoogleCalendar';
+import GoogleSheets from './pages/services/GoogleSheets';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -198,6 +200,8 @@ function AppContent() {
             {activePage === 'support' && <Support />}
             {activePage === 'whatsapp-automation' && <WhatsAppAutomation />}
             {activePage === 'instagram-automation' && <InstagramAutomation />}
+            {activePage === 'google-calendar' && <GoogleCalendar />}
+            {activePage === 'google-sheets' && <GoogleSheets />}
           </main>
         </div>
       </div>
