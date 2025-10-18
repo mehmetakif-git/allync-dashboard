@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2 } from 'lucide-react';
+import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2, Plus } from 'lucide-react';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { companies } from '../../data/mockData';
 import { mockServiceRequests } from '../../data/serviceRequests';
@@ -39,6 +39,24 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
   const [isProcessingUser, setIsProcessingUser] = useState(false);
   const [showUserSuccessMessage, setShowUserSuccessMessage] = useState(false);
   const [userSuccessMessage, setUserSuccessMessage] = useState('');
+
+  // Company edit states
+  const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
+  const [isEditingCompany, setIsEditingCompany] = useState(false);
+  const [companyFormData, setCompanyFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    country: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    taxId: '',
+    registrationNumber: '',
+    billingEmail: '',
+    website: '',
+    status: 'Active',
+  });
 
   const company = companies.find(c => c.id === companyId);
 
@@ -229,7 +247,23 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
               </div>
             </div>
             <button
-              onClick={() => window.location.hash = 'companies-management'}
+              onClick={() => {
+                setCompanyFormData({
+                  name: company.name,
+                  email: company.email,
+                  phone: company.phone,
+                  country: company.country,
+                  address: company.address || '',
+                  city: company.city || '',
+                  postalCode: company.postalCode || '',
+                  taxId: company.taxId || '',
+                  registrationNumber: company.registrationNumber || '',
+                  billingEmail: company.billingEmail || '',
+                  website: company.website || '',
+                  status: company.status,
+                });
+                setShowEditCompanyModal(true);
+              }}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
             >
               <Edit3 className="w-4 h-4" />
@@ -296,25 +330,94 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
 
         {activeTab === 'overview' && (
           <div className="space-y-6">
+            {/* Company Details */}
             <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Company Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Company Name</p>
+                    <p className="text-white font-medium">{company.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Email</p>
+                    <p className="text-white">{company.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Phone</p>
+                    <p className="text-white">{company.phone}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Website</p>
+                    <p className="text-white">{company.website || 'Not provided'}</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Country</p>
+                    <p className="text-white">{company.country}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Address</p>
+                    <p className="text-white">{company.address || 'Not provided'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">City & Postal Code</p>
+                    <p className="text-white">{company.city || 'N/A'}, {company.postalCode || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Member Since</p>
+                    <p className="text-white">
+                      {new Date(company.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tax & Billing Information */}
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Tax & Billing Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Tax ID / VAT Number</p>
+                  <p className="text-white font-mono">{company.taxId || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Registration Number</p>
+                  <p className="text-white font-mono">{company.registrationNumber || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Billing Email</p>
+                  <p className="text-white">{company.billingEmail || company.email}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Company Status */}
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Status & Metrics</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-gray-900/50 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-400">Member Since</span>
+                    <CheckCircle className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Account Status</span>
                   </div>
-                  <p className="text-white font-medium">
-                    {new Date(company.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    company.status === 'Active'
+                      ? 'bg-green-500/10 border border-green-500/30 text-green-500'
+                      : 'bg-red-500/10 border border-red-500/30 text-red-500'
+                  }`}>
+                    {company.status}
+                  </span>
                 </div>
                 <div className="p-4 bg-gray-900/50 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="w-4 h-4 text-gray-400" />
+                    <Calendar className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-400">Company ID</span>
                   </div>
                   <p className="text-white font-medium font-mono">{company.id}</p>
@@ -322,6 +425,7 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
               </div>
             </div>
 
+            {/* Recent Activity */}
             <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Recent Activity</h2>
               <div className="space-y-3">
@@ -458,64 +562,122 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
         )}
 
         {activeTab === 'services' && (
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Active Services</h2>
-            <div className="space-y-3">
-              {companyServices.map((service) => (
-                <div key={service.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white font-medium">{service.service_name}</p>
-                      <p className="text-sm text-gray-400">Package: {service.package.toUpperCase()}</p>
-                    </div>
-                    <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded text-xs text-green-500">
-                      Active
-                    </span>
-                  </div>
-                </div>
-              ))}
-              {pendingRequests.length > 0 && (
-                <>
-                  <h3 className="text-lg font-semibold text-white mt-6 mb-3">Pending Requests</h3>
-                  {pendingRequests.map((request) => (
-                    <div key={request.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+          <div className="space-y-6">
+            {/* Active Services */}
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white">Active Services</h2>
+                <span className="text-sm text-gray-400">{companyServices.length} active</span>
+              </div>
+
+              {companyServices.length > 0 ? (
+                <div className="space-y-3">
+                  {companyServices.map((service) => (
+                    <div key={service.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-white font-medium">{request.service_name}</p>
-                          <p className="text-sm text-gray-400">Package: {request.package.toUpperCase()}</p>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                            <Zap className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{service.service_name}</p>
+                            <p className="text-sm text-gray-400">Package: {service.package.toUpperCase()}</p>
+                          </div>
                         </div>
-                        <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-500">
-                          Pending
+                        <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded text-xs text-green-500">
+                          Active
                         </span>
                       </div>
                     </div>
                   ))}
-                </>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Zap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400">No active services</p>
+                </div>
               )}
             </div>
+
+            {/* Pending Requests */}
+            {pendingRequests.length > 0 && (
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white">Pending Service Requests</h2>
+                  <span className="text-sm text-gray-400">{pendingRequests.length} pending</span>
+                </div>
+                <div className="space-y-3">
+                  {pendingRequests.map((request) => (
+                    <div key={request.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center">
+                            <Zap className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{request.service_name}</p>
+                            <p className="text-sm text-gray-400">Package: {request.package.toUpperCase()}</p>
+                          </div>
+                        </div>
+                        <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-500">
+                          Pending Approval
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'tickets' && (
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Support Tickets</h2>
-            <div className="space-y-3">
-              {companyTickets.map((ticket) => (
-                <div key={ticket.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">{ticket.subject}</span>
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      ticket.status === 'Open' ? 'bg-blue-500/10 text-blue-500' :
-                      ticket.status === 'In Progress' ? 'bg-yellow-500/10 text-yellow-500' :
-                      'bg-green-500/10 text-green-500'
-                    }`}>
-                      {ticket.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-400">{ticket.number} • {ticket.priority} Priority</p>
-                </div>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white">Support Tickets</h2>
+              <span className="text-sm text-gray-400">{companyTickets.length} tickets</span>
             </div>
+
+            {companyTickets.length > 0 ? (
+              <div className="space-y-3">
+                {companyTickets.map((ticket) => (
+                  <div key={ticket.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg hover:bg-gray-900/70 transition-colors">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Mail className="w-4 h-4 text-gray-400" />
+                          <span className="text-white font-medium">{ticket.subject}</span>
+                        </div>
+                        <p className="text-sm text-gray-400 mb-2">{ticket.number}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        ticket.status === 'Open' ? 'bg-blue-500/10 border border-blue-500/30 text-blue-500' :
+                        ticket.status === 'In Progress' ? 'bg-yellow-500/10 border border-yellow-500/30 text-yellow-500' :
+                        'bg-green-500/10 border border-green-500/30 text-green-500'
+                      }`}>
+                        {ticket.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <span className={`px-2 py-1 rounded ${
+                        ticket.priority === 'High' ? 'bg-red-500/20 text-red-400' :
+                        ticket.priority === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-green-500/20 text-green-400'
+                      }`}>
+                        {ticket.priority} Priority
+                      </span>
+                      <span>Created: {ticket.createdAt}</span>
+                      <span>Updated: {ticket.updatedAt}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Mail className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No support tickets</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -714,6 +876,182 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
           confirmColor={selectedUser?.status === 'Active' ? 'from-orange-600 to-orange-700' : 'from-green-600 to-emerald-600'}
           isLoading={isProcessingUser}
         />
+
+        {/* Edit Company Modal */}
+        {showEditCompanyModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-4xl w-full p-6 my-8">
+              <h2 className="text-2xl font-bold text-white mb-6">Edit Company Information</h2>
+
+              <div className="space-y-4 mb-6 max-h-[70vh] overflow-y-auto pr-2">
+                <div className="border-b border-gray-700 pb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Company Name *</label>
+                      <input
+                        type="text"
+                        value={companyFormData.name}
+                        onChange={(e) => setCompanyFormData({ ...companyFormData, name: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                        <input
+                          type="email"
+                          value={companyFormData.email}
+                          onChange={(e) => setCompanyFormData({ ...companyFormData, email: e.target.value })}
+                          className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Phone *</label>
+                        <input
+                          type="tel"
+                          value={companyFormData.phone}
+                          onChange={(e) => setCompanyFormData({ ...companyFormData, phone: e.target.value })}
+                          className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Website</label>
+                      <input
+                        type="url"
+                        value={companyFormData.website}
+                        onChange={(e) => setCompanyFormData({ ...companyFormData, website: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b border-gray-700 pb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Address</h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Street Address *</label>
+                      <input
+                        type="text"
+                        value={companyFormData.address}
+                        onChange={(e) => setCompanyFormData({ ...companyFormData, address: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">City *</label>
+                        <input
+                          type="text"
+                          value={companyFormData.city}
+                          onChange={(e) => setCompanyFormData({ ...companyFormData, city: e.target.value })}
+                          className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Postal Code *</label>
+                        <input
+                          type="text"
+                          value={companyFormData.postalCode}
+                          onChange={(e) => setCompanyFormData({ ...companyFormData, postalCode: e.target.value })}
+                          className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Country *</label>
+                        <input
+                          type="text"
+                          value={companyFormData.country}
+                          onChange={(e) => setCompanyFormData({ ...companyFormData, country: e.target.value })}
+                          className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b border-gray-700 pb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Tax & Registration</h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Tax ID / VAT Number *</label>
+                      <input
+                        type="text"
+                        value={companyFormData.taxId}
+                        onChange={(e) => setCompanyFormData({ ...companyFormData, taxId: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Registration Number *</label>
+                      <input
+                        type="text"
+                        value={companyFormData.registrationNumber}
+                        onChange={(e) => setCompanyFormData({ ...companyFormData, registrationNumber: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Billing Email</label>
+                    <input
+                      type="email"
+                      value={companyFormData.billingEmail}
+                      onChange={(e) => setCompanyFormData({ ...companyFormData, billingEmail: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-4">Status</h3>
+                  <select
+                    value={companyFormData.status}
+                    onChange={(e) => setCompanyFormData({ ...companyFormData, status: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Suspended">Suspended</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowEditCompanyModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    setIsEditingCompany(true);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    setIsEditingCompany(false);
+                    setShowEditCompanyModal(false);
+                    setUserSuccessMessage('Company information updated successfully!');
+                    setShowUserSuccessMessage(true);
+                    setTimeout(() => setShowUserSuccessMessage(false), 3000);
+                    console.log('Company Updated:', companyFormData);
+                  }}
+                  disabled={isEditingCompany}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+                >
+                  {isEditingCompany ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
