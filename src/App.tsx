@@ -24,6 +24,7 @@ import ActivityLogs from './pages/admin/ActivityLogs';
 import ServicesCatalog from './pages/admin/ServicesCatalog';
 import CompanyDetail from './pages/admin/CompanyDetail';
 import WhatsAppServiceManagement from './pages/admin/services/WhatsAppServiceManagement';
+import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -180,6 +181,7 @@ function AppContent() {
             )}
 
             {activePage === 'support' && <Support />}
+            {activePage === 'whatsapp-automation' && <WhatsAppAutomation />}
           </main>
         </div>
       </div>

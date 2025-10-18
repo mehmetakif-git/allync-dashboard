@@ -28,6 +28,9 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
     { type: 'divider', label: 'SERVICES' },
     { id: 'services-catalog', label: 'Services Catalog', icon: Zap, section: 'services' },
 
+    { type: 'divider', label: 'SERVICE MANAGEMENT' },
+    { id: 'whatsapp-service-management', label: 'WhatsApp Automation', icon: MessageCircle, section: 'service-mgmt' },
+
     { type: 'divider', label: 'USER MANAGEMENT' },
     { id: 'users-management', label: 'All Users', icon: Users, section: 'users' },
     { id: 'user-invite', label: 'Invite Users', icon: UserPlus, section: 'users' },

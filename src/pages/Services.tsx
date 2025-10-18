@@ -154,10 +154,16 @@ export default function Services() {
                 <div className="mt-4">
                   {isActive ? (
                     <button
-                      onClick={() => handleViewDetails(service.slug)}
+                      onClick={() => {
+                        if (service.slug === 'whatsapp-automation') {
+                          window.location.hash = 'whatsapp-automation';
+                        } else {
+                          handleViewDetails(service.slug);
+                        }
+                      }}
                       className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-lg font-medium transition-all"
                     >
-                      View Details & Dashboard
+                      View Dashboard
                     </button>
                   ) : service.status === 'maintenance' ? (
                     <div>
