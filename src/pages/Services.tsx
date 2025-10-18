@@ -157,6 +157,8 @@ export default function Services() {
                       onClick={() => {
                         if (service.slug === 'whatsapp-automation') {
                           window.location.hash = 'whatsapp-automation';
+                        } else if (service.slug === 'instagram-automation') {
+                          window.location.hash = 'instagram-automation';
                         } else {
                           handleViewDetails(service.slug);
                         }

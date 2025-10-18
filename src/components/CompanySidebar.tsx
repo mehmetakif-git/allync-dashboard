@@ -117,7 +117,9 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
                 </li>
                 {activeServices.map((service: any) => {
                   const Icon = service.icon;
-                  const pageId = service.id === 'whatsapp-automation' ? 'whatsapp-automation' : `service/${service.slug}`;
+                  const pageId = service.id === 'whatsapp-automation' ? 'whatsapp-automation' :
+                                 service.id === 'instagram-automation' ? 'instagram-automation' :
+                                 `service/${service.slug}`;
                   const isActive = activePage === pageId;
                   return (
                     <li key={service.id}>

@@ -24,7 +24,9 @@ import ActivityLogs from './pages/admin/ActivityLogs';
 import ServicesCatalog from './pages/admin/ServicesCatalog';
 import CompanyDetail from './pages/admin/CompanyDetail';
 import WhatsAppServiceManagement from './pages/admin/services/WhatsAppServiceManagement';
+import InstagramServiceManagement from './pages/admin/services/InstagramServiceManagement';
 import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
+import InstagramAutomation from './pages/services/InstagramAutomation';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -116,6 +118,7 @@ function AppContent() {
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
             {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'whatsapp-service-management' && <WhatsAppServiceManagement />}
+            {superAdminPage === 'instagram-service-management' && <InstagramServiceManagement />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'company-detail' && companyDetailId && (
               <CompanyDetail
@@ -182,6 +185,7 @@ function AppContent() {
 
             {activePage === 'support' && <Support />}
             {activePage === 'whatsapp-automation' && <WhatsAppAutomation />}
+            {activePage === 'instagram-automation' && <InstagramAutomation />}
           </main>
         </div>
       </div>

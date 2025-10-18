@@ -30,6 +30,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
 
     { type: 'divider', label: 'SERVICE MANAGEMENT' },
     { id: 'whatsapp-service-management', label: 'WhatsApp Automation', icon: MessageCircle, section: 'service-mgmt' },
+    { id: 'instagram-service-management', label: 'Instagram Automation', icon: Instagram, section: 'service-mgmt' },
 
     { type: 'divider', label: 'USER MANAGEMENT' },
     { id: 'users-management', label: 'All Users', icon: Users, section: 'users' },
