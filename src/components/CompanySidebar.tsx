@@ -62,7 +62,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
       )}
 
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto transition-transform duration-300 z-50 ${
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 z-50 ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } w-64`}
       >
