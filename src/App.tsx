@@ -22,6 +22,7 @@ import SystemSettings from './pages/admin/SystemSettings';
 import MaintenanceMode from './pages/admin/MaintenanceMode';
 import ActivityLogs from './pages/admin/ActivityLogs';
 import ServicesCatalog from './pages/admin/ServicesCatalog';
+import CompanyDetail from './pages/admin/CompanyDetail';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -29,6 +30,7 @@ function AppContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [serviceSlug, setServiceSlug] = useState<string>('');
   const [superAdminPage, setSuperAdminPage] = useState('admin-dashboard');
+  const [companyDetailId, setCompanyDetailId] = useState<string>('');
 
   console.log('Current user:', user);
   console.log('Is authenticated:', isAuthenticated);
@@ -44,10 +46,18 @@ function AppContent() {
     if (isSuperAdmin) {
       const handleSuperAdminHash = () => {
         const hash = window.location.hash.slice(1);
-        if (hash && !hash.startsWith('service/')) {
+
+        // Check for company detail page
+        if (hash.startsWith('company-detail/')) {
+          const companyId = hash.replace('company-detail/', '');
+          setCompanyDetailId(companyId);
+          setSuperAdminPage('company-detail');
+        } else if (hash && !hash.startsWith('service/')) {
           setSuperAdminPage(hash);
+          setCompanyDetailId('');
         } else if (!hash) {
           setSuperAdminPage('admin-dashboard');
+          setCompanyDetailId('');
         }
       };
 
@@ -104,6 +114,16 @@ function AppContent() {
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
             {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
+            {superAdminPage === 'company-detail' && companyDetailId && (
+              <CompanyDetail
+                companyId={companyDetailId}
+                onBack={() => {
+                  window.location.hash = 'companies-management';
+                  setSuperAdminPage('companies-management');
+                  setCompanyDetailId('');
+                }}
+              />
+            )}
             {superAdminPage === 'users-management' && <UsersManagement />}
             {superAdminPage === 'user-invite' && <UserInvite />}
             {superAdminPage === 'notifications-management' && <NotificationsManagement />}
