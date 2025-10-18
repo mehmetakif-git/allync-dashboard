@@ -18,8 +18,8 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const activeServices = Object.keys(mockCompanyRequests)
-    .filter(serviceId => mockCompanyRequests[serviceId].status === 'approved')
-    .map(serviceId => serviceTypes.find(s => s.id === serviceId))
+    .filter(serviceSlug => mockCompanyRequests[serviceSlug].status === 'approved')
+    .map(serviceSlug => serviceTypes.find(s => s.slug === serviceSlug))
     .filter(Boolean);
 
   const menuItems = [
