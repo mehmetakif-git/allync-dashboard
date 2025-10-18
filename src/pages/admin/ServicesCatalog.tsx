@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings } from 'lucide-react';
+import { Search, MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, TrendingUp, Building2, DollarSign, Settings } from 'lucide-react';
 
 export default function ServicesCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,6 +34,96 @@ export default function ServicesCatalog() {
       companies_using: 2,
       total_revenue: 598,
       managementPage: 'instagram-service-management'
+    },
+    {
+      id: 'google-calendar',
+      name: 'Google Calendar',
+      status: 'Active',
+      since: '2024-06-10',
+      package: 'Professional',
+      nextBilling: '2025-02-10',
+      price: 399,
+      description: 'WhatsApp appointment booking with Google Calendar sync. Customers book appointments via WhatsApp, automatically synced to your calendar.',
+      icon: Calendar,
+      color: 'from-blue-500 to-blue-700',
+      companies_using: 2,
+      total_revenue: 598,
+      managementPage: 'google-calendar-management'
+    },
+    {
+      id: 'google-sheets',
+      name: 'Google Sheets',
+      status: 'Active',
+      since: '2024-07-15',
+      package: 'Professional',
+      nextBilling: '2025-02-15',
+      price: 299,
+      description: 'WhatsApp data queries from Google Sheets. Query inventory, check stock, get pricing directly through WhatsApp conversations.',
+      icon: Sheet,
+      color: 'from-green-600 to-green-800',
+      companies_using: 2,
+      total_revenue: 448,
+      managementPage: 'google-sheets-management'
+    },
+    {
+      id: 'gmail-integration',
+      name: 'Gmail Integration',
+      status: 'Active',
+      since: '2024-08-01',
+      package: 'Professional',
+      nextBilling: '2025-02-01',
+      price: 349,
+      description: 'Send and receive emails via WhatsApp with Gmail integration. Manage inbox, send responses, get AI-powered email summaries.',
+      icon: Mail,
+      color: 'from-red-500 to-red-700',
+      companies_using: 2,
+      total_revenue: 528,
+      managementPage: 'gmail-management'
+    },
+    {
+      id: 'google-docs',
+      name: 'Google Docs',
+      status: 'Active',
+      since: '2024-09-05',
+      package: 'Professional',
+      nextBilling: '2025-02-05',
+      price: 399,
+      description: 'AI document generation via WhatsApp saved to Google Docs. Generate contracts, reports, proposals through WhatsApp.',
+      icon: FileText,
+      color: 'from-blue-600 to-cyan-600',
+      companies_using: 2,
+      total_revenue: 598,
+      managementPage: 'google-docs-management'
+    },
+    {
+      id: 'google-drive',
+      name: 'Google Drive',
+      status: 'Active',
+      since: '2024-10-15',
+      package: 'Professional',
+      nextBilling: '2025-02-15',
+      price: 299,
+      description: 'File management via WhatsApp with Google Drive. Upload, organize, share files directly through WhatsApp conversations.',
+      icon: FolderOpen,
+      color: 'from-yellow-500 to-yellow-700',
+      companies_using: 2,
+      total_revenue: 448,
+      managementPage: 'google-drive-management'
+    },
+    {
+      id: 'google-photos',
+      name: 'Google Photos',
+      status: 'Active',
+      since: '2024-11-25',
+      package: 'Professional',
+      nextBilling: '2025-02-25',
+      price: 259,
+      description: 'Photo management via WhatsApp with Google Photos. Upload, organize, search photos with AI-powered tagging.',
+      icon: Image,
+      color: 'from-purple-500 to-pink-600',
+      companies_using: 2,
+      total_revenue: 388,
+      managementPage: 'google-photos-management'
     },
   ];
 
