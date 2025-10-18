@@ -119,8 +119,9 @@ export default function InvoicesManagement() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Invoices Management</h1>
           <p className="text-gray-400 mt-1">Manage all invoices across all companies</p>
@@ -368,6 +369,7 @@ export default function InvoicesManagement() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

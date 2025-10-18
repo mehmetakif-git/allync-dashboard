@@ -69,6 +69,7 @@ export default function UserInvite() {
     email: '',
     company: '',
     role: 'user',
+    password: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -118,7 +119,8 @@ info@allyncai.com
   `.trim();
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">Invite Users</h1>
         <p className="text-gray-400 mt-1">Send invitations to new users via email</p>
@@ -212,6 +214,22 @@ info@allyncai.com
                 <option value="user">User</option>
                 <option value="company_admin">Company Admin</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-gray-400 text-sm mb-2">
+                Password <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Enter temporary password"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">User will be prompted to change password on first login</p>
             </div>
 
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
@@ -362,6 +380,7 @@ info@allyncai.com
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Clock, AlertCircle, CheckCircle, MessageSquare, User, Calendar, X, Save } from 'lucide-react';
+import { Search, Filter, Clock, AlertCircle, CheckCircle, MessageSquare, User, Calendar, X, Save, Building2 } from 'lucide-react';
 import { tickets as initialTickets } from '../../data/mockData';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
@@ -132,7 +132,7 @@ export default function SupportTicketsManagement() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Support Tickets Management</h1>
@@ -218,6 +218,7 @@ export default function SupportTicketsManagement() {
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Ticket #</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Subject</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Company</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created By</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Category</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Priority</th>
@@ -237,8 +238,17 @@ export default function SupportTicketsManagement() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-blue-500" />
+                        <span className="text-gray-300">{ticket.company_name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-300">{ticket.createdBy}</span>
+                        <div>
+                          <p className="text-white text-sm">{ticket.createdBy}</p>
+                          <p className="text-gray-500 text-xs">{ticket.createdByEmail}</p>
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -356,8 +366,16 @@ export default function SupportTicketsManagement() {
 
               <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-900/50 rounded-lg">
                 <div>
+                  <p className="text-sm text-gray-400 mb-1">Company</p>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-blue-500" />
+                    <p className="text-white font-medium">{selectedTicket.company_name}</p>
+                  </div>
+                </div>
+                <div>
                   <p className="text-sm text-gray-400 mb-1">Created By</p>
                   <p className="text-white font-medium">{selectedTicket.createdBy}</p>
+                  <p className="text-gray-500 text-xs">{selectedTicket.createdByEmail}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Category</p>
@@ -366,10 +384,6 @@ export default function SupportTicketsManagement() {
                 <div>
                   <p className="text-sm text-gray-400 mb-1">Created At</p>
                   <p className="text-white">{new Date(selectedTicket.createdAt).toLocaleString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">Last Updated</p>
-                  <p className="text-white">{new Date(selectedTicket.updatedAt).toLocaleString()}</p>
                 </div>
               </div>
 
