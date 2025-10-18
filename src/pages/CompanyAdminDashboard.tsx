@@ -34,19 +34,6 @@ const mockActiveServices = [
     lastActivity: '1 hour ago',
     growth: '+8.7%',
   },
-  {
-    id: 'text-to-video',
-    name: 'Text-to-Video AI',
-    plan: 'Enterprise',
-    status: 'pending-setup',
-    monthlyUsage: {
-      current: 0,
-      limit: 1000,
-      unit: 'videos',
-    },
-    lastActivity: 'Not started',
-    growth: 'N/A',
-  },
 ];
 
 const mockPendingRequests = [
