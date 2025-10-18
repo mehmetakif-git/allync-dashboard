@@ -11,7 +11,6 @@ export default function CompaniesManagement() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
@@ -70,26 +69,6 @@ export default function CompaniesManagement() {
     setShowAddModal(true);
   };
 
-  const handleEditClick = (company: any) => {
-    setSelectedCompany(company);
-    setFormData({
-      name: company.name,
-      email: company.email,
-      phone: company.phone,
-      country: company.country,
-      address: company.address || '',
-      city: company.city || '',
-      postalCode: company.postalCode || '',
-      taxId: company.taxId || '',
-      registrationNumber: company.registrationNumber || '',
-      billingEmail: company.billingEmail || '',
-      website: company.website || '',
-      adminName: '',
-      adminEmail: '',
-      status: company.status,
-    });
-    setShowEditModal(true);
-  };
 
   const handleDeleteClick = (company: any) => {
     setSelectedCompany(company);
@@ -124,35 +103,6 @@ export default function CompaniesManagement() {
     console.log('Company Added:', newCompany);
   };
 
-  const handleEditCompany = async () => {
-    setIsProcessing(true);
-
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const updatedCompanies = companies.map(c =>
-      c.id === selectedCompany.id
-        ? {
-            ...c,
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            country: formData.country,
-            address: formData.address,
-            status: formData.status as 'Active' | 'Suspended',
-          }
-        : c
-    );
-
-    setCompanies(updatedCompanies);
-    setIsProcessing(false);
-    setShowEditModal(false);
-
-    setSuccessMessage(`Company "${formData.name}" has been updated successfully!`);
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
-
-    console.log('Company Updated:', { id: selectedCompany.id, ...formData });
-  };
 
   const handleDeleteCompany = async () => {
     setIsProcessing(true);
@@ -551,94 +501,6 @@ export default function CompaniesManagement() {
           </div>
         )}
 
-        {showEditModal && selectedCompany && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6 my-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Edit Company</h2>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Company Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Country *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Status *
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Suspended">Suspended</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleEditCompany}
-                  disabled={isProcessing}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
-                >
-                  {isProcessing ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         <ConfirmationDialog
           isOpen={showDeleteConfirm}

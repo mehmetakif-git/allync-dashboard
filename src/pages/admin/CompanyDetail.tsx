@@ -85,8 +85,8 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
   const pendingRequests = mockServiceRequests.filter(
     req => req.company_id === companyId && req.status === 'pending'
   );
-  const companyTickets = tickets.filter(t => t.createdBy.includes('Tech Corp'));
-  const companyInvoices = invoices;
+  const companyTickets = tickets.filter(t => t.company_id === companyId);
+  const companyInvoices = invoices.filter(inv => inv.company_id === companyId);
 
   const totalRevenue = companyInvoices
     .filter(i => i.status === 'Paid')
