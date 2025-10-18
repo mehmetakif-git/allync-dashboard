@@ -200,6 +200,8 @@ export const mockCompanyRequests: Record<string, { status: 'pending' | 'approved
   'instagram-automation': { status: 'approved', date: '2024-05-22', plan: 'basic' },
   'google-calendar': { status: 'approved', date: '2024-06-10', plan: 'pro' },
   'google-sheets': { status: 'approved', date: '2024-07-15', plan: 'basic' },
-  'gmail-integration': { status: 'pending', date: '2025-01-20', plan: 'pro' },
-  'google-docs': { status: 'pending', date: '2025-01-21', plan: 'basic' },
+  'gmail-integration': { status: 'approved', date: '2024-08-01', plan: 'pro' },
+  'google-docs': { status: 'approved', date: '2024-09-05', plan: 'basic' },
+  'google-drive': { status: 'approved', date: '2024-10-15', plan: 'pro' },
+  'google-photos': { status: 'approved', date: '2024-11-25', plan: 'basic' },
 };
