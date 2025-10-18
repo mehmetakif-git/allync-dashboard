@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Search, MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, TrendingUp, Building2, DollarSign, Settings } from 'lucide-react';
+import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle } from 'lucide-react';
 
 export default function ServicesCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedStatus, setSelectedStatus] = useState<'active' | 'maintenance' | 'inactive'>('active');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const activeServices = [
     {
       id: 'whatsapp-automation',
       name: 'WhatsApp Automation',
-      status: 'Active',
+      status: 'active',
       since: '2024-03-15',
       package: 'Professional',
       nextBilling: '2025-02-15',
@@ -23,7 +28,7 @@ export default function ServicesCatalog() {
     {
       id: 'instagram-automation',
       name: 'Instagram Automation',
-      status: 'Active',
+      status: 'active',
       since: '2024-04-20',
       package: 'Professional',
       nextBilling: '2025-02-20',
@@ -38,7 +43,7 @@ export default function ServicesCatalog() {
     {
       id: 'google-calendar',
       name: 'Google Calendar',
-      status: 'Active',
+      status: 'active',
       since: '2024-06-10',
       package: 'Professional',
       nextBilling: '2025-02-10',
@@ -53,7 +58,7 @@ export default function ServicesCatalog() {
     {
       id: 'google-sheets',
       name: 'Google Sheets',
-      status: 'Active',
+      status: 'active',
       since: '2024-07-15',
       package: 'Professional',
       nextBilling: '2025-02-15',
@@ -68,7 +73,7 @@ export default function ServicesCatalog() {
     {
       id: 'gmail-integration',
       name: 'Gmail Integration',
-      status: 'Active',
+      status: 'active',
       since: '2024-08-01',
       package: 'Professional',
       nextBilling: '2025-02-01',
@@ -78,12 +83,12 @@ export default function ServicesCatalog() {
       color: 'from-red-500 to-red-700',
       companies_using: 2,
       total_revenue: 528,
-      managementPage: 'gmail-management'
+      managementPage: 'gmail-integration-management'
     },
     {
       id: 'google-docs',
       name: 'Google Docs',
-      status: 'Active',
+      status: 'active',
       since: '2024-09-05',
       package: 'Professional',
       nextBilling: '2025-02-05',
@@ -98,7 +103,7 @@ export default function ServicesCatalog() {
     {
       id: 'google-drive',
       name: 'Google Drive',
-      status: 'Active',
+      status: 'active',
       since: '2024-10-15',
       package: 'Professional',
       nextBilling: '2025-02-15',
@@ -113,7 +118,7 @@ export default function ServicesCatalog() {
     {
       id: 'google-photos',
       name: 'Google Photos',
-      status: 'Active',
+      status: 'active',
       since: '2024-11-25',
       package: 'Professional',
       nextBilling: '2025-02-25',
@@ -135,6 +140,74 @@ export default function ServicesCatalog() {
   const totalRevenue = activeServices.reduce((sum, s) => sum + s.total_revenue, 0);
   const totalCompanies = activeServices.reduce((sum, s) => sum + s.companies_using, 0);
 
+  const handleStatusChange = (service: any, status: 'active' | 'maintenance' | 'inactive') => {
+    setSelectedService(service);
+    setSelectedStatus(status);
+    setShowStatusModal(true);
+  };
+
+  const confirmStatusChange = () => {
+    console.log('Updating service status:', {
+      serviceId: selectedService.id,
+      newStatus: selectedStatus
+    });
+
+    const statusMessages = {
+      active: 'Service activated successfully!',
+      maintenance: 'Service set to maintenance mode. Users can see it but cannot request it.',
+      inactive: 'Service deactivated. Only Super Admins can see it now.'
+    };
+
+    setSuccessMessage(statusMessages[selectedStatus]);
+    setShowSuccessMessage(true);
+    setShowStatusModal(false);
+
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 4000);
+  };
+
+  const getStatusInfo = (status: string) => {
+    switch (status) {
+      case 'active':
+        return {
+          text: 'Active',
+          color: 'bg-green-500',
+          textColor: 'text-green-500',
+          bgColor: 'bg-green-500/10',
+          borderColor: 'border-green-500/30',
+          icon: '✓'
+        };
+      case 'maintenance':
+        return {
+          text: 'Maintenance',
+          color: 'bg-orange-500',
+          textColor: 'text-orange-500',
+          bgColor: 'bg-orange-500/10',
+          borderColor: 'border-orange-500/30',
+          icon: '🔧'
+        };
+      case 'inactive':
+        return {
+          text: 'Inactive',
+          color: 'bg-red-500',
+          textColor: 'text-red-500',
+          bgColor: 'bg-red-500/10',
+          borderColor: 'border-red-500/30',
+          icon: '✕'
+        };
+      default:
+        return {
+          text: 'Unknown',
+          color: 'bg-gray-500',
+          textColor: 'text-gray-500',
+          bgColor: 'bg-gray-500/10',
+          borderColor: 'border-gray-500/30',
+          icon: '?'
+        };
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
@@ -143,6 +216,20 @@ export default function ServicesCatalog() {
           <p className="text-gray-400">Manage automation services and view usage across all companies</p>
         </div>
 
+        {/* Success Message */}
+        {showSuccessMessage && (
+          <div className="mb-6 bg-green-500/10 border border-green-500/30 rounded-xl p-4 flex items-center gap-3 animate-fade-in">
+            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+              ✓
+            </div>
+            <div>
+              <p className="text-green-500 font-semibold">Status Updated!</p>
+              <p className="text-green-400 text-sm">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
@@ -189,17 +276,18 @@ export default function ServicesCatalog() {
                 <p className="text-sm text-gray-400 mb-1">Avg. Package Price</p>
                 <p className="text-3xl font-bold text-white">${activeServices[0]?.price || 0}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                <Settings className="w-6 h-6 text-orange-500" />
+              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-yellow-500" />
               </div>
             </div>
             <p className="text-xs text-gray-400">Professional tier</p>
           </div>
         </div>
 
-        <div className="mb-6">
+        {/* Search */}
+        <div className="mb-8">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search services..."
@@ -214,9 +302,12 @@ export default function ServicesCatalog() {
           <h2 className="text-xl font-bold text-white">Active Services</h2>
         </div>
 
+        {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredServices.map((service) => {
             const Icon = service.icon;
+            const statusInfo = getStatusInfo(service.status);
+
             return (
               <div
                 key={service.id}
@@ -229,9 +320,10 @@ export default function ServicesCatalog() {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white mb-1">{service.name}</h3>
-                      <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-500 rounded-full text-xs font-medium">
-                        {service.status}
-                      </span>
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 ${statusInfo.bgColor} border ${statusInfo.borderColor} rounded-full`}>
+                        <span className="text-sm">{statusInfo.icon}</span>
+                        <span className={`text-xs font-medium ${statusInfo.textColor}`}>{statusInfo.text}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -242,72 +334,64 @@ export default function ServicesCatalog() {
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Package</p>
+                    <p className="text-xs text-gray-500 mb-1">Package</p>
                     <p className="text-sm font-semibold text-white">{service.package}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Price</p>
+                    <p className="text-xs text-gray-500 mb-1">Price</p>
                     <p className="text-sm font-semibold text-white">${service.price}/month</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Companies Using</p>
+                    <p className="text-xs text-gray-500 mb-1">Companies Using</p>
                     <p className="text-sm font-semibold text-white">{service.companies_using}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Total Revenue</p>
+                    <p className="text-xs text-gray-500 mb-1">Total Revenue</p>
                     <p className="text-sm font-semibold text-white">${service.total_revenue}</p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => window.location.hash = service.managementPage}
-                  className={`w-full px-6 py-3 bg-gradient-to-r ${service.color} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2`}
+                  className={`w-full px-6 py-3 bg-gradient-to-r ${service.color} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 mb-4`}
                 >
                   <Settings className="w-5 h-5" />
                   Manage Service
                 </button>
 
-                <div className="mt-4">
-                  <p className="text-xs text-gray-400 mb-2 font-medium">Service Status</p>
-                  <div className="flex gap-2">
+                {/* Status Control Buttons - IMPROVED */}
+                <div className="border-t border-gray-700 pt-4">
+                  <p className="text-xs text-gray-400 mb-3 font-semibold uppercase tracking-wider">Change Service Status</p>
+                  <div className="grid grid-cols-3 gap-2">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Set to active:', service.id);
-                      }}
-                      className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-all ${
+                      onClick={() => handleStatusChange(service, 'active')}
+                      className={`px-4 py-3 rounded-lg text-sm font-bold transition-all transform hover:scale-105 ${
                         service.status === 'active'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                          ? 'bg-green-500 text-white shadow-lg shadow-green-500/50 ring-2 ring-green-400'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
-                      Active
+                      ✓ Active
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Set to maintenance:', service.id);
-                      }}
-                      className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-all ${
+                      onClick={() => handleStatusChange(service, 'maintenance')}
+                      className={`px-4 py-3 rounded-lg text-sm font-bold transition-all transform hover:scale-105 ${
                         service.status === 'maintenance'
-                          ? 'bg-orange-500 text-white'
-                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                          ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/50 ring-2 ring-orange-400'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
-                      Maintenance
+                      🔧 Maintenance
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Set to inactive:', service.id);
-                      }}
-                      className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-all ${
+                      onClick={() => handleStatusChange(service, 'inactive')}
+                      className={`px-4 py-3 rounded-lg text-sm font-bold transition-all transform hover:scale-105 ${
                         service.status === 'inactive'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                          ? 'bg-red-500 text-white shadow-lg shadow-red-500/50 ring-2 ring-red-400'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
-                      Inactive
+                      ✕ Inactive
                     </button>
                   </div>
                 </div>
@@ -323,6 +407,53 @@ export default function ServicesCatalog() {
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {showStatusModal && selectedService && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl">
+            <div className="p-6 border-b border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <AlertTriangle className="w-6 h-6 text-orange-500" />
+                <button onClick={() => setShowStatusModal(false)} className="text-gray-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Confirm Status Change</h3>
+              <p className="text-gray-400 text-sm">
+                You are about to change <span className="text-white font-semibold">{selectedService.name}</span> status to:
+              </p>
+            </div>
+
+            <div className="p-6">
+              <div className={`inline-flex items-center gap-2 px-4 py-2 ${getStatusInfo(selectedStatus).bgColor} border ${getStatusInfo(selectedStatus).borderColor} rounded-lg mb-4`}>
+                <span className="text-xl">{getStatusInfo(selectedStatus).icon}</span>
+                <span className={`font-bold ${getStatusInfo(selectedStatus).textColor}`}>{getStatusInfo(selectedStatus).text}</span>
+              </div>
+              <p className="text-gray-400 text-sm">
+                {selectedStatus === 'active' && 'Service will be fully visible and requestable by all users.'}
+                {selectedStatus === 'maintenance' && 'Service will be visible but users cannot request it. Pricing will be hidden.'}
+                {selectedStatus === 'inactive' && 'Service will be hidden from all users except Super Admins.'}
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-gray-700 flex gap-3">
+              <button
+                onClick={() => setShowStatusModal(false)}
+                className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmStatusChange}
+                className={`flex-1 px-6 py-3 ${getStatusInfo(selectedStatus).color} hover:opacity-90 text-white rounded-lg font-medium transition-all`}
+              >
+                Confirm Change
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
