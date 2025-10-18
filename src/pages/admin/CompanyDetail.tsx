@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3 } from 'lucide-react';
+import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2 } from 'lucide-react';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { companies } from '../../data/mockData';
 import { mockServiceRequests } from '../../data/serviceRequests';
 import { tickets } from '../../data/mockData';
@@ -12,6 +13,32 @@ interface CompanyDetailProps {
 
 export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'services' | 'tickets' | 'invoices'>('overview');
+
+  // User management states
+  const [companyUsers, setCompanyUsers] = useState([
+    { id: '1', name: 'Sarah Smith', email: 'sarah@techcorp.com', role: 'Company Admin', status: 'Active', joinedDate: '2024-03-15' },
+    { id: '2', name: 'John Doe', email: 'john@techcorp.com', role: 'User', status: 'Active', joinedDate: '2024-04-20' },
+    { id: '3', name: 'Jane Wilson', email: 'jane@techcorp.com', role: 'User', status: 'Active', joinedDate: '2024-05-10' },
+    { id: '4', name: 'Mike Brown', email: 'mike@techcorp.com', role: 'User', status: 'Suspended', joinedDate: '2024-06-01' },
+    { id: '5', name: 'Emily Davis', email: 'emily@techcorp.com', role: 'User', status: 'Active', joinedDate: '2024-07-15' },
+  ]);
+
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [showDeleteUserConfirm, setShowDeleteUserConfirm] = useState(false);
+  const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  const [userFormData, setUserFormData] = useState({
+    name: '',
+    email: '',
+    role: 'User',
+    password: '',
+  });
+
+  const [isProcessingUser, setIsProcessingUser] = useState(false);
+  const [showUserSuccessMessage, setShowUserSuccessMessage] = useState(false);
+  const [userSuccessMessage, setUserSuccessMessage] = useState('');
 
   const company = companies.find(c => c.id === companyId);
 
@@ -54,6 +81,108 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
     { id: 'tickets', label: 'Support Tickets', icon: Mail, badge: companyTickets.length },
     { id: 'invoices', label: 'Invoices', icon: DollarSign, badge: companyInvoices.length },
   ];
+
+  const handleAddUser = async () => {
+    setIsProcessingUser(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const newUser = {
+      id: String(companyUsers.length + 1),
+      name: userFormData.name,
+      email: userFormData.email,
+      role: userFormData.role,
+      status: 'Active',
+      joinedDate: new Date().toISOString().split('T')[0],
+    };
+
+    setCompanyUsers([...companyUsers, newUser]);
+    setIsProcessingUser(false);
+    setShowAddUserModal(false);
+    setUserFormData({ name: '', email: '', role: 'User', password: '' });
+
+    setUserSuccessMessage(`User "${userFormData.name}" has been added successfully!`);
+    setShowUserSuccessMessage(true);
+    setTimeout(() => setShowUserSuccessMessage(false), 3000);
+
+    console.log('User Added:', newUser);
+  };
+
+  const handleEditUser = (user: any) => {
+    setSelectedUser(user);
+    setUserFormData({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      password: '',
+    });
+    setShowEditUserModal(true);
+  };
+
+  const handleUpdateUser = async () => {
+    setIsProcessingUser(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const updatedUsers = companyUsers.map(u =>
+      u.id === selectedUser.id
+        ? { ...u, name: userFormData.name, email: userFormData.email, role: userFormData.role }
+        : u
+    );
+
+    setCompanyUsers(updatedUsers);
+    setIsProcessingUser(false);
+    setShowEditUserModal(false);
+
+    setUserSuccessMessage(`User "${userFormData.name}" has been updated successfully!`);
+    setShowUserSuccessMessage(true);
+    setTimeout(() => setShowUserSuccessMessage(false), 3000);
+
+    console.log('User Updated:', { id: selectedUser.id, ...userFormData });
+  };
+
+  const handleDeleteUser = (user: any) => {
+    setSelectedUser(user);
+    setShowDeleteUserConfirm(true);
+  };
+
+  const handleDeleteUserConfirm = async () => {
+    setIsProcessingUser(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    setCompanyUsers(companyUsers.filter(u => u.id !== selectedUser.id));
+    setIsProcessingUser(false);
+    setShowDeleteUserConfirm(false);
+
+    setUserSuccessMessage(`User "${selectedUser.name}" has been removed from the company.`);
+    setShowUserSuccessMessage(true);
+    setTimeout(() => setShowUserSuccessMessage(false), 3000);
+
+    console.log('User Deleted:', selectedUser.id);
+  };
+
+  const handleToggleUserStatus = (user: any) => {
+    setSelectedUser(user);
+    setShowSuspendConfirm(true);
+  };
+
+  const handleToggleUserStatusConfirm = async () => {
+    setIsProcessingUser(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const newStatus = selectedUser.status === 'Active' ? 'Suspended' : 'Active';
+    const updatedUsers = companyUsers.map(u =>
+      u.id === selectedUser.id ? { ...u, status: newStatus } : u
+    );
+
+    setCompanyUsers(updatedUsers);
+    setIsProcessingUser(false);
+    setShowSuspendConfirm(false);
+
+    setUserSuccessMessage(`User "${selectedUser.name}" has been ${newStatus.toLowerCase()}.`);
+    setShowUserSuccessMessage(true);
+    setTimeout(() => setShowUserSuccessMessage(false), 3000);
+
+    console.log('User Status Updated:', { id: selectedUser.id, newStatus });
+  };
 
   return (
     <div className="p-6">
@@ -223,9 +352,108 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
         )}
 
         {activeTab === 'users' && (
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Company Users</h2>
-            <p className="text-gray-400">Users management tab - Coming in next prompt</p>
+          <div className="space-y-6">
+            {/* Add User Button */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-white">Company Users</h2>
+                <p className="text-gray-400 text-sm">Manage users for {company.name}</p>
+              </div>
+              <button
+                onClick={() => setShowAddUserModal(true)}
+                className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Add User
+              </button>
+            </div>
+
+            {/* Users Table */}
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-900/50 border-b border-gray-700">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">User</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Role</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Joined</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {companyUsers.map((user) => (
+                      <tr key={user.id} className="hover:bg-gray-900/30 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                              <span className="text-white font-semibold">
+                                {user.name.charAt(0)}
+                              </span>
+                            </div>
+                            <span className="text-white font-medium">{user.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-gray-300">{user.email}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            user.role === 'Company Admin'
+                              ? 'bg-purple-500/10 border border-purple-500/30 text-purple-500'
+                              : 'bg-blue-500/10 border border-blue-500/30 text-blue-500'
+                          }`}>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            user.status === 'Active'
+                              ? 'bg-green-500/10 border border-green-500/30 text-green-500'
+                              : 'bg-red-500/10 border border-red-500/30 text-red-500'
+                          }`}>
+                            {user.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-gray-400 text-sm">{user.joinedDate}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleEditUser(user)}
+                              className="p-2 hover:bg-purple-500/10 rounded-lg transition-colors"
+                              title="Edit User"
+                            >
+                              <Edit3 className="w-4 h-4 text-purple-500" />
+                            </button>
+                            <button
+                              onClick={() => handleToggleUserStatus(user)}
+                              className="p-2 hover:bg-orange-500/10 rounded-lg transition-colors"
+                              title={user.status === 'Active' ? 'Suspend User' : 'Activate User'}
+                            >
+                              {user.status === 'Active' ? (
+                                <XCircle className="w-4 h-4 text-orange-500" />
+                              ) : (
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(user)}
+                              className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
+                              title="Delete User"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
@@ -318,6 +546,174 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
             </div>
           </div>
         )}
+
+        {/* User Success Message */}
+        {showUserSuccessMessage && (
+          <div className="fixed top-6 right-6 z-50 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-500" />
+            </div>
+            <div>
+              <p className="text-green-500 font-medium">Success!</p>
+              <p className="text-green-400/70 text-sm">{userSuccessMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Add User Modal */}
+        {showAddUserModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Add New User</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Full Name *</label>
+                  <input
+                    type="text"
+                    value={userFormData.name}
+                    onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={userFormData.email}
+                    onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Role *</label>
+                  <select
+                    value={userFormData.role}
+                    onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="User">Regular User</option>
+                    <option value="Company Admin">Company Admin</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Password *</label>
+                  <input
+                    type="password"
+                    value={userFormData.password}
+                    onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowAddUserModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddUser}
+                  disabled={isProcessingUser || !userFormData.name || !userFormData.email || !userFormData.password}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+                >
+                  {isProcessingUser ? 'Adding...' : 'Add User'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit User Modal */}
+        {showEditUserModal && selectedUser && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Edit User</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Full Name *</label>
+                  <input
+                    type="text"
+                    value={userFormData.name}
+                    onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={userFormData.email}
+                    onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Role *</label>
+                  <select
+                    value={userFormData.role}
+                    onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="User">Regular User</option>
+                    <option value="Company Admin">Company Admin</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowEditUserModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateUser}
+                  disabled={isProcessingUser}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+                >
+                  {isProcessingUser ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete User Confirmation */}
+        <ConfirmationDialog
+          isOpen={showDeleteUserConfirm}
+          onClose={() => setShowDeleteUserConfirm(false)}
+          onConfirm={handleDeleteUserConfirm}
+          title="Remove User"
+          message={`Are you sure you want to remove "${selectedUser?.name}" from ${company.name}? This action cannot be undone.`}
+          confirmText="Remove User"
+          confirmColor="from-red-600 to-red-700"
+          isLoading={isProcessingUser}
+        />
+
+        {/* Suspend/Activate User Confirmation */}
+        <ConfirmationDialog
+          isOpen={showSuspendConfirm}
+          onClose={() => setShowSuspendConfirm(false)}
+          onConfirm={handleToggleUserStatusConfirm}
+          title={selectedUser?.status === 'Active' ? 'Suspend User' : 'Activate User'}
+          message={`Are you sure you want to ${selectedUser?.status === 'Active' ? 'suspend' : 'activate'} "${selectedUser?.name}"?`}
+          confirmText={selectedUser?.status === 'Active' ? 'Suspend User' : 'Activate User'}
+          confirmColor={selectedUser?.status === 'Active' ? 'from-orange-600 to-orange-700' : 'from-green-600 to-emerald-600'}
+          isLoading={isProcessingUser}
+        />
       </div>
     </div>
   );
