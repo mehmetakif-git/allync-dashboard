@@ -40,7 +40,6 @@ export default function GoogleDrive() {
 
   return (
     <div className="space-y-6">
-      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl p-8 text-white mb-6">
           <div className="flex items-start justify-between">
@@ -387,7 +386,6 @@ export default function GoogleDrive() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

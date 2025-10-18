@@ -38,7 +38,6 @@ export default function Gmail() {
 
   return (
     <div className="space-y-6">
-      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-8 text-white mb-6">
           <div className="flex items-start justify-between">
@@ -361,7 +360,6 @@ export default function Gmail() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

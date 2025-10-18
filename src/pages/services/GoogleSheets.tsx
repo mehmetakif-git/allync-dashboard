@@ -31,7 +31,6 @@ export default function GoogleSheets() {
 
   return (
     <div className="space-y-6">
-      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-2xl p-8 text-white mb-6">
           <div className="flex items-start justify-between">
@@ -338,7 +337,6 @@ export default function GoogleSheets() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

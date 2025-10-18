@@ -27,7 +27,6 @@ export default function GooglePhotos() {
 
   return (
     <div className="space-y-6">
-      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-8 text-white mb-6">
           <div className="flex items-start justify-between">
@@ -429,7 +428,6 @@ export default function GooglePhotos() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
