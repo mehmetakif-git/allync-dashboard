@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Edit3, Save, X, Building2, MessageCircle, TrendingUp, Users, BarChart3, Eye, ArrowLeft } from 'lucide-react';
+import { Edit3, Save, X, Building2, MessageCircle, TrendingUp, Users, BarChart3, Eye, ArrowLeft, Instagram } from 'lucide-react';
 
 export default function InstagramServiceManagement() {
   const [activeTab, setActiveTab] = useState<'content' | 'companies' | 'analytics'>('content');
@@ -115,8 +115,8 @@ export default function InstagramServiceManagement() {
 
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-3xl">
-              📸
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+              <Instagram className="w-8 h-8 text-white" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Instagram Automation - Service Management</h1>

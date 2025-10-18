@@ -1,52 +1,56 @@
 import { useState } from 'react';
-import { Search, MessageCircle, TrendingUp, Clock, Users, Settings, Building2, DollarSign } from 'lucide-react';
+import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings } from 'lucide-react';
 
 export default function ServicesCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const services = [
+  const activeServices = [
     {
       id: 'whatsapp-automation',
       name: 'WhatsApp Automation',
+      status: 'Active',
+      since: '2024-03-15',
+      package: 'Professional',
+      nextBilling: '2025-02-15',
+      price: 299,
       description: 'Automate your WhatsApp business communications with AI-powered chatbot. Handle customer inquiries 24/7, track conversations, and improve response times.',
       icon: MessageCircle,
-      status: 'Active',
+      color: 'from-green-500 to-emerald-600',
       companies_using: 4,
       total_revenue: 1196,
-      package: 'Professional',
-      price: 299,
-      color: 'from-green-500 to-emerald-600',
       managementPage: 'whatsapp-service-management'
     },
     {
       id: 'instagram-automation',
       name: 'Instagram Automation',
-      description: 'AI-powered Instagram comment responses and DM automation. Engage with your audience 24/7, track conversations, and analyze sentiment.',
-      icon: MessageCircle,
       status: 'Active',
+      since: '2024-04-20',
+      package: 'Professional',
+      nextBilling: '2025-02-20',
+      price: 299,
+      description: 'AI-powered Instagram comment responses and DM automation. Engage with your audience 24/7, track conversations, and analyze sentiment.',
+      icon: Instagram,
+      color: 'from-pink-500 to-purple-600',
       companies_using: 2,
       total_revenue: 598,
-      package: 'Professional',
-      price: 299,
-      color: 'from-pink-500 to-purple-600',
       managementPage: 'instagram-service-management'
     },
   ];
 
-  const filteredServices = services.filter(service =>
+  const filteredServices = activeServices.filter(service =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     service.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalRevenue = services.reduce((sum, s) => sum + s.total_revenue, 0);
-  const totalCompanies = services.reduce((sum, s) => sum + s.companies_using, 0);
+  const totalRevenue = activeServices.reduce((sum, s) => sum + s.total_revenue, 0);
+  const totalCompanies = activeServices.reduce((sum, s) => sum + s.companies_using, 0);
 
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Services Catalog</h1>
-          <p className="text-gray-400">Manage automation services and view usage statistics</p>
+          <p className="text-gray-400">Manage automation services and view usage across all companies</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -54,12 +58,13 @@ export default function ServicesCatalog() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-400 mb-1">Active Services</p>
-                <p className="text-3xl font-bold text-white">{services.length}</p>
+                <p className="text-3xl font-bold text-white">{activeServices.length}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-blue-500" />
               </div>
             </div>
+            <p className="text-xs text-green-500">All services operational</p>
           </div>
 
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
@@ -72,6 +77,7 @@ export default function ServicesCatalog() {
                 <Building2 className="w-6 h-6 text-purple-500" />
               </div>
             </div>
+            <p className="text-xs text-gray-400">Using services</p>
           </div>
 
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
@@ -84,18 +90,20 @@ export default function ServicesCatalog() {
                 <DollarSign className="w-6 h-6 text-green-500" />
               </div>
             </div>
+            <p className="text-xs text-green-500">↑ 12% from last month</p>
           </div>
 
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-gray-400 mb-1">Avg. Price</p>
-                <p className="text-3xl font-bold text-white">${services[0]?.price || 0}</p>
+                <p className="text-sm text-gray-400 mb-1">Avg. Package Price</p>
+                <p className="text-3xl font-bold text-white">${activeServices[0]?.price || 0}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-orange-500" />
+                <Settings className="w-6 h-6 text-orange-500" />
               </div>
             </div>
+            <p className="text-xs text-gray-400">Professional tier</p>
           </div>
         </div>
 
@@ -110,6 +118,10 @@ export default function ServicesCatalog() {
               className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
           </div>
+        </div>
+
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-white">Active Services</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,36 +150,32 @@ export default function ServicesCatalog() {
                   {service.description}
                 </p>
 
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="text-center p-3 bg-gray-900/50 rounded-lg">
-                    <p className="text-2xl font-bold text-white mb-1">${service.price}</p>
-                    <p className="text-xs text-gray-400">Price/Month</p>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Package</p>
+                    <p className="text-sm font-semibold text-white">{service.package}</p>
                   </div>
-                  <div className="text-center p-3 bg-gray-900/50 rounded-lg">
-                    <p className="text-2xl font-bold text-white mb-1">{service.companies_using}</p>
-                    <p className="text-xs text-gray-400">Companies</p>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Price</p>
+                    <p className="text-sm font-semibold text-white">${service.price}/month</p>
                   </div>
-                  <div className="text-center p-3 bg-gray-900/50 rounded-lg">
-                    <p className="text-2xl font-bold text-white mb-1">${service.total_revenue}</p>
-                    <p className="text-xs text-gray-400">Revenue</p>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Companies Using</p>
+                    <p className="text-sm font-semibold text-white">{service.companies_using}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Total Revenue</p>
+                    <p className="text-sm font-semibold text-white">${service.total_revenue}</p>
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded text-sm font-medium">
-                    {service.package} Package
-                  </span>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => window.location.hash = service.managementPage}
-                    className={`flex-1 px-6 py-3 bg-gradient-to-r ${service.color} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2`}
-                  >
-                    <Settings className="w-5 h-5" />
-                    Manage Service
-                  </button>
-                </div>
+                <button
+                  onClick={() => window.location.hash = service.managementPage}
+                  className={`w-full px-6 py-3 bg-gradient-to-r ${service.color} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2`}
+                >
+                  <Settings className="w-5 h-5" />
+                  Manage Service
+                </button>
               </div>
             );
           })}
@@ -175,7 +183,7 @@ export default function ServicesCatalog() {
 
         {filteredServices.length === 0 && (
           <div className="text-center py-12">
-            <MessageCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <p className="text-gray-400 text-lg">No services found matching your search.</p>
           </div>
         )}
