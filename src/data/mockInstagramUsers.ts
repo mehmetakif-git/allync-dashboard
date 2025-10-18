@@ -1,0 +1,147 @@
+export interface InstagramUser {
+  id: string;
+  company_id: string;
+  user_id: string;
+  username: string;
+  profile_picture_url: string;
+  full_name?: string;
+  follower_count?: number;
+  following_count?: number;
+  tags: string[];
+  total_comments: number;
+  total_dms: number;
+  last_interaction: string;
+  customer_status: 'active' | 'inactive' | 'blocked';
+  notes: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const mockInstagramUsers: InstagramUser[] = [
+  {
+    id: 'ig_user_1',
+    company_id: '1',
+    user_id: 'ig_1234567890',
+    username: '@ahmed_ali',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=12',
+    full_name: 'Ahmed Ali',
+    follower_count: 2840,
+    following_count: 456,
+    tags: ['VIP', 'Frequent'],
+    total_comments: 12,
+    total_dms: 45,
+    last_interaction: '2025-01-18T14:30:00Z',
+    customer_status: 'active',
+    notes: 'Loyal customer. Very engaged with our posts.',
+    created_at: '2024-12-01T10:00:00Z',
+    updated_at: '2025-01-18T14:30:00Z',
+  },
+  {
+    id: 'ig_user_2',
+    company_id: '1',
+    user_id: 'ig_2345678901',
+    username: '@fatima_hassan',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=5',
+    full_name: 'Fatima Hassan',
+    follower_count: 892,
+    following_count: 234,
+    tags: ['New'],
+    total_comments: 3,
+    total_dms: 8,
+    last_interaction: '2025-01-18T15:45:00Z',
+    customer_status: 'active',
+    notes: 'First interaction today. Interested in our products.',
+    created_at: '2025-01-18T15:20:00Z',
+    updated_at: '2025-01-18T15:45:00Z',
+  },
+  {
+    id: 'ig_user_3',
+    company_id: '1',
+    user_id: 'ig_3456789012',
+    username: '@sarah_digital',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=25',
+    full_name: 'Sarah Digital',
+    follower_count: 5420,
+    following_count: 678,
+    tags: ['VIP', 'Influencer'],
+    total_comments: 24,
+    total_dms: 67,
+    last_interaction: '2025-01-18T15:15:00Z',
+    customer_status: 'active',
+    notes: 'Influencer with good engagement. Shares our content.',
+    created_at: '2024-10-10T12:00:00Z',
+    updated_at: '2025-01-18T15:15:00Z',
+  },
+  {
+    id: 'ig_user_4',
+    company_id: '1',
+    user_id: 'ig_4567890123',
+    username: '@tech_enthusiast',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=32',
+    full_name: 'Tech Enthusiast',
+    follower_count: 1240,
+    following_count: 890,
+    tags: ['Frequent'],
+    total_comments: 18,
+    total_dms: 23,
+    last_interaction: '2025-01-18T16:00:00Z',
+    customer_status: 'active',
+    notes: 'Regular commenter. Asks good questions.',
+    created_at: '2024-11-15T09:00:00Z',
+    updated_at: '2025-01-18T16:00:00Z',
+  },
+  {
+    id: 'ig_user_5',
+    company_id: '1',
+    user_id: 'ig_5678901234',
+    username: '@business_owner',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=8',
+    full_name: 'Business Owner',
+    follower_count: 3560,
+    following_count: 421,
+    tags: ['VIP', 'Potential Client'],
+    total_comments: 9,
+    total_dms: 31,
+    last_interaction: '2025-01-18T13:20:00Z',
+    customer_status: 'active',
+    notes: 'Interested in our automation services. High value prospect.',
+    created_at: '2024-09-05T10:00:00Z',
+    updated_at: '2025-01-18T13:20:00Z',
+  },
+  {
+    id: 'ig_user_6',
+    company_id: '1',
+    user_id: 'ig_6789012345',
+    username: '@marketing_pro',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=44',
+    full_name: 'Marketing Pro',
+    follower_count: 8920,
+    following_count: 1200,
+    tags: ['Influencer', 'Frequent'],
+    total_comments: 31,
+    total_dms: 52,
+    last_interaction: '2025-01-18T16:30:00Z',
+    customer_status: 'active',
+    notes: 'Marketing professional. Great engagement and shares.',
+    created_at: '2024-08-20T14:00:00Z',
+    updated_at: '2025-01-18T16:30:00Z',
+  },
+  {
+    id: 'ig_user_7',
+    company_id: '1',
+    user_id: 'ig_7890123456',
+    username: '@inactive_user',
+    profile_picture_url: 'https://i.pravatar.cc/150?img=19',
+    full_name: 'Inactive User',
+    follower_count: 450,
+    following_count: 320,
+    tags: ['Inactive'],
+    total_comments: 5,
+    total_dms: 12,
+    last_interaction: '2024-12-20T16:00:00Z',
+    customer_status: 'inactive',
+    notes: 'No activity for 1 month. Follow up needed.',
+    created_at: '2024-09-10T10:00:00Z',
+    updated_at: '2024-12-20T16:00:00Z',
+  },
+];

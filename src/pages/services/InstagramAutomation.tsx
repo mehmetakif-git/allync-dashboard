@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Search, MessageCircle, Clock, TrendingUp, Users, ThumbsUp, Send, CheckCheck, BarChart3, Settings } from 'lucide-react';
+import { Search, MessageCircle, Clock, TrendingUp, Users, ThumbsUp, Send, CheckCheck, BarChart3, Settings, Edit3, Eye, Download, Tag, User } from 'lucide-react';
 import { mockInstagramPosts, mockInstagramComments, getCommentsByPost } from '../../data/mockInstagramComments';
 import { mockInstagramDMSessions } from '../../data/mockInstagramDMSessions';
 import { mockInstagramDMMessages } from '../../data/mockInstagramDMMessages';
+import { mockInstagramUsers } from '../../data/mockInstagramUsers';
 
 export default function InstagramAutomation() {
-  const [activeTab, setActiveTab] = useState<'comments' | 'dms' | 'analytics' | 'settings'>('comments');
+  const [activeTab, setActiveTab] = useState<'comments' | 'dms' | 'customers' | 'analytics' | 'settings'>('comments');
 
   const [posts] = useState(mockInstagramPosts);
   const [selectedPost, setSelectedPost] = useState(posts[0]);
@@ -51,9 +52,42 @@ export default function InstagramAutomation() {
     avgResponseTime: '2.5 min',
   };
 
+  const [users] = useState(mockInstagramUsers);
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [customerFilter, setCustomerFilter] = useState<'all' | 'active' | 'inactive' | 'blocked'>('all');
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+
+  const filteredCustomers = users.filter(user => {
+    const matchesSearch =
+      user.username.toLowerCase().includes(customerSearch.toLowerCase()) ||
+      user.full_name?.toLowerCase().includes(customerSearch.toLowerCase());
+
+    const matchesFilter =
+      customerFilter === 'all' || user.customer_status === customerFilter;
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const dailyEngagement = [
+    { date: 'Mon', comments: 15, dms: 8 },
+    { date: 'Tue', comments: 22, dms: 12 },
+    { date: 'Wed', comments: 18, dms: 9 },
+    { date: 'Thu', comments: 28, dms: 15 },
+    { date: 'Fri', comments: 24, dms: 11 },
+    { date: 'Sat', comments: 12, dms: 6 },
+    { date: 'Sun', comments: 14, dms: 7 },
+  ];
+
+  const sentimentData = [
+    { sentiment: 'Positive', percentage: 67, color: 'from-green-500 to-emerald-500' },
+    { sentiment: 'Neutral', percentage: 25, color: 'from-blue-500 to-cyan-500' },
+    { sentiment: 'Negative', percentage: 8, color: 'from-red-500 to-pink-500' },
+  ];
+
   const tabs = [
     { id: 'comments', label: 'Comments', icon: MessageCircle, badge: mockInstagramComments.length },
     { id: 'dms', label: 'Direct Messages', icon: Send, badge: dmStats.activeSessions },
+    { id: 'customers', label: 'Customers', icon: User, badge: users.length },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -492,19 +526,351 @@ export default function InstagramAutomation() {
           </>
         )}
 
+{activeTab === 'customers' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="flex gap-4 items-center">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search customers by username or name..."
+                    value={customerSearch}
+                    onChange={(e) => setCustomerSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+                <select
+                  value={customerFilter}
+                  onChange={(e) => setCustomerFilter(e.target.value as any)}
+                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+                <button className="px-4 py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Export
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-900/50 border-b border-gray-700">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">User</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Followers</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Tags</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Engagement</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Last Seen</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {filteredCustomers.map((user) => (
+                      <tr key={user.id} className="hover:bg-gray-700/30 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={user.profile_picture_url}
+                              alt={user.username}
+                              className="w-10 h-10 rounded-full"
+                            />
+                            <div>
+                              <p className="text-white font-medium">{user.username}</p>
+                              <p className="text-xs text-gray-400">{user.full_name}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-gray-300">{user.follower_count?.toLocaleString()}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-1">
+                            {user.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  tag === 'VIP' ? 'bg-purple-500/20 text-purple-400' :
+                                  tag === 'Frequent' ? 'bg-pink-500/20 text-pink-400' :
+                                  tag === 'New' ? 'bg-green-500/20 text-green-400' :
+                                  tag === 'Influencer' ? 'bg-blue-500/20 text-blue-400' :
+                                  'bg-gray-500/20 text-gray-400'
+                                }`}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm">
+                            <p className="text-white">{user.total_comments} comments</p>
+                            <p className="text-gray-400">{user.total_dms} DMs</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-sm text-gray-400">
+                            {formatTime(user.last_interaction)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            user.customer_status === 'active'
+                              ? 'bg-green-500/10 border border-green-500/30 text-green-500'
+                              : user.customer_status === 'inactive'
+                              ? 'bg-gray-500/10 border border-gray-500/30 text-gray-400'
+                              : 'bg-red-500/10 border border-red-500/30 text-red-500'
+                          }`}>
+                            {user.customer_status.charAt(0).toUpperCase() + user.customer_status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setSelectedCustomer(user)}
+                              className="p-2 hover:bg-pink-500/10 rounded-lg transition-colors"
+                              title="View Details"
+                            >
+                              <Eye className="w-4 h-4 text-pink-500" />
+                            </button>
+                            <button
+                              className="p-2 hover:bg-purple-500/10 rounded-lg transition-colors"
+                              title="Edit Notes"
+                            >
+                              <Edit3 className="w-4 h-4 text-purple-500" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {selectedCustomer && (
+              <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6">
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={selectedCustomer.profile_picture_url}
+                        alt={selectedCustomer.username}
+                        className="w-16 h-16 rounded-full"
+                      />
+                      <div>
+                        <h2 className="text-2xl font-bold text-white">{selectedCustomer.username}</h2>
+                        <p className="text-gray-400">{selectedCustomer.full_name}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedCustomer(null)}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-gray-900/50 rounded-lg">
+                        <p className="text-sm text-gray-400 mb-1">Followers</p>
+                        <p className="text-2xl font-bold text-white">{selectedCustomer.follower_count?.toLocaleString()}</p>
+                      </div>
+                      <div className="p-4 bg-gray-900/50 rounded-lg">
+                        <p className="text-sm text-gray-400 mb-1">Following</p>
+                        <p className="text-2xl font-bold text-white">{selectedCustomer.following_count?.toLocaleString()}</p>
+                      </div>
+                      <div className="p-4 bg-gray-900/50 rounded-lg">
+                        <p className="text-sm text-gray-400 mb-1">Comments</p>
+                        <p className="text-2xl font-bold text-white">{selectedCustomer.total_comments}</p>
+                      </div>
+                      <div className="p-4 bg-gray-900/50 rounded-lg">
+                        <p className="text-sm text-gray-400 mb-1">DMs</p>
+                        <p className="text-2xl font-bold text-white">{selectedCustomer.total_dms}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-gray-900/50 rounded-lg">
+                      <div className="flex items-center gap-2 text-gray-400 mb-2">
+                        <Tag className="w-4 h-4" />
+                        <span className="text-sm">Tags</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCustomer.tags.map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-lg text-sm"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-gray-900/50 rounded-lg">
+                      <p className="text-sm text-gray-400 mb-2">Notes</p>
+                      <p className="text-white">{selectedCustomer.notes}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <button
+                      onClick={() => setSelectedCustomer(null)}
+                      className="w-full px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'analytics' && (
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-8 text-center">
-            <BarChart3 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Analytics Coming Soon</h3>
-            <p className="text-gray-400">Detailed analytics and insights will be available here.</p>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+                <p className="text-sm text-gray-400 mb-1">This Week</p>
+                <p className="text-3xl font-bold text-white">133</p>
+                <p className="text-xs text-green-500 mt-2">↑ 18% from last week</p>
+              </div>
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+                <p className="text-sm text-gray-400 mb-1">Avg Response</p>
+                <p className="text-3xl font-bold text-white">2.1 min</p>
+                <p className="text-xs text-green-500 mt-2">↓ 22% faster</p>
+              </div>
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+                <p className="text-sm text-gray-400 mb-1">Engagement Rate</p>
+                <p className="text-3xl font-bold text-white">8.4%</p>
+                <p className="text-xs text-green-500 mt-2">↑ 2.1% higher</p>
+              </div>
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+                <p className="text-sm text-gray-400 mb-1">Bot Success</p>
+                <p className="text-3xl font-bold text-white">94%</p>
+                <p className="text-xs text-green-500 mt-2">↑ 3% improvement</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+                <h3 className="text-lg font-bold text-white mb-4">Daily Engagement</h3>
+                <div className="space-y-3">
+                  {dailyEngagement.map((day) => (
+                    <div key={day.date}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm text-gray-400">{day.date}</span>
+                        <span className="text-sm text-white font-medium">{day.comments + day.dms} interactions</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full"
+                          style={{ width: `${((day.comments + day.dms) / 40) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+                <h3 className="text-lg font-bold text-white mb-4">Sentiment Analysis</h3>
+                <div className="space-y-4">
+                  {sentimentData.map((item) => (
+                    <div key={item.sentiment}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-gray-400">{item.sentiment}</span>
+                        <span className="text-white font-medium">{item.percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-3">
+                        <div
+                          className={`bg-gradient-to-r ${item.color} h-3 rounded-full`}
+                          style={{ width: `${item.percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         {activeTab === 'settings' && (
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-8 text-center">
-            <Settings className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Settings</h3>
-            <p className="text-gray-400">Bot configuration and settings will be available here.</p>
+          <div className="space-y-6">
+            <div className="bg-pink-500/10 border border-pink-500/30 rounded-xl p-4">
+              <p className="text-pink-400 text-sm">
+                <strong>Note:</strong> Settings are managed by your system administrator. Contact support to modify bot configuration.
+              </p>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Bot Configuration</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Connected Account</label>
+                  <input
+                    type="text"
+                    value="@your_business_account"
+                    readOnly
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">AI Model</label>
+                  <input
+                    type="text"
+                    value="GPT-4 (OpenRouter)"
+                    readOnly
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Comment Auto-Reply</label>
+                  <div className="flex items-center gap-3 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-white">Enabled</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">DM Auto-Reply</label>
+                  <div className="flex items-center gap-3 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-white">Enabled</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Instance Status</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <p className="text-sm text-gray-400 mb-2">Connection Status</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-white font-medium">Connected</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <p className="text-sm text-gray-400 mb-2">Last Synced</p>
+                  <p className="text-white font-medium">5 minutes ago</p>
+                </div>
+                <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <p className="text-sm text-gray-400 mb-2">Service Status</p>
+                  <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-500 rounded text-sm font-medium">
+                    Active
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
