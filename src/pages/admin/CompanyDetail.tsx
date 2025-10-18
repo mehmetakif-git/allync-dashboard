@@ -562,7 +562,7 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
 
         {/* Add User Modal */}
         {showAddUserModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
               <h2 className="text-2xl font-bold text-white mb-6">Add New User</h2>
 
@@ -634,7 +634,7 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
 
         {/* Edit User Modal */}
         {showEditUserModal && selectedUser && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6">
               <h2 className="text-2xl font-bold text-white mb-6">Edit User</h2>
 

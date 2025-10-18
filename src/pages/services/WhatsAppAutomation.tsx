@@ -285,7 +285,7 @@ export default function WhatsAppAutomation() {
                     </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0a0f1a]">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                     {messages.length > 0 ? (
                       messages.map((message) => (
                         <div
@@ -621,7 +621,7 @@ export default function WhatsAppAutomation() {
             </div>
 
             {selectedCustomer && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6">
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">

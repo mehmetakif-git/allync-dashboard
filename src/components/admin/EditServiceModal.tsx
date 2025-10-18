@@ -64,7 +64,7 @@ export default function EditServiceModal({ service, onClose, onSave }: EditServi
 
   if (showSuccess) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-8 text-center">
           <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-500" />

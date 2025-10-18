@@ -327,7 +327,7 @@ export default function CompaniesManagement() {
         </div>
 
         {showAddModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6 my-8">
               <h2 className="text-2xl font-bold text-white mb-6">Add New Company</h2>
 
@@ -446,7 +446,7 @@ export default function CompaniesManagement() {
         )}
 
         {showEditModal && selectedCompany && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6 my-8">
               <h2 className="text-2xl font-bold text-white mb-6">Edit Company</h2>
 
