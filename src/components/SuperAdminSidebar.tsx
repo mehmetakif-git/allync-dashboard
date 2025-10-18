@@ -52,26 +52,6 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
     { id: 'system-settings', label: 'System Settings', icon: Settings, section: 'system' },
     { id: 'maintenance-mode', label: 'Maintenance Mode', icon: AlertTriangle, section: 'system' },
     { id: 'activity-logs', label: 'Activity Logs', icon: Activity, section: 'system' },
-
-    { type: 'divider', label: 'SERVICE DASHBOARDS (PREVIEW)' },
-    { id: 'service-whatsapp', label: 'WhatsApp', icon: MessageCircle, section: 'service-dashboards' },
-    { id: 'service-instagram', label: 'Instagram', icon: Instagram, section: 'service-dashboards' },
-    { id: 'service-text-to-video', label: 'Text-to-Video', icon: Video, section: 'service-dashboards' },
-    { id: 'service-text-to-image', label: 'Text-to-Image', icon: Image, section: 'service-dashboards' },
-    { id: 'service-voice-cloning', label: 'Voice Cloning', icon: Mic, section: 'service-dashboards' },
-    { id: 'service-document-ai', label: 'Document AI', icon: FileText, section: 'service-dashboards' },
-    { id: 'service-image-to-video', label: 'Image-to-Video', icon: Play, section: 'service-dashboards' },
-    { id: 'service-video-to-video', label: 'Video-to-Video', icon: Film, section: 'service-dashboards' },
-    { id: 'service-data-analysis', label: 'Data Analysis', icon: BarChart3, section: 'service-dashboards' },
-    { id: 'service-custom-ai', label: 'Custom AI', icon: Sparkles, section: 'service-dashboards' },
-    { id: 'service-ecommerce', label: 'E-Commerce', icon: ShoppingCart, section: 'service-dashboards' },
-    { id: 'service-corporate-website', label: 'Corporate Website', icon: Monitor, section: 'service-dashboards' },
-    { id: 'service-mobile-app', label: 'Mobile App', icon: Smartphone, section: 'service-dashboards' },
-    { id: 'service-digital-marketing', label: 'Digital Marketing', icon: Target, section: 'service-dashboards' },
-    { id: 'service-iot-solutions', label: 'IoT Solutions', icon: Wifi, section: 'service-dashboards' },
-    { id: 'service-cloud-solutions', label: 'Cloud Solutions', icon: Cloud, section: 'service-dashboards' },
-    { id: 'service-ui-ux-design', label: 'UI/UX Design', icon: Palette, section: 'service-dashboards' },
-    { id: 'service-maintenance-support', label: 'Maintenance', icon: Wrench, section: 'service-dashboards' },
   ];
 
   const handleNavClick = (pageId: string) => {
