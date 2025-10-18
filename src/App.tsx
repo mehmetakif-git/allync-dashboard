@@ -35,6 +35,8 @@ import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
 import InstagramAutomation from './pages/services/InstagramAutomation';
 import GoogleCalendar from './pages/services/GoogleCalendar';
 import GoogleSheets from './pages/services/GoogleSheets';
+import Gmail from './pages/services/Gmail';
+import GoogleDocs from './pages/services/GoogleDocs';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -202,6 +204,8 @@ function AppContent() {
             {activePage === 'instagram-automation' && <InstagramAutomation />}
             {activePage === 'google-calendar' && <GoogleCalendar />}
             {activePage === 'google-sheets' && <GoogleSheets />}
+            {activePage === 'gmail-integration' && <Gmail />}
+            {activePage === 'google-docs' && <GoogleDocs />}
           </main>
         </div>
       </div>
