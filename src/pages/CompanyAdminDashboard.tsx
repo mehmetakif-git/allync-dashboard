@@ -74,18 +74,18 @@ export default function CompanyAdminDashboard() {
   const activeServicesCount = mockActiveServices.filter(s => s.status === 'active').length;
   const pendingSetupCount = mockActiveServices.filter(s => s.status === 'pending-setup').length;
 
-  const getServiceIcon = (serviceId: string) => {
-    const service = serviceTypes.find(s => s.id === serviceId);
+  const getServiceIcon = (serviceSlug: string) => {
+    const service = serviceTypes.find(s => s.slug === serviceSlug);
     return service ? service.icon : Zap;
   };
 
-  const getServiceGradient = (serviceId: string) => {
-    const service = serviceTypes.find(s => s.id === serviceId);
+  const getServiceGradient = (serviceSlug: string) => {
+    const service = serviceTypes.find(s => s.slug === serviceSlug);
     return service ? service.gradient : 'from-blue-500 to-blue-700';
   };
 
-  const handleViewService = (serviceId: string) => {
-    window.location.hash = `service/${serviceId}`;
+  const handleViewService = (serviceSlug: string) => {
+    window.location.hash = serviceSlug;
   };
 
   return (

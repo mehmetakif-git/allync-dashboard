@@ -24,7 +24,7 @@ export interface ServiceType {
 
 export const serviceTypes: ServiceType[] = [
   {
-    id: 'whatsapp-automation',
+    id: '1',
     slug: 'whatsapp-automation',
     name_en: 'WhatsApp Automation',
     name_tr: 'WhatsApp Otomasyonu',
@@ -41,7 +41,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 299, pro: 499, enterprise: 999 },
   },
   {
-    id: 'instagram-automation',
+    id: '2',
     slug: 'instagram-automation',
     name_en: 'Instagram Automation',
     name_tr: 'Instagram Otomasyonu',
@@ -58,7 +58,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 149, pro: 349, enterprise: 799 },
   },
   {
-    id: 'google-calendar',
+    id: '3',
     slug: 'google-calendar',
     name_en: 'Google Calendar',
     name_tr: 'Google Takvim',
@@ -75,7 +75,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 199, pro: 399, enterprise: 799 },
   },
   {
-    id: 'google-sheets',
+    id: '4',
     slug: 'google-sheets',
     name_en: 'Google Sheets',
     name_tr: 'Google Sheets',
@@ -92,7 +92,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 149, pro: 299, enterprise: 599 },
   },
   {
-    id: 'gmail-integration',
+    id: '5',
     slug: 'gmail-integration',
     name_en: 'Gmail Integration',
     name_tr: 'Gmail Entegrasyonu',
@@ -109,7 +109,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 179, pro: 349, enterprise: 699 },
   },
   {
-    id: 'google-docs',
+    id: '6',
     slug: 'google-docs',
     name_en: 'Google Docs',
     name_tr: 'Google Docs',
@@ -126,7 +126,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 199, pro: 399, enterprise: 799 },
   },
   {
-    id: 'google-drive',
+    id: '7',
     slug: 'google-drive',
     name_en: 'Google Drive',
     name_tr: 'Google Drive',
@@ -143,7 +143,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 149, pro: 299, enterprise: 599 },
   },
   {
-    id: 'google-photos',
+    id: '8',
     slug: 'google-photos',
     name_en: 'Google Photos',
     name_tr: 'Google Photos',
@@ -160,7 +160,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 129, pro: 259, enterprise: 519 },
   },
   {
-    id: 'voice-cloning',
+    id: '9',
     slug: 'voice-cloning',
     name_en: 'AI Voice Cloning',
     name_tr: 'Yapay Zeka Ses Klonlama',
@@ -177,7 +177,7 @@ export const serviceTypes: ServiceType[] = [
     pricing: { basic: 199, pro: 399, enterprise: 799 },
   },
   {
-    id: 'sentiment-analysis',
+    id: '10',
     slug: 'sentiment-analysis',
     name_en: 'Sentiment Analysis',
     name_tr: 'Duygu Analizi',
