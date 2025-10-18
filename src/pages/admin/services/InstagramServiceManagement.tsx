@@ -92,17 +92,36 @@ export default function InstagramServiceManagement() {
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
         <button
-          onClick={() => window.history.back()}
+          onClick={() => window.location.hash = 'services-catalog'}
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Services Catalog
         </button>
 
+        <div className="bg-pink-500/10 border border-pink-500/30 rounded-xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+              <MessageCircle className="w-6 h-6 text-pink-500" />
+            </div>
+            <div>
+              <p className="text-pink-400 font-medium mb-1">Instagram Automation Service</p>
+              <p className="text-pink-300/70 text-sm">
+                This is the central management hub for Instagram Automation. Edit service content, monitor company usage, and view global analytics.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Instagram Automation - Service Management</h1>
-            <p className="text-gray-400">Manage service content, view company usage, and analytics</p>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-3xl">
+              📸
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">Instagram Automation - Service Management</h1>
+              <p className="text-gray-400">Manage service content, view company usage, and analytics</p>
+            </div>
           </div>
           {activeTab === 'content' && (
             <button

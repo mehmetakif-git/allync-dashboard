@@ -117,17 +117,36 @@ export default function WhatsAppServiceManagement() {
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
         <button
-          onClick={() => window.history.back()}
+          onClick={() => window.location.hash = 'services-catalog'}
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Services Catalog
         </button>
 
+        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+              <MessageCircle className="w-6 h-6 text-green-500" />
+            </div>
+            <div>
+              <p className="text-green-400 font-medium mb-1">WhatsApp Automation Service</p>
+              <p className="text-green-300/70 text-sm">
+                This is the central management hub for WhatsApp Automation. Edit service content, monitor company usage, and view global analytics.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">WhatsApp Automation - Service Management</h1>
-            <p className="text-gray-400">Manage service content, view company usage, and analytics</p>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-3xl">
+              💬
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">WhatsApp Automation - Service Management</h1>
+              <p className="text-gray-400">Manage service content, view company usage, and analytics</p>
+            </div>
           </div>
           {activeTab === 'content' && (
             <button
