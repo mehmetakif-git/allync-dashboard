@@ -334,6 +334,16 @@ export default function ServicesCatalog() {
                         </button>
                       )}
 
+                      {service.slug === 'instagram-automation' && (
+                        <button
+                          onClick={() => window.location.hash = 'instagram-service-management'}
+                          className="w-full px-4 py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Manage Service
+                        </button>
+                      )}
+
                       {companiesUsing.length > 0 && (
                         <button
                           className="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
