@@ -70,7 +70,7 @@ export default function SuperAdminDashboard() {
   const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Super Admin Dashboard</h1>

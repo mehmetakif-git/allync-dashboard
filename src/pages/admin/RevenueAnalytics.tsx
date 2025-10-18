@@ -56,9 +56,10 @@ export default function RevenueAnalytics() {
   const growthRate = ((monthlyRevenueData[11].revenue - monthlyRevenueData[0].revenue) / monthlyRevenueData[0].revenue * 100).toFixed(1);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
           <h1 className="text-3xl font-bold text-white">Revenue Analytics</h1>
           <p className="text-gray-400 mt-1">Comprehensive financial performance overview</p>
         </div>
@@ -298,6 +299,7 @@ export default function RevenueAnalytics() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

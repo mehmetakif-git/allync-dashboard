@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, Mail, UserPlus, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { Send, Mail, UserPlus, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 interface Invite {
@@ -70,6 +70,7 @@ export default function UserInvite() {
     company: '',
     role: 'user',
     password: '',
+    sendEmail: true,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -82,22 +83,34 @@ export default function UserInvite() {
   const handleSendInvite = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.company) {
-      alert('Please fill in all required fields');
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.company || !formData.password) {
+      alert('Please fill in all required fields including password');
       return;
     }
 
-    if (confirm(`Send invitation email to ${formData.email}?`)) {
+    const confirmMessage = formData.sendEmail
+      ? `Send invitation email with credentials to ${formData.email}?`
+      : `Create account for ${formData.email} without sending email?`;
+
+    if (confirm(confirmMessage)) {
       setIsLoading(true);
       await new Promise(resolve => setTimeout(resolve, 2000));
       setIsLoading(false);
-      alert(`Invitation sent successfully to ${formData.email}`);
+
+      const successMessage = formData.sendEmail
+        ? `Invitation sent successfully to ${formData.email}`
+        : `Account created for ${formData.email}. Please share credentials manually.`;
+
+      alert(successMessage);
+
       setFormData({
         firstName: '',
         lastName: '',
         email: '',
         company: '',
         role: 'user',
+        password: '',
+        sendEmail: true,
       });
     }
   };
@@ -107,11 +120,19 @@ Hi ${formData.firstName} ${formData.lastName},
 
 You've been invited to join ${formData.company} on the Allync Platform!
 
-Your account has been created with ${formData.role} privileges. Click the link below to set your password and get started:
+Your account has been created with ${formData.role} privileges.
 
-[Set Password & Login]
+Login Credentials:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Email: ${formData.email}
+Temporary Password: ${formData.password || '[Password will be shown here]'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-If you didn't expect this invitation, you can safely ignore this email.
+Login URL: https://allync.ai/login
+
+⚠️ IMPORTANT: You will be required to change this password on your first login.
+
+If you didn't expect this invitation, please contact us immediately.
 
 Best regards,
 Allync Team
@@ -120,8 +141,8 @@ info@allyncai.com
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-      <div className="space-y-6">
-      <div>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div>
         <h1 className="text-3xl font-bold text-white">Invite Users</h1>
         <p className="text-gray-400 mt-1">Send invitations to new users via email</p>
       </div>
@@ -218,21 +239,59 @@ info@allyncai.com
 
             <div>
               <label className="block text-gray-400 text-sm mb-2">
-                Password <span className="text-red-400">*</span>
+                Temporary Password <span className="text-red-400">*</span>
               </label>
               <input
-                type="password"
+                type="text"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Enter temporary password"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">User will be prompted to change password on first login</p>
+              <p className="text-xs text-gray-500 mt-1">User will need to change this password on first login</p>
             </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+            <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.sendEmail}
+                  onChange={(e) => setFormData({ ...formData, sendEmail: e.target.checked })}
+                  className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <p className="text-white font-medium">Send invitation email</p>
+                  <p className="text-gray-400 text-xs">Email will include login credentials</p>
+                </div>
+              </label>
+            </div>
+
+            {formData.sendEmail ? (
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-blue-400 mt-0.5" />
+                  <div>
+                    <p className="text-blue-400 font-medium">Email will be sent from</p>
+                    <p className="text-gray-300 text-sm mt-1">info@allyncai.com via Resend.com</p>
+                    <p className="text-gray-400 text-xs mt-2">The email will include login credentials and instructions</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-orange-400 mt-0.5" />
+                  <div>
+                    <p className="text-orange-400 font-medium">No email will be sent</p>
+                    <p className="text-gray-300 text-sm mt-1">You will need to share the credentials manually</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="hidden">
               <div className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-blue-400 mt-0.5" />
                 <div>
