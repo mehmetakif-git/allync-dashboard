@@ -15,6 +15,7 @@ export default function Services() {
   const isRegularUser = user?.role === 'USER';
 
   const filteredServices = serviceTypes.filter(service => {
+    // Hide inactive services from Company Admin and Users
     if (service.status === 'inactive') return false;
 
     if (selectedCategory === 'all') return true;
@@ -181,13 +182,20 @@ export default function Services() {
                     </div>
                   ) : (
                     <>
-                      {isCompanyAdmin && !status && (
+                      {isCompanyAdmin && !status && service.status !== 'maintenance' && (
                         <button
                           onClick={() => handleRequestService(service)}
                           className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all"
                         >
                           Request Service
                         </button>
+                      )}
+
+                      {isCompanyAdmin && !status && service.status === 'maintenance' && (
+                        <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                          <p className="text-orange-500 font-medium text-sm mb-1">Service Under Maintenance</p>
+                          <p className="text-orange-400 text-xs">This service is temporarily unavailable</p>
+                        </div>
                       )}
 
                       {isCompanyAdmin && status && status.status === 'pending' && (

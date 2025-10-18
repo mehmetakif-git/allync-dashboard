@@ -1,4 +1,4 @@
-import { MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image } from 'lucide-react';
+import { MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Mic, Heart } from 'lucide-react';
 
 export interface ServiceType {
   id: string;
@@ -158,6 +158,40 @@ export const serviceTypes: ServiceType[] = [
     sort_order: 8,
     delivery: '3-5 days',
     pricing: { basic: 129, pro: 259, enterprise: 519 },
+  },
+  {
+    id: 'voice-cloning',
+    slug: 'voice-cloning',
+    name_en: 'AI Voice Cloning',
+    name_tr: 'Yapay Zeka Ses Klonlama',
+    category: 'ai',
+    icon: Mic,
+    color: 'from-purple-600 to-pink-600',
+    gradient: 'from-purple-600 to-pink-600',
+    description_en: 'Clone and use AI voices for automated calls and messages',
+    description_tr: 'Otomatik aramalar ve mesajlar için yapay zeka sesleri klonlayın ve kullanın',
+    features: ['AI voice cloning', 'Multiple voice styles', 'Natural speech synthesis', 'Multi-language support'],
+    status: 'maintenance',
+    sort_order: 9,
+    delivery: '5-7 business days',
+    pricing: { basic: 199, pro: 399, enterprise: 799 },
+  },
+  {
+    id: 'sentiment-analysis',
+    slug: 'sentiment-analysis',
+    name_en: 'Sentiment Analysis',
+    name_tr: 'Duygu Analizi',
+    category: 'ai',
+    icon: Heart,
+    color: 'from-red-500 to-pink-500',
+    gradient: 'from-red-500 to-pink-500',
+    description_en: 'Analyze customer sentiment from messages and conversations',
+    description_tr: 'Mesajlardan ve konuşmalardan müşteri duygularını analiz edin',
+    features: ['Real-time sentiment analysis', 'Emotion detection', 'Trend analysis', 'Custom reports'],
+    status: 'inactive',
+    sort_order: 10,
+    delivery: '3-5 business days',
+    pricing: { basic: 149, pro: 299, enterprise: 599 },
   },
 ];
 
