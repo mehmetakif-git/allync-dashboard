@@ -277,6 +277,12 @@ export default function GoogleSheets() {
         {/* Settings Tab */}
         {activeTab === 'settings' && (
           <div className="space-y-6">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+              <p className="text-yellow-500 text-sm">
+                Note: Settings are view-only. Contact your system administrator or support to modify service configuration.
+              </p>
+            </div>
+
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Google Sheets Connection</h3>
               <div className="space-y-4">
@@ -333,6 +339,29 @@ export default function GoogleSheets() {
                     <span className="text-gray-400">Searchable</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Instance Status</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-gray-400 mb-2">Connection Status</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-white font-medium">Connected</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-2">Last Synced</p>
+                  <p className="text-white font-medium">5 minutes ago</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-2">Service Status</p>
+                  <span className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded-full text-xs font-medium">
+                    Active
+                  </span>
+                </div>
               </div>
             </div>
           </div>
