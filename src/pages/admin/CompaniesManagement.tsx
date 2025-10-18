@@ -21,6 +21,12 @@ export default function CompaniesManagement() {
     phone: '',
     country: '',
     address: '',
+    city: '',
+    postalCode: '',
+    taxId: '',
+    registrationNumber: '',
+    billingEmail: '',
+    website: '',
     adminName: '',
     adminEmail: '',
     status: 'Active',
@@ -51,6 +57,12 @@ export default function CompaniesManagement() {
       phone: '',
       country: '',
       address: '',
+      city: '',
+      postalCode: '',
+      taxId: '',
+      registrationNumber: '',
+      billingEmail: '',
+      website: '',
       adminName: '',
       adminEmail: '',
       status: 'Active',
@@ -66,6 +78,12 @@ export default function CompaniesManagement() {
       phone: company.phone,
       country: company.country,
       address: company.address || '',
+      city: company.city || '',
+      postalCode: company.postalCode || '',
+      taxId: company.taxId || '',
+      registrationNumber: company.registrationNumber || '',
+      billingEmail: company.billingEmail || '',
+      website: company.website || '',
       adminName: '',
       adminEmail: '',
       status: company.status,
@@ -304,13 +322,6 @@ export default function CompaniesManagement() {
                           <Eye className="w-4 h-4 text-blue-500" />
                         </button>
                         <button
-                          onClick={() => handleEditClick(company)}
-                          className="p-2 hover:bg-purple-500/10 rounded-lg transition-colors"
-                          title="Edit Company"
-                        >
-                          <Edit3 className="w-4 h-4 text-purple-500" />
-                        </button>
-                        <button
                           onClick={() => handleDeleteClick(company)}
                           className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Delete Company"
@@ -331,70 +342,165 @@ export default function CompaniesManagement() {
             <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6 my-8">
               <h2 className="text-2xl font-bold text-white mb-6">Add New Company</h2>
 
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Company Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
+              <div className="space-y-4 mb-6 max-h-[60vh] overflow-y-auto pr-2">
+                <div className="border-b border-gray-700 pb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email *
+                      Company Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Phone *
+                      </label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Website (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.website}
+                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                      placeholder="https://example.com"
+                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-b border-gray-700 pb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Address</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.city}
+                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Postal Code *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.postalCode}
+                        onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Country *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.country}
+                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b border-gray-700 pb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Tax & Registration</h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Tax ID / VAT Number *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.taxId}
+                        onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                        placeholder="e.g., TR1234567890"
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Company Registration Number *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.registrationNumber}
+                        onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                        placeholder="e.g., 123456"
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Billing Email (Optional)
                     </label>
                     <input
                       type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      value={formData.billingEmail}
+                      onChange={(e) => setFormData({ ...formData, billingEmail: e.target.value })}
+                      placeholder="billing@company.com"
                       className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                      required
                     />
+                    <p className="text-xs text-gray-500 mt-1">If different from main email</p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Country *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Address (Optional)
-                  </label>
-                  <textarea
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 resize-none"
-                    rows={2}
-                  />
                 </div>
 
                 <div className="border-t border-gray-700 pt-4">
@@ -435,7 +541,7 @@ export default function CompaniesManagement() {
                 </button>
                 <button
                   onClick={handleAddCompany}
-                  disabled={isProcessing || !formData.name || !formData.email || !formData.phone || !formData.country}
+                  disabled={isProcessing || !formData.name || !formData.email || !formData.phone || !formData.country || !formData.address || !formData.city || !formData.postalCode || !formData.taxId || !formData.registrationNumber}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
                 >
                   {isProcessing ? 'Adding...' : 'Add Company'}
