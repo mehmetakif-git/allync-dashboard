@@ -1,4 +1,4 @@
-import { Home, Zap, MessageCircle, Instagram, Video, Image, Mic, FileText, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
+import { Home, Zap, MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Video, Mic, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -31,6 +31,12 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
     { type: 'divider', label: 'SERVICE MANAGEMENT' },
     { id: 'whatsapp-service-management', label: 'WhatsApp Automation', icon: MessageCircle, section: 'service-mgmt' },
     { id: 'instagram-service-management', label: 'Instagram Automation', icon: Instagram, section: 'service-mgmt' },
+    { id: 'google-calendar-management', label: 'Google Calendar', icon: Calendar, section: 'service-mgmt' },
+    { id: 'google-sheets-management', label: 'Google Sheets', icon: Sheet, section: 'service-mgmt' },
+    { id: 'gmail-management', label: 'Gmail Integration', icon: Mail, section: 'service-mgmt' },
+    { id: 'google-docs-management', label: 'Google Docs', icon: FileText, section: 'service-mgmt' },
+    { id: 'google-drive-management', label: 'Google Drive', icon: FolderOpen, section: 'service-mgmt' },
+    { id: 'google-photos-management', label: 'Google Photos', icon: Image, section: 'service-mgmt' },
 
     { type: 'divider', label: 'USER MANAGEMENT' },
     { id: 'users-management', label: 'All Users', icon: Users, section: 'users' },

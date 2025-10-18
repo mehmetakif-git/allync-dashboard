@@ -25,6 +25,12 @@ import ServicesCatalog from './pages/admin/ServicesCatalog';
 import CompanyDetail from './pages/admin/CompanyDetail';
 import WhatsAppServiceManagement from './pages/admin/services/WhatsAppServiceManagement';
 import InstagramServiceManagement from './pages/admin/services/InstagramServiceManagement';
+import CalendarServiceManagement from './pages/admin/services/CalendarServiceManagement';
+import SheetsServiceManagement from './pages/admin/services/SheetsServiceManagement';
+import GmailServiceManagement from './pages/admin/services/GmailServiceManagement';
+import DocsServiceManagement from './pages/admin/services/DocsServiceManagement';
+import DriveServiceManagement from './pages/admin/services/DriveServiceManagement';
+import PhotosServiceManagement from './pages/admin/services/PhotosServiceManagement';
 import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
 import InstagramAutomation from './pages/services/InstagramAutomation';
 
@@ -119,6 +125,12 @@ function AppContent() {
             {superAdminPage === 'services-catalog' && <ServicesCatalog />}
             {superAdminPage === 'whatsapp-service-management' && <WhatsAppServiceManagement />}
             {superAdminPage === 'instagram-service-management' && <InstagramServiceManagement />}
+            {superAdminPage === 'google-calendar-management' && <CalendarServiceManagement />}
+            {superAdminPage === 'google-sheets-management' && <SheetsServiceManagement />}
+            {superAdminPage === 'gmail-management' && <GmailServiceManagement />}
+            {superAdminPage === 'google-docs-management' && <DocsServiceManagement />}
+            {superAdminPage === 'google-drive-management' && <DriveServiceManagement />}
+            {superAdminPage === 'google-photos-management' && <PhotosServiceManagement />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'company-detail' && companyDetailId && (
               <CompanyDetail
