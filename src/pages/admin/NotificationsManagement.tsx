@@ -133,7 +133,8 @@ export default function NotificationsManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">Notifications Management</h1>
         <p className="text-gray-400 mt-1">Send global notifications to all users</p>
@@ -365,6 +366,7 @@ export default function NotificationsManagement() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
