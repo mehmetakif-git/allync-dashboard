@@ -331,15 +331,15 @@ export default function GoogleDocs() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Drive Folder ID</label>
-                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74Og" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74Og" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Folder Name</label>
-                  <input type="text" defaultValue="Generated Documents" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="Generated Documents" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Default AI Model</label>
-                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white">
+                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed" disabled>
                     <option>GPT-4</option>
                     <option>Claude-3</option>
                     <option>GPT-3.5</option>
@@ -350,8 +350,8 @@ export default function GoogleDocs() {
                     <p className="text-white font-medium">Auto-save to Drive</p>
                     <p className="text-sm text-gray-400">Automatically save generated documents</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <label className="relative inline-flex items-center cursor-not-allowed">
+                    <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>

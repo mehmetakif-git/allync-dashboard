@@ -288,11 +288,11 @@ export default function GoogleCalendar() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Google Calendar ID</label>
-                  <input type="text" defaultValue="techcorp@google.com" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="techcorp@google.com" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Timezone</label>
-                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white">
+                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed" disabled>
                     <option>Asia/Qatar</option>
                     <option>UTC</option>
                     <option>America/New_York</option>
@@ -303,8 +303,8 @@ export default function GoogleCalendar() {
                     <p className="text-white font-medium">Auto-approve appointments</p>
                     <p className="text-sm text-gray-400">Automatically approve new appointment requests</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" />
+                  <label className="relative inline-flex items-center cursor-not-allowed">
+                    <input type="checkbox" className="sr-only peer" disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>

@@ -288,15 +288,15 @@ export default function GoogleSheets() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Sheet ID</label>
-                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Sheet Name</label>
-                  <input type="text" defaultValue="Product Inventory" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="Product Inventory" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Sync Interval</label>
-                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white">
+                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed" disabled>
                     <option>Every 5 minutes</option>
                     <option>Every 15 minutes</option>
                     <option>Every 30 minutes</option>
@@ -308,8 +308,8 @@ export default function GoogleSheets() {
                     <p className="text-white font-medium">Auto-sync enabled</p>
                     <p className="text-sm text-gray-400">Automatically sync data at set intervals</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <label className="relative inline-flex items-center cursor-not-allowed">
+                    <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                   </label>
                 </div>

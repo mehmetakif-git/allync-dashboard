@@ -340,19 +340,19 @@ export default function GoogleDrive() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Root Folder ID</label>
-                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74Og" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74Og" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Folder Name</label>
-                  <input type="text" defaultValue="Company Files" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white" />
+                  <input type="text" defaultValue="Company Files" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
                   <div>
                     <p className="text-white font-medium">Auto-organize files</p>
                     <p className="text-sm text-gray-400">Automatically organize uploaded files by type</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <label className="relative inline-flex items-center cursor-not-allowed">
+                    <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
@@ -361,8 +361,8 @@ export default function GoogleDrive() {
                     <p className="text-white font-medium">AI file tagging</p>
                     <p className="text-sm text-gray-400">Use AI to automatically tag and categorize files</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <label className="relative inline-flex items-center cursor-not-allowed">
+                    <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
