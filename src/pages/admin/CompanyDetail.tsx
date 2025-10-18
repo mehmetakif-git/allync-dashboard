@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2, Plus, FileText, Settings, MessageCircle, Instagram, Sheet, FolderOpen, Image } from 'lucide-react';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { companies } from '../../data/mockData';
 import { mockServiceRequests } from '../../data/serviceRequests';
 import { tickets } from '../../data/mockData';
 import { invoices } from '../../data/mockData';
+import { serviceTypes } from '../../data/services';
+import WhatsAppSettingsModal from '../../components/modals/WhatsAppSettingsModal';
+import InstagramSettingsModal from '../../components/modals/InstagramSettingsModal';
+import GoogleServiceSettingsModal from '../../components/modals/GoogleServiceSettingsModal';
 
 interface CompanyDetailProps {
   companyId: string;
@@ -13,6 +17,10 @@ interface CompanyDetailProps {
 
 export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'services' | 'tickets' | 'invoices'>('overview');
+  const [showWhatsAppSettings, setShowWhatsAppSettings] = useState(false);
+  const [showInstagramSettings, setShowInstagramSettings] = useState(false);
+  const [showGoogleSettings, setShowGoogleSettings] = useState(false);
+  const [selectedGoogleService, setSelectedGoogleService] = useState<string | null>(null);
 
   // User management states
   const [companyUsers, setCompanyUsers] = useState([
@@ -563,43 +571,110 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
 
         {activeTab === 'services' && (
           <div className="space-y-6">
-            {/* Active Services */}
             <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-6">
                 <h2 className="text-xl font-bold text-white">Active Services</h2>
-                <span className="text-sm text-gray-400">{companyServices.length} active</span>
+                <p className="text-sm text-gray-400 mt-1">Configure service settings for this company</p>
               </div>
 
-              {companyServices.length > 0 ? (
-                <div className="space-y-3">
-                  {companyServices.map((service) => (
-                    <div key={service.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <p className="text-white font-medium">{service.service_name}</p>
-                            <p className="text-sm text-gray-400">Package: {service.package.toUpperCase()}</p>
-                          </div>
-                        </div>
-                        <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded text-xs text-green-500">
-                          Active
-                        </span>
-                      </div>
+              {(() => {
+                const activeServiceSlugs = [
+                  'whatsapp-automation',
+                  'instagram-automation',
+                  'google-calendar',
+                  'google-sheets',
+                  'gmail-integration',
+                  'google-docs',
+                  'google-drive',
+                  'google-photos'
+                ];
+
+                const activeServices = serviceTypes.filter(service =>
+                  activeServiceSlugs.includes(service.slug)
+                );
+
+                if (activeServices.length === 0) {
+                  return (
+                    <div className="text-center py-12">
+                      <Zap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                      <p className="text-white font-medium">No Active Services</p>
+                      <p className="text-gray-400 text-sm mt-1">This company doesn't have any active services yet.</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Zap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-400">No active services</p>
-                </div>
-              )}
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {activeServices.map((service) => {
+                      const Icon = service.icon;
+                      const handleConfigureClick = () => {
+                        if (service.slug === 'whatsapp-automation') {
+                          setShowWhatsAppSettings(true);
+                        } else if (service.slug === 'instagram-automation') {
+                          setShowInstagramSettings(true);
+                        } else if (service.slug === 'google-calendar') {
+                          setSelectedGoogleService('calendar');
+                          setShowGoogleSettings(true);
+                        } else if (service.slug === 'google-sheets') {
+                          setSelectedGoogleService('sheets');
+                          setShowGoogleSettings(true);
+                        } else if (service.slug === 'gmail-integration') {
+                          setSelectedGoogleService('gmail');
+                          setShowGoogleSettings(true);
+                        } else if (service.slug === 'google-docs') {
+                          setSelectedGoogleService('docs');
+                          setShowGoogleSettings(true);
+                        } else if (service.slug === 'google-drive') {
+                          setSelectedGoogleService('drive');
+                          setShowGoogleSettings(true);
+                        } else if (service.slug === 'google-photos') {
+                          setSelectedGoogleService('photos');
+                          setShowGoogleSettings(true);
+                        }
+                      };
+
+                      return (
+                        <div key={service.id} className="bg-gray-900/50 border border-gray-700 rounded-xl p-5 hover:border-gray-600 transition-all">
+                          <div className="mb-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center`}>
+                                <Icon className="w-6 h-6 text-white" />
+                              </div>
+                              <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-500 font-medium">
+                                Active
+                              </span>
+                            </div>
+                          </div>
+
+                          <h3 className="text-white font-semibold text-lg mb-2">{service.name_en}</h3>
+                          <p className="text-gray-400 text-sm mb-4 line-clamp-2">{service.description_en}</p>
+
+                          <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                            <div>
+                              <span className="text-gray-400">Package</span>
+                              <p className="text-white font-medium">Professional</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-gray-400">Status</span>
+                              <p className="text-green-500 font-medium">Connected</p>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={handleConfigureClick}
+                            className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                          >
+                            <Settings className="w-4 h-4" />
+                            Configure Settings
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
 
-            {/* Pending Requests */}
             {pendingRequests.length > 0 && (
               <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -876,6 +951,72 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
           confirmColor={selectedUser?.status === 'Active' ? 'from-orange-600 to-orange-700' : 'from-green-600 to-emerald-600'}
           isLoading={isProcessingUser}
         />
+
+        {/* Settings Modals */}
+        <WhatsAppSettingsModal
+          isOpen={showWhatsAppSettings}
+          onClose={() => setShowWhatsAppSettings(false)}
+          onSave={(settings) => {
+            console.log('WhatsApp settings saved:', settings);
+          }}
+          companyName={company.name}
+          companyId={company.id}
+          initialSettings={{
+            bot_name: 'Tech Support Bot',
+            greeting_message: 'Hello! Welcome to our support. How can I help you today?',
+            phone_number: '+974 5555 0000',
+            instance_id: `wa_instance_${company.id}`,
+            connection_status: 'connected',
+            is_active: true,
+          }}
+        />
+
+        <InstagramSettingsModal
+          isOpen={showInstagramSettings}
+          onClose={() => setShowInstagramSettings(false)}
+          onSave={(settings) => {
+            console.log('Instagram settings saved:', settings);
+          }}
+          companyName={company.name}
+          companyId={company.id}
+          initialSettings={{
+            connected_account: '@your_business_account',
+            ai_model: 'GPT-4 (OpenRouter)',
+            comment_auto_reply: true,
+            dm_auto_reply: true,
+            connection_status: 'connected',
+            is_active: true,
+          }}
+        />
+
+        {selectedGoogleService && (
+          <GoogleServiceSettingsModal
+            isOpen={showGoogleSettings}
+            onClose={() => {
+              setShowGoogleSettings(false);
+              setSelectedGoogleService(null);
+            }}
+            onSave={(settings) => {
+              console.log(`${selectedGoogleService} settings saved:`, settings);
+            }}
+            serviceType={selectedGoogleService as any}
+            companyName={company.name}
+            companyId={company.id}
+            initialSettings={{
+              google_account_email: `${selectedGoogleService}@${company.name.toLowerCase().replace(/\s+/g, '')}.com`,
+              google_account_name: company.name,
+              calendar_id: 'primary',
+              sheet_id: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+              drive_folder_id: 'folder_abc123',
+              auto_sync_enabled: true,
+              sync_interval_minutes: 15,
+              ai_model: 'gpt-4',
+              auto_organize_enabled: true,
+              connection_status: 'connected',
+              is_active: true,
+            }}
+          />
+        )}
 
         {/* Edit Company Modal */}
         {showEditCompanyModal && (
