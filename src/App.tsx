@@ -37,6 +37,8 @@ import GoogleCalendar from './pages/services/GoogleCalendar';
 import GoogleSheets from './pages/services/GoogleSheets';
 import Gmail from './pages/services/Gmail';
 import GoogleDocs from './pages/services/GoogleDocs';
+import GoogleDrive from './pages/services/GoogleDrive';
+import GooglePhotos from './pages/services/GooglePhotos';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -206,6 +208,8 @@ function AppContent() {
             {activePage === 'google-sheets' && <GoogleSheets />}
             {activePage === 'gmail-integration' && <Gmail />}
             {activePage === 'google-docs' && <GoogleDocs />}
+            {activePage === 'google-drive' && <GoogleDrive />}
+            {activePage === 'google-photos' && <GooglePhotos />}
           </main>
         </div>
       </div>
