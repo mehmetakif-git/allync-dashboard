@@ -39,6 +39,24 @@ function AppContent() {
 
   console.log('Role checks:', { isSuperAdmin, isCompanyAdmin, isRegularUser });
 
+  // Super Admin hash navigation
+  useEffect(() => {
+    if (isSuperAdmin) {
+      const handleSuperAdminHash = () => {
+        const hash = window.location.hash.slice(1);
+        if (hash && !hash.startsWith('service/')) {
+          setSuperAdminPage(hash);
+        } else if (!hash) {
+          setSuperAdminPage('admin-dashboard');
+        }
+      };
+
+      handleSuperAdminHash();
+      window.addEventListener('hashchange', handleSuperAdminHash);
+      return () => window.removeEventListener('hashchange', handleSuperAdminHash);
+    }
+  }, [isSuperAdmin]);
+
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
