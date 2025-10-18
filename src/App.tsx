@@ -23,6 +23,7 @@ import MaintenanceMode from './pages/admin/MaintenanceMode';
 import ActivityLogs from './pages/admin/ActivityLogs';
 import ServicesCatalog from './pages/admin/ServicesCatalog';
 import CompanyDetail from './pages/admin/CompanyDetail';
+import WhatsAppServiceManagement from './pages/admin/services/WhatsAppServiceManagement';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -113,6 +114,7 @@ function AppContent() {
           <main className="flex-1 p-6">
             {superAdminPage === 'admin-dashboard' && <SuperAdminDashboard />}
             {superAdminPage === 'services-catalog' && <ServicesCatalog />}
+            {superAdminPage === 'whatsapp-service-management' && <WhatsAppServiceManagement />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'company-detail' && companyDetailId && (
               <CompanyDetail

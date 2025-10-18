@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { serviceTypes } from '../../data/services';
 import { mockServiceRequests } from '../../data/serviceRequests';
-import { Edit3, Users, Clock, CheckCircle, Building2, Wrench, Power, Check, X } from 'lucide-react';
+import { Edit3, Users, Clock, CheckCircle, Building2, Wrench, Power, Check, X, Settings } from 'lucide-react';
 import EditServiceModal from '../../components/admin/EditServiceModal';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 
@@ -323,6 +323,16 @@ export default function ServicesCatalog() {
                         <Edit3 className="w-4 h-4" />
                         Edit Service Details
                       </button>
+
+                      {service.slug === 'whatsapp-automation' && (
+                        <button
+                          onClick={() => window.location.hash = 'whatsapp-service-management'}
+                          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Manage Service
+                        </button>
+                      )}
 
                       {companiesUsing.length > 0 && (
                         <button
