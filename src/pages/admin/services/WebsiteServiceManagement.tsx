@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Globe, Building2, TrendingUp, BarChart3, ArrowLeft, Settings, Clock, CheckCircle2 } from 'lucide-react';
-import WebsiteSettingsModal from '../../../components/modals/WebsiteSettingsModal';
+import WebsiteSettingsModal from "../../../components/modals/WebsiteSettingsModal";
 import { mockWebsiteProjects } from '../../../data/mockWebsiteData';
 
 export default function WebsiteServiceManagement() {
