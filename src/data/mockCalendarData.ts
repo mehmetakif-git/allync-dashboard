@@ -1,12 +1,16 @@
 export interface CalendarInstance {
   id: string;
-  company_id: string;
-  google_calendar_id: string;
-  calendar_name: string;
+  companyId: string;
+  instanceName: string;
+  googleAccountEmail: string;
+  googleCalendarId: string;
   timezone: string;
-  business_hours: any;
-  auto_approve_appointments: boolean;
-  status: string;
+  connectionStatus: 'connected' | 'disconnected' | 'error';
+  lastSync?: string;
+  businessHours: any;
+  autoApproveAppointments: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AppointmentRequest {
@@ -44,12 +48,15 @@ export interface CalendarStaff {
 
 export const mockCalendarInstances: CalendarInstance[] = [
   {
-    id: 'cal_inst_1',
-    company_id: '1',
-    google_calendar_id: 'techcorp@google.com',
-    calendar_name: 'Tech Corp Appointments',
+    id: '760e8400-e29b-41d4-a716-446655440001',
+    companyId: '1',
+    instanceName: 'Sales Team Calendar',
+    googleAccountEmail: 'sales@techcorp.com',
+    googleCalendarId: 'sales@techcorp.com',
     timezone: 'Asia/Qatar',
-    business_hours: {
+    connectionStatus: 'connected',
+    lastSync: '2025-10-21T10:00:00Z',
+    businessHours: {
       monday: { start: '09:00', end: '18:00' },
       tuesday: { start: '09:00', end: '18:00' },
       wednesday: { start: '09:00', end: '18:00' },
@@ -58,10 +65,67 @@ export const mockCalendarInstances: CalendarInstance[] = [
       saturday: { start: '10:00', end: '14:00' },
       sunday: { start: null, end: null }
     },
-    auto_approve_appointments: false,
-    status: 'active'
+    autoApproveAppointments: false,
+    createdAt: '2024-06-10T08:00:00Z',
+    updatedAt: '2025-10-21T10:00:00Z'
+  },
+  {
+    id: '760e8400-e29b-41d4-a716-446655440002',
+    companyId: '1',
+    instanceName: 'Support Calendar',
+    googleAccountEmail: 'support@techcorp.com',
+    googleCalendarId: 'support@techcorp.com',
+    timezone: 'Asia/Qatar',
+    connectionStatus: 'connected',
+    lastSync: '2025-10-21T09:30:00Z',
+    businessHours: {
+      monday: { start: '08:00', end: '20:00' },
+      tuesday: { start: '08:00', end: '20:00' },
+      wednesday: { start: '08:00', end: '20:00' },
+      thursday: { start: '08:00', end: '20:00' },
+      friday: { start: '08:00', end: '20:00' },
+      saturday: { start: '09:00', end: '17:00' },
+      sunday: { start: '09:00', end: '17:00' }
+    },
+    autoApproveAppointments: true,
+    createdAt: '2024-08-15T08:00:00Z',
+    updatedAt: '2025-10-21T09:30:00Z'
+  },
+  {
+    id: '760e8400-e29b-41d4-a716-446655440003',
+    companyId: '1',
+    instanceName: 'HR Department Calendar',
+    googleAccountEmail: 'hr@techcorp.com',
+    googleCalendarId: 'hr@techcorp.com',
+    timezone: 'Asia/Qatar',
+    connectionStatus: 'connected',
+    lastSync: '2025-10-21T08:15:00Z',
+    businessHours: {
+      monday: { start: '09:00', end: '17:00' },
+      tuesday: { start: '09:00', end: '17:00' },
+      wednesday: { start: '09:00', end: '17:00' },
+      thursday: { start: '09:00', end: '17:00' },
+      friday: { start: '09:00', end: '15:00' },
+      saturday: { start: null, end: null },
+      sunday: { start: null, end: null }
+    },
+    autoApproveAppointments: false,
+    createdAt: '2024-09-20T08:00:00Z',
+    updatedAt: '2025-10-21T08:15:00Z'
   }
 ];
+
+export const connectionStatusColors = {
+  'connected': 'text-green-400 bg-green-500/10 border-green-500/30',
+  'disconnected': 'text-red-400 bg-red-500/10 border-red-500/30',
+  'error': 'text-orange-400 bg-orange-500/10 border-orange-500/30'
+};
+
+export const connectionStatusLabels = {
+  'connected': 'Connected',
+  'disconnected': 'Disconnected',
+  'error': 'Error'
+};
 
 export const mockAppointmentRequests: AppointmentRequest[] = [
   {
