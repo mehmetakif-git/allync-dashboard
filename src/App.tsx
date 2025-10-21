@@ -39,6 +39,7 @@ import Gmail from './pages/services/Gmail';
 import GoogleDocs from './pages/services/GoogleDocs';
 import GoogleDrive from './pages/services/GoogleDrive';
 import GooglePhotos from './pages/services/GooglePhotos';
+import WebsiteDevelopment from './pages/services/WebsiteDevelopment';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -137,6 +138,7 @@ function AppContent() {
             {superAdminPage === 'google-docs-management' && <DocsServiceManagement />}
             {superAdminPage === 'google-drive-management' && <DriveServiceManagement />}
             {superAdminPage === 'google-photos-management' && <PhotosServiceManagement />}
+            {superAdminPage === 'website-development-management' && <div className="p-6"><h1 className="text-white text-2xl">Website Development Management (Coming Soon)</h1></div>}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'company-detail' && companyDetailId && (
               <CompanyDetail
@@ -210,6 +212,7 @@ function AppContent() {
             {activePage === 'google-docs' && <GoogleDocs />}
             {activePage === 'google-drive' && <GoogleDrive />}
             {activePage === 'google-photos' && <GooglePhotos />}
+            {activePage === 'website-development' && <WebsiteDevelopment />}
           </main>
         </div>
       </div>

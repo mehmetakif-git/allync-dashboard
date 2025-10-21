@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2, Plus, FileText, Settings, MessageCircle, Instagram, Sheet, FolderOpen, Image } from 'lucide-react';
+import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Edit3, Trash2, Plus, FileText, Settings, MessageCircle, Instagram, Sheet, FolderOpen, Image, Globe } from 'lucide-react';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { companies } from '../../data/mockData';
 import { mockServiceRequests } from '../../data/serviceRequests';
@@ -9,6 +9,8 @@ import { serviceTypes } from '../../data/services';
 import WhatsAppSettingsModal from '../../components/modals/WhatsAppSettingsModal';
 import InstagramSettingsModal from '../../components/modals/InstagramSettingsModal';
 import GoogleServiceSettingsModal from '../../components/modals/GoogleServiceSettingsModal';
+import WebsiteSettingsModal from '../../components/modals/WebsiteSettingsModal';
+import { mockWebsiteProjects } from '../../data/mockWebsiteData';
 
 interface CompanyDetailProps {
   companyId: string;
@@ -21,6 +23,7 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
   const [showInstagramSettings, setShowInstagramSettings] = useState(false);
   const [showGoogleSettings, setShowGoogleSettings] = useState(false);
   const [selectedGoogleService, setSelectedGoogleService] = useState<string | null>(null);
+  const [showWebsiteSettings, setShowWebsiteSettings] = useState(false);
 
   // User management states
   const [companyUsers, setCompanyUsers] = useState([
@@ -586,7 +589,8 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
                   'gmail-integration',
                   'google-docs',
                   'google-drive',
-                  'google-photos'
+                  'google-photos',
+                  'website-development'
                 ];
 
                 const activeServices = serviceTypes.filter(service =>
@@ -630,6 +634,8 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
                         } else if (service.slug === 'google-photos') {
                           setSelectedGoogleService('photos');
                           setShowGoogleSettings(true);
+                        } else if (service.slug === 'website-development') {
+                          setShowWebsiteSettings(true);
                         }
                       };
 
@@ -1017,6 +1023,27 @@ export default function CompanyDetail({ companyId, onBack }: CompanyDetailProps)
             }}
           />
         )}
+
+        {showWebsiteSettings && (() => {
+          const websiteProject = mockWebsiteProjects.find(p => p.companyId === company.id);
+          return (
+            <WebsiteSettingsModal
+              companyName={company.name}
+              onClose={() => setShowWebsiteSettings(false)}
+              onSave={(settings) => {
+                console.log('Website settings saved:', settings);
+                setShowWebsiteSettings(false);
+              }}
+              initialSettings={websiteProject ? {
+                projectType: websiteProject.projectType,
+                domain: websiteProject.domain,
+                email: websiteProject.email,
+                estimatedCompletion: websiteProject.estimatedCompletion.split('T')[0],
+                milestones: websiteProject.milestones
+              } : undefined}
+            />
+          );
+        })()}
 
         {/* Edit Company Modal */}
         {showEditCompanyModal && (
