@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle, Globe } from 'lucide-react';
+import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle, Globe, Smartphone } from 'lucide-react';
 
 export default function ServicesCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -144,6 +144,21 @@ export default function ServicesCatalog() {
       companies_using: 1,
       total_revenue: 299,
       managementPage: 'website-service-management'
+    },
+    {
+      id: 'mobile-app-development',
+      name: 'Mobile App Development',
+      status: 'active',
+      since: '2024-12-01',
+      package: 'Professional',
+      nextBilling: '2025-02-01',
+      price: 399,
+      description: 'Professional mobile app development for Android and iOS with app store publishing support',
+      icon: Smartphone,
+      color: 'from-cyan-500 to-blue-600',
+      companies_using: 1,
+      total_revenue: 399,
+      managementPage: 'mobile-app-service-management'
     },
   ];
 

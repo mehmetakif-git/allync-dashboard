@@ -38,6 +38,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
     { id: 'google-drive-management', label: 'Google Drive', icon: FolderOpen, section: 'service-mgmt' },
     { id: 'google-photos-management', label: 'Google Photos', icon: Image, section: 'service-mgmt' },
     { id: 'website-service-management', label: 'Website Development', icon: Globe, section: 'service-mgmt' },
+    { id: 'mobile-app-service-management', label: 'Mobile App Development', icon: Smartphone, section: 'service-mgmt' },
 
     { type: 'divider', label: 'USER MANAGEMENT' },
     { id: 'users-management', label: 'All Users', icon: Users, section: 'users' },

@@ -41,6 +41,8 @@ import GoogleDrive from './pages/services/GoogleDrive';
 import GooglePhotos from './pages/services/GooglePhotos';
 import WebsiteDevelopment from './pages/services/WebsiteDevelopment';
 import WebsiteServiceManagement from './pages/admin/services/WebsiteServiceManagement';
+import MobileAppDevelopment from './pages/services/MobileAppDevelopment';
+import MobileAppServiceManagement from './pages/admin/services/MobileAppServiceManagement';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -140,6 +142,7 @@ function AppContent() {
             {superAdminPage === 'google-drive-management' && <DriveServiceManagement />}
             {superAdminPage === 'google-photos-management' && <PhotosServiceManagement />}
             {superAdminPage === 'website-service-management' && <WebsiteServiceManagement />}
+            {superAdminPage === 'mobile-app-service-management' && <MobileAppServiceManagement />}
             {superAdminPage === 'companies-management' && <CompaniesManagement />}
             {superAdminPage === 'company-detail' && companyDetailId && (
               <CompanyDetail
@@ -214,6 +217,7 @@ function AppContent() {
             {activePage === 'google-drive' && <GoogleDrive />}
             {activePage === 'google-photos' && <GooglePhotos />}
             {activePage === 'website-development' && <WebsiteDevelopment />}
+            {activePage === 'mobile-app-development' && <MobileAppDevelopment />}
           </main>
         </div>
       </div>

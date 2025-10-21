@@ -1,4 +1,4 @@
-import { MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Mic, Heart, Globe } from 'lucide-react';
+import { MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Mic, Heart, Globe, Smartphone } from 'lucide-react';
 
 export interface ServiceType {
   id: string;
@@ -210,6 +210,23 @@ export const serviceTypes: ServiceType[] = [
     delivery: '4-8 weeks',
     pricing: { basic: 299, pro: 599, enterprise: 1299 },
   },
+  {
+    id: '12',
+    slug: 'mobile-app-development',
+    name_en: 'Mobile App Development',
+    name_tr: 'Mobil Uygulama Geliştirme',
+    category: 'digital',
+    icon: Smartphone,
+    color: 'from-cyan-500 to-blue-600',
+    gradient: 'from-cyan-500 to-blue-600',
+    description_en: 'Professional mobile app development - Android, iOS, and Cross-platform applications',
+    description_tr: 'Profesyonel mobil uygulama geliştirme - Android, iOS ve Cross-platform uygulamalar',
+    features: ['Native & Cross-platform Development', 'UI/UX Design', 'Backend Integration', 'App Store Publishing', 'Post-launch Support', 'Regular Updates'],
+    status: 'active',
+    sort_order: 12,
+    delivery: '8-12 weeks',
+    pricing: { basic: 199, pro: 399, enterprise: 899 },
+  },
 ];
 
 export const mockCompanyRequests: Record<string, { status: 'pending' | 'approved' | 'rejected', date: string, plan: string }> = {
@@ -222,4 +239,5 @@ export const mockCompanyRequests: Record<string, { status: 'pending' | 'approved
   'google-drive': { status: 'approved', date: '2024-10-15', plan: 'pro' },
   'google-photos': { status: 'approved', date: '2024-11-25', plan: 'basic' },
   'website-development': { status: 'approved', date: '2025-10-01', plan: 'pro' },
+  'mobile-app-development': { status: 'approved', date: '2025-10-05', plan: 'pro' },
 };
