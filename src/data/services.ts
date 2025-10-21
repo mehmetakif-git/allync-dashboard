@@ -1,4 +1,4 @@
-import { MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Mic, Heart } from 'lucide-react';
+import { MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Mic, Heart, Globe } from 'lucide-react';
 
 export interface ServiceType {
   id: string;
@@ -193,6 +193,23 @@ export const serviceTypes: ServiceType[] = [
     delivery: '3-5 business days',
     pricing: { basic: 149, pro: 299, enterprise: 599 },
   },
+  {
+    id: '11',
+    slug: 'website-development',
+    name_en: 'Website Development',
+    name_tr: 'Web Sitesi Geliştirme',
+    category: 'digital',
+    icon: Globe,
+    color: 'from-purple-500 to-blue-500',
+    gradient: 'from-purple-500 to-blue-500',
+    description_en: 'Professional website development service - E-commerce, Corporate, and Personal websites',
+    description_tr: 'Profesyonel web sitesi geliştirme hizmeti - E-ticaret, Kurumsal ve Kişisel web siteleri',
+    features: ['Custom Website Design', 'Responsive Development', 'Domain & Hosting Setup', 'SEO Optimization', 'Content Management', 'Ongoing Support'],
+    status: 'active',
+    sort_order: 11,
+    delivery: '4-8 weeks',
+    pricing: { basic: 299, pro: 599, enterprise: 1299 },
+  },
 ];
 
 export const mockCompanyRequests: Record<string, { status: 'pending' | 'approved' | 'rejected', date: string, plan: string }> = {
@@ -204,4 +221,5 @@ export const mockCompanyRequests: Record<string, { status: 'pending' | 'approved
   'google-docs': { status: 'approved', date: '2024-09-05', plan: 'basic' },
   'google-drive': { status: 'approved', date: '2024-10-15', plan: 'pro' },
   'google-photos': { status: 'approved', date: '2024-11-25', plan: 'basic' },
+  'website-development': { status: 'approved', date: '2025-10-01', plan: 'pro' },
 };
