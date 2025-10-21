@@ -5,30 +5,39 @@ export interface WebsiteMilestone {
   progress: number;
   completedDate?: string;
   notes?: string;
+  displayOrder: number;
 }
 
 export interface WebsiteProject {
   id: string;
   companyId: string;
+  projectName: string;
   projectType: 'e-commerce' | 'corporate' | 'personal';
   domain: string;
   email: string;
   estimatedCompletion: string;
   lastUpdate: string;
   overallProgress: number;
+  status: 'active' | 'completed' | 'on-hold' | 'cancelled';
   milestones: WebsiteMilestone[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const mockWebsiteProjects: WebsiteProject[] = [
   {
-    id: 'wp-1',
+    id: '550e8400-e29b-41d4-a716-446655440001',
     companyId: '1',
+    projectName: 'Main E-commerce Store',
     projectType: 'e-commerce',
     domain: 'www.techcorp-store.com',
     email: 'admin@techcorp-store.com',
     estimatedCompletion: '2025-12-15',
     lastUpdate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     overallProgress: 65,
+    status: 'active',
+    createdAt: '2025-10-01T08:00:00Z',
+    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     milestones: [
       {
         id: 'm1',
@@ -36,7 +45,8 @@ export const mockWebsiteProjects: WebsiteProject[] = [
         status: 'completed',
         progress: 100,
         completedDate: '2025-10-01',
-        notes: 'Domain registered and DNS configured'
+        notes: 'Domain registered and DNS configured',
+        displayOrder: 1
       },
       {
         id: 'm2',
@@ -44,45 +54,107 @@ export const mockWebsiteProjects: WebsiteProject[] = [
         status: 'completed',
         progress: 100,
         completedDate: '2025-10-05',
-        notes: 'Google Workspace configured with 5 email accounts'
+        notes: 'Google Workspace configured with 5 email accounts',
+        displayOrder: 2
       },
       {
         id: 'm3',
         title: 'Homepage Design',
         status: 'in-progress',
         progress: 80,
-        notes: 'Final revisions in progress'
+        notes: 'Final revisions in progress',
+        displayOrder: 3
       },
       {
         id: 'm4',
         title: 'Product Pages',
         status: 'pending',
         progress: 0,
-        notes: 'Waiting for product images and descriptions'
+        notes: 'Waiting for product images and descriptions',
+        displayOrder: 4
       },
       {
         id: 'm5',
         title: 'Shopping Cart Integration',
         status: 'pending',
-        progress: 0
+        progress: 0,
+        displayOrder: 5
       },
       {
         id: 'm6',
         title: 'Payment Gateway Setup',
         status: 'pending',
-        progress: 0
+        progress: 0,
+        displayOrder: 6
       },
       {
         id: 'm7',
         title: 'Testing & QA',
         status: 'pending',
-        progress: 0
+        progress: 0,
+        displayOrder: 7
       },
       {
         id: 'm8',
         title: 'Launch & Deployment',
         status: 'pending',
-        progress: 0
+        progress: 0,
+        displayOrder: 8
+      }
+    ]
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440002',
+    companyId: '1',
+    projectName: 'Corporate Landing Page',
+    projectType: 'corporate',
+    domain: 'www.techcorp.com',
+    email: 'info@techcorp.com',
+    estimatedCompletion: '2025-11-30',
+    lastUpdate: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    overallProgress: 85,
+    status: 'active',
+    createdAt: '2025-09-15T08:00:00Z',
+    updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    milestones: [
+      {
+        id: 'm9',
+        title: 'Domain Setup',
+        status: 'completed',
+        progress: 100,
+        completedDate: '2025-09-16',
+        displayOrder: 1
+      },
+      {
+        id: 'm10',
+        title: 'Design Mockups',
+        status: 'completed',
+        progress: 100,
+        completedDate: '2025-09-25',
+        displayOrder: 2
+      },
+      {
+        id: 'm11',
+        title: 'Content Creation',
+        status: 'completed',
+        progress: 100,
+        completedDate: '2025-10-10',
+        displayOrder: 3
+      },
+      {
+        id: 'm12',
+        title: 'Development',
+        status: 'in-progress',
+        progress: 90,
+        notes: 'Final touches on responsive design',
+        displayOrder: 4
+      },
+      {
+        id: 'm13',
+        title: 'Testing & Launch',
+        status: 'pending',
+        progress: 0,
+        displayOrder: 5
       }
     ]
   }

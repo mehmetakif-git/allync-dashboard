@@ -6,10 +6,22 @@ import { mockWebsiteProjects, projectTypeLabels, statusLabels, statusColors, sta
 const WebsiteDevelopment: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
-  const project = mockWebsiteProjects.find(p => p.companyId === user?.companyId);
+  // TODO: Replace with API call
+  // const { data: projects, loading } = await supabase
+  //   .from('website_projects')
+  //   .select('*')
+  //   .eq('company_id', user?.companyId)
+  //   .eq('status', 'active')
+  //   .order('created_at', { ascending: false });
+  const projects = mockWebsiteProjects.filter(p => p.companyId === user?.companyId && p.status === 'active');
 
-  if (!project) {
+  const project = selectedProjectId
+    ? projects.find(p => p.id === selectedProjectId)
+    : projects[0];
+
+  if (!project || projects.length === 0) {
     return (
       <div className="p-8">
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
@@ -56,14 +68,33 @@ const WebsiteDevelopment: React.FC = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-            <Globe className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+              <Globe className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">{project.projectName}</h1>
+              <p className="text-gray-400">{projectTypeLabels[project.projectType]} - Track your website development progress</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Website Development</h1>
-            <p className="text-gray-400">Track your website development progress</p>
-          </div>
+
+          {projects.length > 1 && (
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Select Project</label>
+              <select
+                value={project.id}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.projectName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -211,6 +242,16 @@ const WebsiteDevelopment: React.FC = () => {
             <h3 className="text-lg font-semibold text-white mb-6">Project Information</h3>
 
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Project Name</label>
+                <input
+                  type="text"
+                  value={project.projectName}
+                  readOnly
+                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Project Type</label>
                 <input

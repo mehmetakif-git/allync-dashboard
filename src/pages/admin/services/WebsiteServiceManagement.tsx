@@ -8,34 +8,52 @@ export default function WebsiteServiceManagement() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
+  // TODO: Replace with API call
+  // const { data: companies } = await supabase
+  //   .from('companies')
+  //   .select(`
+  //     *,
+  //     website_projects (
+  //       id,
+  //       project_name,
+  //       project_type,
+  //       domain,
+  //       overall_progress,
+  //       estimated_completion,
+  //       status,
+  //       milestones:website_milestones(count)
+  //     )
+  //   `)
+  //   .eq('website_projects.status', 'active');
+
   const companiesUsingService = [
     {
       id: '1',
       name: 'Tech Corp',
       activeSince: '2025-10-01',
       package: 'Professional',
-      projectType: 'E-commerce',
-      domain: 'www.techcorp-store.com',
-      progress: 65,
-      estimatedCompletion: '2025-12-15',
-      status: 'in-progress',
-      milestones: 8,
-      completedMilestones: 2,
+      projects: mockWebsiteProjects.filter(p => p.companyId === '1'),
     },
   ];
 
+  const allProjects = companiesUsingService.flatMap(c => c.projects);
+  const activeProjectsCount = allProjects.filter(p => p.status === 'active').length;
+  const completedProjectsCount = allProjects.filter(p => p.status === 'completed').length;
+
   const globalStats = {
     totalCompanies: companiesUsingService.length,
-    activeProjects: companiesUsingService.filter(c => c.status === 'in-progress').length,
-    completedProjects: 0,
+    activeProjects: activeProjectsCount,
+    completedProjects: completedProjectsCount,
     totalRevenue: companiesUsingService.reduce((sum, c) => {
       const price = c.package === 'Basic' ? 299 : c.package === 'Professional' ? 599 : 1299;
       return sum + price;
     }, 0),
     avgCompletionTime: '6-8 weeks',
-    avgProgress: Math.round(
-      companiesUsingService.reduce((sum, c) => sum + c.progress, 0) / companiesUsingService.length
-    ),
+    avgProgress: allProjects.length > 0
+      ? Math.round(
+          allProjects.reduce((sum, p) => sum + p.overallProgress, 0) / allProjects.length
+        )
+      : 0,
   };
 
   const handleConfigureSettings = (company: any) => {
@@ -186,74 +204,87 @@ export default function WebsiteServiceManagement() {
 
               <div className="grid grid-cols-1 gap-6">
                 {companiesUsingService.map((company) => (
-                  <div key={company.id} className="bg-gray-900/50 border border-gray-700 rounded-xl p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                          <Building2 className="w-6 h-6 text-white" />
+                  <div key={company.id} className="space-y-4">
+                    <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                            <Building2 className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-white">{company.name}</h3>
+                            <p className="text-sm text-gray-400">{company.package} Package - {company.projects.length} project{company.projects.length !== 1 ? 's' : ''}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-white">{company.name}</h3>
-                          <p className="text-sm text-gray-400">Active since {company.activeSince}</p>
-                        </div>
+                        <button
+                          onClick={() => {
+                            window.location.hash = `company-detail/${company.id}`;
+                          }}
+                          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                        >
+                          View Company
+                        </button>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        company.status === 'in-progress'
-                          ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400'
-                          : 'bg-green-500/10 border border-green-500/30 text-green-400'
-                      }`}>
-                        {company.status === 'in-progress' ? 'In Progress' : 'Completed'}
-                      </span>
-                    </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">Package</p>
-                        <p className="text-white font-medium">{company.package}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">Project Type</p>
-                        <p className="text-white font-medium">{company.projectType}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">Progress</p>
-                        <p className="text-white font-medium">{company.progress}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">Milestones</p>
-                        <p className="text-white font-medium">{company.completedMilestones}/{company.milestones}</p>
-                      </div>
-                    </div>
+                      <div className="space-y-4">
+                        {company.projects.map((project) => {
+                          const completedMilestones = project.milestones.filter(m => m.status === 'completed').length;
+                          return (
+                            <div key={project.id} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                              <div className="flex items-start justify-between mb-3">
+                                <div>
+                                  <h4 className="text-white font-semibold">{project.projectName}</h4>
+                                  <p className="text-sm text-gray-400">{project.projectType === 'e-commerce' ? 'E-commerce' : project.projectType === 'corporate' ? 'Corporate' : 'Personal'} - {project.domain}</p>
+                                </div>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  project.status === 'active'
+                                    ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400'
+                                    : project.status === 'completed'
+                                    ? 'bg-green-500/10 border border-green-500/30 text-green-400'
+                                    : 'bg-gray-500/10 border border-gray-500/30 text-gray-400'
+                                }`}>
+                                  {project.status === 'active' ? 'Active' : project.status === 'completed' ? 'Completed' : 'On Hold'}
+                                </span>
+                              </div>
 
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-gray-400">Overall Progress</span>
-                        <span className="text-sm text-purple-400 font-medium">{company.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all"
-                          style={{ width: `${company.progress}%` }}
-                        />
-                      </div>
-                    </div>
+                              <div className="grid grid-cols-3 gap-4 mb-3">
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-1">Progress</p>
+                                  <p className="text-white font-medium">{project.overallProgress}%</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-1">Milestones</p>
+                                  <p className="text-white font-medium">{completedMilestones}/{project.milestones.length}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500 mb-1">Est. Completion</p>
+                                  <p className="text-white font-medium">{new Date(project.estimatedCompletion).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                </div>
+                              </div>
 
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => {
-                          window.location.hash = `company-detail/${company.id}`;
-                        }}
-                        className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                      >
-                        View Details
-                      </button>
-                      <button
-                        onClick={() => handleConfigureSettings(company)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all"
-                      >
-                        <Settings className="w-4 h-4" />
-                        Configure Settings
-                      </button>
+                              <div className="mb-3">
+                                <div className="w-full bg-gray-700 rounded-full h-2">
+                                  <div
+                                    className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all"
+                                    style={{ width: `${project.overallProgress}%` }}
+                                  />
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => {
+                                  setSelectedCompany({ ...company, selectedProject: project });
+                                  handleConfigureSettings({ ...company, selectedProject: project });
+                                }}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all"
+                              >
+                                <Settings className="w-4 h-4" />
+                                Configure Project
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -309,7 +340,7 @@ export default function WebsiteServiceManagement() {
         )}
 
         {showSettingsModal && selectedCompany && (() => {
-          const websiteProject = mockWebsiteProjects.find(p => p.companyId === selectedCompany.id);
+          const websiteProject = selectedCompany.selectedProject || mockWebsiteProjects.find(p => p.companyId === selectedCompany.id);
           return (
             <WebsiteSettingsModal
               companyName={selectedCompany.name}
@@ -323,6 +354,7 @@ export default function WebsiteServiceManagement() {
                 setSelectedCompany(null);
               }}
               initialSettings={websiteProject ? {
+                projectName: websiteProject.projectName,
                 projectType: websiteProject.projectType,
                 domain: websiteProject.domain,
                 email: websiteProject.email,
