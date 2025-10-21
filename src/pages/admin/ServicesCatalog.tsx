@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle } from 'lucide-react';
+import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle, Globe } from 'lucide-react';
 
 export default function ServicesCatalog() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -129,6 +129,21 @@ export default function ServicesCatalog() {
       companies_using: 2,
       total_revenue: 388,
       managementPage: 'google-photos-management'
+    },
+    {
+      id: 'website-development',
+      name: 'Website Development',
+      status: 'active',
+      since: '2024-12-01',
+      package: 'Professional',
+      nextBilling: '2025-02-01',
+      price: 299,
+      description: 'Professional website development - E-commerce, Corporate, Personal websites with milestone tracking',
+      icon: Globe,
+      color: 'from-purple-500 to-blue-500',
+      companies_using: 1,
+      total_revenue: 299,
+      managementPage: 'website-service-management'
     },
   ];
 
