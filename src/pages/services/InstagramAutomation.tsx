@@ -1,12 +1,26 @@
 import { useState } from 'react';
-import { Search, MessageCircle, Clock, TrendingUp, Users, ThumbsUp, Send, CheckCheck, BarChart3, Settings, Edit3, Eye, Download, Tag, User } from 'lucide-react';
+import { Search, MessageCircle, Clock, TrendingUp, Users, ThumbsUp, Send, CheckCheck, BarChart3, Settings, Edit3, Eye, Download, Tag, User, ChevronDown, Plus, Info, Instagram } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { mockInstagramPosts, mockInstagramComments, getCommentsByPost } from '../../data/mockInstagramComments';
 import { mockInstagramDMSessions } from '../../data/mockInstagramDMSessions';
 import { mockInstagramDMMessages } from '../../data/mockInstagramDMMessages';
 import { mockInstagramUsers } from '../../data/mockInstagramUsers';
+import { mockInstagramInstances, connectionStatusColors, connectionStatusLabels } from '../../data/mockInstagramData';
 
 export default function InstagramAutomation() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'comments' | 'dms' | 'customers' | 'analytics' | 'settings'>('comments');
+  const [showInstanceDropdown, setShowInstanceDropdown] = useState(false);
+  const [showAddInstanceInfo, setShowAddInstanceInfo] = useState(false);
+
+  // TODO: Replace with API call
+  // const { data: instances } = await supabase
+  //   .from('instagram_instances')
+  //   .select('*')
+  //   .eq('company_id', user?.companyId);
+  const instances = mockInstagramInstances.filter(i => i.companyId === user?.companyId);
+  const [selectedInstanceId, setSelectedInstanceId] = useState(instances[0]?.id);
+  const selectedInstance = instances.find(i => i.id === selectedInstanceId) || instances[0];
 
   const [posts] = useState(mockInstagramPosts);
   const [selectedPost, setSelectedPost] = useState(posts[0]);
@@ -110,12 +124,112 @@ export default function InstagramAutomation() {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
+  if (!selectedInstance) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+        <div className="max-w-[1800px] mx-auto">
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
+            <Instagram className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-300 mb-2">No Instagram Account</h3>
+            <p className="text-gray-400">No Instagram automation instance found for your company.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">Instagram Automation</h1>
-          <p className="text-gray-400">AI-powered comment responses and engagement management</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">Instagram Automation</h1>
+              <p className="text-gray-400">AI-powered comment responses and engagement management</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {instances.length > 1 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowInstanceDropdown(!showInstanceDropdown)}
+                    className="flex items-center gap-3 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="text-left">
+                      <div className="text-sm text-gray-400">Current Account</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-medium">{selectedInstance.instanceName}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs border ${connectionStatusColors[selectedInstance.connectionStatus]}`}>
+                          {connectionStatusLabels[selectedInstance.connectionStatus]}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500">{selectedInstance.username}</div>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </button>
+
+                  {showInstanceDropdown && (
+                    <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+                      <div className="p-2">
+                        {instances.map((instance) => (
+                          <button
+                            key={instance.id}
+                            onClick={() => {
+                              setSelectedInstanceId(instance.id);
+                              setShowInstanceDropdown(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                              instance.id === selectedInstanceId
+                                ? 'bg-pink-600 text-white'
+                                : 'hover:bg-gray-700 text-white'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="font-medium">{instance.instanceName}</div>
+                                <div className="text-xs text-gray-400">{instance.username}</div>
+                              </div>
+                              <span className={`px-2 py-0.5 rounded-full text-xs border ${connectionStatusColors[instance.connectionStatus]}`}>
+                                {connectionStatusLabels[instance.connectionStatus]}
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="relative">
+                <button
+                  onClick={() => setShowAddInstanceInfo(true)}
+                  className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-600 rounded-lg hover:border-pink-500 hover:bg-pink-500/10 transition-all text-gray-400 hover:text-pink-400"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="font-medium">Add Account</span>
+                </button>
+
+                {showAddInstanceInfo && (
+                  <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 p-4">
+                    <div className="flex items-start gap-3 mb-3">
+                      <Info className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="text-white font-medium mb-1">Add New Instagram Account</h3>
+                        <p className="text-sm text-gray-400">Contact our support team to add additional Instagram accounts to your automation.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowAddInstanceInfo(false)}
+                      className="w-full px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors"
+                    >
+                      Got it
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-2 mb-6 overflow-x-auto">

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { mockCompanyRequests, serviceTypes } from '../data/services';
 import { useAuth } from '../context/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
+import { mockWhatsAppInstances } from '../data/mockWhatsAppData';
+import { mockInstagramInstances } from '../data/mockInstagramData';
 
 interface CompanySidebarProps {
   activePage: string;
@@ -21,6 +23,16 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
     .filter(serviceSlug => mockCompanyRequests[serviceSlug].status === 'approved')
     .map(serviceSlug => serviceTypes.find(s => s.slug === serviceSlug))
     .filter(Boolean);
+
+  // Get instance counts for services
+  const whatsappInstances = mockWhatsAppInstances.filter(i => i.companyId === user?.companyId);
+  const instagramInstances = mockInstagramInstances.filter(i => i.companyId === user?.companyId);
+
+  const getInstanceCount = (serviceSlug: string) => {
+    if (serviceSlug === 'whatsapp-automation') return whatsappInstances.length;
+    if (serviceSlug === 'instagram-automation') return instagramInstances.length;
+    return 0;
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -119,6 +131,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
                   const Icon = service.icon;
                   const pageId = service.slug;
                   const isActive = activePage === pageId;
+                  const instanceCount = getInstanceCount(service.slug);
                   return (
                     <li key={service.id}>
                       <button
@@ -131,7 +144,12 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
                       >
                         <div className="flex items-center gap-3">
                           <Icon className="w-5 h-5" />
-                          <span className="font-medium">{service.name_en}</span>
+                          <span className="font-medium">
+                            {service.name_en}
+                            {instanceCount > 1 && (
+                              <span className="ml-1 text-xs">({instanceCount})</span>
+                            )}
+                          </span>
                         </div>
                         <span className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-medium rounded">
                           Active
