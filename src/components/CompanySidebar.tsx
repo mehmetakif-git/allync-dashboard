@@ -1,67 +1,88 @@
-import { Home, Zap, MessageCircle, Instagram, FileText, HelpCircle, Settings, LogOut, X, Package } from 'lucide-react';
-import { useState } from 'react';
-import { mockCompanyRequests, serviceTypes } from '../data/services';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Home, Package, FileText, HelpCircle, Settings, LogOut, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
-import { mockWhatsAppInstances } from '../data/mockWhatsAppData';
-import { mockInstagramInstances } from '../data/mockInstagramData';
+import { getServiceRequests, getServiceTypes } from '../lib/api/companies';
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: any;
+  path: string;
+  adminOnly?: boolean;
+}
 
 interface CompanySidebarProps {
-  activePage: string;
-  onPageChange: (page: string) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function CompanySidebar({ activePage, onPageChange, isOpen, onClose }: CompanySidebarProps) {
+export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
-  const isCompanyAdmin = user?.role === 'COMPANY_ADMIN';
-  const isRegularUser = user?.role === 'USER';
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [activeServices, setActiveServices] = useState<any[]>([]);
+  
+  const isCompanyAdmin = user?.role === 'company_admin';
 
-  const activeServices = Object.keys(mockCompanyRequests)
-    .filter(serviceSlug => mockCompanyRequests[serviceSlug].status === 'approved')
-    .map(serviceSlug => serviceTypes.find(s => s.slug === serviceSlug))
-    .filter(Boolean);
+  // Fetch active services
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (!user?.company_id) return;
+      
+      try {
+        const [requests, types] = await Promise.all([
+          getServiceRequests(user.company_id),
+          getServiceTypes()
+        ]);
+        
+        const approvedIds = requests
+          .filter((r: any) => r.status === 'approved')
+          .map((r: any) => r.service_type_id);
+        
+        const services = types.filter((t: any) => approvedIds.includes(t.id));
+        setActiveServices(services);
+      } catch (err) {
+        console.error('Error fetching services:', err);
+      }
+    };
 
-  // Get instance counts for services
-  const whatsappInstances = mockWhatsAppInstances.filter(i => i.companyId === user?.companyId);
-  const instagramInstances = mockInstagramInstances.filter(i => i.companyId === user?.companyId);
+    fetchServices();
+  }, [user?.company_id]);
 
-  const getInstanceCount = (serviceSlug: string) => {
-    if (serviceSlug === 'whatsapp-automation') return whatsappInstances.length;
-    if (serviceSlug === 'instagram-automation') return instagramInstances.length;
-    return 0;
-  };
-
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: 'services', label: 'Services', icon: Package },
+  const mainMenuItems: MenuItem[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/dashboard' },
+    { id: 'services', label: 'Services', icon: Package, path: '/dashboard/services' },
   ];
 
-  const bottomItems = [
-    ...(isCompanyAdmin ? [{ id: 'invoices', label: 'Invoices', icon: FileText }] : []),
-    { id: 'support', label: 'Support', icon: HelpCircle },
-    ...(isCompanyAdmin ? [{ id: 'settings', label: 'Settings', icon: Settings }] : []),
+  const bottomMenuItems: MenuItem[] = [
+    { id: 'invoices', label: 'Invoices', icon: FileText, path: '/dashboard/invoices', adminOnly: true },
+    { id: 'support', label: 'Support', icon: HelpCircle, path: '/dashboard/support' },
+    { id: 'settings', label: 'Settings', icon: Settings, path: '/dashboard/settings', adminOnly: true },
   ];
 
-  const handleNavClick = (pageId: string) => {
-    onPageChange(pageId);
+  const handleNavClick = (path: string) => {
+    navigate(path);
     if (window.innerWidth < 1024) {
       onClose();
     }
   };
 
-  const getUserInitials = () => {
-    if (isCompanyAdmin) return 'CA';
-    if (isRegularUser) return 'U';
-    return 'U';
+  const handleLogout = async () => {
+    setShowLogoutConfirm(false);
+    await logout();
+    navigate('/login');
   };
 
-  const getUserRole = () => {
-    if (isCompanyAdmin) return 'Company Admin';
-    if (isRegularUser) return 'User';
-    return 'User';
+  const isActive = (path: string) => {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Map service slug to path
+  const getServicePath = (slug: string) => {
+    return `/dashboard/services/${slug.replace('-automation', '').replace('-integration', '')}`;
   };
 
   return (
@@ -78,6 +99,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } w-64`}
       >
+        {/* Header */}
         <div className="p-6 border-b border-gray-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
@@ -100,19 +122,22 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
           </button>
         </div>
 
+        {/* Navigation */}
         <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {menuItems.map((item) => {
+          <ul className="space-y-1">
+            {/* Main Menu */}
+            {mainMenuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activePage === item.id;
+              const active = isActive(item.path);
+              
               return (
                 <li key={item.id}>
                   <button
-                    onClick={() => handleNavClick(item.id)}
+                    onClick={() => handleNavClick(item.path)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      isActive
+                      active
                         ? 'bg-blue-600 text-white shadow-lg'
-                        : 'text-gray-400 hover:bg-gray-800'
+                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -122,36 +147,33 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
               );
             })}
 
+            {/* Active Services */}
             {activeServices.length > 0 && (
               <>
                 <li className="pt-4 pb-2">
-                  <div className="text-xs font-semibold text-gray-500 uppercase px-4">Active Services</div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase px-4">
+                    ACTIVE SERVICES
+                  </div>
                 </li>
                 {activeServices.map((service: any) => {
-                  const Icon = service.icon;
-                  const pageId = service.slug;
-                  const isActive = activePage === pageId;
-                  const instanceCount = getInstanceCount(service.slug);
+                  const path = getServicePath(service.slug);
+                  const active = isActive(path);
+                  
                   return (
                     <li key={service.id}>
                       <button
-                        onClick={() => handleNavClick(pageId)}
+                        onClick={() => handleNavClick(path)}
                         className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
-                          isActive
+                          active
                             ? 'bg-blue-600 text-white shadow-lg'
-                            : 'text-gray-400 hover:bg-gray-800'
+                            : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className="w-5 h-5" />
-                          <span className="font-medium">
-                            {service.name_en}
-                            {instanceCount > 1 && (
-                              <span className="ml-1 text-xs">({instanceCount})</span>
-                            )}
-                          </span>
+                          <span className="text-xl">{service.icon}</span>
+                          <span className="font-medium truncate">{service.name_en}</span>
                         </div>
-                        <span className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-medium rounded">
+                        <span className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-medium rounded flex-shrink-0">
                           Active
                         </span>
                       </button>
@@ -161,21 +183,26 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
               </>
             )}
 
+            {/* Bottom Menu */}
             <li className="pt-6">
               <div className="border-t border-gray-800 mb-2"></div>
             </li>
 
-            {bottomItems.map((item) => {
+            {bottomMenuItems.map((item) => {
+              // Hide admin-only items for regular users
+              if (item.adminOnly && !isCompanyAdmin) return null;
+              
               const Icon = item.icon;
-              const isActive = activePage === item.id;
+              const active = isActive(item.path);
+              
               return (
                 <li key={item.id}>
                   <button
-                    onClick={() => handleNavClick(item.id)}
+                    onClick={() => handleNavClick(item.path)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      isActive
+                      active
                         ? 'bg-blue-600 text-white shadow-lg'
-                        : 'text-gray-400 hover:bg-gray-800'
+                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -187,12 +214,13 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
           </ul>
         </nav>
 
+        {/* Logout */}
         <div className="p-4 border-t border-gray-800 bg-gray-900/50">
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-5 h-5" />
             <span className="font-medium">Logout</span>
           </button>
         </div>
@@ -201,10 +229,7 @@ export default function CompanySidebar({ activePage, onPageChange, isOpen, onClo
       <ConfirmationDialog
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={() => {
-          setShowLogoutConfirm(false);
-          logout();
-        }}
+        onConfirm={handleLogout}
         title="Logout"
         message="Are you sure you want to logout?"
         confirmText="Logout"

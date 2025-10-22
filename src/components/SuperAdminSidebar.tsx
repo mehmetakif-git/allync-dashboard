@@ -1,73 +1,96 @@
-import { Home, Zap, MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Video, Mic, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X, Globe } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Home, Zap, MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Globe, Smartphone, Building2, Users, UserPlus, Receipt, DollarSign, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
 
 interface MenuItem {
-  id?: string;
+  id: string;
   label: string;
-  icon?: any;
-  section?: string;
-  type?: string;
+  icon: any;
+  path: string;
   badge?: number;
+  type?: 'item' | 'divider';
+  dividerLabel?: string;
 }
 
 interface SuperAdminSidebarProps {
-  activePage: string;
-  onPageChange: (page: string) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, onClose }: SuperAdminSidebarProps) {
+export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   const menuItems: MenuItem[] = [
-    { id: 'admin-dashboard', label: 'Dashboard', icon: Home, section: 'main' },
-
-    { type: 'divider', label: 'SERVICES' },
-    { id: 'services-catalog', label: 'Services Catalog', icon: Zap, section: 'services' },
-
-    { type: 'divider', label: 'SERVICE MANAGEMENT' },
-    { id: 'whatsapp-service-management', label: 'WhatsApp Automation', icon: MessageCircle, section: 'service-mgmt' },
-    { id: 'instagram-service-management', label: 'Instagram Automation', icon: Instagram, section: 'service-mgmt' },
-    { id: 'google-calendar-management', label: 'Google Calendar', icon: Calendar, section: 'service-mgmt' },
-    { id: 'google-sheets-management', label: 'Google Sheets', icon: Sheet, section: 'service-mgmt' },
-    { id: 'gmail-management', label: 'Gmail Integration', icon: Mail, section: 'service-mgmt' },
-    { id: 'google-docs-management', label: 'Google Docs', icon: FileText, section: 'service-mgmt' },
-    { id: 'google-drive-management', label: 'Google Drive', icon: FolderOpen, section: 'service-mgmt' },
-    { id: 'google-photos-management', label: 'Google Photos', icon: Image, section: 'service-mgmt' },
-    { id: 'website-service-management', label: 'Website Development', icon: Globe, section: 'service-mgmt' },
-    { id: 'mobile-app-service-management', label: 'Mobile App Development', icon: Smartphone, section: 'service-mgmt' },
-
-    { type: 'divider', label: 'USER MANAGEMENT' },
-    { id: 'users-management', label: 'All Users', icon: Users, section: 'users' },
-    { id: 'user-invite', label: 'Invite Users', icon: UserPlus, section: 'users' },
-
-    { type: 'divider', label: 'COMPANY MANAGEMENT' },
-    { id: 'companies-management', label: 'Companies', icon: Building2, section: 'companies', badge: 2 },
-
-    { type: 'divider', label: 'BILLING' },
-    { id: 'invoices-management', label: 'Invoices', icon: Receipt, section: 'billing' },
-    { id: 'revenue-analytics', label: 'Revenue', icon: DollarSign, section: 'billing' },
-
-    { type: 'divider', label: 'SUPPORT' },
-    { id: 'support-tickets', label: 'Support Tickets', icon: MessageCircle, section: 'support', badge: 3 },
-
-    { type: 'divider', label: 'COMMUNICATION' },
-    { id: 'notifications-management', label: 'Notifications', icon: Bell, section: 'communication' },
-
-    { type: 'divider', label: 'SYSTEM' },
-    { id: 'system-settings', label: 'System Settings', icon: Settings, section: 'system' },
-    { id: 'maintenance-mode', label: 'Maintenance Mode', icon: AlertTriangle, section: 'system' },
-    { id: 'activity-logs', label: 'Activity Logs', icon: Activity, section: 'system' },
+    // Main
+    { type: 'divider', dividerLabel: 'MAIN', id: 'divider-main', label: '', icon: null, path: '' },
+    { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/admin/dashboard' },
+    
+    // Services
+    { type: 'divider', dividerLabel: 'SERVICES', id: 'divider-services', label: '', icon: null, path: '' },
+    { id: 'services', label: 'Services Catalog', icon: Zap, path: '/admin/services' },
+    
+    // Service Management
+    { type: 'divider', dividerLabel: 'SERVICE MANAGEMENT', id: 'divider-service-mgmt', label: '', icon: null, path: '' },
+    { id: 'whatsapp', label: 'WhatsApp Automation', icon: MessageCircle, path: '/admin/services/whatsapp' },
+    { id: 'instagram', label: 'Instagram Automation', icon: Instagram, path: '/admin/services/instagram' },
+    { id: 'calendar', label: 'Google Calendar', icon: Calendar, path: '/admin/services/calendar' },
+    { id: 'sheets', label: 'Google Sheets', icon: Sheet, path: '/admin/services/sheets' },
+    { id: 'gmail', label: 'Gmail Integration', icon: Mail, path: '/admin/services/gmail' },
+    { id: 'docs', label: 'Google Docs', icon: FileText, path: '/admin/services/docs' },
+    { id: 'drive', label: 'Google Drive', icon: FolderOpen, path: '/admin/services/drive' },
+    { id: 'photos', label: 'Google Photos', icon: Image, path: '/admin/services/photos' },
+    { id: 'website', label: 'Website Development', icon: Globe, path: '/admin/services/website' },
+    { id: 'mobile-app', label: 'Mobile App Development', icon: Smartphone, path: '/admin/services/mobile-app' },
+    
+    // User Management
+    { type: 'divider', dividerLabel: 'USER MANAGEMENT', id: 'divider-users', label: '', icon: null, path: '' },
+    { id: 'users', label: 'All Users', icon: Users, path: '/admin/users' },
+    { id: 'user-invite', label: 'Invite Users', icon: UserPlus, path: '/admin/users/invite' },
+    
+    // Company Management
+    { type: 'divider', dividerLabel: 'COMPANY MANAGEMENT', id: 'divider-companies', label: '', icon: null, path: '' },
+    { id: 'companies', label: 'Companies', icon: Building2, path: '/admin/companies', badge: 2 },
+    
+    // Billing
+    { type: 'divider', dividerLabel: 'BILLING', id: 'divider-billing', label: '', icon: null, path: '' },
+    { id: 'invoices', label: 'Invoices', icon: Receipt, path: '/admin/invoices' },
+    { id: 'revenue', label: 'Revenue Analytics', icon: DollarSign, path: '/admin/revenue' },
+    
+    // Support
+    { type: 'divider', dividerLabel: 'SUPPORT', id: 'divider-support', label: '', icon: null, path: '' },
+    { id: 'support', label: 'Support Tickets', icon: MessageCircle, path: '/admin/support', badge: 3 },
+    
+    // Communication
+    { type: 'divider', dividerLabel: 'COMMUNICATION', id: 'divider-communication', label: '', icon: null, path: '' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, path: '/admin/notifications' },
+    
+    // System
+    { type: 'divider', dividerLabel: 'SYSTEM', id: 'divider-system', label: '', icon: null, path: '' },
+    { id: 'settings', label: 'System Settings', icon: Settings, path: '/admin/settings' },
+    { id: 'maintenance', label: 'Maintenance Mode', icon: AlertTriangle, path: '/admin/maintenance' },
+    { id: 'logs', label: 'Activity Logs', icon: Activity, path: '/admin/logs' },
   ];
 
-  const handleNavClick = (pageId: string) => {
-    onPageChange(pageId);
+  const handleNavClick = (path: string) => {
+    navigate(path);
     if (window.innerWidth < 1024) {
       onClose();
     }
+  };
+
+  const handleLogout = async () => {
+    setShowLogoutConfirm(false);
+    await logout();
+    navigate('/login');
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   return (
@@ -84,6 +107,7 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } w-64`}
       >
+        {/* Header */}
         <div className="p-6 border-b border-gray-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
@@ -104,62 +128,63 @@ export default function SuperAdminSidebar({ activePage, onPageChange, isOpen, on
           </button>
         </div>
 
-      <nav className="flex-1 p-4">
-        <ul className="space-y-1">
-          {menuItems.map((item, idx) => {
-            if (item.type === 'divider') {
+        {/* Navigation */}
+        <nav className="flex-1 p-4">
+          <ul className="space-y-1">
+            {menuItems.map((item) => {
+              if (item.type === 'divider') {
+                return (
+                  <li key={item.id} className="pt-4 pb-2">
+                    <div className="text-xs font-semibold text-gray-500 uppercase px-4">
+                      {item.dividerLabel}
+                    </div>
+                  </li>
+                );
+              }
+
+              const Icon = item.icon;
+              const active = isActive(item.path);
+
               return (
-                <li key={idx} className="pt-4 pb-2">
-                  <div className="text-xs font-semibold text-gray-500 uppercase px-4">{item.label}</div>
+                <li key={item.id}>
+                  <button
+                    onClick={() => handleNavClick(item.path)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                      active
+                        ? 'bg-red-600 text-white shadow-lg'
+                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    <span className="font-medium truncate">{item.label}</span>
+                    {item.badge && item.badge > 0 && (
+                      <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
                 </li>
               );
-            }
+            })}
+          </ul>
+        </nav>
 
-            const Icon = item.icon;
-            const isActive = activePage === item.id;
-
-            return (
-              <li key={item.id}>
-                <button
-                  onClick={() => handleNavClick(item.id!)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? 'bg-red-600 text-white shadow-lg'
-                      : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                  }`}
-                >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="font-medium truncate">{item.label}</span>
-                  {item.badge && item.badge > 0 && (
-                    <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
-                      {item.badge}
-                    </span>
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      <div className="p-4 border-t border-gray-800 bg-gray-900/50">
-        <button
-          onClick={() => setShowLogoutConfirm(true)}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="font-medium">Logout</span>
-        </button>
-      </div>
+        {/* Logout */}
+        <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
       </aside>
 
       <ConfirmationDialog
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={() => {
-          setShowLogoutConfirm(false);
-          logout();
-        }}
+        onConfirm={handleLogout}
         title="Logout"
         message="Are you sure you want to logout?"
         confirmText="Logout"
