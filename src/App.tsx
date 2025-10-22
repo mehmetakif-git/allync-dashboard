@@ -5,8 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/auth/Login';
 
 // Layouts
-import SuperAdminLayout from './layouts/SuperAdminLayout';
-import CompanyLayout from './layouts/CompanyLayout';
+import SuperAdminLayout from '././layouts/SuperAdminLayout';
+import CompanyLayout from '././layouts/CompanyLayout';
 
 // Super Admin Pages
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';

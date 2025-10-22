@@ -102,7 +102,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white">{user?.name}</h3>
-                    <p className="text-gray-400">{user?.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'User'}</p>
+                    <p className="text-gray-400">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
                   </div>
                 </div>
 

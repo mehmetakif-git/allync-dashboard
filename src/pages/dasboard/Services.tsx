@@ -11,8 +11,8 @@ export default function Services() {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
 
-  const isCompanyAdmin = user?.role === 'COMPANY_ADMIN';
-  const isRegularUser = user?.role === 'USER';
+  const isCompanyAdmin = user?.role === 'company_admin';
+  const isRegularUser = user?.role === 'user';
 
   const filteredServices = serviceTypes.filter(service => {
     // Hide inactive services from Company Admin and Users
