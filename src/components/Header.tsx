@@ -1,9 +1,8 @@
+import { Menu, Bell, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
-import { Search, Bell, Menu, LogOut, User as UserIcon, Settings, Building2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 import NotificationsPanel from './NotificationsPanel';
-import ConfirmationDialog from './ConfirmationDialog';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -11,204 +10,118 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'SUPER_ADMIN':
-        return 'bg-purple-500/20 text-purple-700';
-      case 'COMPANY_ADMIN':
-        return 'bg-blue-500/20 text-blue-400';
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  const getInitials = () => {
+    if (!user) return 'U';
+    if (user.full_name) {
+      return user.full_name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    return user.email?.[0]?.toUpperCase() || 'U';
+  };
+
+  const getRoleName = () => {
+    if (!user) return 'User';
+    switch (user.role) {
+      case 'super_admin':
+        return 'Super Admin';
+      case 'company_admin':
+        return 'Company Admin';
+      case 'user':
+        return 'User';
       default:
-        return 'bg-gray-800/50 text-gray-400';
+        return 'User';
     }
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-  };
-
   return (
-    <>
-      <header className="bg-gray-900/80 backdrop-blur-xl border-b border-gray-800 h-16 flex items-center px-4 lg:px-6 sticky top-0 z-40">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={onMenuClick}
-            className="lg:hidden p-2 hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <Menu className="w-6 h-6 text-gray-400" />
-          </button>
+    <header className="sticky top-0 z-30 bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-4">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden p-2 hover:bg-gray-800 rounded-lg transition-colors"
+        >
+          <Menu className="w-6 h-6 text-gray-400" />
+        </button>
 
-          <div className="hidden lg:flex items-center gap-3">
-            <img
-              src="/logo-white.svg"
-              alt="Allync Logo"
-              className="h-8 w-auto"
-              onError={(e) => {
-                e.currentTarget.src = '/logo-white.png';
-              }}
-            />
-            <div className="hidden md:block">
-              <h1 className="text-white font-bold text-lg">Allync</h1>
-              <p className="text-gray-400 text-xs">Control Panel</p>
-            </div>
-          </div>
+        <div className="flex-1 lg:flex-none">
+          <h1 className="text-xl font-bold text-white hidden lg:block">
+            Welcome back, {user?.full_name || user?.email || 'User'}
+          </h1>
         </div>
 
-        <div className="flex-1 max-w-2xl hidden md:block">
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Notifications */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500 transition-all"
-            />
-          </div>
-        </div>
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <Bell className="w-5 h-5 text-gray-400" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
 
-        <div className="flex items-center gap-2 ml-auto">
-          <div className="flex items-center gap-1 mr-2">
-            <button
-              onClick={() => setLanguage('en')}
-              className={`px-2 py-1 rounded ${
-                language === 'en' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800'
-              }`}
-            >
-              🇬🇧
-            </button>
-            <button
-              onClick={() => setLanguage('tr')}
-              className={`px-2 py-1 rounded ${
-                language === 'tr' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800'
-              }`}
-            >
-              🇹🇷
-            </button>
+            {showNotifications && (
+              <NotificationsPanel onClose={() => setShowNotifications(false)} />
+            )}
           </div>
 
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <Bell className="w-5 h-5 text-gray-400" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-
+          {/* User Menu */}
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded-lg transition-colors"
+              className="flex items-center gap-2 sm:gap-3 p-2 hover:bg-gray-800 rounded-lg transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-sm font-medium">
-                {user && getInitials(user.name)}
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">
+                  {getInitials()}
+                </span>
               </div>
-              <div className="hidden md:block text-left">
-                <div className="text-sm font-medium text-white">{user?.name}</div>
-                <div className="text-xs text-gray-400">{user?.role.replace('_', ' ')}</div>
+              <div className="hidden sm:block text-left">
+                <p className="text-sm font-medium text-white">
+                  {user?.full_name || user?.email || 'User'}
+                </p>
+                <p className="text-xs text-gray-400">{getRoleName()}</p>
               </div>
             </button>
 
             {showUserMenu && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowUserMenu(false)}
-                ></div>
-                <div className="absolute right-0 top-full mt-2 w-64 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-                  <div className="p-4 border-b border-gray-800 bg-gray-800/50">
-                    <p className="text-white font-medium">{user?.name}</p>
-                    <p className="text-gray-400 text-sm">{user?.email}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Building2 className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-400 text-sm">{user?.company}</span>
-                    </div>
-                    <div className="mt-2">
-                      <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                        user?.role === 'SUPER_ADMIN'
-                          ? 'bg-red-500/20 text-red-400'
-                          : user?.role === 'COMPANY_ADMIN'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-green-500/20 text-green-400'
-                      }`}>
-                        {user?.role === 'SUPER_ADMIN' ? 'Super Admin' :
-                         user?.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'User'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-2">
-                    {(user?.role === 'SUPER_ADMIN' || user?.role === 'COMPANY_ADMIN') && (
-                      <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          if (user?.role === 'SUPER_ADMIN') {
-                            window.location.hash = 'system-settings';
-                          } else {
-                            window.location.hash = 'settings';
-                          }
-                        }}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
-                      >
-                        <UserIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">Profile</span>
-                      </button>
-                    )}
-
-                    {user?.role === 'COMPANY_ADMIN' && (
-                      <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          window.location.hash = 'settings';
-                        }}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
-                      >
-                        <Settings className="w-4 h-4" />
-                        <span className="text-sm font-medium">Settings</span>
-                      </button>
-                    )}
-
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        setShowLogoutConfirm(true);
-                      }}
-                      className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span className="text-sm font-medium">Logout</span>
-                    </button>
-                  </div>
-                </div>
-              </>
+              <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-1 z-50">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </div>
             )}
           </div>
         </div>
-      </header>
+      </div>
 
-      <NotificationsPanel
-        isOpen={showNotifications}
-        onClose={() => setShowNotifications(false)}
-      />
-
-      <ConfirmationDialog
-        isOpen={showLogoutConfirm}
-        onClose={() => setShowLogoutConfirm(false)}
-        onConfirm={() => {
-          setShowLogoutConfirm(false);
-          logout();
-        }}
-        title="Logout"
-        message="Are you sure you want to logout? You will need to login again to access the system."
-        confirmText="Logout"
-        confirmColor="from-red-600 to-red-700"
-      />
-    </>
+      {/* Click outside to close */}
+      {(showNotifications || showUserMenu) && (
+        <div
+          className="fixed inset-0 z-20"
+          onClick={() => {
+            setShowNotifications(false);
+            setShowUserMenu(false);
+          }}
+        />
+      )}
+    </header>
   );
 }

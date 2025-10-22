@@ -5,7 +5,7 @@ interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthUser>;  // ✅ AuthUser return!
   logout: () => Promise<void>;
 }
 
@@ -22,22 +22,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    // Listen to auth changes
-    const { data: { subscription } } = onAuthStateChange((user) => {
-      console.log('👤 User changed:', user?.email);
-      setUser(user);
-      setIsLoading(false);
-    });
+    // Listener'ı GEÇİCİ KAPAT (test için)
+    // const { data: { subscription } } = onAuthStateChange((user) => {
+    //   console.log('👤 User changed:', user?.email);
+    //   setUser(user);
+    //   setIsLoading(false);
+    // });
 
-    return () => {
-      subscription?.unsubscribe();
-    };
+    // return () => {
+    //   subscription?.unsubscribe();
+    // };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<AuthUser> => {  // ✅ Return type!
+    console.log('🎯 AuthContext.login called');
     const user = await signIn(email, password);
+    console.log('🎯 signIn returned:', user);
     setUser(user);
-    return user;
+    return user;  // ✅ User'ı return et
   };
 
   const logout = async () => {

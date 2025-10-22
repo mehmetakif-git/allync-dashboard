@@ -28,7 +28,7 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
   const menuItems: MenuItem[] = [
     // Main
     { type: 'divider', dividerLabel: 'MAIN', id: 'divider-main', label: '', icon: null, path: '' },
-    { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/admin/dashboard' },
+    { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/admin' },
     
     // Services
     { type: 'divider', dividerLabel: 'SERVICES', id: 'divider-services', label: '', icon: null, path: '' },

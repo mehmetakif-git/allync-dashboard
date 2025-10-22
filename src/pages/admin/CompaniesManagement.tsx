@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Edit3, Trash2, Eye, Building2, Users, Zap, CheckCircle, XCircle } from 'lucide-react';
-import { getAllCompanies } from '../../lib/api/companies';
+import { useNavigate } from 'react-router-dom';  // ✅ EKLE
+import { ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, MapPin, CheckCircle, XCircle, Search, Edit3, Eye, Trash2, Plus, Settings, MessageCircle, Instagram, Sheet, FileText, FolderOpen, Image, Globe, Smartphone } from 'lucide-react';
+import { getAllCompanies, createCompany, deleteCompany } from '../../lib/api/companies';  // ✅ createCompany, deleteCompany ekle
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function CompaniesManagement() {
+  const navigate = useNavigate();  // ✅ EKLE
   const [isLoading, setIsLoading] = useState(true);
   const [companies, setCompanies] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +38,20 @@ export default function CompaniesManagement() {
   const [successMessage, setSuccessMessage] = useState('');
 
   // Fetch companies on mount
+  const fetchCompanies = async () => {
+    try {
+      setIsLoading(true);
+      console.log('📡 Fetching all companies...');
+      const data = await getAllCompanies();
+      console.log('✅ Companies fetched:', data);
+      setCompanies(data || []);
+    } catch (err) {
+      console.error('❌ Error fetching companies:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -43,6 +59,8 @@ export default function CompaniesManagement() {
         console.log('📡 Fetching all companies...');
         const data = await getAllCompanies();
         console.log('✅ Companies fetched:', data);
+        console.log('🔍 First company:', data[0]);  // ✅ EKLE
+        console.log('🔍 First company ID:', data[0]?.id);  // ✅ EKLE
         setCompanies(data || []);
       } catch (err) {
         console.error('❌ Error fetching companies:', err);
@@ -56,8 +74,8 @@ export default function CompaniesManagement() {
 
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         company.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         company.country.toLowerCase().includes(searchTerm.toLowerCase());
+      company.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.country.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || company.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -96,51 +114,85 @@ export default function CompaniesManagement() {
   const handleAddCompany = async () => {
     setIsProcessing(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      console.log('📡 Creating company:', formData);
 
-    // TODO: Implement real API call here
-    const newCompany = {
-      id: String(companies.length + 1),
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      country: formData.country,
-      address: formData.address,
-      status: formData.status,
-      created_at: new Date().toISOString(),
-      activeServicesCount: 0,
-    };
+      // ✅ REAL API CALL
+      const newCompany = await createCompany({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        country: formData.country,
+        address: formData.address,
+        city: formData.city,
+        postal_code: formData.postalCode,
+        tax_id: formData.taxId,
+        registration_number: formData.registrationNumber,
+        billing_email: formData.billingEmail || formData.email,
+        website: formData.website,
+        status: formData.status,
+      });
 
-    setCompanies([...companies, newCompany]);
-    setIsProcessing(false);
-    setShowAddModal(false);
+      console.log('✅ Company created:', newCompany);
 
-    setSuccessMessage(`Company "${formData.name}" has been added successfully!`);
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
+      // Refresh companies list
+      await fetchCompanies();
 
-    console.log('Company Added:', newCompany);
+      setShowAddModal(false);
+      setSuccessMessage(`Company "${formData.name}" has been added successfully!`);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+
+      // TODO: Create admin user if provided
+      if (formData.adminName && formData.adminEmail) {
+        console.log('📧 Admin user creation needed:', {
+          name: formData.adminName,
+          email: formData.adminEmail,
+          companyId: newCompany.id,
+        });
+        // Implement createUser API call here
+      }
+    } catch (err: any) {
+      console.error('❌ Error creating company:', err);
+      setSuccessMessage(`Failed to add company: ${err.message}`);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleDeleteCompany = async () => {
     setIsProcessing(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      console.log('🗑️ Deleting company:', selectedCompany.id);
 
-    // TODO: Implement real API call here
-    setCompanies(companies.filter(c => c.id !== selectedCompany.id));
-    setIsProcessing(false);
-    setShowDeleteConfirm(false);
+      // ✅ REAL API CALL
+      await deleteCompany(selectedCompany.id);
 
-    setSuccessMessage(`Company "${selectedCompany.name}" has been deleted.`);
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
+      console.log('✅ Company deleted');
 
-    console.log('Company Deleted:', selectedCompany.id);
+      // Refresh companies list
+      await fetchCompanies();
+
+      setShowDeleteConfirm(false);
+      setSuccessMessage(`Company "${selectedCompany.name}" has been deleted.`);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+    } catch (err: any) {
+      console.error('❌ Error deleting company:', err);
+      setSuccessMessage(`Failed to delete company: ${err.message}`);
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleViewDetails = (companyId: string) => {
-    window.location.hash = `company-detail/${companyId}`;
+    // ✅ MODERN NAVIGATION
+    navigate(`/admin/companies/${companyId}`);
   };
 
   if (isLoading) {
@@ -149,6 +201,7 @@ export default function CompaniesManagement() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      {/* ... REST OF JSX STAYS THE SAME ... */}
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -261,11 +314,10 @@ export default function CompaniesManagement() {
                       <span className="text-gray-300">{company.country}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        company.status === 'active'
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${company.status === 'active'
                           ? 'bg-green-500/10 border border-green-500/30 text-green-500'
                           : 'bg-red-500/10 border border-red-500/30 text-red-500'
-                      }`}>
+                        }`}>
                         {company.status}
                       </span>
                     </td>
@@ -299,12 +351,14 @@ export default function CompaniesManagement() {
           </div>
         </div>
 
+        {/* ADD MODAL - SAME AS BEFORE */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6 my-8">
               <h2 className="text-2xl font-bold text-white mb-6">Add New Company</h2>
 
               <div className="space-y-4 mb-6 max-h-[60vh] overflow-y-auto pr-2">
+                {/* ... Form fields stay the same ... */}
                 <div className="border-b border-gray-700 pb-4">
                   <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
 

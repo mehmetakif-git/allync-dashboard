@@ -6,6 +6,13 @@ export interface Company {
   email: string;
   phone?: string | null;
   country: string;
+  address?: string | null;  // ✅ EKLE
+  city?: string | null;  // ✅ EKLE
+  postal_code?: string | null;  // ✅ EKLE
+  tax_id?: string | null;  // ✅ EKLE
+  registration_number?: string | null;  // ✅ EKLE
+  billing_email?: string | null;  // ✅ EKLE
+  website?: string | null;  // ✅ EKLE
   logo_url?: string | null;
   status: string; // 'active' | 'inactive' | 'suspended'
   created_at: string;
@@ -22,6 +29,7 @@ export async function getAllCompanies() {
   if (error) throw error;
   return data as Company[];
 }
+
 // Create company
 export async function createCompany(company: Omit<Company, 'id' | 'created_at' | 'updated_at'>) {
   const { data, error } = await supabase
@@ -56,7 +64,8 @@ export async function deleteCompany(id: string) {
 
   if (error) throw error;
 }
-// Get all companies (for Super Admin)
+
+// Get all companies with projects (for Super Admin)
 export async function getAllCompaniesWithProjects() {
   const { data, error } = await supabase
     .from('companies')
@@ -89,6 +98,7 @@ export async function getAllCompaniesWithProjects() {
   
   return data;
 }
+
 // Get company by ID
 export async function getCompanyById(companyId: string) {
   const { data, error } = await supabase

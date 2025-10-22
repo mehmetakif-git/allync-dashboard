@@ -46,7 +46,7 @@ export async function getCompanyUsers(companyId: string) {
     console.error('Error fetching company users:', error);
     throw error;
   }
-  
+
   return data as User[];
 }
 
@@ -62,7 +62,7 @@ export async function getUserById(userId: string) {
     console.error('Error fetching user:', error);
     throw error;
   }
-  
+
   return data as User;
 }
 
@@ -123,13 +123,15 @@ export async function updateUser(userId: string, updates: Partial<User>) {
     console.error('Error updating user:', error);
     throw error;
   }
-  
+
   return data as User;
 }
 
-// Delete user
+// Delete user (WITH TRIGGER SUPPORT)
 export async function deleteUser(userId: string) {
-  // Delete profile
+  console.log('🗑️ Deleting user profile (trigger will delete auth user):', userId);
+
+  // Delete profile - Trigger will automatically delete auth user
   const { error: profileError } = await supabase
     .from('profiles')
     .delete()
@@ -140,13 +142,9 @@ export async function deleteUser(userId: string) {
     throw profileError;
   }
 
-  // Delete auth user (requires admin access)
-  const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+  console.log('✅ User deleted (profile + auth via trigger)');
 
-  if (authError) {
-    console.error('Error deleting auth user:', authError);
-    throw authError;
-  }
+  // Note: Auth user is automatically deleted by Supabase trigger
 }
 
 // =====================================================
@@ -170,13 +168,13 @@ export async function getAllUsers() {
     console.error('Error fetching all users:', error);
     throw error;
   }
-  
+
   return data;
 }
 
 // Update user status (suspend/block/activate)
 export async function updateUserStatus(
-  userId: string, 
+  userId: string,
   status: 'active' | 'suspended' | 'blocked'
 ) {
   const { data, error } = await supabase
@@ -190,7 +188,7 @@ export async function updateUserStatus(
     console.error('Error updating user status:', error);
     throw error;
   }
-  
+
   return data as User;
 }
 
@@ -207,7 +205,7 @@ export async function updateLastLogin(userId: string) {
     console.error('Error updating last login:', error);
     throw error;
   }
-  
+
   return data as User;
 }
 
@@ -243,7 +241,7 @@ export async function getInvites(companyId?: string) {
     console.error('Error fetching invites:', error);
     throw error;
   }
-  
+
   return data as any[];
 }
 
@@ -276,7 +274,7 @@ export async function createInvite(inviteData: {
     console.error('Error creating invite:', error);
     throw error;
   }
-  
+
   return data as UserInvite;
 }
 
@@ -284,7 +282,7 @@ export async function createInvite(inviteData: {
 export async function acceptInvite(inviteToken: string, userId: string) {
   const { data, error } = await supabase
     .from('user_invites')
-    .update({ 
+    .update({
       status: 'accepted',
       accepted_at: new Date().toISOString()
     })
@@ -296,7 +294,7 @@ export async function acceptInvite(inviteToken: string, userId: string) {
     console.error('Error accepting invite:', error);
     throw error;
   }
-  
+
   return data as UserInvite;
 }
 
@@ -313,7 +311,7 @@ export async function expireInvite(inviteId: string) {
     console.error('Error expiring invite:', error);
     throw error;
   }
-  
+
   return data as UserInvite;
 }
 
@@ -349,6 +347,6 @@ export async function getInviteByToken(token: string) {
     console.error('Error fetching invite:', error);
     throw error;
   }
-  
+
   return data;
 }
