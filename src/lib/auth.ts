@@ -29,7 +29,10 @@ export async function signIn(email: string, password: string) {
       .eq('id', authData.user.id)
       .single();
 
-    if (profileError) throw profileError;
+    console.log('🔍 Profile data:', profile);
+    console.log('🔍 Profile error:', profileError);
+      if (!profile) throw new Error('Profile not found'); 
+      if (profileError) throw profileError;
 
     console.log('✅ Login successful:', profile);
     return profile as AuthUser;

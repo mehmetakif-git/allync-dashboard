@@ -35,14 +35,14 @@ import PhotosServiceManagement from './pages/admin/services/PhotosServiceManagem
 import WebsiteServiceManagement from './pages/admin/services/WebsiteServiceManagement';
 import MobileAppServiceManagement from './pages/admin/services/MobileAppServiceManagement';
 
-// Company Pages
+// Company/User Pages
 import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
 import Services from './pages/Services';
 import Invoices from './pages/Invoices';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
 
-// Service Pages
+// Service Pages (Company/User)
 import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
 import InstagramAutomation from './pages/services/InstagramAutomation';
 import GoogleCalendar from './pages/services/GoogleCalendar';
@@ -65,15 +65,15 @@ export default function App() {
 
             {/* Super Admin Routes */}
             <Route
-              path="/admin/*"
+              path="/admin"
               element={
                 <ProtectedRoute requiredRole="super_admin">
                   <SuperAdminLayout />
                 </ProtectedRoute>
               }
             >
+              {/* Default route - Super Admin Dashboard */}
               <Route index element={<SuperAdminDashboard />} />
-              <Route path="dashboard" element={<SuperAdminDashboard />} />
               
               {/* Companies */}
               <Route path="companies" element={<CompaniesManagement />} />
@@ -108,13 +108,14 @@ export default function App() {
 
             {/* Company Admin & User Routes */}
             <Route
-              path="/dashboard/*"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <CompanyLayout />
                 </ProtectedRoute>
               }
             >
+              {/* Default route - Company Dashboard */}
               <Route index element={<CompanyAdminDashboard />} />
               <Route path="services" element={<Services />} />
               <Route path="invoices" element={<Invoices />} />
