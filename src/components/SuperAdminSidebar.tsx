@@ -1,6 +1,6 @@
 import { Home, Zap, MessageCircle, Instagram, Calendar, Sheet, Mail, FileText, FolderOpen, Image, Video, Mic, Play, Film, BarChart3, Sparkles, ShoppingCart, Monitor, Smartphone, Target, Wifi, Cloud, Palette, Wrench, Building2, Users, DollarSign, Receipt, UserPlus, Bell, Settings, Activity, AlertTriangle, LogOut, X, Globe } from 'lucide-react';
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
 
 interface MenuItem {

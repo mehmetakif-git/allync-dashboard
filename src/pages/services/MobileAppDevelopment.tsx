@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Smartphone, Calendar, CheckCircle2, Circle, Clock, XCircle, ExternalLink, Info } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { getMobileAppProjectsByCompany } from '../../lib/api/mobileAppProjects';
 
 const MobileAppDevelopment: React.FC = () => {

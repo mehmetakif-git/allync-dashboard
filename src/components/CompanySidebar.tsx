@@ -1,7 +1,7 @@
 import { Home, Zap, MessageCircle, Instagram, FileText, HelpCircle, Settings, LogOut, X, Package } from 'lucide-react';
 import { useState } from 'react';
 import { mockCompanyRequests, serviceTypes } from '../data/services';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
 import { mockWhatsAppInstances } from '../data/mockWhatsAppData';
 import { mockInstagramInstances } from '../data/mockInstagramData';

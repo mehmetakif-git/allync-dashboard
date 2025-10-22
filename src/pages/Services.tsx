@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { serviceTypes } from '../data/services';
 import { mockCompanyRequests } from '../data/services';
 import { AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';

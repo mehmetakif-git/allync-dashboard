@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User, Building2, Shield, Globe, Calendar, MapPin, Mail, Phone, CheckCircle, Clock, Monitor } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Settings() {
   const { user } = useAuth();

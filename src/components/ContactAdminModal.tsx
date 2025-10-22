@@ -31,7 +31,9 @@ export default function ContactAdminModal({ isOpen, onClose }: ContactAdminModal
                   For password resets, account access, or technical support, please contact your system administrator.
                 </p>
                 
-                  href="mailto:info@allyncai.com?subject=Account%20Access%20Request&body=Hello,%0D%0A%0D%0AI need assistance with:%0D%0A%0D%0AName:%0D%0AEmail:%0D%0ACompany:%0D%0AIssue:"
+                {/* HATA BURADAYDI: Eksik <a> etiketi eklendi */}
+                <a
+                  href="mailto:info@allyncai.com?subject=Account%20Access%20Request&body=Hello,%0D%0A%0D%0AI%20need%20assistance%20with:%0D%0A%0D%0AName:%0D%0AEmail:%0D%0ACompany:%0D%0AIssue:"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors"
                 >
                   <Mail className="w-4 h-4" />

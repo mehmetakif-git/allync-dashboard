@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, Bell, Menu, LogOut, User as UserIcon, Settings, Building2 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import NotificationsPanel from './NotificationsPanel';
 import ConfirmationDialog from './ConfirmationDialog';
 
