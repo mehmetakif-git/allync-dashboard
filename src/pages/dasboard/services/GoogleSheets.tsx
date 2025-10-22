@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sheet, Search, TrendingUp, Database, BarChart3, Settings as SettingsIcon, Download, RefreshCw } from 'lucide-react';
-import { mockSheetsDataCache, mockSheetsQueries } from '../../data/mockSheetsData';
+import { mockSheetsDataCache, mockSheetsQueries } from '../../../data/mockSheetsData';
 
 export default function GoogleSheets() {
   const [activeTab, setActiveTab] = useState('queries');

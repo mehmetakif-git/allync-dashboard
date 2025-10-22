@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { serviceTypes } from '../data/services';
-import { mockCompanyRequests } from '../data/services';
+import { useAuth } from '../../contexts/AuthContext';
+import { serviceTypes } from '../../data/services';
+import { mockCompanyRequests } from '../../data/services';
 import { AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';
-import RequestServiceModal from '../components/RequestServiceModal';
+import RequestServiceModal from '../../components/RequestServiceModal';
 
 export default function Services() {
   const { user } = useAuth();

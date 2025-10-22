@@ -1,5 +1,5 @@
 import { Zap, TrendingUp, AlertCircle, Clock, CheckCircle, CreditCard, MessageSquare, ArrowRight, Activity } from 'lucide-react';
-import { serviceTypes } from '../data/services';
+import { serviceTypes } from '../../data/services';
 
 // MOCK DATA - NO DB YET
 // To change active services, simply edit this array:

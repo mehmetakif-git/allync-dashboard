@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Login from './pages/Login';
+import Login from './pages/auth/Login';
 
 // Layouts
 import SuperAdminLayout from './layouts/SuperAdminLayout';
@@ -36,23 +36,23 @@ import WebsiteServiceManagement from './pages/admin/services/WebsiteServiceManag
 import MobileAppServiceManagement from './pages/admin/services/MobileAppServiceManagement';
 
 // Company/User Pages
-import CompanyAdminDashboard from './pages/CompanyAdminDashboard';
-import Services from './pages/Services';
-import Invoices from './pages/Invoices';
-import Support from './pages/Support';
-import Settings from './pages/Settings';
+import CompanyAdminDashboard from './pages/dasboard/CompanyAdminDashboard';
+import Services from './pages/dasboard/Services';
+import Invoices from './pages/dasboard/Invoices';
+import Support from './pages/dasboard/Support';
+import Settings from './pages/dasboard/Settings';
 
 // Service Pages (Company/User)
-import WhatsAppAutomation from './pages/services/WhatsAppAutomation';
-import InstagramAutomation from './pages/services/InstagramAutomation';
-import GoogleCalendar from './pages/services/GoogleCalendar';
-import GoogleSheets from './pages/services/GoogleSheets';
-import Gmail from './pages/services/Gmail';
-import GoogleDocs from './pages/services/GoogleDocs';
-import GoogleDrive from './pages/services/GoogleDrive';
-import GooglePhotos from './pages/services/GooglePhotos';
-import WebsiteDevelopment from './pages/services/WebsiteDevelopment';
-import MobileAppDevelopment from './pages/services/MobileAppDevelopment';
+import WhatsAppAutomation from './pages/dasboard/services/WhatsAppAutomation';
+import InstagramAutomation from './pages/dasboard/services/InstagramAutomation';
+import GoogleCalendar from './pages/dasboard/services/GoogleCalendar';
+import GoogleSheets from './pages/dasboard/services/GoogleSheets';
+import Gmail from './pages/dasboard/services/Gmail';
+import GoogleDocs from './pages/dasboard/services/GoogleDocs';
+import GoogleDrive from './pages/dasboard/services/GoogleDrive';
+import GooglePhotos from './pages/dasboard/services/GooglePhotos';
+import WebsiteDevelopment from './pages/dasboard/services/WebsiteDevelopment';
+import MobileAppDevelopment from './pages/dasboard/services/MobileAppDevelopment';
 
 export default function App() {
   return (

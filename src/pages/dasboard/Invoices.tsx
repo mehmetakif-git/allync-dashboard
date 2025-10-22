@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Download, Calendar, DollarSign, CreditCard, CheckCircle, Clock, AlertCircle, Filter } from 'lucide-react';
-import LoadingSpinner from '../components/LoadingSpinner';
-import ConfirmationDialog from '../components/ConfirmationDialog';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 
 interface Invoice {
   id: string;

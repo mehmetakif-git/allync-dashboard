@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FolderOpen, File, Upload, Download, Share2, TrendingUp, HardDrive, BarChart3, Settings as SettingsIcon, Search } from 'lucide-react';
-import { mockDriveFiles } from '../../data/mockDriveData';
+import { mockDriveFiles } from '../../../data/mockDriveData';
 
 export default function GoogleDrive() {
   const [activeTab, setActiveTab] = useState('files');

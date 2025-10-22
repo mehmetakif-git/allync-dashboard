@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Image, Camera, Star, TrendingUp, Users, BarChart3, Settings as SettingsIcon, Download, Grid, List } from 'lucide-react';
-import { mockPhotos, mockPhotoAlbums } from '../../data/mockPhotosData';
+import { mockPhotos, mockPhotoAlbums } from '../../../data/mockPhotosData';
 
 export default function GooglePhotos() {
   const [activeTab, setActiveTab] = useState('photos');

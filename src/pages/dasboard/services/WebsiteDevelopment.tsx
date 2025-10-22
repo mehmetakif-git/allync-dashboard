@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { getWebsiteProjectsByCompany } from '../../lib/api/websiteProjects';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getWebsiteProjectsByCompany } from '../../../lib/api/websiteProjects';
 
 const WebsiteDevelopment: React.FC = () => {
   const { user } = useAuth();

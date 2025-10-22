@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Search, MessageCircle, Clock, TrendingUp, Users, ThumbsUp, Send, CheckCheck, BarChart3, Settings, Edit3, Eye, Download, Tag, User, ChevronDown, Plus, Info, Instagram } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { mockInstagramPosts, mockInstagramComments, getCommentsByPost } from '../../data/mockInstagramComments';
-import { mockInstagramDMSessions } from '../../data/mockInstagramDMSessions';
-import { mockInstagramDMMessages } from '../../data/mockInstagramDMMessages';
-import { mockInstagramUsers } from '../../data/mockInstagramUsers';
-import { mockInstagramInstances, connectionStatusColors, connectionStatusLabels } from '../../data/mockInstagramData';
+import { useAuth } from '../../../contexts/AuthContext';
+import { mockInstagramPosts, mockInstagramComments, getCommentsByPost } from '../../../data/mockInstagramComments';
+import { mockInstagramDMSessions } from '../../../data/mockInstagramDMSessions';
+import { mockInstagramDMMessages } from '../../../data/mockInstagramDMMessages';
+import { mockInstagramUsers } from '../../../data/mockInstagramUsers';
+import { mockInstagramInstances, connectionStatusColors, connectionStatusLabels } from '../../../data/mockInstagramData';
 
 export default function InstagramAutomation() {
   const { user } = useAuth();

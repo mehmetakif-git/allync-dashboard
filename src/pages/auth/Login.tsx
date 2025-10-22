@@ -1,8 +1,8 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Shield, Building2, AlertCircle } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import ContactAdminModal from '../components/ContactAdminModal';
+import { useAuth } from '../../contexts/AuthContext';
+import ContactAdminModal from '../../components/ContactAdminModal';
 
 export default function Login() {
   const navigate = useNavigate();

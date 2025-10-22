@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
-import Login from './pages/Login';
+import Login from './pages/auth/Login';
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
 import WhatsApp from './pages/WhatsApp';

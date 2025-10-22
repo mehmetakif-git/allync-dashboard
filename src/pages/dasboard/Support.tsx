@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MessageSquare, Send, Plus, Clock, CheckCircle, XCircle, AlertCircle, Search } from 'lucide-react';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 interface Message {
   id: string;

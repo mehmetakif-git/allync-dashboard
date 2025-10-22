@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Search, MessageCircle, Clock, TrendingUp, Users, CheckCheck, BarChart3, UserCircle, Settings, Mail, Phone, Tag, Edit3, Eye, Download, ChevronDown, Plus, Info } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { mockWhatsAppSessions } from '../../data/mockWhatsAppSessions';
-import { mockWhatsAppMessages } from '../../data/mockWhatsAppMessages';
-import { mockWhatsAppCustomers } from '../../data/mockWhatsAppCustomers';
-import { mockWhatsAppInstances, connectionStatusColors, connectionStatusLabels } from '../../data/mockWhatsAppData';
+import { useAuth } from '../../../contexts/AuthContext';
+import { mockWhatsAppSessions } from '../../../data/mockWhatsAppSessions';
+import { mockWhatsAppMessages } from '../../../data/mockWhatsAppMessages';
+import { mockWhatsAppCustomers } from '../../../data/mockWhatsAppCustomers';
+import { mockWhatsAppInstances, connectionStatusColors, connectionStatusLabels } from '../../../data/mockWhatsAppData';
 
 export default function WhatsAppAutomation() {
   const { user } = useAuth();

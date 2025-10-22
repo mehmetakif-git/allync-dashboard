@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, Send, Inbox, Archive, Star, TrendingUp, Clock, BarChart3, Settings as SettingsIcon, Download } from 'lucide-react';
-import { mockGmailMessages } from '../../data/mockGmailData';
+import { mockGmailMessages } from '../../../data/mockGmailData';
 
 export default function Gmail() {
   const [activeTab, setActiveTab] = useState('emails');

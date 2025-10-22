@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Calendar, Clock, CheckCircle, XCircle, AlertCircle, TrendingUp, Users, BarChart3, Settings as SettingsIcon, Download } from 'lucide-react';
-import { mockAppointmentRequests, mockCalendarStaff, mockAppointmentTypes } from '../../data/mockCalendarData';
+import { mockAppointmentRequests, mockCalendarStaff, mockAppointmentTypes } from '../../../data/mockCalendarData';
 
 export default function GoogleCalendar() {
   const [activeTab, setActiveTab] = useState('appointments');

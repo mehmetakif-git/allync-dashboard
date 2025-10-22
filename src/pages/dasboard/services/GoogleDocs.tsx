@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FileText, File, CheckCircle, Clock, TrendingUp, BarChart3, Settings as SettingsIcon, Download, Share2 } from 'lucide-react';
-import { mockGeneratedDocuments } from '../../data/mockDocsData';
+import { mockGeneratedDocuments } from '../../../data/mockDocsData';
 
 export default function GoogleDocs() {
   const [activeTab, setActiveTab] = useState('documents');
