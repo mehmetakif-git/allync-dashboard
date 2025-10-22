@@ -1,44 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Globe, Building2, TrendingUp, BarChart3, ArrowLeft, Settings, Clock, CheckCircle2 } from 'lucide-react';
 import WebsiteSettingsModal from "../../../components/modals/WebsiteSettingsModal";
-import { mockWebsiteProjects } from '../../../data/mockWebsiteData';
+import { getAllCompaniesWithProjects } from '../../../lib/api/companies';
+import { updateWebsiteProjectWithMilestones } from '../../../lib/api/websiteProjects';
 
 export default function WebsiteServiceManagement() {
   const [activeTab, setActiveTab] = useState<'overview' | 'companies' | 'analytics'>('overview');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // TODO: Replace with API call
-  // const { data: companies } = await supabase
-  //   .from('companies')
-  //   .select(`
-  //     *,
-  //     website_projects (
-  //       id,
-  //       project_name,
-  //       project_type,
-  //       domain,
-  //       overall_progress,
-  //       estimated_completion,
-  //       status,
-  //       milestones:website_milestones(count)
-  //     )
-  //   `)
-  //   .eq('website_projects.status', 'active');
+  // Fetch companies with projects
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        console.log('📡 Fetching companies with website projects...');
+        const data = await getAllCompaniesWithProjects();
+        console.log('✅ Companies fetched:', data);
+        
+        // Filter companies that have website projects
+        const companiesWithWebsite = data.filter((c: any) => c.website_projects && c.website_projects.length > 0);
+        setCompanies(companiesWithWebsite);
+      } catch (err) {
+        console.error('❌ Error fetching companies:', err);
+        setError('Failed to load companies');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const companiesUsingService = [
-    {
-      id: '1',
-      name: 'Tech Corp',
-      activeSince: '2025-10-01',
-      package: 'Professional',
-      projects: mockWebsiteProjects.filter(p => p.companyId === '1'),
-    },
-  ];
+    fetchCompanies();
+  }, []);
+
+  const companiesUsingService = companies.map((company: any) => ({
+    id: company.id,
+    name: company.name,
+    activeSince: company.created_at,
+    package: 'Professional', // You can add this to DB if needed
+    projects: company.website_projects || []
+  }));
 
   const allProjects = companiesUsingService.flatMap(c => c.projects);
-  const activeProjectsCount = allProjects.filter(p => p.status === 'active').length;
-  const completedProjectsCount = allProjects.filter(p => p.status === 'completed').length;
+  const activeProjectsCount = allProjects.filter((p: any) => p.status === 'active').length;
+  const completedProjectsCount = allProjects.filter((p: any) => p.status === 'completed').length;
 
   const globalStats = {
     totalCompanies: companiesUsingService.length,
@@ -51,7 +59,7 @@ export default function WebsiteServiceManagement() {
     avgCompletionTime: '6-8 weeks',
     avgProgress: allProjects.length > 0
       ? Math.round(
-          allProjects.reduce((sum, p) => sum + p.overallProgress, 0) / allProjects.length
+          allProjects.reduce((sum: number, p: any) => sum + (p.overall_progress || 0), 0) / allProjects.length
         )
       : 0,
   };
@@ -61,11 +69,81 @@ export default function WebsiteServiceManagement() {
     setShowSettingsModal(true);
   };
 
+  const handleSaveSettings = async (settings: any) => {
+    if (!selectedCompany?.selectedProject) return;
+
+    try {
+      setSaving(true);
+      console.log('💾 Saving website settings:', settings);
+
+      const projectId = selectedCompany.selectedProject.id;
+      
+      // Update project
+      await updateWebsiteProjectWithMilestones(
+        projectId,
+        {
+          project_name: settings.projectName,
+          project_type: settings.projectType,
+          domain: settings.domain,
+          email: settings.email,
+          estimated_completion: settings.estimatedCompletion,
+        },
+        settings.milestones
+      );
+
+      console.log('✅ Website project updated successfully');
+      
+      // Refresh data
+      const data = await getAllCompaniesWithProjects();
+      const companiesWithWebsite = data.filter((c: any) => c.website_projects && c.website_projects.length > 0);
+      setCompanies(companiesWithWebsite);
+      
+      setShowSettingsModal(false);
+      setSelectedCompany(null);
+    } catch (err) {
+      console.error('❌ Error saving settings:', err);
+      alert('Failed to save settings. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'companies', label: 'Companies', icon: Building2, badge: companiesUsingService.length },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   ];
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading companies...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6 text-center">
+            <p className="text-red-400">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
@@ -202,93 +280,109 @@ export default function WebsiteServiceManagement() {
                 <span className="text-sm text-gray-400">{companiesUsingService.length} active</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-6">
-                {companiesUsingService.map((company) => (
-                  <div key={company.id} className="space-y-4">
-                    <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-6">
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                            <Building2 className="w-6 h-6 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-white">{company.name}</h3>
-                            <p className="text-sm text-gray-400">{company.package} Package - {company.projects.length} project{company.projects.length !== 1 ? 's' : ''}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            window.location.hash = `company-detail/${company.id}`;
-                          }}
-                          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                        >
-                          View Company
-                        </button>
-                      </div>
-
-                      <div className="space-y-4">
-                        {company.projects.map((project) => {
-                          const completedMilestones = project.milestones.filter(m => m.status === 'completed').length;
-                          return (
-                            <div key={project.id} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                              <div className="flex items-start justify-between mb-3">
-                                <div>
-                                  <h4 className="text-white font-semibold">{project.projectName}</h4>
-                                  <p className="text-sm text-gray-400">{project.projectType === 'e-commerce' ? 'E-commerce' : project.projectType === 'corporate' ? 'Corporate' : 'Personal'} - {project.domain}</p>
-                                </div>
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  project.status === 'active'
-                                    ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400'
-                                    : project.status === 'completed'
-                                    ? 'bg-green-500/10 border border-green-500/30 text-green-400'
-                                    : 'bg-gray-500/10 border border-gray-500/30 text-gray-400'
-                                }`}>
-                                  {project.status === 'active' ? 'Active' : project.status === 'completed' ? 'Completed' : 'On Hold'}
-                                </span>
-                              </div>
-
-                              <div className="grid grid-cols-3 gap-4 mb-3">
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1">Progress</p>
-                                  <p className="text-white font-medium">{project.overallProgress}%</p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1">Milestones</p>
-                                  <p className="text-white font-medium">{completedMilestones}/{project.milestones.length}</p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-gray-500 mb-1">Est. Completion</p>
-                                  <p className="text-white font-medium">{new Date(project.estimatedCompletion).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-                                </div>
-                              </div>
-
-                              <div className="mb-3">
-                                <div className="w-full bg-gray-700 rounded-full h-2">
-                                  <div
-                                    className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all"
-                                    style={{ width: `${project.overallProgress}%` }}
-                                  />
-                                </div>
-                              </div>
-
-                              <button
-                                onClick={() => {
-                                  setSelectedCompany({ ...company, selectedProject: project });
-                                  handleConfigureSettings({ ...company, selectedProject: project });
-                                }}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all"
-                              >
-                                <Settings className="w-4 h-4" />
-                                Configure Project
-                              </button>
+              {companiesUsingService.length === 0 ? (
+                <div className="text-center py-12">
+                  <Globe className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-white font-medium">No companies using this service yet</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6">
+                  {companiesUsingService.map((company) => (
+                    <div key={company.id} className="space-y-4">
+                      <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                              <Building2 className="w-6 h-6 text-white" />
                             </div>
-                          );
-                        })}
+                            <div>
+                              <h3 className="text-lg font-bold text-white">{company.name}</h3>
+                              <p className="text-sm text-gray-400">{company.package} Package - {company.projects.length} project{company.projects.length !== 1 ? 's' : ''}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              window.location.hash = `company-detail/${company.id}`;
+                            }}
+                            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                          >
+                            View Company
+                          </button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {company.projects.map((project: any) => {
+                            const completedMilestones = project.milestones?.filter((m: any) => m.status === 'completed').length || 0;
+                            const totalMilestones = project.milestones?.length || 0;
+                            
+                            return (
+                              <div key={project.id} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                                <div className="flex items-start justify-between mb-3">
+                                  <div>
+                                    <h4 className="text-white font-semibold">{project.project_name}</h4>
+                                    <p className="text-sm text-gray-400">
+                                      {project.project_type === 'e-commerce' ? 'E-commerce' : project.project_type === 'corporate' ? 'Corporate' : 'Personal'} - {project.domain}
+                                    </p>
+                                  </div>
+                                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                    project.status === 'active'
+                                      ? 'bg-blue-500/10 border border-blue-500/30 text-blue-400'
+                                      : project.status === 'completed'
+                                      ? 'bg-green-500/10 border border-green-500/30 text-green-400'
+                                      : 'bg-gray-500/10 border border-gray-500/30 text-gray-400'
+                                  }`}>
+                                    {project.status === 'active' ? 'Active' : project.status === 'completed' ? 'Completed' : 'On Hold'}
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-4 mb-3">
+                                  <div>
+                                    <p className="text-xs text-gray-500 mb-1">Progress</p>
+                                    <p className="text-white font-medium">{project.overall_progress || 0}%</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500 mb-1">Milestones</p>
+                                    <p className="text-white font-medium">{completedMilestones}/{totalMilestones}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500 mb-1">Est. Completion</p>
+                                    <p className="text-white font-medium">
+                                      {project.estimated_completion 
+                                        ? new Date(project.estimated_completion).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                        : 'TBD'
+                                      }
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="mb-3">
+                                  <div className="w-full bg-gray-700 rounded-full h-2">
+                                    <div
+                                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all"
+                                      style={{ width: `${project.overall_progress || 0}%` }}
+                                    />
+                                  </div>
+                                </div>
+
+                                <button
+                                  onClick={() => {
+                                    setSelectedCompany({ ...company, selectedProject: project });
+                                    handleConfigureSettings({ ...company, selectedProject: project });
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all"
+                                >
+                                  <Settings className="w-4 h-4" />
+                                  Configure Project
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -339,31 +433,25 @@ export default function WebsiteServiceManagement() {
           </div>
         )}
 
-        {showSettingsModal && selectedCompany && (() => {
-          const websiteProject = selectedCompany.selectedProject || mockWebsiteProjects.find(p => p.companyId === selectedCompany.id);
-          return (
-            <WebsiteSettingsModal
-              companyName={selectedCompany.name}
-              onClose={() => {
-                setShowSettingsModal(false);
-                setSelectedCompany(null);
-              }}
-              onSave={(settings) => {
-                console.log('Website settings saved:', settings);
-                setShowSettingsModal(false);
-                setSelectedCompany(null);
-              }}
-              initialSettings={websiteProject ? {
-                projectName: websiteProject.projectName,
-                projectType: websiteProject.projectType,
-                domain: websiteProject.domain,
-                email: websiteProject.email,
-                estimatedCompletion: websiteProject.estimatedCompletion.split('T')[0],
-                milestones: websiteProject.milestones
-              } : undefined}
-            />
-          );
-        })()}
+        {showSettingsModal && selectedCompany && selectedCompany.selectedProject && (
+          <WebsiteSettingsModal
+            companyName={selectedCompany.name}
+            onClose={() => {
+              setShowSettingsModal(false);
+              setSelectedCompany(null);
+            }}
+            onSave={handleSaveSettings}
+            initialSettings={{
+              projectName: selectedCompany.selectedProject.project_name,
+              projectType: selectedCompany.selectedProject.project_type,
+              domain: selectedCompany.selectedProject.domain,
+              email: selectedCompany.selectedProject.email,
+              estimatedCompletion: selectedCompany.selectedProject.estimated_completion?.split('T')[0] || '',
+              milestones: selectedCompany.selectedProject.milestones || []
+            }}
+            isSaving={saving}
+          />
+        )}
       </div>
     </div>
   );

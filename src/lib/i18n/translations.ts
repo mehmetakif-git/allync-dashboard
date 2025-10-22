@@ -1,306 +1,133 @@
-export const translations = {
-  en: {
-    common: {
-      welcome: "Welcome back",
-      loading: "Loading...",
-      save: "Save",
-      cancel: "Cancel",
-      delete: "Delete",
-      edit: "Edit",
-      search: "Search...",
-      filter: "Filter",
-      export: "Export",
-      create: "Create",
-      actions: "Actions",
-      status: "Status",
-      date: "Date",
-      amount: "Amount",
-      all: "All",
-    },
-    dashboard: {
-      title: "Dashboard",
-      subtitle: "Welcome back! Here's what's happening today.",
-      stats: {
-        activeServices: "Active Services",
-        messagesToday: "Messages Today",
-        openTickets: "Open Tickets",
-        revenueMonth: "Revenue This Month",
-      },
-      charts: {
-        messagesOverTime: "Messages Over Time",
-        serviceUsage: "Service Usage",
-      },
-      recentActivity: "Recent Activity",
-      quickActions: "Quick Actions",
-      lastUpdated: "Last updated",
-    },
-    services: {
-      title: "Services",
-      subtitle: "Explore and manage your AI-powered services",
-      catalog: "Service Catalog",
-      active: "Active Services",
-      activate: "Activate Service",
-      manage: "Manage",
-      upgrade: "Upgrade Plan",
-      nextBilling: "Next billing",
-      usage: "Usage",
-    },
-    whatsapp: {
-      title: "WhatsApp Automation",
-      subtitle: "Manage your WhatsApp conversations and analytics",
-      analytics: "Analytics",
-      liveChat: "Live Chat",
-      customers: "Customers",
-      settings: "Settings",
-      totalConversations: "Total Conversations",
-      activeSessions: "Active Sessions",
-      avgResponseTime: "Avg Response Time",
-      satisfactionScore: "Satisfaction Score",
-      searchConversations: "Search conversations...",
-      searchCustomers: "Search customers...",
-      typeMessage: "Type a message...",
-    },
-    invoices: {
-      title: "Invoices",
-      subtitle: "Manage and view your invoices",
-      all: "All",
-      paid: "Paid",
-      pending: "Pending",
-      overdue: "Overdue",
-      downloadPdf: "Download PDF",
-      createInvoice: "Create Invoice",
-      invoiceNumber: "Invoice #",
-      markAsPaid: "Mark as Paid",
-      items: "Items",
-      subtotal: "Subtotal",
-      tax: "Tax",
-      total: "Total",
-    },
-    support: {
-      title: "Support Tickets",
-      subtitle: "Manage and track support requests",
-      tickets: "Tickets",
-      createTicket: "Create Ticket",
-      open: "Open",
-      inProgress: "In Progress",
-      resolved: "Resolved",
-      priority: "Priority",
-      status: "Status",
-      subject: "Subject",
-      category: "Category",
-      description: "Description",
-      reply: "Reply",
-      sendReply: "Send Reply",
-    },
-    settings: {
-      title: "Settings",
-      subtitle: "Manage your account and preferences",
-      profile: "Profile",
-      company: "Company",
-      notifications: "Notifications",
-      billing: "Billing",
-      security: "Security",
-      changePassword: "Change Password",
-      uploadAvatar: "Upload Avatar",
-      saveChanges: "Save Changes",
-      fullName: "Full Name",
-      email: "Email",
-      phone: "Phone Number",
-      language: "Language",
-    },
-    admin: {
-      title: "Admin Panel",
-      subtitle: "Manage companies, users, and system settings",
-      companies: "Companies",
-      users: "Users",
-      systemSettings: "System Settings",
-      activityLogs: "Activity Logs",
-      addCompany: "Add Company",
-      addUser: "Add User",
-      maintenanceMode: "Maintenance Mode",
-    },
-    nav: {
-      dashboard: "Dashboard",
-      services: "Services",
-      whatsapp: "WhatsApp",
-      invoices: "Invoices",
-      support: "Support",
-      settings: "Settings",
-      admin: "Admin",
-      maintenance: "Maintenance",
-      logout: "Logout",
-    },
-    auth: {
-      welcomeBack: "Welcome Back",
-      signIn: "Sign in to your account to continue",
-      email: "Email Address",
-      password: "Password",
-      rememberMe: "Remember me",
-      forgotPassword: "Forgot password?",
-      signInButton: "Sign In",
-      signingIn: "Signing in...",
-      noAccount: "Don't have an account?",
-      register: "Register here",
-      demoAccounts: "Demo accounts",
-    },
+export interface Translations {
+  [key: string]: {
+    en: string;
+    tr: string;
+  };
+}
+
+export const translations: Translations = {
+  // Common
+  'common.loading': {
+    en: 'Loading...',
+    tr: 'Yükleniyor...'
   },
-  tr: {
-    common: {
-      welcome: "Tekrar hoş geldin",
-      loading: "Yükleniyor...",
-      save: "Kaydet",
-      cancel: "İptal",
-      delete: "Sil",
-      edit: "Düzenle",
-      search: "Ara...",
-      filter: "Filtrele",
-      export: "Dışa Aktar",
-      create: "Oluştur",
-      actions: "İşlemler",
-      status: "Durum",
-      date: "Tarih",
-      amount: "Tutar",
-      all: "Tümü",
-    },
-    dashboard: {
-      title: "Gösterge Paneli",
-      subtitle: "Tekrar hoş geldin! İşte bugünkü gelişmeler.",
-      stats: {
-        activeServices: "Aktif Hizmetler",
-        messagesToday: "Bugünkü Mesajlar",
-        openTickets: "Açık Talepler",
-        revenueMonth: "Bu Ayki Gelir",
-      },
-      charts: {
-        messagesOverTime: "Mesaj Trendleri",
-        serviceUsage: "Hizmet Kullanımı",
-      },
-      recentActivity: "Son Aktiviteler",
-      quickActions: "Hızlı İşlemler",
-      lastUpdated: "Son güncelleme",
-    },
-    services: {
-      title: "Hizmetler",
-      subtitle: "Yapay zeka destekli hizmetlerinizi keşfedin ve yönetin",
-      catalog: "Hizmet Kataloğu",
-      active: "Aktif Hizmetler",
-      activate: "Hizmeti Aktifleştir",
-      manage: "Yönet",
-      upgrade: "Paketi Yükselt",
-      nextBilling: "Sonraki fatura",
-      usage: "Kullanım",
-    },
-    whatsapp: {
-      title: "WhatsApp Otomasyonu",
-      subtitle: "WhatsApp konuşmalarınızı ve analizlerinizi yönetin",
-      analytics: "Analitik",
-      liveChat: "Canlı Sohbet",
-      customers: "Müşteriler",
-      settings: "Ayarlar",
-      totalConversations: "Toplam Konuşmalar",
-      activeSessions: "Aktif Oturumlar",
-      avgResponseTime: "Ort. Yanıt Süresi",
-      satisfactionScore: "Memnuniyet Puanı",
-      searchConversations: "Konuşmalarda ara...",
-      searchCustomers: "Müşterilerde ara...",
-      typeMessage: "Mesaj yazın...",
-    },
-    invoices: {
-      title: "Faturalar",
-      subtitle: "Faturalarınızı görüntüleyin ve yönetin",
-      all: "Tümü",
-      paid: "Ödendi",
-      pending: "Bekliyor",
-      overdue: "Gecikmiş",
-      downloadPdf: "PDF İndir",
-      createInvoice: "Fatura Oluştur",
-      invoiceNumber: "Fatura No",
-      markAsPaid: "Ödendi Olarak İşaretle",
-      items: "Kalemler",
-      subtotal: "Ara Toplam",
-      tax: "KDV",
-      total: "Toplam",
-    },
-    support: {
-      title: "Destek Talepleri",
-      subtitle: "Destek taleplerini yönetin ve takip edin",
-      tickets: "Talepler",
-      createTicket: "Talep Oluştur",
-      open: "Açık",
-      inProgress: "İşlemde",
-      resolved: "Çözüldü",
-      priority: "Öncelik",
-      status: "Durum",
-      subject: "Konu",
-      category: "Kategori",
-      description: "Açıklama",
-      reply: "Yanıtla",
-      sendReply: "Yanıt Gönder",
-    },
-    settings: {
-      title: "Ayarlar",
-      subtitle: "Hesabınızı ve tercihlerinizi yönetin",
-      profile: "Profil",
-      company: "Şirket",
-      notifications: "Bildirimler",
-      billing: "Faturalama",
-      security: "Güvenlik",
-      changePassword: "Şifre Değiştir",
-      uploadAvatar: "Avatar Yükle",
-      saveChanges: "Değişiklikleri Kaydet",
-      fullName: "Ad Soyad",
-      email: "E-posta",
-      phone: "Telefon Numarası",
-      language: "Dil",
-    },
-    admin: {
-      title: "Yönetim Paneli",
-      subtitle: "Şirketleri, kullanıcıları ve sistem ayarlarını yönetin",
-      companies: "Şirketler",
-      users: "Kullanıcılar",
-      systemSettings: "Sistem Ayarları",
-      activityLogs: "Aktivite Kayıtları",
-      addCompany: "Şirket Ekle",
-      addUser: "Kullanıcı Ekle",
-      maintenanceMode: "Bakım Modu",
-    },
-    nav: {
-      dashboard: "Ana Sayfa",
-      services: "Hizmetler",
-      whatsapp: "WhatsApp",
-      invoices: "Faturalar",
-      support: "Destek",
-      settings: "Ayarlar",
-      admin: "Yönetici",
-      maintenance: "Bakım",
-      logout: "Çıkış",
-    },
-    auth: {
-      welcomeBack: "Tekrar Hoş Geldiniz",
-      signIn: "Devam etmek için hesabınıza giriş yapın",
-      email: "E-posta Adresi",
-      password: "Şifre",
-      rememberMe: "Beni hatırla",
-      forgotPassword: "Şifremi unuttum?",
-      signInButton: "Giriş Yap",
-      signingIn: "Giriş yapılıyor...",
-      noAccount: "Hesabınız yok mu?",
-      register: "Buradan kayıt olun",
-      demoAccounts: "Demo hesaplar",
-    },
+  'common.error': {
+    en: 'Error',
+    tr: 'Hata'
   },
+  'common.success': {
+    en: 'Success',
+    tr: 'Başarılı'
+  },
+  'common.save': {
+    en: 'Save',
+    tr: 'Kaydet'
+  },
+  'common.cancel': {
+    en: 'Cancel',
+    tr: 'İptal'
+  },
+  'common.edit': {
+    en: 'Edit',
+    tr: 'Düzenle'
+  },
+  'common.delete': {
+    en: 'Delete',
+    tr: 'Sil'
+  },
+  'common.view': {
+    en: 'View',
+    tr: 'Görüntüle'
+  },
+  'common.back': {
+    en: 'Back',
+    tr: 'Geri'
+  },
+
+  // Auth
+  'auth.login': {
+    en: 'Login',
+    tr: 'Giriş Yap'
+  },
+  'auth.logout': {
+    en: 'Logout',
+    tr: 'Çıkış Yap'
+  },
+  'auth.email': {
+    en: 'Email',
+    tr: 'E-posta'
+  },
+  'auth.password': {
+    en: 'Password',
+    tr: 'Şifre'
+  },
+
+  // Dashboard
+  'dashboard.title': {
+    en: 'Dashboard',
+    tr: 'Kontrol Paneli'
+  },
+  'dashboard.welcome': {
+    en: 'Welcome',
+    tr: 'Hoş Geldiniz'
+  },
+
+  // Services
+  'services.title': {
+    en: 'Services',
+    tr: 'Hizmetler'
+  },
+  'services.catalog': {
+    en: 'Services Catalog',
+    tr: 'Hizmet Kataloğu'
+  },
+  'services.website': {
+    en: 'Website Development',
+    tr: 'Website Geliştirme'
+  },
+  'services.mobileApp': {
+    en: 'Mobile App Development',
+    tr: 'Mobil Uygulama Geliştirme'
+  },
+  'services.whatsapp': {
+    en: 'WhatsApp Automation',
+    tr: 'WhatsApp Otomasyonu'
+  },
+  'services.instagram': {
+    en: 'Instagram Automation',
+    tr: 'Instagram Otomasyonu'
+  },
+
+  // Project Status
+  'status.active': {
+    en: 'Active',
+    tr: 'Aktif'
+  },
+  'status.completed': {
+    en: 'Completed',
+    tr: 'Tamamlandı'
+  },
+  'status.pending': {
+    en: 'Pending',
+    tr: 'Beklemede'
+  },
+  'status.inProgress': {
+    en: 'In Progress',
+    tr: 'Devam Ediyor'
+  },
+  'status.blocked': {
+    en: 'Blocked',
+    tr: 'Engellendi'
+  },
+
+  // Add more translations as needed
 };
 
-export type Language = 'en' | 'tr';
-export type TranslationKey = keyof typeof translations.en;
-
-export function getTranslation(lang: Language, key: string): string {
-  const keys = key.split('.');
-  let value: any = translations[lang];
-
-  for (const k of keys) {
-    value = value?.[k];
+export function getTranslation(key: string, language: 'en' | 'tr'): string {
+  const translation = translations[key];
+  if (!translation) {
+    console.warn(`Translation not found for key: ${key}`);
+    return key;
   }
-
-  return value || key;
+  return translation[language] || key;
 }

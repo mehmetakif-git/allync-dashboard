@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Plus, Edit3, Trash2, Eye, Building2, Users, Zap, CheckCircle, XCircle } from 'lucide-react';
-import { companies as initialCompanies } from '../../data/mockData';
+import { getAllCompanies } from '../../lib/api/companies';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function CompaniesManagement() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [companies, setCompanies] = useState(initialCompanies);
+  const [isLoading, setIsLoading] = useState(true);
+  const [companies, setCompanies] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -28,12 +28,31 @@ export default function CompaniesManagement() {
     website: '',
     adminName: '',
     adminEmail: '',
-    status: 'Active',
+    status: 'active',
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Fetch companies on mount
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setIsLoading(true);
+        console.log('📡 Fetching all companies...');
+        const data = await getAllCompanies();
+        console.log('✅ Companies fetched:', data);
+        setCompanies(data || []);
+      } catch (err) {
+        console.error('❌ Error fetching companies:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,8 +64,8 @@ export default function CompaniesManagement() {
 
   const stats = {
     total: companies.length,
-    active: companies.filter(c => c.status === 'Active').length,
-    suspended: companies.filter(c => c.status === 'Suspended').length,
+    active: companies.filter(c => c.status === 'active').length,
+    suspended: companies.filter(c => c.status === 'suspended').length,
   };
 
   const handleAddClick = () => {
@@ -64,11 +83,10 @@ export default function CompaniesManagement() {
       website: '',
       adminName: '',
       adminEmail: '',
-      status: 'Active',
+      status: 'active',
     });
     setShowAddModal(true);
   };
-
 
   const handleDeleteClick = (company: any) => {
     setSelectedCompany(company);
@@ -80,6 +98,7 @@ export default function CompaniesManagement() {
 
     await new Promise(resolve => setTimeout(resolve, 1500));
 
+    // TODO: Implement real API call here
     const newCompany = {
       id: String(companies.length + 1),
       name: formData.name,
@@ -87,8 +106,8 @@ export default function CompaniesManagement() {
       phone: formData.phone,
       country: formData.country,
       address: formData.address,
-      status: formData.status as 'Active' | 'Suspended',
-      createdAt: new Date().toISOString(),
+      status: formData.status,
+      created_at: new Date().toISOString(),
       activeServicesCount: 0,
     };
 
@@ -103,12 +122,12 @@ export default function CompaniesManagement() {
     console.log('Company Added:', newCompany);
   };
 
-
   const handleDeleteCompany = async () => {
     setIsProcessing(true);
 
     await new Promise(resolve => setTimeout(resolve, 1500));
 
+    // TODO: Implement real API call here
     setCompanies(companies.filter(c => c.id !== selectedCompany.id));
     setIsProcessing(false);
     setShowDeleteConfirm(false);
@@ -202,8 +221,8 @@ export default function CompaniesManagement() {
               className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Suspended">Suspended</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
             </select>
           </div>
         </div>
@@ -216,7 +235,6 @@ export default function CompaniesManagement() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Company</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Contact</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Country</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Services</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
@@ -243,14 +261,8 @@ export default function CompaniesManagement() {
                       <span className="text-gray-300">{company.country}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Zap className="w-4 h-4 text-blue-500" />
-                        <span className="text-white font-medium">{company.activeServicesCount}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        company.status === 'Active'
+                        company.status === 'active'
                           ? 'bg-green-500/10 border border-green-500/30 text-green-500'
                           : 'bg-red-500/10 border border-red-500/30 text-red-500'
                       }`}>
@@ -259,7 +271,7 @@ export default function CompaniesManagement() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-gray-400 text-sm">
-                        {new Date(company.createdAt).toLocaleDateString()}
+                        {new Date(company.created_at).toLocaleDateString()}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -500,7 +512,6 @@ export default function CompaniesManagement() {
             </div>
           </div>
         )}
-
 
         <ConfirmationDialog
           isOpen={showDeleteConfirm}

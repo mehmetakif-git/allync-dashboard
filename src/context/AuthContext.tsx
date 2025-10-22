@@ -13,20 +13,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const mockUsers: Record<string, User> = {
   'admin@allync.com': {
     id: '1',
-    name: 'Allync',
-    email: 'info@allyncai.com',
+    name: 'Allync Admin',
+    email: 'admin@allync.com',
     role: 'SUPER_ADMIN',
-    companyId: '0',
+    companyId: '2e661604-cf99-4cbd-8db3-1d8eae58327a', // ✅ Allync UUID
     companyName: 'Allync',
     phone: '+1 555 999 8888',
     language: 'EN',
   },
   'info@allyncai.com': {
     id: '1',
-    name: 'Allync',
+    name: 'Allync Admin',
     email: 'info@allyncai.com',
     role: 'SUPER_ADMIN',
-    companyId: '0',
+    companyId: '2e661604-cf99-4cbd-8db3-1d8eae58327a', // ✅ Allync UUID
     companyName: 'Allync',
     phone: '+1 555 999 8888',
     language: 'EN',
@@ -36,7 +36,7 @@ const mockUsers: Record<string, User> = {
     name: 'Sarah Smith',
     email: 'company@example.com',
     role: 'COMPANY_ADMIN',
-    companyId: '1',
+    companyId: '3c718eec-c7d6-434a-9bb4-8492347d6bab', // ✅ Tech Corp UUID
     companyName: 'Tech Corp',
     phone: '+90 555 123 4567',
     language: 'EN',
@@ -46,7 +46,7 @@ const mockUsers: Record<string, User> = {
     name: 'Ahmed Ali',
     email: 'user@example.com',
     role: 'USER',
-    companyId: '1',
+    companyId: '3c718eec-c7d6-434a-9bb4-8492347d6bab', // ✅ Tech Corp UUID
     companyName: 'Tech Corp',
     phone: '+90 555 777 8888',
     language: 'EN',

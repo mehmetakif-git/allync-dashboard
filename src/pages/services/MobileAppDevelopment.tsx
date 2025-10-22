@@ -1,37 +1,100 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Smartphone, Calendar, CheckCircle2, Circle, Clock, XCircle, ExternalLink, Info } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { mockMobileAppProjects, platformLabels, platformColors, storeStatusLabels, storeStatusColors, milestoneStatusLabels, milestoneStatusColors, milestoneStatusBgColors } from '../../data/mockMobileAppData';
+import { getMobileAppProjectsByCompany } from '../../lib/api/mobileAppProjects';
 
 const MobileAppDevelopment: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Replace with API call
-  // const { data: projects, loading } = await supabase
-  //   .from('mobile_app_projects')
-  //   .select('*, milestones:mobile_app_milestones(*)')
-  //   .eq('company_id', user?.companyId)
-  //   .eq('status', 'active')
-  //   .order('created_at', { ascending: false });
-  const projects = mockMobileAppProjects.filter(p => p.companyId === user?.companyId && p.status === 'active');
+  // Fetch projects on mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      console.log('🔍 MobileAppDevelopment - User:', user);
+      console.log('🔍 MobileAppDevelopment - Company ID:', user?.companyId);
 
-  const project = selectedProjectId
-    ? projects.find(p => p.id === selectedProjectId)
-    : projects[0];
+      if (!user?.companyId) {
+        console.log('❌ No company ID found!');
+        setLoading(false);
+        return;
+      }
 
-  if (!project || projects.length === 0) {
-    return (
-      <div className="p-8">
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
-          <Smartphone className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-300 mb-2">No Active Project</h3>
-          <p className="text-gray-400">No mobile app development project found for your company.</p>
-        </div>
-      </div>
-    );
-  }
+      try {
+        setLoading(true);
+        console.log('📡 Fetching mobile app projects...');
+        const data = await getMobileAppProjectsByCompany(user.companyId);
+        console.log('✅ Projects fetched:', data);
+        console.log('🔍 First project:', data?.[0]);
+        setProjects(data || []);
+      } catch (err) {
+        console.error('❌ Error fetching mobile app projects:', err);
+        setError('Failed to load projects');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [user?.companyId]);
+
+  const project = projects[0];
+
+  // Platform labels
+  const platformLabels: any = {
+    'android': 'Android',
+    'ios': 'iOS',
+    'both': 'Android & iOS'
+  };
+
+  const platformColors: any = {
+    'android': 'from-green-500 to-green-600',
+    'ios': 'from-blue-500 to-blue-600',
+    'both': 'from-cyan-500 to-blue-600'
+  };
+
+  // Store status labels
+  const storeStatusLabels: any = {
+    'pending': 'Pending',
+    'submitted': 'Submitted',
+    'in-review': 'In Review',
+    'approved': 'Approved',
+    'published': 'Published',
+    'rejected': 'Rejected'
+  };
+
+  const storeStatusColors: any = {
+    'pending': 'bg-gray-500/10 border-gray-500/30 text-gray-400',
+    'submitted': 'bg-blue-500/10 border-blue-500/30 text-blue-400',
+    'in-review': 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400',
+    'approved': 'bg-green-500/10 border-green-500/30 text-green-400',
+    'published': 'bg-green-500/10 border-green-500/30 text-green-400',
+    'rejected': 'bg-red-500/10 border-red-500/30 text-red-400'
+  };
+
+  // Milestone status
+  const milestoneStatusLabels: any = {
+    'completed': 'Completed',
+    'in-progress': 'In Progress',
+    'pending': 'Pending',
+    'blocked': 'Blocked'
+  };
+
+  const milestoneStatusColors: any = {
+    'completed': 'text-green-400',
+    'in-progress': 'text-blue-400',
+    'pending': 'text-gray-400',
+    'blocked': 'text-red-400'
+  };
+
+  const milestoneStatusBgColors: any = {
+    'completed': 'bg-green-500/10 border-green-500/20',
+    'in-progress': 'bg-blue-500/10 border-blue-500/20',
+    'pending': 'bg-gray-500/10 border-gray-500/20',
+    'blocked': 'bg-red-500/10 border-red-500/20'
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -64,6 +127,48 @@ const MobileAppDevelopment: React.FC = () => {
     return `${diffInDays} days ago`;
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading project...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6 text-center">
+          <p className="text-red-400">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No project state
+  if (!project || projects.length === 0) {
+    return (
+      <div className="p-8">
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
+          <Smartphone className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-300 mb-2">No Active Project</h3>
+          <p className="text-gray-400">No mobile app development project found for your company.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8">
       <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
@@ -87,32 +192,15 @@ const MobileAppDevelopment: React.FC = () => {
               <Smartphone className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">{project.projectName}</h1>
+              <h1 className="text-3xl font-bold text-white">{project.project_name}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${platformColors[project.platform]} text-white`}>
                   {platformLabels[project.platform]}
                 </span>
-                <span className="text-gray-400 text-sm">{project.appName}</span>
+                <span className="text-gray-400 text-sm">{project.app_name}</span>
               </div>
             </div>
           </div>
-
-          {projects.length > 1 && (
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Select Project</label>
-              <select
-                value={project.id}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              >
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.projectName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
       </div>
 
@@ -120,9 +208,7 @@ const MobileAppDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'dashboard'
-              ? 'text-cyan-400'
-              : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'dashboard' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-300'
           }`}
         >
           Dashboard
@@ -133,9 +219,7 @@ const MobileAppDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('details')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'details'
-              ? 'text-cyan-400'
-              : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'details' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-300'
           }`}
         >
           App Details
@@ -146,9 +230,7 @@ const MobileAppDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('support')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'support'
-              ? 'text-cyan-400'
-              : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'support' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-300'
           }`}
         >
           Support
@@ -177,7 +259,7 @@ const MobileAppDevelopment: React.FC = () => {
                 <span className="text-gray-400 text-sm">Estimated Completion</span>
               </div>
               <p className="text-xl font-semibold text-white">
-                {formatDate(project.estimatedCompletion)}
+                {project.estimated_completion ? formatDate(project.estimated_completion) : 'TBD'}
               </p>
             </div>
 
@@ -187,7 +269,7 @@ const MobileAppDevelopment: React.FC = () => {
                 <span className="text-gray-400 text-sm">Last Update</span>
               </div>
               <p className="text-xl font-semibold text-white">
-                {getTimeAgo(project.lastUpdate)}
+                {project.last_update ? getTimeAgo(project.last_update) : 'No updates'}
               </p>
             </div>
           </div>
@@ -195,12 +277,12 @@ const MobileAppDevelopment: React.FC = () => {
           <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Overall Progress</h3>
-              <span className="text-2xl font-bold text-cyan-400">{project.overallProgress}%</span>
+              <span className="text-2xl font-bold text-cyan-400">{project.overall_progress || 0}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-3">
               <div
                 className="bg-gradient-to-r from-cyan-500 to-blue-600 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${project.overallProgress}%` }}
+                style={{ width: `${project.overall_progress || 0}%` }}
               />
             </div>
           </div>
@@ -212,13 +294,13 @@ const MobileAppDevelopment: React.FC = () => {
                 <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-white">Google Play Store</h4>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${storeStatusColors[project.playStoreStatus]}`}>
-                      {storeStatusLabels[project.playStoreStatus]}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${storeStatusColors[project.play_store_status || 'pending']}`}>
+                      {storeStatusLabels[project.play_store_status || 'pending']}
                     </span>
                   </div>
-                  {project.playStoreUrl && (
+                  {project.play_store_url && (
                     <a
-                      href={project.playStoreUrl}
+                      href={project.play_store_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
@@ -234,13 +316,13 @@ const MobileAppDevelopment: React.FC = () => {
                 <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-white">Apple App Store</h4>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${storeStatusColors[project.appStoreStatus]}`}>
-                      {storeStatusLabels[project.appStoreStatus]}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${storeStatusColors[project.app_store_status || 'pending']}`}>
+                      {storeStatusLabels[project.app_store_status || 'pending']}
                     </span>
                   </div>
-                  {project.appStoreUrl && (
+                  {project.app_store_url && (
                     <a
-                      href={project.appStoreUrl}
+                      href={project.app_store_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
@@ -254,52 +336,54 @@ const MobileAppDevelopment: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Development Milestones</h3>
-            <div className="space-y-4">
-              {project.milestones.map((milestone) => {
-                const StatusIcon = getStatusIcon(milestone.status);
-                return (
-                  <div
-                    key={milestone.id}
-                    className={`border rounded-lg p-4 ${milestoneStatusBgColors[milestone.status]}`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <StatusIcon className={`w-5 h-5 ${milestoneStatusColors[milestone.status]}`} />
-                        <div>
-                          <h4 className="font-medium text-white">{milestone.title}</h4>
-                          <span className={`text-sm ${milestoneStatusColors[milestone.status]}`}>
-                            {milestoneStatusLabels[milestone.status]}
-                          </span>
+          {project.milestones && project.milestones.length > 0 && (
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Development Milestones</h3>
+              <div className="space-y-4">
+                {project.milestones.map((milestone: any) => {
+                  const StatusIcon = getStatusIcon(milestone.status);
+                  return (
+                    <div
+                      key={milestone.id}
+                      className={`border rounded-lg p-4 ${milestoneStatusBgColors[milestone.status]}`}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <StatusIcon className={`w-5 h-5 ${milestoneStatusColors[milestone.status]}`} />
+                          <div>
+                            <h4 className="font-medium text-white">{milestone.title}</h4>
+                            <span className={`text-sm ${milestoneStatusColors[milestone.status]}`}>
+                              {milestoneStatusLabels[milestone.status]}
+                            </span>
+                          </div>
                         </div>
+                        <span className="text-lg font-semibold text-white">{milestone.progress || 0}%</span>
                       </div>
-                      <span className="text-lg font-semibold text-white">{milestone.progress}%</span>
+
+                      {milestone.status === 'in-progress' && milestone.progress > 0 && (
+                        <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                          <div
+                            className="bg-cyan-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${milestone.progress}%` }}
+                          />
+                        </div>
+                      )}
+
+                      {milestone.notes && (
+                        <p className="text-sm text-gray-400 mt-2">{milestone.notes}</p>
+                      )}
+
+                      {milestone.completed_date && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Completed: {formatDate(milestone.completed_date)}
+                        </p>
+                      )}
                     </div>
-
-                    {milestone.status === 'in-progress' && milestone.progress > 0 && (
-                      <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
-                        <div
-                          className="bg-cyan-500 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${milestone.progress}%` }}
-                        />
-                      </div>
-                    )}
-
-                    {milestone.notes && (
-                      <p className="text-sm text-gray-400 mt-2">{milestone.notes}</p>
-                    )}
-
-                    {milestone.completedDate && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        Completed: {formatDate(milestone.completedDate)}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -313,7 +397,7 @@ const MobileAppDevelopment: React.FC = () => {
                 <label className="block text-sm text-gray-400 mb-2">Project Name</label>
                 <input
                   type="text"
-                  value={project.projectName}
+                  value={project.project_name || 'N/A'}
                   readOnly
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
@@ -323,7 +407,7 @@ const MobileAppDevelopment: React.FC = () => {
                 <label className="block text-sm text-gray-400 mb-2">App Name</label>
                 <input
                   type="text"
-                  value={project.appName}
+                  value={project.app_name || 'N/A'}
                   readOnly
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
@@ -333,30 +417,30 @@ const MobileAppDevelopment: React.FC = () => {
                 <label className="block text-sm text-gray-400 mb-2">Platform</label>
                 <input
                   type="text"
-                  value={platformLabels[project.platform]}
+                  value={platformLabels[project.platform] || 'N/A'}
                   readOnly
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
-              {(project.platform === 'android' || project.platform === 'both') && (
+              {(project.platform === 'android' || project.platform === 'both') && project.package_name && (
                 <div>
                   <label className="block text-sm text-gray-400 mb-2">Package Name (Android)</label>
                   <input
                     type="text"
-                    value={project.packageName}
+                    value={project.package_name}
                     readOnly
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
                   />
                 </div>
               )}
 
-              {(project.platform === 'ios' || project.platform === 'both') && (
+              {(project.platform === 'ios' || project.platform === 'both') && project.bundle_id && (
                 <div>
                   <label className="block text-sm text-gray-400 mb-2">Bundle ID (iOS)</label>
                   <input
                     type="text"
-                    value={project.bundleId}
+                    value={project.bundle_id}
                     readOnly
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
                   />
