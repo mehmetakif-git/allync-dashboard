@@ -144,6 +144,57 @@ export default function UsersManagement() {
 
   // ===== USER MANAGEMENT HANDLERS =====
 
+  const handleAddUser = async (data: any) => {
+    setIsProcessing(true);
+    try {
+      console.log('📡 Creating user:', data);
+
+      // Create user in database and auth
+      await createUser({
+        email: data.email,
+        password: data.password,
+        full_name: data.name,
+        company_id: data.companyId || null,
+        role: data.role,
+        language: 'en',
+      });
+
+      console.log('✅ User created successfully');
+
+      // Send welcome email if requested
+      if (data.sendEmail) {
+        try {
+          const company = data.companyId 
+            ? users.find(u => u.company_id === data.companyId)?.company?.name || 'Allync AI'
+            : 'Allync AI';
+
+          await EmailService.sendWelcomeEmail({
+            userName: data.name,
+            userEmail: data.email,
+            companyName: company,
+            temporaryPassword: data.password,
+          });
+          console.log('📧 Welcome email sent');
+        } catch (emailError) {
+          console.error('⚠️ Failed to send welcome email:', emailError);
+          // Don't fail user creation if email fails
+        }
+      }
+
+      // Refresh users list
+      await fetchUsers();
+
+      setShowAddModal(false);
+      showSuccess(`User "${data.name}" has been created successfully!`);
+    } catch (err: any) {
+      console.error('❌ Error creating user:', err);
+      showError(err.message || 'Failed to create user');
+      throw err; // Re-throw to let modal handle it
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
     setShowEditModal(true);
@@ -288,9 +339,18 @@ export default function UsersManagement() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-white">Users Management</h1>
-          <p className="text-gray-400 mt-1">Manage all users across all companies</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Users Management</h1>
+            <p className="text-gray-400 mt-1">Manage all users across all companies</p>
+          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add New User
+          </button>
         </div>
 
         {/* Success Message */}
@@ -551,6 +611,15 @@ export default function UsersManagement() {
       </div>
 
       {/* ===== MODALS ===== */}
+
+      {/* Add User Modal */}
+      <AddUserModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={handleAddUser}
+        isLoading={isProcessing}
+        showRoleSuperAdmin={true} // Allow super_admin role in UsersManagement
+      />
 
       {/* Edit User Modal */}
       {showEditModal && selectedUser && (
