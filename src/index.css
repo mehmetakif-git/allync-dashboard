@@ -4,7 +4,8 @@
 
 @layer base {
   body {
-    @apply bg-gray-950 text-white;
+    @apply text-white;
+    background-color: #1B2432;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

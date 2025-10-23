@@ -140,7 +140,7 @@ export async function getTicketsByCompany(companyId: string) {
         id,
         full_name,
         email
-      ),
+      )
     `)
     .eq('company_id', companyId)
     .order('created_at', { ascending: false });
@@ -502,16 +502,7 @@ export interface TicketMessage {
 export async function getTicketMessages(ticketId: string, includeInternal: boolean = true) {
   let query = supabase
     .from('support_ticket_messages')
-    .select(`
-      *,
-      sender:profiles!sender_id(
-        id,
-        full_name,
-        email,
-        avatar_url,
-        role
-      )
-    `)
+    .select('*')
     .eq('ticket_id', ticketId)
     .order('created_at', { ascending: true });
 
@@ -549,16 +540,7 @@ export async function createTicketMessage(messageData: {
       is_from_support: messageData.is_from_support || false,
       attachments: messageData.attachments || [],
     }])
-    .select(`
-      *,
-      sender:profiles!sender_id(
-        id,
-        full_name,
-        email,
-        avatar_url,
-        role
-      )
-    `)
+    .select('*')
     .single();
 
   if (error) {

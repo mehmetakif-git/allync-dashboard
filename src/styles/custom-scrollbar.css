@@ -1,0 +1,177 @@
+/* =====================================================
+   CUSTOM SCROLLBAR STYLES
+   For Support Tickets Table & Modal
+   ===================================================== */
+
+/* Custom Scrollbar - Works on Chromium & WebKit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5); /* gray-800 with opacity */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #00d9ff 0%, #00b8e6 100%);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #00b8e6 0%, #0099cc 100%);
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #00d9ff rgba(31, 41, 55, 0.5);
+}
+
+/* =====================================================
+   SMOOTH SCROLLING
+   ===================================================== */
+
+.custom-scrollbar {
+  scroll-behavior: smooth;
+}
+
+/* =====================================================
+   STICKY COLUMN SHADOW (for table Actions column)
+   ===================================================== */
+
+/* Add a subtle shadow on the left side of sticky column */
+.sticky-shadow-left {
+  box-shadow: -8px 0 12px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* =====================================================
+   RESPONSIVE TABLE WRAPPER
+   ===================================================== */
+
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* Scroll hint indicator (optional - shows there's more content) */
+.table-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, rgba(31, 41, 55, 0.8) 0%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.table-wrapper:not(.scrolled-right)::after {
+  opacity: 1;
+}
+
+/* =====================================================
+   MODAL SCROLLABLE CONTENT
+   ===================================================== */
+
+.modal-scrollable {
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* =====================================================
+   UTILITY CLASSES
+   ===================================================== */
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Show scrollbar on hover only */
+.scrollbar-hover::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.scrollbar-hover:hover::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* =====================================================
+   RESPONSIVE BREAKPOINTS
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* =====================================================
+   ANIMATIONS
+   ===================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* =====================================================
+   USAGE EXAMPLES
+   ===================================================== */
+
+/*
+In your component:
+
+1. Table with sticky Actions column:
+<div className="overflow-x-auto custom-scrollbar">
+  <table>
+    <thead>
+      <th className="sticky right-0 sticky-shadow-left">Actions</th>
+    </thead>
+    <tbody>
+      <td className="sticky right-0 sticky-shadow-left">...</td>
+    </tbody>
+  </table>
+</div>
+
+2. Modal with scrollable content:
+<div className="fixed inset-0 ...">
+  <div className="modal-container">
+    <div className="sticky-header">Header</div>
+    <div className="custom-scrollbar modal-scrollable">
+      Content...
+    </div>
+  </div>
+</div>
+
+3. Hide scrollbar:
+<div className="scrollbar-hide">...</div>
+
+4. Show scrollbar on hover:
+<div className="scrollbar-hover">...</div>
+*/

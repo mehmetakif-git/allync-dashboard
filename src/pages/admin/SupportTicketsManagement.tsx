@@ -341,20 +341,20 @@ export default function SupportTicketsManagement() {
         {/* ===== TICKETS TABLE ===== */}
         <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
           {filteredTickets.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+            <div className="overflow-x-auto custom-scrollbar" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+              <table className="w-full relative">
+                <thead className="bg-gray-900/50 border-b border-gray-700 sticky top-0 z-10">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Ticket #</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Subject</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Company</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created By</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Assigned To</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Category</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Priority</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[120px]">Ticket #</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[250px]">Subject</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[150px]">Company</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[180px]">Created By</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[150px]">Assigned To</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[140px]">Category</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[100px]">Priority</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[120px]">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[120px]">Created</th>
+                    <th className="sticky right-0 bg-gray-900/95 backdrop-blur-sm px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[100px] shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.4)] z-20">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
@@ -415,7 +415,7 @@ export default function SupportTicketsManagement() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="sticky right-0 bg-gray-800/95 backdrop-blur-sm px-6 py-4 shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.4)]">
                         <button
                           onClick={() => handleViewTicket(ticket)}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
