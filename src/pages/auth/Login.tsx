@@ -1,18 +1,28 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Shield, Building2, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Shield, Building2, AlertCircle, CheckCircle, KeyRound } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import ContactAdminModal from '../../components/ContactAdminModal';
+import { EmailService } from '../../lib/email';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   
+  // Login States
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Modal States
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  
+  // Forgot Password States
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetStatus, setResetStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [resetMessage, setResetMessage] = useState('');
 
   const isDevelopment = import.meta.env.DEV;
 
@@ -30,7 +40,6 @@ export default function Login() {
       console.log('✅ Login successful!', user);
       console.log('👤 User object:', user);
       console.log('🎭 User role:', user.role);
-      console.log('🎭 User role:', user.role);
 
       // Navigate based on role
       if (user.role === 'super_admin') {
@@ -45,7 +54,47 @@ export default function Login() {
       setError(err.message || 'Invalid email or password. Please try again.');
       setIsLoading(false);
     }
-    // Don't set isLoading(false) in success case - let navigation happen
+  };
+
+  const handleForgotPassword = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!resetEmail) {
+      setResetStatus('error');
+      setResetMessage('Please enter your email address');
+      return;
+    }
+
+    setResetStatus('loading');
+    setResetMessage('');
+
+    try {
+      console.log('📧 Sending password reset email to:', resetEmail);
+
+      // Use Supabase's built-in password reset
+      await EmailService.sendPasswordResetEmail({
+        userName: resetEmail.split('@')[0], // Extract name from email
+        userEmail: resetEmail,
+      });
+
+      console.log('✅ Password reset email sent successfully');
+
+      setResetStatus('success');
+      setResetMessage('Password reset link has been sent to your email. Please check your inbox.');
+      
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setResetEmail('');
+        setResetStatus('idle');
+        setResetMessage('');
+      }, 3000);
+
+    } catch (err: any) {
+      console.error('❌ Failed to send password reset email:', err);
+      setResetStatus('error');
+      setResetMessage(err.message || 'Failed to send reset email. Please try again.');
+    }
   };
 
   const handleDemoLogin = async (demoEmail: string, demoPassword: string = 'Demo123!') => {
@@ -174,9 +223,18 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Password
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
@@ -298,6 +356,106 @@ export default function Login() {
         isOpen={showContactModal} 
         onClose={() => setShowContactModal(false)} 
       />
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <KeyRound className="w-6 h-6 text-blue-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Reset Password</h2>
+                <p className="text-sm text-gray-400">Enter your email to receive reset link</p>
+              </div>
+            </div>
+
+            {/* Success Message */}
+            {resetStatus === 'success' && (
+              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-green-400 text-sm font-medium">Email Sent!</p>
+                  <p className="text-green-400/80 text-sm mt-1">{resetMessage}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {resetStatus === 'error' && (
+              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-red-400 text-sm font-medium">Error</p>
+                  <p className="text-red-400/80 text-sm mt-1">{resetMessage}</p>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="your@email.com"
+                    required
+                    disabled={resetStatus === 'loading' || resetStatus === 'success'}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                <p className="text-xs text-blue-400">
+                  🔒 A password reset link will be sent to your email. The link expires in 1 hour.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotPassword(false);
+                    setResetEmail('');
+                    setResetStatus('idle');
+                    setResetMessage('');
+                  }}
+                  disabled={resetStatus === 'loading'}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={resetStatus === 'loading' || resetStatus === 'success'}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {resetStatus === 'loading' ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Sending...
+                    </>
+                  ) : resetStatus === 'success' ? (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      Sent!
+                    </>
+                  ) : (
+                    'Send Reset Link'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
