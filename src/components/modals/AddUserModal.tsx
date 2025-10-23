@@ -1,73 +1,148 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-
-interface AddUserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (data: UserFormData) => Promise<void>;
-  companyName: string;
-}
+import { getAllCompanies } from '../../lib/api/companies';
 
 export interface UserFormData {
   name: string;
   email: string;
-  role: 'user' | 'company_admin';
   password: string;
+  role: 'super_admin' | 'company_admin' | 'user';
+  companyId: string;
+  sendEmail: boolean;
 }
 
-export default function AddUserModal({
-  isOpen,
-  onClose,
-  onSave,
-  companyName,
+interface AddUserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: UserFormData) => Promise<void>;
+  isLoading?: boolean;
+  defaultCompanyId?: string; // If called from CompanyDetail, pre-select company
+  showRoleSuperAdmin?: boolean; // Option to show super_admin role
+}
+
+export default function AddUserModal({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  isLoading = false,
+  defaultCompanyId,
+  showRoleSuperAdmin = false,
 }: AddUserModalProps) {
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
     email: '',
-    role: 'user',
     password: '',
+    role: 'user',
+    companyId: defaultCompanyId || '',
+    sendEmail: true,
   });
-  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  if (!isOpen) return null;
+  // Fetch companies when modal opens
+  useEffect(() => {
+    if (isOpen && !defaultCompanyId) {
+      fetchCompanies();
+    }
+  }, [isOpen, defaultCompanyId]);
 
-  const handleSubmit = async () => {
-    setIsProcessing(true);
+  const fetchCompanies = async () => {
     try {
-      await onSave(formData);
-      setFormData({ name: '', email: '', role: 'user', password: '' });
-      onClose();
-    } catch (err) {
-      console.error('Error saving user:', err);
+      setLoadingCompanies(true);
+      const data = await getAllCompanies();
+      setCompanies(data || []);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
     } finally {
-      setIsProcessing(false);
+      setLoadingCompanies(false);
     }
   };
 
-  const isValid = formData.name && formData.email && formData.password;
+  if (!isOpen) return null;
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email format';
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!formData.companyId && !showRoleSuperAdmin) {
+      newErrors.companyId = 'Company is required';
+    }
+
+    // Super admin doesn't need company
+    if (formData.role === 'super_admin' && formData.companyId) {
+      setFormData({ ...formData, companyId: '' });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      await onSubmit(formData);
+      handleClose();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      role: 'user',
+      companyId: defaultCompanyId || '',
+      sendEmail: true,
+    });
+    setErrors({});
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div 
-        className="absolute inset-0 backdrop-blur-sm"
-        onClick={onClose}
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={handleClose}
       ></div>
 
-      <div className="relative bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl">
+      {/* Modal Content */}
+      <div className="relative bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-white">Add New User</h2>
-            <p className="text-sm text-gray-400 mt-1">Add user to {companyName}</p>
-          </div>
+          <h2 className="text-2xl font-bold text-white">Add New User</h2>
           <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4">
+          {/* Full Name */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Full Name *
@@ -76,12 +151,16 @@ export default function AddUserModal({
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className={`w-full px-4 py-3 bg-gray-900 border ${
+                errors.name ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg text-white focus:outline-none focus:border-blue-500`}
               placeholder="John Doe"
-              required
+              disabled={isLoading}
             />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Email *
@@ -90,58 +169,123 @@ export default function AddUserModal({
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              placeholder="john@company.com"
-              required
+              className={`w-full px-4 py-3 bg-gray-900 border ${
+                errors.email ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg text-white focus:outline-none focus:border-blue-500`}
+              placeholder="john@example.com"
+              disabled={isLoading}
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
+          {/* Company Selection */}
+          {!defaultCompanyId && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Company {formData.role !== 'super_admin' && '*'}
+              </label>
+              <select
+                value={formData.companyId}
+                onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
+                className={`w-full px-4 py-3 bg-gray-900 border ${
+                  errors.companyId ? 'border-red-500' : 'border-gray-700'
+                } rounded-lg text-white focus:outline-none focus:border-blue-500`}
+                disabled={isLoading || loadingCompanies || formData.role === 'super_admin'}
+              >
+                <option value="">
+                  {loadingCompanies ? 'Loading companies...' : formData.role === 'super_admin' ? 'No company (Super Admin)' : 'Select a company'}
+                </option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+              {errors.companyId && <p className="text-red-500 text-xs mt-1">{errors.companyId}</p>}
+              {formData.role === 'super_admin' && (
+                <p className="text-xs text-gray-500 mt-1">Super admins don't belong to any company</p>
+              )}
+            </div>
+          )}
+
+          {/* Role */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Role *
             </label>
             <select
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value as 'user' | 'company_admin' })}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
               className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              disabled={isLoading}
             >
-              <option value="user">User</option>
+              {showRoleSuperAdmin && <option value="super_admin">Super Admin</option>}
               <option value="company_admin">Company Admin</option>
+              <option value="user">User</option>
             </select>
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Password *
+              Temporary Password *
             </label>
             <input
-              type="password"
+              type="text"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              placeholder="Min. 8 characters"
-              required
+              className={`w-full px-4 py-3 bg-gray-900 border ${
+                errors.password ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg text-white focus:outline-none focus:border-blue-500`}
+              placeholder="Enter temporary password"
+              disabled={isLoading}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              User will receive an email with login instructions
-            </p>
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            <p className="text-xs text-gray-500 mt-1">User will be required to change this on first login</p>
           </div>
+
+          {/* Send Email Checkbox */}
+          <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.sendEmail}
+                onChange={(e) => setFormData({ ...formData, sendEmail: e.target.checked })}
+                className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+                disabled={isLoading}
+              />
+              <div>
+                <p className="text-white font-medium">Send welcome email</p>
+                <p className="text-gray-400 text-xs">Email will include login credentials and instructions</p>
+              </div>
+            </label>
+          </div>
+
+          {/* Email Info */}
+          {formData.sendEmail && (
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+              <p className="text-blue-400 text-sm">
+                📧 A welcome email will be sent to <strong>{formData.email || '[user email]'}</strong> with their login credentials.
+              </p>
+            </div>
+          )}
         </div>
 
-        <div className="flex gap-3">
+        {/* Actions */}
+        <div className="flex gap-3 mt-6">
           <button
-            onClick={onClose}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-            disabled={isProcessing}
+            onClick={handleClose}
+            disabled={isLoading}
+            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isProcessing || !isValid}
+            disabled={isLoading}
             className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
           >
-            {isProcessing ? 'Adding...' : 'Add User'}
+            {isLoading ? 'Creating User...' : 'Create User'}
           </button>
         </div>
       </div>

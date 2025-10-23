@@ -4,9 +4,11 @@ import {
   Building2, Mail, XCircle, CheckCircle, Edit3, Trash2, Plus 
 } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { getAllUsers, updateUserStatus, deleteUser, updateUser } from '../../lib/api/users';
+import { getAllUsers, updateUserStatus, deleteUser, updateUser, createUser } from '../../lib/api/users';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import EditUserModal from '../../components/modals/EditUserModal';
+import AddUserModal from '../../components/modals/AddUserModal';
+import { EmailService } from '../../lib/email';
 
 interface User {
   id: string;
@@ -35,6 +37,7 @@ export default function UsersManagement() {
   const [companyFilter, setCompanyFilter] = useState<string>('all');
 
   // Modal States
+  const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const [showBlockConfirm, setShowBlockConfirm] = useState(false);
