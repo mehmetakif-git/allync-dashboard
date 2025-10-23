@@ -1,68 +1,99 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 
-interface EditUserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (data: UserFormData) => Promise<void>;
-  initialData: UserFormData;
-  userName: string;
-}
-
 export interface UserFormData {
   name: string;
   email: string;
-  role: 'user' | 'company_admin';
+  role: 'super_admin' | 'company_admin' | 'user';
 }
 
-export default function EditUserModal({
-  isOpen,
-  onClose,
-  onSave,
-  initialData,
-  userName,
+interface EditUserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: UserFormData) => Promise<void>;
+  initialData: UserFormData;
+  isLoading?: boolean;
+  showRoleSuperAdmin?: boolean; // Option to show super_admin role
+  userInfo?: {
+    company?: string;
+    joinedDate?: string;
+  };
+}
+
+export default function EditUserModal({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  initialData, 
+  isLoading = false,
+  showRoleSuperAdmin = false,
+  userInfo
 }: EditUserModalProps) {
   const [formData, setFormData] = useState<UserFormData>(initialData);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (!isOpen) return null;
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email format';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
-    setIsProcessing(true);
+    if (!validateForm()) {
+      return;
+    }
+
     try {
-      await onSave(formData);
-      onClose();
-    } catch (err) {
-      console.error('Error saving user:', err);
-    } finally {
-      setIsProcessing(false);
+      await onSubmit(formData);
+      handleClose();
+    } catch (error) {
+      // Error handling is done in parent component
+      console.error('Error submitting form:', error);
     }
   };
 
-  const isValid = formData.name && formData.email;
+  const handleClose = () => {
+    setFormData(initialData);
+    setErrors({});
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div 
-        className="absolute inset-0 backdrop-blur-sm"
-        onClick={onClose}
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={handleClose}
       ></div>
 
+      {/* Modal Content */}
       <div className="relative bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-white">Edit User</h2>
-            <p className="text-sm text-gray-400 mt-1">Update {userName}'s information</p>
-          </div>
+          <h2 className="text-2xl font-bold text-white">Edit User</h2>
           <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4">
+          {/* Full Name */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Full Name *
@@ -71,11 +102,16 @@ export default function EditUserModal({
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              required
+              className={`w-full px-4 py-3 bg-gray-900 border ${
+                errors.name ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg text-white focus:outline-none focus:border-blue-500`}
+              placeholder="Enter full name"
+              disabled={isLoading}
             />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Email *
@@ -84,40 +120,64 @@ export default function EditUserModal({
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              required
+              className={`w-full px-4 py-3 bg-gray-900 border ${
+                errors.email ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg text-white focus:outline-none focus:border-blue-500`}
+              placeholder="user@example.com"
+              disabled={isLoading}
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
+          {/* Role */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Role *
             </label>
             <select
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value as 'user' | 'company_admin' })}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
               className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              disabled={isLoading}
             >
-              <option value="user">User</option>
+              {showRoleSuperAdmin && <option value="super_admin">Super Admin</option>}
               <option value="company_admin">Company Admin</option>
+              <option value="user">User</option>
             </select>
           </div>
+
+          {/* User Info (if provided) */}
+          {userInfo && (
+            <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+              {userInfo.company && (
+                <p className="text-sm text-gray-400">
+                  <strong className="text-white">Company:</strong> {userInfo.company}
+                </p>
+              )}
+              {userInfo.joinedDate && (
+                <p className="text-sm text-gray-400 mt-2">
+                  <strong className="text-white">Joined:</strong> {userInfo.joinedDate}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="flex gap-3">
+        {/* Actions */}
+        <div className="flex gap-3 mt-6">
           <button
-            onClick={onClose}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-            disabled={isProcessing}
+            onClick={handleClose}
+            disabled={isLoading}
+            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            disabled={isProcessing || !isValid}
+            disabled={isLoading}
             className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
           >
-            {isProcessing ? 'Updating...' : 'Update User'}
+            {isLoading ? 'Updating...' : 'Update User'}
           </button>
         </div>
       </div>
