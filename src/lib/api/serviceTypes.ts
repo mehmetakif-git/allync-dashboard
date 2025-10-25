@@ -38,6 +38,7 @@ export interface ServiceType {
   is_active: boolean;
   is_featured: boolean;
   sort_order: number;
+  status: 'active' | 'maintenance' | 'inactive'; // NEW!
   
   // SEO (multi-language)
   meta_title_tr: string | null;
@@ -67,6 +68,8 @@ export interface ServiceTypeWithStats extends ServiceType {
   total_requests?: number;
   active_subscriptions?: number;
   total_companies?: number;
+  companies_using?: number;
+  total_revenue?: number;
 }
 
 // =====================================================
@@ -324,6 +327,122 @@ export async function getCategoryStats() {
 }
 
 // =====================================================
+// SERVICE STATUS MANAGEMENT (SUPER ADMIN) - NEW!
+// =====================================================
+
+// Update service status
+export async function updateServiceStatus(
+  serviceId: string,
+  status: 'active' | 'maintenance' | 'inactive'
+) {
+  console.log('🔄 [updateServiceStatus] Starting...', { serviceId, status });
+  
+  const { data, error } = await supabase
+    .from('service_types')
+    .update({ 
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', serviceId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('❌ [updateServiceStatus] Error:', error);
+    throw error;
+  }
+
+  console.log('✅ [updateServiceStatus] Success:', data);
+  return data as ServiceType;
+}
+
+// Get service with company statistics - NEW!
+export async function getServiceWithCompanyStats(serviceId: string) {
+  console.log('📊 [getServiceWithCompanyStats] Starting for service:', serviceId);
+  
+  try {
+    // 1. Get service
+    const service = await getServiceById(serviceId);
+    console.log('✅ [getServiceWithCompanyStats] Service found:', service.name_en);
+
+    // 2. Get company_services (REAL active services)
+    console.log('🔍 [getServiceWithCompanyStats] Fetching company_services...');
+    const { data: companyServices, error } = await supabase
+      .from('company_services')
+      .select('id, company_id, price_amount, status')
+      .eq('service_type_id', serviceId);
+
+    if (error) {
+      console.error('❌ [getServiceWithCompanyStats] Error:', error);
+      return {
+        ...service,
+        companies_using: 0,
+        active_subscriptions: 0,
+        total_revenue: 0,
+      };
+    }
+
+    console.log(`✅ [getServiceWithCompanyStats] Found ${companyServices?.length || 0} company_services`);
+
+    // 3. Calculate stats
+    const companies_using = new Set(companyServices?.map(cs => cs.company_id) || []).size;
+    const active_subscriptions = companyServices?.filter(cs => cs.status === 'active').length || 0;
+    const total_revenue = companyServices?.reduce((sum, cs) => sum + (cs.price_amount || 0), 0) || 0;
+
+    console.log('📊 [getServiceWithCompanyStats] Stats calculated:', {
+      companies_using,
+      active_subscriptions,
+      total_revenue
+    });
+
+    return {
+      ...service,
+      companies_using,
+      active_subscriptions,
+      total_revenue,
+    };
+
+  } catch (error) {
+    console.error('❌ [getServiceWithCompanyStats] Unexpected error:', error);
+    console.error('❌ [getServiceWithCompanyStats] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
+    // Error durumunda bile service'i döndür
+    const service = await getServiceById(serviceId);
+    return {
+      ...service,
+      companies_using: 0,
+      active_subscriptions: 0,
+      total_revenue: 0,
+    };
+  }
+}
+
+// Get all services with company stats - NEW!
+export async function getAllServicesWithStats() {
+  console.log('📋 [getAllServicesWithStats] Starting...');
+  
+  try {
+    const services = await getAllServices();
+    console.log(`✅ [getAllServicesWithStats] Found ${services.length} services from service_types`);
+    
+    const servicesWithStats = await Promise.all(
+      services.map(async (service, index) => {
+        console.log(`[${index + 1}/${services.length}] Processing: ${service.name_en}`);
+        return getServiceWithCompanyStats(service.id);
+      })
+    );
+
+    console.log('✅ [getAllServicesWithStats] All services processed successfully');
+    return servicesWithStats;
+
+  } catch (error) {
+    console.error('❌ [getAllServicesWithStats] Error:', error);
+    console.error('❌ [getAllServicesWithStats] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    throw error;
+  }
+}
+
+// =====================================================
 // PRICING HELPERS
 // =====================================================
 
@@ -547,6 +666,11 @@ export default {
   getServiceUsageStats,
   getServicesWithStats,
   getCategoryStats,
+  
+  // Status Management (NEW!)
+  updateServiceStatus,
+  getServiceWithCompanyStats,
+  getAllServicesWithStats,
   
   // Pricing
   getPricingTier,

@@ -3,11 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, 
   MessageCircle, MapPin, Instagram, CheckCircle, Smartphone, XCircle, 
-  Sheet, Globe, FolderOpen, FileText, Edit3, Trash2, Plus, Settings, Image 
+  Sheet, Globe, FolderOpen, FileText, Edit3, Trash2, Plus, Settings, Image,
+  ThumbsUp, ThumbsDown, ExternalLink
 } from 'lucide-react';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
-import { getCompanyById, getServiceRequests, getSupportTickets, getInvoices, getServiceTypes } from '../../lib/api/companies';
+import { getCompanyById, getSupportTickets, getInvoices, getServiceTypes } from '../../lib/api/companies';
 import { getCompanyUsers, createUser, updateUser, deleteUser } from '../../lib/api/users';
+import { getCompanyServiceRequests, approveServiceRequest, rejectServiceRequest } from '../../lib/api/serviceRequests';
+import { useAuth } from '../../contexts/AuthContext';
 import WhatsAppSettingsModal from '../../components/modals/WhatsAppSettingsModal';
 import InstagramSettingsModal from '../../components/modals/InstagramSettingsModal';
 import GoogleServiceSettingsModal from '../../components/modals/GoogleServiceSettingsModal';
@@ -20,6 +23,7 @@ import EditUserModal from '../../components/modals/EditUserModal';
 export default function CompanyDetail() {
   const { id: companyId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { profile } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'services' | 'tickets' | 'invoices'>('overview');
   const [company, setCompany] = useState<any>(null);
@@ -51,6 +55,12 @@ export default function CompanyDetail() {
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
+  // Service Request Modals
+  const [showApproveConfirm, setShowApproveConfirm] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+
   // Success/Error Messages
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -70,7 +80,7 @@ export default function CompanyDetail() {
 
         const [companyData, servicesData, ticketsData, invoicesData, serviceTypesData, usersData] = await Promise.all([
           getCompanyById(companyId),
-          getServiceRequests(companyId),
+          getCompanyServiceRequests(companyId),
           getSupportTickets(companyId),
           getInvoices(companyId),
           getServiceTypes(),
@@ -142,7 +152,7 @@ export default function CompanyDetail() {
     } catch (err: any) {
       console.error('❌ Error creating user:', err);
       showError(err.message || 'Failed to create user');
-      throw err; // Re-throw to let modal handle it
+      throw err;
     } finally {
       setIsProcessing(false);
     }
@@ -249,6 +259,72 @@ export default function CompanyDetail() {
       console.error('❌ Error updating company:', err);
       showError(err.message || 'Failed to update company');
       throw err;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // ===== SERVICE REQUEST HANDLERS =====
+
+  const handleApproveClick = (request: any) => {
+    setSelectedRequest(request);
+    setShowApproveConfirm(true);
+  };
+
+  const handleApproveConfirm = async () => {
+    if (!selectedRequest || !profile) return;
+
+    setIsProcessing(true);
+    try {
+      console.log('✅ Approving request:', selectedRequest.id);
+      
+      await approveServiceRequest(selectedRequest.id, profile.id);
+      
+      // Refresh service requests
+      const updatedRequests = await getCompanyServiceRequests(companyId!);
+      setServiceRequests(updatedRequests);
+      
+      setShowApproveConfirm(false);
+      setSelectedRequest(null);
+      showSuccess(`Service "${selectedRequest.service_type.name_en}" has been approved!`);
+    } catch (err: any) {
+      console.error('❌ Error approving request:', err);
+      showError(err.message || 'Failed to approve request');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRejectClick = (request: any) => {
+    setSelectedRequest(request);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleRejectConfirm = async () => {
+    if (!selectedRequest || !profile) return;
+    if (!rejectionReason.trim()) {
+      showError('Please provide a rejection reason');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      console.log('❌ Rejecting request:', selectedRequest.id);
+      
+      await rejectServiceRequest(selectedRequest.id, rejectionReason, profile.id);
+      
+      // Refresh service requests
+      const updatedRequests = await getCompanyServiceRequests(companyId!);
+      setServiceRequests(updatedRequests);
+      
+      setShowRejectModal(false);
+      setSelectedRequest(null);
+      setRejectionReason('');
+      showSuccess(`Service request has been rejected.`);
+    } catch (err: any) {
+      console.error('❌ Error rejecting request:', err);
+      showError(err.message || 'Failed to reject request');
     } finally {
       setIsProcessing(false);
     }
@@ -764,7 +840,7 @@ export default function CompanyDetail() {
                   {pendingRequests.map((request: any) => (
                     <div key={request.id} className="p-4 bg-primary/50 border border-secondary rounded-lg">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-1">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center">
                             <Zap className="w-5 h-5 text-white" />
                           </div>
@@ -773,9 +849,27 @@ export default function CompanyDetail() {
                             <p className="text-sm text-muted">Package: {request.package?.toUpperCase()}</p>
                           </div>
                         </div>
-                        <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-500">
-                          Pending Approval
-                        </span>
+                        
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleApproveClick(request)}
+                            disabled={isProcessing}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Approve Request"
+                          >
+                            <ThumbsUp className="w-4 h-4" />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleRejectClick(request)}
+                            disabled={isProcessing}
+                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Reject Request"
+                          >
+                            <ThumbsDown className="w-4 h-4" />
+                            Reject
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -789,13 +883,23 @@ export default function CompanyDetail() {
           <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Support Tickets</h2>
-              <span className="text-sm text-muted">{supportTickets.length} tickets</span>
+              <button
+                onClick={() => navigate('/admin/support-tickets')}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <ExternalLink className="w-4 h-4" />
+                View All Tickets
+              </button>
             </div>
 
             {supportTickets.length > 0 ? (
               <div className="space-y-3">
                 {supportTickets.map((ticket: any) => (
-                  <div key={ticket.id} className="p-4 bg-primary/50 border border-secondary rounded-lg hover:bg-primary/70 transition-colors">
+                  <div 
+                    key={ticket.id} 
+                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:bg-primary/70 transition-colors cursor-pointer"
+                    onClick={() => navigate('/admin/support-tickets')}
+                  >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
@@ -836,11 +940,25 @@ export default function CompanyDetail() {
 
         {activeTab === 'invoices' && (
           <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Invoices</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white">Invoices</h2>
+              <button
+                onClick={() => navigate('/admin/invoices')}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <ExternalLink className="w-4 h-4" />
+                View All Invoices
+              </button>
+            </div>
+
             {companyInvoices.length > 0 ? (
               <div className="space-y-3">
                 {companyInvoices.map((invoice: any) => (
-                  <div key={invoice.id} className="p-4 bg-primary/50 border border-secondary rounded-lg">
+                  <div 
+                    key={invoice.id} 
+                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:bg-primary/70 transition-colors cursor-pointer"
+                    onClick={() => navigate('/admin/invoices')}
+                  >
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-white font-medium">{invoice.invoice_number}</p>
@@ -944,6 +1062,62 @@ export default function CompanyDetail() {
           confirmColor={selectedUser?.status === 'active' ? 'from-yellow-600 to-orange-600' : 'from-green-600 to-emerald-600'}
           isLoading={isProcessing}
         />
+
+        {/* Approve Service Request Confirmation */}
+        <ConfirmationDialog
+          isOpen={showApproveConfirm}
+          onClose={() => setShowApproveConfirm(false)}
+          onConfirm={handleApproveConfirm}
+          title="Approve Service Request"
+          message={`Are you sure you want to approve "${selectedRequest?.service_type?.name_en}" for ${company?.name}? This will activate the service immediately.`}
+          confirmText="Approve Service"
+          confirmColor="from-green-600 to-emerald-600"
+          isLoading={isProcessing}
+        />
+
+        {/* Reject Service Request Modal */}
+        {showRejectModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-secondary rounded-2xl max-w-md w-full border border-secondary shadow-2xl">
+              <div className="p-6 border-b border-secondary">
+                <h3 className="text-xl font-bold text-white mb-2">Reject Service Request</h3>
+                <p className="text-muted text-sm">
+                  Please provide a reason for rejecting "{selectedRequest?.service_type?.name_en}"
+                </p>
+              </div>
+
+              <div className="p-6">
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Enter rejection reason..."
+                  rows={4}
+                  className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500 resize-none"
+                />
+              </div>
+
+              <div className="p-6 border-t border-secondary flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setRejectionReason('');
+                  }}
+                  disabled={isProcessing}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRejectConfirm}
+                  disabled={isProcessing || !rejectionReason.trim()}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isProcessing ? 'Rejecting...' : 'Reject Request'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Service Settings Modals */}
         {showWhatsAppSettings && (

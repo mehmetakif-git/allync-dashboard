@@ -100,7 +100,7 @@ export default function App() {
               <Route path="notifications" element={<NotificationsManagement />} />
               <Route path="revenue" element={<RevenueAnalytics />} />
               <Route path="invoices" element={<InvoicesManagement />} />
-              <Route path="support" element={<SupportTicketsManagement />} />
+              <Route path="support-tickets" element={<SupportTicketsManagement />} />
               <Route path="settings" element={<SystemSettings />} />
               <Route path="maintenance" element={<MaintenanceMode />} />
               <Route path="logs" element={<ActivityLogs />} />
