@@ -49,7 +49,7 @@ export default function InvoiceDetailModal({ invoice, onClose, onDownload }: Inv
             <div className="text-right">
               <p className="text-sm text-muted mb-2">Total Amount</p>
               <p className="text-3xl font-bold text-white">
-                {formatCurrency(invoice.total_amount, invoice.currency)}
+                {formatCurrency(invoice.total_amount)}
               </p>
             </div>
           </div>
@@ -137,24 +137,24 @@ export default function InvoiceDetailModal({ invoice, onClose, onDownload }: Inv
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-muted">Subtotal</span>
-                <span className="text-white font-medium">{formatCurrency(invoice.subtotal, invoice.currency)}</span>
+                <span className="text-white font-medium">{formatCurrency(invoice.subtotal)}</span>
               </div>
               {invoice.tax_rate && invoice.tax_amount && (
                 <div className="flex justify-between">
                   <span className="text-muted">Tax ({invoice.tax_rate}%)</span>
-                  <span className="text-white font-medium">{formatCurrency(invoice.tax_amount, invoice.currency)}</span>
+                  <span className="text-white font-medium">{formatCurrency(invoice.tax_amount)}</span>
                 </div>
               )}
               {invoice.discount_amount && invoice.discount_amount > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted">Discount</span>
-                  <span className="text-accent-green font-medium">-{formatCurrency(invoice.discount_amount, invoice.currency)}</span>
+                  <span className="text-accent-green font-medium">-{formatCurrency(invoice.discount_amount)}</span>
                 </div>
               )}
               <div className="border-t border-primary pt-3">
                 <div className="flex justify-between">
                   <span className="text-white font-semibold text-lg">Total</span>
-                  <span className="text-white font-bold text-lg">{formatCurrency(invoice.total_amount, invoice.currency)}</span>
+                  <span className="text-white font-bold text-lg">{formatCurrency(invoice.total_amount)}</span>
                 </div>
               </div>
             </div>

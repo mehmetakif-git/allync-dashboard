@@ -494,11 +494,11 @@ async function generateInvoiceNumber(): Promise<string> {
   return `INV-${year}-${String(nextNumber).padStart(4, '0')}`;
 }
 
-// Format currency
-export function formatCurrency(amount: number, currency: string): string {
+// Format currency (always USD)
+export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency,
+    currency: 'USD',
   }).format(amount);
 }
 

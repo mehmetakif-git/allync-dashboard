@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle, AlertCircle, DollarSign, Building2, ChevronDown } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import InvoiceDetailModal from '../../components/modals/InvoiceDetailModal';
+import InvoicePreviewModal from '../../components/modals/InvoicePreviewModal';
 import {
   getAllInvoices,
   markInvoiceAsPaid,
@@ -25,6 +26,7 @@ export default function InvoicesManagement() {
   const [gatewayFilter, setGatewayFilter] = useState<string>('all');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -126,6 +128,18 @@ export default function InvoicesManagement() {
       console.error('Error cancelling invoice:', error);
       showError(error.message || 'Failed to cancel invoice');
     }
+  };
+
+  // ===== PREVIEW HANDLERS =====
+  const handlePreviewInvoice = (invoice: Invoice) => {
+    console.log('📄 [InvoicesManagement] Preview invoice:', invoice.invoice_number);
+    setSelectedInvoice(invoice);
+    setShowPreviewModal(true);
+  };
+
+  const handleOpenInNewTab = (invoice: Invoice) => {
+    console.log('🔗 [InvoicesManagement] Opening in new tab:', invoice.invoice_number);
+    window.open(`/invoice-preview/${invoice.id}`, '_blank');
   };
 
   // ===== EXPORT HANDLERS =====
@@ -415,7 +429,7 @@ export default function InvoicesManagement() {
                       </td>
                       <td className="py-4 px-4">
                         <p className="text-white font-semibold">
-                          {formatCurrency(invoice.total_amount, invoice.currency)}
+                          {formatCurrency(invoice.total_amount)}
                         </p>
                       </td>
                       <td className="py-4 px-4">
@@ -448,10 +462,17 @@ export default function InvoicesManagement() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
+                          <button
+                            onClick={() => handlePreviewInvoice(invoice)}
+                            className="p-2 bg-accent-purple/10 hover:bg-accent-purple/20 text-accent-purple rounded-lg transition-colors"
+                            title="Preview Invoice"
+                          >
+                            <FileText className="w-4 h-4" />
+                          </button>
                           {invoice.pdf_url && (
                             <button
                               onClick={() => handleDownloadPDF(invoice)}
-                              className="p-2 bg-accent-purple/10 hover:bg-accent-purple/20 text-accent-purple rounded-lg transition-colors"
+                              className="p-2 bg-accent-yellow/10 hover:bg-accent-yellow/20 text-accent-yellow rounded-lg transition-colors"
                               title="Download PDF"
                             >
                               <Download className="w-4 h-4" />
@@ -502,6 +523,18 @@ export default function InvoicesManagement() {
           invoice={selectedInvoice}
           onClose={() => setShowDetailsModal(false)}
           onDownload={handleDownloadPDF}
+        />
+      )}
+
+      {/* ===== INVOICE PREVIEW MODAL ===== */}
+      {showPreviewModal && selectedInvoice && (
+        <InvoicePreviewModal
+          invoice={selectedInvoice}
+          onClose={() => {
+            console.log('❌ [InvoicesManagement] Close preview modal');
+            setShowPreviewModal(false);
+            setSelectedInvoice(null);
+          }}
         />
       )}
 
