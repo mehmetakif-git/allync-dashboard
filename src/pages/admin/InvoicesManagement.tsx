@@ -1,375 +1,517 @@
-import { useState } from 'react';
-import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle, AlertCircle, DollarSign, Building2, ChevronDown } from 'lucide-react';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import InvoiceDetailModal from '../../components/modals/InvoiceDetailModal';
+import {
+  getAllInvoices,
+  markInvoiceAsPaid,
+  cancelInvoice,
+  formatCurrency,
+  getInvoiceStatusColor,
+  getPaymentGatewayName,
+  type Invoice,
+} from '../../lib/api/invoices';
 
-interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  company: string;
-  companyEmail: string;
-  amount: number;
-  status: 'paid' | 'pending' | 'overdue';
-  dueDate: string;
-  paidDate?: string;
-  services: string[];
-  issueDate: string;
-}
-
-const mockInvoices: Invoice[] = [
-  {
-    id: '1',
-    invoiceNumber: 'INV-2024-001',
-    company: 'Tech Innovators Inc',
-    companyEmail: 'contact@techinnovators.com',
-    amount: 2450,
-    status: 'paid',
-    dueDate: '2024-03-15',
-    paidDate: '2024-03-14',
-    services: ['WhatsApp Business AI', 'Instagram DM Automation', 'Text to Video AI'],
-    issueDate: '2024-03-01',
-  },
-  {
-    id: '2',
-    invoiceNumber: 'INV-2024-002',
-    company: 'Global Solutions Ltd',
-    companyEmail: 'info@globalsolutions.com',
-    amount: 1850,
-    status: 'paid',
-    dueDate: '2024-03-20',
-    paidDate: '2024-03-18',
-    services: ['WhatsApp Business AI', 'AI Customer Support'],
-    issueDate: '2024-03-05',
-  },
-  {
-    id: '3',
-    invoiceNumber: 'INV-2024-003',
-    company: 'Digital Marketing Pro',
-    companyEmail: 'contact@digitalmarketingpro.com',
-    amount: 1620,
-    status: 'pending',
-    dueDate: '2024-03-25',
-    services: ['Instagram DM Automation', 'Social Media Analytics'],
-    issueDate: '2024-03-10',
-  },
-  {
-    id: '4',
-    invoiceNumber: 'INV-2024-004',
-    company: 'E-Commerce Plus',
-    companyEmail: 'support@ecommerceplus.com',
-    amount: 1540,
-    status: 'overdue',
-    dueDate: '2024-03-10',
-    services: ['WhatsApp Business AI', 'AI Customer Support'],
-    issueDate: '2024-02-25',
-  },
-  {
-    id: '5',
-    invoiceNumber: 'INV-2024-005',
-    company: 'Creative Studios',
-    companyEmail: 'hello@creativestudios.com',
-    amount: 1320,
-    status: 'paid',
-    dueDate: '2024-03-18',
-    paidDate: '2024-03-17',
-    services: ['Text to Video AI', 'Social Media Analytics'],
-    issueDate: '2024-03-03',
-  },
-  {
-    id: '6',
-    invoiceNumber: 'INV-2024-006',
-    company: 'Data Analytics Corp',
-    companyEmail: 'info@dataanalytics.com',
-    amount: 1180,
-    status: 'pending',
-    dueDate: '2024-03-28',
-    services: ['AI Customer Support', 'Email Marketing Automation'],
-    issueDate: '2024-03-13',
-  },
-];
+// =====================================================
+// COMPONENT
+// =====================================================
 
 export default function InvoicesManagement() {
-  const [invoices] = useState<Invoice[]>(mockInvoices);
+  // ===== STATES =====
+  const [isLoading, setIsLoading] = useState(true);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [gatewayFilter, setGatewayFilter] = useState<string>('all');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // ===== LIFECYCLE =====
+  useEffect(() => {
+    fetchInvoices();
+  }, []);
+
+  // ===== UTILITY FUNCTIONS =====
+  const showSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(null), 5000);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  // ===== DATA FETCHING =====
+  const fetchInvoices = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getAllInvoices();
+      setInvoices(data || []);
+    } catch (error: any) {
+      console.error('Error fetching invoices:', error);
+      showError(error.message || 'Failed to load invoices');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ===== DATA CALCULATIONS =====
   const filteredInvoices = invoices.filter(invoice => {
     const matchesSearch =
-      invoice.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.companyEmail.toLowerCase().includes(searchTerm.toLowerCase());
+      invoice.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.company?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.company?.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesGateway = gatewayFilter === 'all' || invoice.payment_gateway === gatewayFilter;
+    
+    return matchesSearch && matchesStatus && matchesGateway;
   });
 
-  const totalRevenue = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const totalRevenue = invoices.reduce((sum, inv) => sum + inv.total_amount, 0);
   const paidInvoices = invoices.filter(inv => inv.status === 'paid');
   const pendingInvoices = invoices.filter(inv => inv.status === 'pending');
   const overdueInvoices = invoices.filter(inv => inv.status === 'overdue');
 
-  const handleExport = () => {
-    if (confirm('Export all invoices to CSV?')) {
-      alert('Invoices exported successfully');
-    }
-  };
-
+  // ===== HANDLERS =====
   const handleViewInvoice = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
     setShowDetailsModal(true);
   };
 
+  const handleDownloadPDF = (invoice: Invoice) => {
+    if (invoice.pdf_url) {
+      window.open(invoice.pdf_url, '_blank');
+    } else {
+      showError('PDF not available for this invoice');
+    }
+  };
+
+  const handleMarkAsPaid = async (invoiceId: string) => {
+    if (!confirm('Mark this invoice as paid?')) return;
+    
+    try {
+      await markInvoiceAsPaid(invoiceId, {
+        paid_at: new Date().toISOString(),
+      });
+      await fetchInvoices();
+      showSuccess('Invoice marked as paid successfully!');
+    } catch (error: any) {
+      console.error('Error marking invoice as paid:', error);
+      showError(error.message || 'Failed to update invoice');
+    }
+  };
+
+  const handleCancelInvoice = async (invoiceId: string) => {
+    const reason = prompt('Cancellation reason (optional):');
+    if (reason === null) return;
+    
+    try {
+      await cancelInvoice(invoiceId, reason);
+      await fetchInvoices();
+      showSuccess('Invoice cancelled successfully!');
+    } catch (error: any) {
+      console.error('Error cancelling invoice:', error);
+      showError(error.message || 'Failed to cancel invoice');
+    }
+  };
+
+  // ===== EXPORT HANDLERS =====
+  const exportToCSV = (data: Invoice[], filename: string) => {
+    const headers = ['Invoice #', 'Company', 'Email', 'Amount', 'Currency', 'Status', 'Gateway', 'Issue Date', 'Due Date', 'Paid Date'];
+    const rows = data.map(inv => [
+      inv.invoice_number,
+      inv.company?.name || '',
+      inv.company?.email || '',
+      inv.total_amount,
+      inv.currency,
+      inv.status,
+      inv.payment_gateway || '',
+      inv.issue_date,
+      inv.due_date || '',
+      inv.paid_at || '',
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    showSuccess(`Exported ${data.length} invoices successfully!`);
+  };
+
+  const handleExportAll = () => {
+    exportToCSV(invoices, `all-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    setShowExportMenu(false);
+  };
+
+  const handleExportFiltered = () => {
+    exportToCSV(filteredInvoices, `filtered-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    setShowExportMenu(false);
+  };
+
+  const handleExportByStatus = (status: string) => {
+    const filtered = invoices.filter(inv => inv.status === status);
+    exportToCSV(filtered, `${status}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    setShowExportMenu(false);
+  };
+
+  const handleExportByCompany = () => {
+    const companyName = prompt('Enter company name to export:');
+    if (!companyName) return;
+    
+    const filtered = invoices.filter(inv => 
+      inv.company?.name.toLowerCase().includes(companyName.toLowerCase())
+    );
+    
+    if (filtered.length === 0) {
+      showError('No invoices found for this company');
+      return;
+    }
+    
+    exportToCSV(filtered, `${companyName.replace(/\s/g, '-')}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    setShowExportMenu(false);
+  };
+
+  // ===== LOADING STATE =====
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="min-h-screen bg-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* ===== HEADER ===== */}
         <div className="flex items-center justify-between">
           <div>
-          <h1 className="text-3xl font-bold text-white">Invoices Management</h1>
-          <p className="text-muted mt-1">Manage all invoices across all companies</p>
-        </div>
-        <button
-          onClick={handleExport}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <Download className="w-5 h-5" />
-          Export
-        </button>
-      </div>
+            <h1 className="text-3xl font-bold text-white">Invoices Management</h1>
+            <p className="text-muted mt-1">Manage all invoices across all companies</p>
+          </div>
+          
+          {/* Export Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="px-4 py-2 bg-gradient-to-r from-accent-blue to-accent-cyan text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+            >
+              <Download className="w-5 h-5" />
+              Export
+              <ChevronDown className="w-4 h-4" />
+            </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">Total Revenue</p>
-              <p className="text-3xl font-bold text-white mt-2">${totalRevenue.toLocaleString()}</p>
+            {showExportMenu && (
+              <div className="absolute right-0 mt-2 w-56 bg-card border border-primary rounded-xl shadow-xl z-50">
+                <div className="p-2">
+                  <button
+                    onClick={handleExportAll}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                  >
+                    Export All Invoices
+                  </button>
+                  <button
+                    onClick={handleExportFiltered}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                  >
+                    Export Filtered Results
+                  </button>
+                  <div className="border-t border-primary my-2"></div>
+                  <button
+                    onClick={() => handleExportByStatus('paid')}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                  >
+                    Export Paid Only
+                  </button>
+                  <button
+                    onClick={() => handleExportByStatus('pending')}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                  >
+                    Export Pending Only
+                  </button>
+                  <button
+                    onClick={() => handleExportByStatus('overdue')}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                  >
+                    Export Overdue Only
+                  </button>
+                  <div className="border-t border-primary my-2"></div>
+                  <button
+                    onClick={handleExportByCompany}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                  >
+                    Export by Company...
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ===== SUCCESS MESSAGE ===== */}
+        {successMessage && (
+          <div className="p-4 bg-accent-green/10 border border-accent-green/30 rounded-xl flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-accent-green flex-shrink-0" />
+            <p className="text-accent-green font-medium">{successMessage}</p>
+          </div>
+        )}
+
+        {/* ===== ERROR MESSAGE ===== */}
+        {errorMessage && (
+          <div className="p-4 bg-accent-red/10 border border-accent-red/30 rounded-xl flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-accent-red flex-shrink-0" />
+            <p className="text-accent-red font-medium">{errorMessage}</p>
+          </div>
+        )}
+
+        {/* ===== STATS CARDS ===== */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-card border border-primary rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-muted text-sm">Total Revenue</p>
+                <p className="text-3xl font-bold text-white mt-2">${totalRevenue.toLocaleString()}</p>
+              </div>
+              <DollarSign className="w-12 h-12 text-accent-blue" />
             </div>
-            <FileText className="w-12 h-12 text-blue-500" />
           </div>
-        </div>
 
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">Paid Invoices</p>
-              <p className="text-3xl font-bold text-white mt-2">{paidInvoices.length}</p>
-              <p className="text-green-400 text-sm mt-1">${paidInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}</p>
+          <div className="bg-card border border-primary rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-muted text-sm">Paid Invoices</p>
+                <p className="text-3xl font-bold text-white mt-2">{paidInvoices.length}</p>
+                <p className="text-accent-green text-sm mt-1">
+                  ${paidInvoices.reduce((sum, inv) => sum + inv.total_amount, 0).toLocaleString()}
+                </p>
+              </div>
+              <CheckCircle2 className="w-12 h-12 text-accent-green" />
             </div>
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
           </div>
-        </div>
 
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">Pending Invoices</p>
-              <p className="text-3xl font-bold text-white mt-2">{pendingInvoices.length}</p>
-              <p className="text-yellow-400 text-sm mt-1">${pendingInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}</p>
+          <div className="bg-card border border-primary rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-muted text-sm">Pending Invoices</p>
+                <p className="text-3xl font-bold text-white mt-2">{pendingInvoices.length}</p>
+                <p className="text-accent-yellow text-sm mt-1">
+                  ${pendingInvoices.reduce((sum, inv) => sum + inv.total_amount, 0).toLocaleString()}
+                </p>
+              </div>
+              <Clock className="w-12 h-12 text-accent-yellow" />
             </div>
-            <Clock className="w-12 h-12 text-yellow-500" />
           </div>
-        </div>
 
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">Overdue Invoices</p>
-              <p className="text-3xl font-bold text-white mt-2">{overdueInvoices.length}</p>
-              <p className="text-red-400 text-sm mt-1">${overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}</p>
+          <div className="bg-card border border-primary rounded-xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-muted text-sm">Overdue Invoices</p>
+                <p className="text-3xl font-bold text-white mt-2">{overdueInvoices.length}</p>
+                <p className="text-accent-red text-sm mt-1">
+                  ${overdueInvoices.reduce((sum, inv) => sum + inv.total_amount, 0).toLocaleString()}
+                </p>
+              </div>
+              <AlertCircle className="w-12 h-12 text-accent-red" />
             </div>
-            <XCircle className="w-12 h-12 text-red-500" />
           </div>
         </div>
-      </div>
 
-      <div className="bg-secondary rounded-lg p-6">
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search by company, invoice number, or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-            />
-          </div>
-          <div className="flex gap-2">
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+        {/* ===== FILTERS ===== */}
+        <div className="bg-card border border-primary rounded-xl p-6">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by company, invoice number, or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-secondary border border-secondary rounded-lg text-white placeholder-muted focus:outline-none focus:border-accent-blue"
+              />
+            </div>
+            <div className="flex gap-2">
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="pl-10 pr-8 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-accent-blue"
+                >
+                  <option value="all">All Status</option>
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                value={gatewayFilter}
+                onChange={(e) => setGatewayFilter(e.target.value)}
+                className="px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-accent-blue"
               >
-                <option value="all">All Status</option>
-                <option value="paid">Paid</option>
-                <option value="pending">Pending</option>
-                <option value="overdue">Overdue</option>
+                <option value="all">All Gateways</option>
+                <option value="paytr">PayTR</option>
+                <option value="stripe">Stripe</option>
+                <option value="qpay">QPay</option>
+                <option value="tappay">Tappay</option>
               </select>
             </div>
           </div>
+          <p className="text-sm text-muted">
+            Showing {filteredInvoices.length} of {invoices.length} invoices
+          </p>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-secondary">
-                <th className="text-left py-3 px-4 text-muted font-medium">Invoice #</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Company</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Amount</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Status</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Issue Date</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Due Date</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b border-secondary hover:bg-gray-750">
-                  <td className="py-4 px-4">
-                    <p className="text-white font-medium">{invoice.invoiceNumber}</p>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div>
-                      <p className="text-white font-medium">{invoice.company}</p>
-                      <p className="text-muted text-sm">{invoice.companyEmail}</p>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <p className="text-white font-medium">${invoice.amount.toLocaleString()}</p>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={`px-3 py-1 rounded-full text-sm ${
-                      invoice.status === 'paid' ? 'bg-green-500/20 text-green-400' :
-                      invoice.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-red-500/20 text-red-400'
-                    }`}>
-                      {invoice.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <p className="text-secondary text-sm">{invoice.issueDate}</p>
-                  </td>
-                  <td className="py-4 px-4">
-                    <p className="text-secondary text-sm">{invoice.dueDate}</p>
-                    {invoice.paidDate && (
-                      <p className="text-green-400 text-xs mt-1">Paid: {invoice.paidDate}</p>
-                    )}
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleViewInvoice(invoice)}
-                        className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                        title="View Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => alert(`Download invoice ${invoice.invoiceNumber}`)}
-                        className="p-2 bg-gray-700 text-white rounded hover:bg-hover"
-                        title="Download PDF"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {showDetailsModal && selectedInvoice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-secondary rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-secondary">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-white">{selectedInvoice.invoiceNumber}</h2>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="text-muted hover:text-white"
-                >
-                  <XCircle className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted text-sm">Status</p>
-                  <span className={`inline-block mt-1 px-3 py-1 rounded-full text-sm ${
-                    selectedInvoice.status === 'paid' ? 'bg-green-500/20 text-green-400' :
-                    selectedInvoice.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-red-500/20 text-red-400'
-                  }`}>
-                    {selectedInvoice.status}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="text-muted text-sm">Amount</p>
-                  <p className="text-2xl font-bold text-white mt-1">${selectedInvoice.amount.toLocaleString()}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-muted text-sm">Company</p>
-                  <p className="text-white font-medium">{selectedInvoice.company}</p>
-                  <p className="text-muted text-sm">{selectedInvoice.companyEmail}</p>
-                </div>
-                <div>
-                  <p className="text-muted text-sm">Invoice Number</p>
-                  <p className="text-white">{selectedInvoice.invoiceNumber}</p>
-                </div>
-                <div>
-                  <p className="text-muted text-sm">Issue Date</p>
-                  <p className="text-white">{selectedInvoice.issueDate}</p>
-                </div>
-                <div>
-                  <p className="text-muted text-sm">Due Date</p>
-                  <p className="text-white">{selectedInvoice.dueDate}</p>
-                </div>
-                {selectedInvoice.paidDate && (
-                  <div>
-                    <p className="text-muted text-sm">Paid Date</p>
-                    <p className="text-green-400">{selectedInvoice.paidDate}</p>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <p className="text-muted text-sm mb-3">Services</p>
-                <div className="space-y-2">
-                  {selectedInvoice.services.map((service, index) => (
-                    <div key={index} className="bg-gray-700 rounded-lg p-3">
-                      <p className="text-white">{service}</p>
-                    </div>
+        {/* ===== INVOICES TABLE ===== */}
+        <div className="bg-card border border-primary rounded-xl overflow-hidden">
+          {filteredInvoices.length > 0 ? (
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-primary bg-secondary">
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Invoice #</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Company</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Amount</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Status</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Gateway</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Issue Date</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Due Date</th>
+                    <th className="text-left py-3 px-4 text-secondary font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredInvoices.map((invoice) => (
+                    <tr key={invoice.id} className="border-b border-primary hover:bg-hover transition-colors">
+                      <td className="py-4 px-4">
+                        <p className="text-white font-medium font-mono text-sm">{invoice.invoice_number}</p>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-accent-blue flex-shrink-0" />
+                          <div>
+                            <p className="text-white font-medium">{invoice.company?.name}</p>
+                            <p className="text-muted text-sm">{invoice.company?.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <p className="text-white font-semibold">
+                          {formatCurrency(invoice.total_amount, invoice.currency)}
+                        </p>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getInvoiceStatusColor(invoice.status)}`}>
+                          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className="text-secondary text-sm">
+                          {invoice.payment_gateway ? getPaymentGatewayName(invoice.payment_gateway) : '-'}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <p className="text-secondary text-sm">{formatDate(invoice.issue_date)}</p>
+                      </td>
+                      <td className="py-4 px-4">
+                        <p className="text-secondary text-sm">
+                          {invoice.due_date ? formatDate(invoice.due_date) : '-'}
+                        </p>
+                        {invoice.paid_at && (
+                          <p className="text-accent-green text-xs mt-1">Paid: {formatDate(invoice.paid_at)}</p>
+                        )}
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewInvoice(invoice)}
+                            className="p-2 bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          {invoice.pdf_url && (
+                            <button
+                              onClick={() => handleDownloadPDF(invoice)}
+                              className="p-2 bg-accent-purple/10 hover:bg-accent-purple/20 text-accent-purple rounded-lg transition-colors"
+                              title="Download PDF"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                          )}
+                          {invoice.status === 'pending' && (
+                            <button
+                              onClick={() => handleMarkAsPaid(invoice.id)}
+                              className="p-2 bg-accent-green/10 hover:bg-accent-green/20 text-accent-green rounded-lg transition-colors"
+                              title="Mark as Paid"
+                            >
+                              <CheckCircle2 className="w-4 h-4" />
+                            </button>
+                          )}
+                          {invoice.status !== 'cancelled' && invoice.status !== 'paid' && (
+                            <button
+                              onClick={() => handleCancelInvoice(invoice.id)}
+                              className="p-2 bg-accent-red/10 hover:bg-accent-red/20 text-accent-red rounded-lg transition-colors"
+                              title="Cancel Invoice"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
                   ))}
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => alert(`Download invoice ${selectedInvoice.invoiceNumber}`)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  Download PDF
-                </button>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-hover"
-                >
-                  Close
-                </button>
-              </div>
+                </tbody>
+              </table>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-muted mx-auto mb-4" />
+              <p className="text-muted text-lg mb-2">No invoices found</p>
+              <p className="text-muted text-sm">
+                {searchTerm || statusFilter !== 'all' || gatewayFilter !== 'all'
+                  ? 'Try adjusting your filters'
+                  : 'Invoices will appear here when created'}
+              </p>
+            </div>
+          )}
         </div>
-      )}
       </div>
+
+      {/* ===== INVOICE DETAIL MODAL ===== */}
+      {showDetailsModal && selectedInvoice && (
+        <InvoiceDetailModal
+          invoice={selectedInvoice}
+          onClose={() => setShowDetailsModal(false)}
+          onDownload={handleDownloadPDF}
+        />
+      )}
+
+      {/* Click outside to close export menu */}
+      {showExportMenu && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowExportMenu(false)}
+        />
+      )}
     </div>
   );
 }
