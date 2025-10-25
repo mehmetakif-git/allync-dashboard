@@ -89,11 +89,11 @@ export default function GmailServiceManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <button
           onClick={() => window.location.hash = 'services-catalog'}
-          className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
+          className="flex items-center gap-2 text-muted hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Services Catalog
@@ -113,13 +113,13 @@ export default function GmailServiceManagement() {
           </div>
         </div>
 
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Mail className="w-6 h-6 text-red-500" />
               <div>
                 <h2 className="text-xl font-bold text-white">Gmail Integration - Service Management</h2>
-                <p className="text-sm text-gray-400">Manage service content, view company usage, and analytics</p>
+                <p className="text-sm text-muted">Manage service content, view company usage, and analytics</p>
               </div>
             </div>
             {activeTab === 'content' && (
@@ -144,7 +144,7 @@ export default function GmailServiceManagement() {
             </div>
             <div>
               <p className="text-green-400 font-semibold">Success!</p>
-              <p className="text-gray-400 text-sm">Service content updated successfully.</p>
+              <p className="text-muted text-sm">Service content updated successfully.</p>
             </div>
           </div>
         )}
@@ -157,7 +157,7 @@ export default function GmailServiceManagement() {
                 key={tab.id}
                 onClick={() => { setActiveTab(tab.id as any); setIsEditing(false); }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap relative ${
-                  activeTab === tab.id ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  activeTab === tab.id ? 'bg-red-600 text-white' : 'bg-secondary text-muted hover:bg-hover'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -170,63 +170,63 @@ export default function GmailServiceManagement() {
 
         {activeTab === 'content' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Service Names</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">English Name</label>
+                  <label className="block text-sm font-medium text-muted mb-2">English Name</label>
                   <input
                     type="text"
                     value={serviceContent.name_en}
                     onChange={(e) => setServiceContent({ ...serviceContent, name_en: e.target.value })}
                     disabled={!isEditing}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Turkish Name</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Turkish Name</label>
                   <input
                     type="text"
                     value={serviceContent.name_tr}
                     onChange={(e) => setServiceContent({ ...serviceContent, name_tr: e.target.value })}
                     disabled={!isEditing}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Service Descriptions</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">English Description</label>
+                  <label className="block text-sm font-medium text-muted mb-2">English Description</label>
                   <textarea
                     value={serviceContent.description_en}
                     onChange={(e) => setServiceContent({ ...serviceContent, description_en: e.target.value })}
                     disabled={!isEditing}
                     rows={4}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-red-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-red-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Turkish Description</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Turkish Description</label>
                   <textarea
                     value={serviceContent.description_tr}
                     onChange={(e) => setServiceContent({ ...serviceContent, description_tr: e.target.value })}
                     disabled={!isEditing}
                     rows={4}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-red-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-red-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Service Features</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">English Features</label>
+                  <label className="block text-sm font-medium text-muted mb-2">English Features</label>
                   <div className="space-y-2">
                     {serviceContent.features_en.map((feature, index) => (
                       <input
@@ -239,13 +239,13 @@ export default function GmailServiceManagement() {
                           setServiceContent({ ...serviceContent, features_en: newFeatures });
                         }}
                         disabled={!isEditing}
-                        className={`w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                        className={`w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                       />
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Turkish Features</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Turkish Features</label>
                   <div className="space-y-2">
                     {serviceContent.features_tr.map((feature, index) => (
                       <input
@@ -258,7 +258,7 @@ export default function GmailServiceManagement() {
                           setServiceContent({ ...serviceContent, features_tr: newFeatures });
                         }}
                         disabled={!isEditing}
-                        className={`w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                        className={`w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-red-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                       />
                     ))}
                   </div>
@@ -266,14 +266,14 @@ export default function GmailServiceManagement() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Pricing Plans</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {Object.entries(serviceContent.pricing).map(([plan, details]) => (
-                  <div key={plan} className="bg-gray-900 border border-gray-700 rounded-lg p-4">
+                  <div key={plan} className="bg-primary border border-secondary rounded-lg p-4">
                     <h4 className="text-white font-semibold mb-3 capitalize">{plan}</h4>
                     <div className="mb-3">
-                      <label className="block text-xs text-gray-400 mb-1">Price (USD)</label>
+                      <label className="block text-xs text-muted mb-1">Price (USD)</label>
                       <input
                         type="number"
                         value={details.price}
@@ -285,12 +285,12 @@ export default function GmailServiceManagement() {
                           }
                         })}
                         disabled={!isEditing}
-                        className={`w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-white ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                        className={`w-full px-3 py-2 bg-primary border border-secondary rounded text-white ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-400 mb-1">Features</label>
-                      <ul className="text-sm text-gray-300 space-y-1">
+                      <label className="block text-xs text-muted mb-1">Features</label>
+                      <ul className="text-sm text-secondary space-y-1">
                         {details.features.map((feature, idx) => (
                           <li key={idx}>• {feature}</li>
                         ))}
@@ -305,7 +305,7 @@ export default function GmailServiceManagement() {
               <div className="flex gap-4">
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   <X className="w-5 h-5" />
                   Cancel
@@ -322,52 +322,52 @@ export default function GmailServiceManagement() {
         {activeTab === 'companies' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <Building2 className="w-5 h-5 text-red-500" />
-                  <span className="text-sm text-gray-400">Companies</span>
+                  <span className="text-sm text-muted">Companies</span>
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.totalCompanies}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <Inbox className="w-5 h-5 text-blue-500" />
-                  <span className="text-sm text-gray-400">Total Emails</span>
+                  <span className="text-sm text-muted">Total Emails</span>
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.totalEmails}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <Send className="w-5 h-5 text-purple-500" />
-                  <span className="text-sm text-gray-400">Emails Sent</span>
+                  <span className="text-sm text-muted">Emails Sent</span>
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.emailsSent}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <TrendingUp className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm text-gray-400">Revenue</span>
+                  <span className="text-sm text-muted">Revenue</span>
                 </div>
                 <p className="text-2xl font-bold text-white">${globalStats.monthlyRevenue}</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50">
+                  <thead className="bg-primary/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Company</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Package</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Emails</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Sent</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Avg Response</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Company</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Package</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Total Emails</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Sent</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Avg Response</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700">
                   {companiesUsingService.map((company) => (
-                    <tr key={company.id} className="hover:bg-gray-700/50 transition-colors">
+                    <tr key={company.id} className="hover:bg-hover/50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white font-semibold">
@@ -382,9 +382,9 @@ export default function GmailServiceManagement() {
                           'bg-red-500/10 border border-red-500/30 text-red-500'
                         }`}>{company.package}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">{company.totalEmails}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">{company.emailsSent}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">{company.avgResponseTime}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{company.totalEmails}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{company.emailsSent}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-secondary">{company.avgResponseTime}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button onClick={() => window.location.hash = `company-detail/${company.id}`} className="p-2 hover:bg-red-500/10 rounded-lg transition-colors">
                           <Eye className="w-5 h-5 text-red-500" />
@@ -402,31 +402,31 @@ export default function GmailServiceManagement() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-                <p className="text-sm text-gray-400 mb-1">Total Companies</p>
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
+                <p className="text-sm text-muted mb-1">Total Companies</p>
                 <p className="text-3xl font-bold text-white">{globalStats.totalCompanies}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-                <p className="text-sm text-gray-400 mb-1">Total Emails</p>
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
+                <p className="text-sm text-muted mb-1">Total Emails</p>
                 <p className="text-3xl font-bold text-white">{globalStats.totalEmails}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-                <p className="text-sm text-gray-400 mb-1">Emails Sent</p>
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
+                <p className="text-sm text-muted mb-1">Emails Sent</p>
                 <p className="text-3xl font-bold text-white">{globalStats.emailsSent}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
-                <p className="text-sm text-gray-400 mb-1">Monthly Revenue</p>
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
+                <p className="text-sm text-muted mb-1">Monthly Revenue</p>
                 <p className="text-3xl font-bold text-white">${globalStats.monthlyRevenue}</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Package Distribution</h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-300">Professional</span>
-                    <span className="text-gray-400 text-sm">1 company (50%)</span>
+                    <span className="text-secondary">Professional</span>
+                    <span className="text-muted text-sm">1 company (50%)</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-3">
                     <div className="bg-gradient-to-r from-red-500 to-red-700 h-3 rounded-full" style={{ width: '50%' }}></div>
@@ -434,8 +434,8 @@ export default function GmailServiceManagement() {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-300">Starter</span>
-                    <span className="text-gray-400 text-sm">1 company (50%)</span>
+                    <span className="text-secondary">Starter</span>
+                    <span className="text-muted text-sm">1 company (50%)</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-3">
                     <div className="bg-gradient-to-r from-blue-500 to-blue-700 h-3 rounded-full" style={{ width: '50%' }}></div>

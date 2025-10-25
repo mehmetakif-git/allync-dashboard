@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
   // Show loading spinner while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-primary">
         <LoadingSpinner />
       </div>
     );
@@ -37,10 +37,10 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
     if (user?.role !== requiredRole) {
       console.log('❌ Insufficient permissions');
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="min-h-screen flex items-center justify-center bg-primary">
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-8 max-w-md">
             <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
-            <p className="text-gray-400 mb-4">
+            <p className="text-muted mb-4">
               You don't have permission to access this page.
             </p>
             <button

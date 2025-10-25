@@ -25,7 +25,7 @@ export default function GoogleSheets() {
       case 'found': return 'bg-green-500/10 text-green-500 border-green-500/30';
       case 'not_found': return 'bg-red-500/10 text-red-500 border-red-500/30';
       case 'multiple_results': return 'bg-blue-500/10 text-blue-500 border-blue-500/30';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
+      default: return 'bg-gray-500/10 text-muted border-secondary/30';
     }
   };
 
@@ -58,45 +58,45 @@ export default function GoogleSheets() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Search className="w-5 h-5 text-green-600" />
-              <span className="text-sm text-gray-400">Total Queries</span>
+              <span className="text-sm text-muted">Total Queries</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.totalQueries}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp className="w-5 h-5 text-green-500" />
-              <span className="text-sm text-gray-400">Successful</span>
+              <span className="text-sm text-muted">Successful</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.successfulQueries}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Database className="w-5 h-5 text-blue-500" />
-              <span className="text-sm text-gray-400">Cached Items</span>
+              <span className="text-sm text-muted">Cached Items</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.cachedItems}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <BarChart3 className="w-5 h-5 text-purple-500" />
-              <span className="text-sm text-gray-400">Avg Response</span>
+              <span className="text-sm text-muted">Avg Response</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.avgResponseTime}</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl mb-6">
-          <div className="flex border-b border-gray-700">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl mb-6">
+          <div className="flex border-b border-secondary">
             <button
               onClick={() => setActiveTab('queries')}
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'queries'
                   ? 'text-green-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Queries
@@ -109,7 +109,7 @@ export default function GoogleSheets() {
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'analytics'
                   ? 'text-green-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Analytics
@@ -122,7 +122,7 @@ export default function GoogleSheets() {
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'settings'
                   ? 'text-green-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Settings
@@ -138,49 +138,49 @@ export default function GoogleSheets() {
           <div className="space-y-6">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search queries..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
+                className="w-full pl-12 pr-4 py-3 bg-secondary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
               />
             </div>
 
             {/* Queries Table */}
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50">
+                  <thead className="bg-primary/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Customer</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Query</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Intent</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Results</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Response</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Query</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Intent</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Results</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Response</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Time</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700">
                     {filteredQueries.map((query) => (
-                      <tr key={query.id} className="hover:bg-gray-700/50 transition-colors">
+                      <tr key={query.id} className="hover:bg-hover/50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <p className="text-white font-medium">{query.customer_name}</p>
-                            <p className="text-sm text-gray-400">{query.customer_phone}</p>
+                            <p className="text-sm text-muted">{query.customer_phone}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <p className="text-white max-w-xs truncate">{query.query_text}</p>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300 capitalize">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-700 text-secondary capitalize">
                             {query.query_intent.replace('_', ' ')}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-300">{query.results_count} found</span>
+                          <span className="text-secondary">{query.results_count} found</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium border capitalize ${getResponseTypeColor(query.response_type)}`}>
@@ -188,7 +188,7 @@ export default function GoogleSheets() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-400 text-sm">{new Date(query.created_at).toLocaleString()}</span>
+                          <span className="text-muted text-sm">{new Date(query.created_at).toLocaleString()}</span>
                         </td>
                       </tr>
                     ))}
@@ -203,33 +203,33 @@ export default function GoogleSheets() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <TrendingUp className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-gray-400">Success Rate</span>
+                  <span className="text-sm text-muted">Success Rate</span>
                 </div>
                 <p className="text-3xl font-bold text-white">93%</p>
                 <p className="text-sm text-green-500 mt-1">↑ 5% from last month</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <BarChart3 className="w-5 h-5 text-blue-500" />
-                  <span className="text-sm text-gray-400">Avg Query Time</span>
+                  <span className="text-sm text-muted">Avg Query Time</span>
                 </div>
                 <p className="text-3xl font-bold text-white">1.9s</p>
                 <p className="text-sm text-green-500 mt-1">↓ 0.3s from last month</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <Search className="w-5 h-5 text-purple-500" />
-                  <span className="text-sm text-gray-400">Total Queries</span>
+                  <span className="text-sm text-muted">Total Queries</span>
                 </div>
                 <p className="text-3xl font-bold text-white">467</p>
                 <p className="text-sm text-green-500 mt-1">↑ 18% from last month</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Query Intent Distribution</h3>
               <div className="space-y-4">
                 {[
@@ -242,8 +242,8 @@ export default function GoogleSheets() {
                   return (
                     <div key={item.intent}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-300 capitalize">{item.intent.replace('_', ' ')}</span>
-                        <span className="text-gray-400 text-sm">{item.count} queries ({percentage.toFixed(0)}%)</span>
+                        <span className="text-secondary capitalize">{item.intent.replace('_', ' ')}</span>
+                        <span className="text-muted text-sm">{item.count} queries ({percentage.toFixed(0)}%)</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-3">
                         <div className="h-3 rounded-full" style={{ width: `${percentage}%`, backgroundColor: item.color }}></div>
@@ -254,18 +254,18 @@ export default function GoogleSheets() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Cached Data Items</h3>
               <div className="space-y-3">
                 {mockSheetsDataCache.slice(0, 5).map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div key={item.id} className="flex items-center justify-between p-4 bg-primary rounded-lg">
                     <div>
                       <p className="text-white font-medium">{item.data_json.name}</p>
-                      <p className="text-sm text-gray-400">{item.worksheet_name} - Row {item.row_number}</p>
+                      <p className="text-sm text-muted">{item.worksheet_name} - Row {item.row_number}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-white font-medium">{item.data_json.price} QAR</p>
-                      <p className="text-sm text-gray-400">Stock: {item.data_json.stock}</p>
+                      <p className="text-sm text-muted">Stock: {item.data_json.stock}</p>
                     </div>
                   </div>
                 ))}
@@ -283,30 +283,30 @@ export default function GoogleSheets() {
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Google Sheets Connection</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Sheet ID</label>
-                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
+                  <label className="block text-sm font-medium text-muted mb-2">Sheet ID</label>
+                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms" className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Sheet Name</label>
-                  <input type="text" defaultValue="Product Inventory" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
+                  <label className="block text-sm font-medium text-muted mb-2">Sheet Name</label>
+                  <input type="text" defaultValue="Product Inventory" className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Sync Interval</label>
-                  <select className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed" disabled>
+                  <label className="block text-sm font-medium text-muted mb-2">Sync Interval</label>
+                  <select className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-muted cursor-not-allowed" disabled>
                     <option>Every 5 minutes</option>
                     <option>Every 15 minutes</option>
                     <option>Every 30 minutes</option>
                     <option>Every 1 hour</option>
                   </select>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-primary rounded-lg">
                   <div>
                     <p className="text-white font-medium">Auto-sync enabled</p>
-                    <p className="text-sm text-gray-400">Automatically sync data at set intervals</p>
+                    <p className="text-sm text-muted">Automatically sync data at set intervals</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-not-allowed">
                     <input type="checkbox" className="sr-only peer" defaultChecked disabled />
@@ -316,7 +316,7 @@ export default function GoogleSheets() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Column Mapping</h3>
               <div className="space-y-3">
                 {[
@@ -326,38 +326,38 @@ export default function GoogleSheets() {
                   { column: 'D', field: 'Price', type: 'currency' },
                   { column: 'E', field: 'Stock', type: 'number' },
                 ].map((mapping) => (
-                  <div key={mapping.column} className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div key={mapping.column} className="flex items-center justify-between p-4 bg-primary rounded-lg">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center text-white font-bold">
                         {mapping.column}
                       </div>
                       <div>
                         <p className="text-white font-medium">{mapping.field}</p>
-                        <p className="text-sm text-gray-400">{mapping.type}</p>
+                        <p className="text-sm text-muted">{mapping.type}</p>
                       </div>
                     </div>
-                    <span className="text-gray-400">Searchable</span>
+                    <span className="text-muted">Searchable</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Instance Status</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Connection Status</p>
+                  <p className="text-sm text-muted mb-2">Connection Status</p>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-white font-medium">Connected</span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Last Synced</p>
+                  <p className="text-sm text-muted mb-2">Last Synced</p>
                   <p className="text-white font-medium">5 minutes ago</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Service Status</p>
+                  <p className="text-sm text-muted mb-2">Service Status</p>
                   <span className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded-full text-xs font-medium">
                     Active
                   </span>

@@ -313,7 +313,7 @@ export default function CompanyDetail() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading company details...</p>
+            <p className="text-muted">Loading company details...</p>
           </div>
         </div>
       </div>
@@ -327,7 +327,7 @@ export default function CompanyDetail() {
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-8 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Company Not Found</h2>
-            <p className="text-gray-400 mb-6">{error || "The company you're looking for doesn't exist."}</p>
+            <p className="text-muted mb-6">{error || "The company you're looking for doesn't exist."}</p>
             <button
               onClick={() => navigate('/admin/companies')}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
@@ -357,12 +357,12 @@ export default function CompanyDetail() {
 
   // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <button
           onClick={() => navigate('/admin/companies')}
-          className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
+          className="flex items-center gap-2 text-muted hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Companies
@@ -395,7 +395,7 @@ export default function CompanyDetail() {
         )}
 
         {/* Company Header */}
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 mb-6">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-6">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -412,7 +412,7 @@ export default function CompanyDetail() {
                     {company.status}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-4 text-sm text-muted">
                   <div className="flex items-center gap-1">
                     <Mail className="w-4 h-4" />
                     {company.email}
@@ -439,32 +439,32 @@ export default function CompanyDetail() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-            <div className="p-4 bg-gray-900/50 rounded-lg">
+            <div className="p-4 bg-primary/50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">Active Services</span>
+                <span className="text-sm text-muted">Active Services</span>
                 <Zap className="w-4 h-4 text-blue-500" />
               </div>
               <p className="text-2xl font-bold text-white">{companyServices.length}</p>
             </div>
-            <div className="p-4 bg-gray-900/50 rounded-lg">
+            <div className="p-4 bg-primary/50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">Total Users</span>
+                <span className="text-sm text-muted">Total Users</span>
                 <Users className="w-4 h-4 text-green-500" />
               </div>
               <p className="text-2xl font-bold text-white">{companyUsers.length}</p>
             </div>
-            <div className="p-4 bg-gray-900/50 rounded-lg">
+            <div className="p-4 bg-primary/50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">Open Tickets</span>
+                <span className="text-sm text-muted">Open Tickets</span>
                 <Mail className="w-4 h-4 text-orange-500" />
               </div>
               <p className="text-2xl font-bold text-white">
                 {supportTickets.filter((t: any) => t.status === 'open').length}
               </p>
             </div>
-            <div className="p-4 bg-gray-900/50 rounded-lg">
+            <div className="p-4 bg-primary/50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">Total Revenue</span>
+                <span className="text-sm text-muted">Total Revenue</span>
                 <DollarSign className="w-4 h-4 text-purple-500" />
               </div>
               <p className="text-2xl font-bold text-white">${totalRevenue.toFixed(2)}</p>
@@ -483,7 +483,7 @@ export default function CompanyDetail() {
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    : 'bg-secondary text-muted hover:bg-hover'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -502,42 +502,42 @@ export default function CompanyDetail() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Company Information */}
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Company Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Company Name</p>
+                    <p className="text-sm text-muted mb-1">Company Name</p>
                     <p className="text-white font-medium">{company.name}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Email</p>
+                    <p className="text-sm text-muted mb-1">Email</p>
                     <p className="text-white">{company.email}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Phone</p>
+                    <p className="text-sm text-muted mb-1">Phone</p>
                     <p className="text-white">{company.phone}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Website</p>
+                    <p className="text-sm text-muted mb-1">Website</p>
                     <p className="text-white">{company.website || 'Not provided'}</p>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Country</p>
+                    <p className="text-sm text-muted mb-1">Country</p>
                     <p className="text-white">{company.country}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Address</p>
+                    <p className="text-sm text-muted mb-1">Address</p>
                     <p className="text-white">{company.address || 'Not provided'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">City & Postal Code</p>
+                    <p className="text-sm text-muted mb-1">City & Postal Code</p>
                     <p className="text-white">{company.city || 'N/A'}, {company.postal_code || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Member Since</p>
+                    <p className="text-sm text-muted mb-1">Member Since</p>
                     <p className="text-white">
                       {new Date(company.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -551,19 +551,19 @@ export default function CompanyDetail() {
             </div>
 
             {/* Tax & Billing Information */}
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Tax & Billing Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <p className="text-sm text-gray-400 mb-1">Tax ID / VAT Number</p>
+                  <p className="text-sm text-muted mb-1">Tax ID / VAT Number</p>
                   <p className="text-white font-mono">{company.tax_id || 'Not provided'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-1">Registration Number</p>
+                  <p className="text-sm text-muted mb-1">Registration Number</p>
                   <p className="text-white font-mono">{company.registration_number || 'Not provided'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-1">Billing Email</p>
+                  <p className="text-sm text-muted mb-1">Billing Email</p>
                   <p className="text-white">{company.billing_email || company.email}</p>
                 </div>
               </div>
@@ -573,11 +573,11 @@ export default function CompanyDetail() {
 
         {activeTab === 'users' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
-              <div className="p-6 border-b border-gray-700 flex items-center justify-between">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+              <div className="p-6 border-b border-secondary flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white">Company Users</h2>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-sm text-muted mt-1">
                     {companyUsers.length} user{companyUsers.length !== 1 ? 's' : ''} in this company
                   </p>
                 </div>
@@ -594,7 +594,7 @@ export default function CompanyDetail() {
                 <div className="p-12 text-center">
                   <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                   <p className="text-white font-medium mb-2">No Users Yet</p>
-                  <p className="text-gray-400 text-sm mb-6">Add the first user to this company</p>
+                  <p className="text-muted text-sm mb-6">Add the first user to this company</p>
                   <button
                     onClick={() => setShowAddUserModal(true)}
                     className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors inline-flex items-center gap-2"
@@ -606,18 +606,18 @@ export default function CompanyDetail() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-900/50 border-b border-gray-700">
+                    <thead className="bg-primary/50 border-b border-secondary">
                       <tr>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">User</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Role</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Joined Date</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">User</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Role</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Status</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Joined Date</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
                       {companyUsers.map((user) => (
-                        <tr key={user.id} className="hover:bg-gray-900/30 transition-colors">
+                        <tr key={user.id} className="hover:bg-primary/30 transition-colors">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -627,7 +627,7 @@ export default function CompanyDetail() {
                               </div>
                               <div>
                                 <p className="text-white font-medium">{user.full_name}</p>
-                                <p className="text-sm text-gray-400">{user.email}</p>
+                                <p className="text-sm text-muted">{user.email}</p>
                               </div>
                             </div>
                           </td>
@@ -650,7 +650,7 @@ export default function CompanyDetail() {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-gray-400 text-sm">
+                            <span className="text-muted text-sm">
                               {new Date(user.created_at).toLocaleDateString()}
                             </span>
                           </td>
@@ -695,10 +695,10 @@ export default function CompanyDetail() {
 
         {activeTab === 'services' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-white">Active Services</h2>
-                <p className="text-sm text-gray-400 mt-1">Configure service settings for this company</p>
+                <p className="text-sm text-muted mt-1">Configure service settings for this company</p>
               </div>
 
               {(() => {
@@ -712,7 +712,7 @@ export default function CompanyDetail() {
                     <div className="text-center py-12">
                       <Zap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                       <p className="text-white font-medium">No Active Services</p>
-                      <p className="text-gray-400 text-sm mt-1">This company doesn't have any active services yet.</p>
+                      <p className="text-muted text-sm mt-1">This company doesn't have any active services yet.</p>
                     </div>
                   );
                 }
@@ -724,7 +724,7 @@ export default function CompanyDetail() {
                       const serviceColor = getServiceColor(service.slug);
 
                       return (
-                        <div key={service.id} className="bg-gray-900/50 border border-gray-700 rounded-xl p-5 hover:border-gray-600 transition-all">
+                        <div key={service.id} className="bg-primary/50 border border-secondary rounded-xl p-5 hover:border-secondary transition-all">
                           <div className="mb-4">
                             <div className="flex items-center justify-between mb-3">
                               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${serviceColor} flex items-center justify-center shadow-lg`}>
@@ -737,7 +737,7 @@ export default function CompanyDetail() {
                           </div>
 
                           <h3 className="text-white font-semibold text-lg mb-2">{service.name_en}</h3>
-                          <p className="text-gray-400 text-sm mb-4 line-clamp-2">{service.description_en}</p>
+                          <p className="text-muted text-sm mb-4 line-clamp-2">{service.description_en}</p>
 
                           <button
                             onClick={() => handleConfigureService(service.slug)}
@@ -755,14 +755,14 @@ export default function CompanyDetail() {
             </div>
 
             {pendingRequests.length > 0 && (
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white">Pending Service Requests</h2>
-                  <span className="text-sm text-gray-400">{pendingRequests.length} pending</span>
+                  <span className="text-sm text-muted">{pendingRequests.length} pending</span>
                 </div>
                 <div className="space-y-3">
                   {pendingRequests.map((request: any) => (
-                    <div key={request.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+                    <div key={request.id} className="p-4 bg-primary/50 border border-secondary rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center">
@@ -770,7 +770,7 @@ export default function CompanyDetail() {
                           </div>
                           <div>
                             <p className="text-white font-medium">{request.service_type?.name_en || 'Service'}</p>
-                            <p className="text-sm text-gray-400">Package: {request.package?.toUpperCase()}</p>
+                            <p className="text-sm text-muted">Package: {request.package?.toUpperCase()}</p>
                           </div>
                         </div>
                         <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-500">
@@ -786,23 +786,23 @@ export default function CompanyDetail() {
         )}
 
         {activeTab === 'tickets' && (
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Support Tickets</h2>
-              <span className="text-sm text-gray-400">{supportTickets.length} tickets</span>
+              <span className="text-sm text-muted">{supportTickets.length} tickets</span>
             </div>
 
             {supportTickets.length > 0 ? (
               <div className="space-y-3">
                 {supportTickets.map((ticket: any) => (
-                  <div key={ticket.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg hover:bg-gray-900/70 transition-colors">
+                  <div key={ticket.id} className="p-4 bg-primary/50 border border-secondary rounded-lg hover:bg-primary/70 transition-colors">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <Mail className="w-4 h-4 text-gray-400" />
+                          <Mail className="w-4 h-4 text-muted" />
                           <span className="text-white font-medium">{ticket.subject}</span>
                         </div>
-                        <p className="text-sm text-gray-400 mb-2">{ticket.ticket_number}</p>
+                        <p className="text-sm text-muted mb-2">{ticket.ticket_number}</p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         ticket.status === 'open' ? 'bg-blue-500/10 border border-blue-500/30 text-blue-500' :
@@ -812,7 +812,7 @@ export default function CompanyDetail() {
                         {ticket.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-muted">
                       <span className={`px-2 py-1 rounded ${
                         ticket.priority === 'high' || ticket.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
                         ticket.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -828,23 +828,23 @@ export default function CompanyDetail() {
             ) : (
               <div className="text-center py-8">
                 <Mail className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">No support tickets</p>
+                <p className="text-muted">No support tickets</p>
               </div>
             )}
           </div>
         )}
 
         {activeTab === 'invoices' && (
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <h2 className="text-xl font-bold text-white mb-4">Invoices</h2>
             {companyInvoices.length > 0 ? (
               <div className="space-y-3">
                 {companyInvoices.map((invoice: any) => (
-                  <div key={invoice.id} className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+                  <div key={invoice.id} className="p-4 bg-primary/50 border border-secondary rounded-lg">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-white font-medium">{invoice.invoice_number}</p>
-                        <p className="text-sm text-gray-400">{new Date(invoice.issue_date).toLocaleDateString()}</p>
+                        <p className="text-sm text-muted">{new Date(invoice.issue_date).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-white font-bold">${invoice.total_amount.toFixed(2)}</p>
@@ -863,7 +863,7 @@ export default function CompanyDetail() {
             ) : (
               <div className="text-center py-8">
                 <DollarSign className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">No invoices</p>
+                <p className="text-muted">No invoices</p>
               </div>
             )}
           </div>

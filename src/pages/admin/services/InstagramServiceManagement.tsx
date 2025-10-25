@@ -89,11 +89,11 @@ export default function InstagramServiceManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         <button
           onClick={() => window.location.hash = 'services-catalog'}
-          className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
+          className="flex items-center gap-2 text-muted hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Services Catalog
@@ -120,7 +120,7 @@ export default function InstagramServiceManagement() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Instagram Automation - Service Management</h1>
-              <p className="text-gray-400">Manage service content, view company usage, and analytics</p>
+              <p className="text-muted">Manage service content, view company usage, and analytics</p>
             </div>
           </div>
           {activeTab === 'content' && (
@@ -157,7 +157,7 @@ export default function InstagramServiceManagement() {
                 key={tab.id}
                 onClick={() => { setActiveTab(tab.id as any); setIsEditing(false); }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap relative ${
-                  activeTab === tab.id ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  activeTab === tab.id ? 'bg-pink-600 text-white' : 'bg-secondary text-muted hover:bg-hover'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -170,63 +170,63 @@ export default function InstagramServiceManagement() {
 
 {activeTab === 'content' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Service Names</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">English Name</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">English Name</label>
                   <input
                     type="text"
                     value={serviceContent.name_en}
                     onChange={(e) => setServiceContent({ ...serviceContent, name_en: e.target.value })}
                     disabled={!isEditing}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Turkish Name</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Turkish Name</label>
                   <input
                     type="text"
                     value={serviceContent.name_tr}
                     onChange={(e) => setServiceContent({ ...serviceContent, name_tr: e.target.value })}
                     disabled={!isEditing}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Service Descriptions</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">English Description</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">English Description</label>
                   <textarea
                     value={serviceContent.description_en}
                     onChange={(e) => setServiceContent({ ...serviceContent, description_en: e.target.value })}
                     disabled={!isEditing}
                     rows={4}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Turkish Description</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Turkish Description</label>
                   <textarea
                     value={serviceContent.description_tr}
                     onChange={(e) => setServiceContent({ ...serviceContent, description_tr: e.target.value })}
                     disabled={!isEditing}
                     rows={4}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 resize-none ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Service Features</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-3">English Features</label>
+                  <label className="block text-sm font-medium text-secondary mb-3">English Features</label>
                   <div className="space-y-2">
                     {serviceContent.features_en.map((feature, index) => (
                       <input
@@ -239,13 +239,13 @@ export default function InstagramServiceManagement() {
                           setServiceContent({ ...serviceContent, features_en: newFeatures });
                         }}
                         disabled={!isEditing}
-                        className={`w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                        className={`w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                       />
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-3">Turkish Features</label>
+                  <label className="block text-sm font-medium text-secondary mb-3">Turkish Features</label>
                   <div className="space-y-2">
                     {serviceContent.features_tr.map((feature, index) => (
                       <input
@@ -258,7 +258,7 @@ export default function InstagramServiceManagement() {
                           setServiceContent({ ...serviceContent, features_tr: newFeatures });
                         }}
                         disabled={!isEditing}
-                        className={`w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                        className={`w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                       />
                     ))}
                   </div>
@@ -266,14 +266,14 @@ export default function InstagramServiceManagement() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Pricing Plans</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {Object.entries(serviceContent.pricing).map(([plan, details]) => (
-                  <div key={plan} className="p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                  <div key={plan} className="p-4 bg-primary/50 rounded-lg border border-secondary">
                     <h3 className="text-lg font-semibold text-white mb-3 capitalize">{plan}</h3>
                     <div className="mb-3">
-                      <label className="block text-sm text-gray-400 mb-1">Price (USD)</label>
+                      <label className="block text-sm text-muted mb-1">Price (USD)</label>
                       <input
                         type="number"
                         value={details.price}
@@ -285,14 +285,14 @@ export default function InstagramServiceManagement() {
                           }
                         })}
                         disabled={!isEditing}
-                        className={`w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-white ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                        className={`w-full px-3 py-2 bg-primary border border-secondary rounded text-white ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Features</label>
+                      <label className="block text-sm text-muted mb-2">Features</label>
                       <div className="space-y-1">
                         {details.features.map((feature, idx) => (
-                          <p key={idx} className="text-sm text-gray-300">• {feature}</p>
+                          <p key={idx} className="text-sm text-secondary">• {feature}</p>
                         ))}
                       </div>
                     </div>
@@ -301,27 +301,27 @@ export default function InstagramServiceManagement() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Delivery Time</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">English</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">English</label>
                   <input
                     type="text"
                     value={serviceContent.delivery_time_en}
                     onChange={(e) => setServiceContent({ ...serviceContent, delivery_time_en: e.target.value })}
                     disabled={!isEditing}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Turkish</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Turkish</label>
                   <input
                     type="text"
                     value={serviceContent.delivery_time_tr}
                     onChange={(e) => setServiceContent({ ...serviceContent, delivery_time_tr: e.target.value })}
                     disabled={!isEditing}
-                    className={`w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
+                    className={`w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-pink-500 ${!isEditing && 'cursor-not-allowed opacity-70'}`}
                   />
                 </div>
               </div>
@@ -331,7 +331,7 @@ export default function InstagramServiceManagement() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   <X className="w-5 h-5" />
                   Cancel
@@ -351,58 +351,58 @@ export default function InstagramServiceManagement() {
         {activeTab === 'companies' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Companies</span>
+                  <span className="text-sm text-muted">Companies</span>
                   <Building2 className="w-5 h-5 text-pink-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.totalCompanies}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Total Comments</span>
+                  <span className="text-sm text-muted">Total Comments</span>
                   <MessageCircle className="w-5 h-5 text-purple-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.totalComments}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Total DMs</span>
+                  <span className="text-sm text-muted">Total DMs</span>
                   <TrendingUp className="w-5 h-5 text-blue-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.totalDMs}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Avg Response</span>
+                  <span className="text-sm text-muted">Avg Response</span>
                   <BarChart3 className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{globalStats.avgResponseTime}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Revenue</span>
+                  <span className="text-sm text-muted">Revenue</span>
                   <Users className="w-5 h-5 text-orange-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">${globalStats.monthlyRevenue}</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
               <table className="w-full">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+                <thead className="bg-primary/50 border-b border-secondary">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Company</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Package</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Comments</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">DMs</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Avg Response</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Company</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Package</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Comments</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">DMs</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Avg Response</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
                   {companiesUsingService.map((company) => (
-                    <tr key={company.id} className="hover:bg-gray-700/30 transition-colors">
+                    <tr key={company.id} className="hover:bg-hover/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
@@ -419,7 +419,7 @@ export default function InstagramServiceManagement() {
                       </td>
                       <td className="px-6 py-4"><span className="text-white font-medium">{company.totalComments}</span></td>
                       <td className="px-6 py-4"><span className="text-white font-medium">{company.totalDMs}</span></td>
-                      <td className="px-6 py-4"><span className="text-gray-300">{company.avgResponseTime}</span></td>
+                      <td className="px-6 py-4"><span className="text-secondary">{company.avgResponseTime}</span></td>
                       <td className="px-6 py-4">
                         <button onClick={() => window.location.hash = `company-detail/${company.id}`} className="p-2 hover:bg-pink-500/10 rounded-lg transition-colors">
                           <Eye className="w-4 h-4 text-pink-500" />
@@ -436,34 +436,34 @@ export default function InstagramServiceManagement() {
 {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
-                <p className="text-sm text-gray-400 mb-1">Total Companies</p>
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
+                <p className="text-sm text-muted mb-1">Total Companies</p>
                 <p className="text-3xl font-bold text-white">{globalStats.totalCompanies}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
-                <p className="text-sm text-gray-400 mb-1">Total Comments</p>
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
+                <p className="text-sm text-muted mb-1">Total Comments</p>
                 <p className="text-3xl font-bold text-white">{globalStats.totalComments}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
-                <p className="text-sm text-gray-400 mb-1">Total DMs</p>
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
+                <p className="text-sm text-muted mb-1">Total DMs</p>
                 <p className="text-3xl font-bold text-white">{globalStats.totalDMs}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
-                <p className="text-sm text-gray-400 mb-1">Avg Response</p>
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
+                <p className="text-sm text-muted mb-1">Avg Response</p>
                 <p className="text-3xl font-bold text-white">{globalStats.avgResponseTime}</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
-                <p className="text-sm text-gray-400 mb-1">Monthly Revenue</p>
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
+                <p className="text-sm text-muted mb-1">Monthly Revenue</p>
                 <p className="text-3xl font-bold text-white">${globalStats.monthlyRevenue}</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Package Distribution</h2>
               <div className="space-y-3">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-gray-400">Enterprise</span>
+                    <span className="text-muted">Enterprise</span>
                     <span className="text-white font-medium">1 company (50%)</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-3">
@@ -472,7 +472,7 @@ export default function InstagramServiceManagement() {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-gray-400">Professional</span>
+                    <span className="text-muted">Professional</span>
                     <span className="text-white font-medium">1 company (50%)</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-3">
@@ -483,38 +483,38 @@ export default function InstagramServiceManagement() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h2 className="text-xl font-bold text-white mb-4">Most Engaged Companies</h2>
                 <div className="space-y-3">
                   {companiesUsingService.map((company, index) => (
-                    <div key={company.id} className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg">
+                    <div key={company.id} className="flex items-center gap-3 p-3 bg-primary/50 rounded-lg">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                        index === 0 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-400/20 text-gray-400'
+                        index === 0 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-400/20 text-muted'
                       }`}>
                         {index + 1}
                       </div>
                       <div className="flex-1">
                         <p className="text-white font-medium">{company.name}</p>
-                        <p className="text-sm text-gray-400">{company.totalComments + company.totalDMs} interactions</p>
+                        <p className="text-sm text-muted">{company.totalComments + company.totalDMs} interactions</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h2 className="text-xl font-bold text-white mb-4">Best Response Times</h2>
                 <div className="space-y-3">
                   {companiesUsingService.sort((a, b) => parseFloat(a.avgResponseTime) - parseFloat(b.avgResponseTime)).map((company, index) => (
-                    <div key={company.id} className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg">
+                    <div key={company.id} className="flex items-center gap-3 p-3 bg-primary/50 rounded-lg">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                        index === 0 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-400/20 text-gray-400'
+                        index === 0 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-gray-400/20 text-muted'
                       }`}>
                         {index + 1}
                       </div>
                       <div className="flex-1">
                         <p className="text-white font-medium">{company.name}</p>
-                        <p className="text-sm text-gray-400">{company.avgResponseTime} avg</p>
+                        <p className="text-sm text-muted">{company.avgResponseTime} avg</p>
                       </div>
                     </div>
                   ))}

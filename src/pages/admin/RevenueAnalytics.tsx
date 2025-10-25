@@ -56,17 +56,17 @@ export default function RevenueAnalytics() {
   const growthRate = ((monthlyRevenueData[11].revenue - monthlyRevenueData[0].revenue) / monthlyRevenueData[0].revenue * 100).toFixed(1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
           <h1 className="text-3xl font-bold text-white">Revenue Analytics</h1>
-          <p className="text-gray-400 mt-1">Comprehensive financial performance overview</p>
+          <p className="text-muted mt-1">Comprehensive financial performance overview</p>
         </div>
         <select
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value)}
-          className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+          className="px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
         >
           <option value="month">This Month</option>
           <option value="quarter">This Quarter</option>
@@ -76,10 +76,10 @@ export default function RevenueAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Revenue</p>
+              <p className="text-muted text-sm">Total Revenue</p>
               <p className="text-3xl font-bold text-white mt-2">${(totalRevenue / 1000).toFixed(0)}K</p>
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -90,10 +90,10 @@ export default function RevenueAnalytics() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Profit</p>
+              <p className="text-muted text-sm">Total Profit</p>
               <p className="text-3xl font-bold text-white mt-2">${(totalProfit / 1000).toFixed(0)}K</p>
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -104,10 +104,10 @@ export default function RevenueAnalytics() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Avg Monthly</p>
+              <p className="text-muted text-sm">Avg Monthly</p>
               <p className="text-3xl font-bold text-white mt-2">${(avgMonthlyRevenue / 1000).toFixed(1)}K</p>
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -118,10 +118,10 @@ export default function RevenueAnalytics() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Active Companies</p>
+              <p className="text-muted text-sm">Active Companies</p>
               <p className="text-3xl font-bold text-white mt-2">24</p>
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="w-4 h-4 text-green-400" />
@@ -133,10 +133,10 @@ export default function RevenueAnalytics() {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-secondary rounded-lg p-6">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-white">Revenue Trend</h2>
-          <p className="text-gray-400 text-sm mt-1">Monthly revenue, expenses, and profit over time</p>
+          <p className="text-muted text-sm mt-1">Monthly revenue, expenses, and profit over time</p>
         </div>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={monthlyRevenueData}>
@@ -160,10 +160,10 @@ export default function RevenueAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-white">Revenue by Service</h2>
-            <p className="text-gray-400 text-sm mt-1">Top performing services</p>
+            <p className="text-muted text-sm mt-1">Top performing services</p>
           </div>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={serviceRevenueData}>
@@ -183,10 +183,10 @@ export default function RevenueAnalytics() {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-white">Top Performing Companies</h2>
-            <p className="text-gray-400 text-sm mt-1">Highest revenue contributors</p>
+            <p className="text-muted text-sm mt-1">Highest revenue contributors</p>
           </div>
           <div className="space-y-3">
             {topCompanies.map((company, index) => (
@@ -198,7 +198,7 @@ export default function RevenueAnalytics() {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-white font-medium">{company.name}</h3>
-                      <div className="flex items-center gap-3 mt-1 text-sm text-gray-400">
+                      <div className="flex items-center gap-3 mt-1 text-sm text-muted">
                         <span>{company.services} services</span>
                         <span>•</span>
                         <span>${company.monthlySpend}/mo</span>
@@ -223,12 +223,12 @@ export default function RevenueAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <h3 className="text-white font-medium mb-4">Revenue Sources</h3>
           <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">Subscriptions</span>
+                <span className="text-muted text-sm">Subscriptions</span>
                 <span className="text-white font-medium">72%</span>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
@@ -237,7 +237,7 @@ export default function RevenueAnalytics() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">One-time Services</span>
+                <span className="text-muted text-sm">One-time Services</span>
                 <span className="text-white font-medium">18%</span>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
@@ -246,7 +246,7 @@ export default function RevenueAnalytics() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">Add-ons</span>
+                <span className="text-muted text-sm">Add-ons</span>
                 <span className="text-white font-medium">10%</span>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
@@ -256,45 +256,45 @@ export default function RevenueAnalytics() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <h3 className="text-white font-medium mb-4">Customer Retention</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">Retention Rate</span>
+              <span className="text-muted text-sm">Retention Rate</span>
               <span className="text-white font-medium">94%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">Churn Rate</span>
+              <span className="text-muted text-sm">Churn Rate</span>
               <span className="text-white font-medium">6%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">Avg Lifetime Value</span>
+              <span className="text-muted text-sm">Avg Lifetime Value</span>
               <span className="text-white font-medium">$18,450</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">Customer Acquisition Cost</span>
+              <span className="text-muted text-sm">Customer Acquisition Cost</span>
               <span className="text-white font-medium">$2,340</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <h3 className="text-white font-medium mb-4">Growth Metrics</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">MoM Growth</span>
+              <span className="text-muted text-sm">MoM Growth</span>
               <span className="text-green-400 font-medium">+12.3%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">YoY Growth</span>
+              <span className="text-muted text-sm">YoY Growth</span>
               <span className="text-green-400 font-medium">+88.9%</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">New Customers</span>
+              <span className="text-muted text-sm">New Customers</span>
               <span className="text-white font-medium">8 this month</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-sm">Upgrade Rate</span>
+              <span className="text-muted text-sm">Upgrade Rate</span>
               <span className="text-green-400 font-medium">+15.7%</span>
             </div>
           </div>

@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { X, Save, CheckCircle, Building2, User, Calendar, Star, AlertCircle, MessageSquare, Clock } from 'lucide-react';
+import { getTicketMessages, createTicketMessage } from '../../lib/api/supportTickets';
+import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from '../LoadingSpinner';
 
 // =====================================================
 // INTERFACES
@@ -80,6 +83,8 @@ export default function TicketDetailModal({
   availableAssignees = [],
   isLoading = false,
 }: TicketDetailModalProps) {
+  const { user } = useAuth();
+  
   // ===== STATES =====
   const [editStatus, setEditStatus] = useState<string>('');
   const [editPriority, setEditPriority] = useState<string>('');
@@ -91,18 +96,38 @@ export default function TicketDetailModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
   // ===== EFFECTS =====
   useEffect(() => {
     if (ticket) {
+      console.log('🎯 Modal opened for ticket:', ticket.id);
       setEditStatus(ticket.status);
       setEditPriority(ticket.priority);
       setEditAssignedTo(ticket.assignee?.id || '');
       setEditResolutionNotes(ticket.resolution_notes || '');
       setEditSatisfactionRating(ticket.satisfaction_rating || 0);
       setHasChanges(false);
+      
+      // Load messages
+      loadMessages(ticket.id);
     }
   }, [ticket]);
+
+  const loadMessages = async (ticketId: string) => {
+    console.log('📞 Loading messages for ticket:', ticketId);
+    try {
+      setLoadingMessages(true);
+      const data = await getTicketMessages(ticketId, true);
+      console.log('✅ Messages loaded:', data);
+      setMessages(data || []);
+    } catch (error) {
+      console.error('❌ Error loading messages:', error);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
 
   if (!isOpen || !ticket) return null;
 
@@ -113,8 +138,8 @@ export default function TicketDetailModal({
       case 'in_progress': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30';
       case 'waiting_customer': return 'bg-purple-500/10 text-purple-500 border-purple-500/30';
       case 'resolved': return 'bg-green-500/10 text-green-500 border-green-500/30';
-      case 'closed': return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
+      case 'closed': return 'bg-gray-500/10 text-muted border-secondary/30';
+      default: return 'bg-gray-500/10 text-muted border-secondary/30';
     }
   };
 
@@ -123,8 +148,8 @@ export default function TicketDetailModal({
       case 'urgent': return 'bg-red-500/10 text-red-500 border-red-500/30';
       case 'high': return 'bg-orange-500/10 text-orange-500 border-orange-500/30';
       case 'medium': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30';
-      case 'low': return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
+      case 'low': return 'bg-gray-500/10 text-muted border-secondary/30';
+      default: return 'bg-gray-500/10 text-muted border-secondary/30';
     }
   };
 
@@ -164,15 +189,24 @@ export default function TicketDetailModal({
   };
 
   const handleSendReply = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !user) return;
 
+    console.log('📤 Sending reply from modal...');
     setIsSendingReply(true);
     try {
-      await onSendReply(ticket.id, newMessage);
+      await createTicketMessage({
+        ticket_id: ticket.id,
+        sender_id: user.id,
+        message: newMessage.trim(),
+        is_from_support: true, // Super admin replies are from support
+      });
+      
+      console.log('✅ Reply sent, reloading messages...');
       setNewMessage('');
+      await loadMessages(ticket.id);
       showSuccess('Reply sent successfully!');
     } catch (error) {
-      console.error('Error sending reply:', error);
+      console.error('❌ Error sending reply:', error);
     } finally {
       setIsSendingReply(false);
     }
@@ -207,7 +241,7 @@ export default function TicketDetailModal({
           </button>
         ))}
         {editSatisfactionRating > 0 && (
-          <span className="text-sm text-gray-400 ml-2">
+          <span className="text-sm text-muted ml-2">
             {editSatisfactionRating}/5
           </span>
         )}
@@ -218,13 +252,13 @@ export default function TicketDetailModal({
   // ===== RENDER =====
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-5xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]">
+      <div className="bg-secondary border border-secondary rounded-xl max-w-5xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]">
         {/* ===== HEADER (STICKY) ===== */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-700 bg-gray-800 sticky top-0 z-10 rounded-t-xl">
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-secondary bg-secondary sticky top-0 z-10 rounded-t-xl">
           <div>
             <h2 className="text-2xl font-bold text-white mb-1">{ticket.subject}</h2>
             <div className="flex items-center gap-3">
-              <span className="text-gray-400 text-sm font-mono">{ticket.ticket_number}</span>
+              <span className="text-muted text-sm font-mono">{ticket.ticket_number}</span>
               <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(ticket.status)}`}>
                 {ticket.status.replace('_', ' ').toUpperCase()}
               </span>
@@ -236,9 +270,9 @@ export default function TicketDetailModal({
           <button
             onClick={handleClose}
             disabled={isLoading || isSaving}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <X className="w-6 h-6 text-gray-400" />
+            <X className="w-6 h-6 text-muted" />
           </button>
         </div>
 
@@ -258,9 +292,9 @@ export default function TicketDetailModal({
           )}
 
         {/* ===== TICKET INFO GRID ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-primary/50 border border-secondary rounded-lg">
           <div>
-            <p className="text-sm text-gray-400 mb-1 flex items-center gap-2">
+            <p className="text-sm text-muted mb-1 flex items-center gap-2">
               <Building2 className="w-4 h-4" />
               Company
             </p>
@@ -268,16 +302,16 @@ export default function TicketDetailModal({
           </div>
           
           <div>
-            <p className="text-sm text-gray-400 mb-1 flex items-center gap-2">
+            <p className="text-sm text-muted mb-1 flex items-center gap-2">
               <User className="w-4 h-4" />
               Created By
             </p>
             <p className="text-white font-medium">{ticket.creator.full_name}</p>
-            <p className="text-gray-500 text-xs">{ticket.creator.email}</p>
+            <p className="text-muted text-xs">{ticket.creator.email}</p>
           </div>
           
           <div>
-            <p className="text-sm text-gray-400 mb-1 flex items-center gap-2">
+            <p className="text-sm text-muted mb-1 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Category
             </p>
@@ -285,7 +319,7 @@ export default function TicketDetailModal({
           </div>
           
           <div>
-            <p className="text-sm text-gray-400 mb-1 flex items-center gap-2">
+            <p className="text-sm text-muted mb-1 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Created At
             </p>
@@ -295,16 +329,16 @@ export default function TicketDetailModal({
 
         {/* ===== DESCRIPTION ===== */}
         {ticket.description && (
-          <div className="mb-6 p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Description</h3>
-            <p className="text-gray-300 whitespace-pre-wrap">{ticket.description}</p>
+          <div className="mb-6 p-4 bg-primary/50 border border-secondary rounded-lg">
+            <h3 className="text-sm font-semibold text-secondary mb-2">Description</h3>
+            <p className="text-secondary whitespace-pre-wrap">{ticket.description}</p>
           </div>
         )}
 
         {/* ===== EDIT FIELDS ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-primary/50 border border-secondary rounded-lg">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Status
             </label>
             <select
@@ -314,7 +348,7 @@ export default function TicketDetailModal({
                 handleFieldChange();
               }}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="open">Open</option>
               <option value="in_progress">In Progress</option>
@@ -325,7 +359,7 @@ export default function TicketDetailModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Priority
             </label>
             <select
@@ -335,7 +369,7 @@ export default function TicketDetailModal({
                 handleFieldChange();
               }}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -345,7 +379,7 @@ export default function TicketDetailModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Assign To
             </label>
             <select
@@ -355,7 +389,7 @@ export default function TicketDetailModal({
                 handleFieldChange();
               }}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Unassigned</option>
               {availableAssignees.map((assignee) => (
@@ -367,7 +401,7 @@ export default function TicketDetailModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Satisfaction Rating
             </label>
             {renderStarRating()}
@@ -376,7 +410,7 @@ export default function TicketDetailModal({
 
         {/* ===== RESOLUTION NOTES ===== */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-secondary mb-2">
             Resolution Notes
           </label>
           <textarea
@@ -387,7 +421,7 @@ export default function TicketDetailModal({
             }}
             disabled={isSaving}
             placeholder="Add resolution notes (visible to customer)..."
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
             rows={3}
           />
         </div>
@@ -412,30 +446,35 @@ export default function TicketDetailModal({
             <MessageSquare className="w-5 h-5" />
             Conversation
           </h3>
-          <div className="space-y-4 max-h-96 overflow-y-auto mb-4 p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
-            {ticket.messages && ticket.messages.length > 0 ? (
-              ticket.messages.map((message) => (
+          <div className="space-y-4 max-h-96 overflow-y-auto mb-4 p-4 bg-primary/50 border border-secondary rounded-lg custom-scrollbar">
+            {loadingMessages ? (
+              <div className="text-center py-8">
+                <LoadingSpinner />
+                <p className="text-muted mt-2">Loading messages...</p>
+              </div>
+            ) : messages && messages.length > 0 ? (
+              messages.map((message) => (
                 <div
                   key={message.id}
                   className={`p-4 rounded-lg ${
-                    message.isSupport
+                    message.is_from_support
                       ? 'bg-blue-500/10 border border-blue-500/30 ml-8'
-                      : 'bg-gray-800 border border-gray-600 mr-8'
+                      : 'bg-secondary border border-secondary mr-8'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`font-medium ${message.isSupport ? 'text-blue-400' : 'text-white'}`}>
-                      {message.sender}
+                    <span className={`font-medium ${message.is_from_support ? 'text-blue-400' : 'text-white'}`}>
+                      {message.is_from_support ? 'Support Team' : 'Customer'}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {formatDate(message.timestamp)}
+                    <span className="text-xs text-muted">
+                      {formatDate(message.created_at)}
                     </span>
                   </div>
-                  <p className="text-gray-300">{message.message}</p>
+                  <p className="text-secondary whitespace-pre-wrap">{message.message}</p>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted">
                 <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No messages yet</p>
               </div>
@@ -445,7 +484,7 @@ export default function TicketDetailModal({
 
         {/* ===== REPLY ===== */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-secondary mb-2">
             Reply to Ticket
           </label>
           <textarea
@@ -453,7 +492,7 @@ export default function TicketDetailModal({
             onChange={(e) => setNewMessage(e.target.value)}
             disabled={isSendingReply}
             placeholder="Type your response..."
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
             rows={4}
           />
           <button
@@ -467,25 +506,25 @@ export default function TicketDetailModal({
 
         {/* ===== TIMESTAMPS INFO ===== */}
         {(ticket.resolved_at || ticket.closed_at || ticket.first_response_at) && (
-          <div className="mt-6 p-4 bg-gray-900/30 border border-gray-700 rounded-lg">
-            <h4 className="text-sm font-semibold text-gray-400 mb-2">Timeline</h4>
+          <div className="mt-6 p-4 bg-primary/30 border border-secondary rounded-lg">
+            <h4 className="text-sm font-semibold text-muted mb-2">Timeline</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
               {ticket.first_response_at && (
                 <div>
-                  <span className="text-gray-500">First Response:</span>
-                  <p className="text-gray-300">{formatDate(ticket.first_response_at)}</p>
+                  <span className="text-muted">First Response:</span>
+                  <p className="text-secondary">{formatDate(ticket.first_response_at)}</p>
                 </div>
               )}
               {ticket.resolved_at && (
                 <div>
-                  <span className="text-gray-500">Resolved:</span>
-                  <p className="text-gray-300">{formatDate(ticket.resolved_at)}</p>
+                  <span className="text-muted">Resolved:</span>
+                  <p className="text-secondary">{formatDate(ticket.resolved_at)}</p>
                 </div>
               )}
               {ticket.closed_at && (
                 <div>
-                  <span className="text-gray-500">Closed:</span>
-                  <p className="text-gray-300">{formatDate(ticket.closed_at)}</p>
+                  <span className="text-muted">Closed:</span>
+                  <p className="text-secondary">{formatDate(ticket.closed_at)}</p>
                 </div>
               )}
             </div>

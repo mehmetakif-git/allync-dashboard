@@ -44,7 +44,7 @@ export default function GooglePhotos() {
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 rounded transition-colors ${
-                    viewMode === 'grid' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                    viewMode === 'grid' ? 'bg-purple-600 text-white' : 'text-muted hover:text-white'
                   }`}
                 >
                   <Grid className="w-5 h-5" />
@@ -52,7 +52,7 @@ export default function GooglePhotos() {
                 <button
                   onClick={() => setViewMode('list')}
                   className={`p-2 rounded transition-colors ${
-                    viewMode === 'list' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                    viewMode === 'list' ? 'bg-purple-600 text-white' : 'text-muted hover:text-white'
                   }`}
                 >
                   <List className="w-5 h-5" />
@@ -68,45 +68,45 @@ export default function GooglePhotos() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Image className="w-5 h-5 text-purple-600" />
-              <span className="text-sm text-gray-400">Total Photos</span>
+              <span className="text-sm text-muted">Total Photos</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.totalPhotos}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Camera className="w-5 h-5 text-green-500" />
-              <span className="text-sm text-gray-400">This Month</span>
+              <span className="text-sm text-muted">This Month</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.thisMonth}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Users className="w-5 h-5 text-blue-500" />
-              <span className="text-sm text-gray-400">WhatsApp Uploads</span>
+              <span className="text-sm text-muted">WhatsApp Uploads</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.whatsappUploads}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Star className="w-5 h-5 text-yellow-500" />
-              <span className="text-sm text-gray-400">Albums</span>
+              <span className="text-sm text-muted">Albums</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.totalAlbums}</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl mb-6">
-          <div className="flex border-b border-gray-700">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl mb-6">
+          <div className="flex border-b border-secondary">
             <button
               onClick={() => setActiveTab('photos')}
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'photos'
                   ? 'text-purple-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Photos
@@ -119,7 +119,7 @@ export default function GooglePhotos() {
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'analytics'
                   ? 'text-purple-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Analytics
@@ -132,7 +132,7 @@ export default function GooglePhotos() {
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'settings'
                   ? 'text-purple-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Settings
@@ -153,7 +153,7 @@ export default function GooglePhotos() {
                 className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
                   albumFilter === 'all'
                     ? 'bg-purple-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    : 'bg-secondary text-muted hover:bg-hover'
                 }`}
               >
                 All Photos
@@ -165,7 +165,7 @@ export default function GooglePhotos() {
                   className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
                     albumFilter === album.name
                       ? 'bg-purple-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      : 'bg-secondary text-muted hover:bg-hover'
                   }`}
                 >
                   {album.name} ({album.photos_count})
@@ -177,8 +177,8 @@ export default function GooglePhotos() {
             {viewMode === 'grid' && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredPhotos.map((photo) => (
-                  <div key={photo.id} className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden hover:border-purple-500 transition-colors">
-                    <div className="relative aspect-square bg-gray-900">
+                  <div key={photo.id} className="bg-card backdrop-blur-sm border border-secondary rounded-xl overflow-hidden hover:border-purple-500 transition-colors">
+                    <div className="relative aspect-square bg-primary">
                       <img src={photo.google_photos_url} alt={photo.filename} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <div className="absolute top-2 right-2">
@@ -194,11 +194,11 @@ export default function GooglePhotos() {
                     </div>
                     <div className="p-4">
                       <p className="text-white font-medium text-sm truncate">{photo.filename}</p>
-                      <p className="text-gray-400 text-xs mt-1">
+                      <p className="text-muted text-xs mt-1">
                         {formatFileSize(photo.file_size_bytes)} • {photo.width}x{photo.height}
                       </p>
                       {photo.ai_description && (
-                        <p className="text-gray-500 text-xs mt-2 line-clamp-2">{photo.ai_description}</p>
+                        <p className="text-muted text-xs mt-2 line-clamp-2">{photo.ai_description}</p>
                       )}
                       {photo.ai_tags && photo.ai_tags.length > 0 && (
                         <div className="flex gap-1 mt-2 flex-wrap">
@@ -217,41 +217,41 @@ export default function GooglePhotos() {
 
             {/* List View */}
             {viewMode === 'list' && (
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-900/50">
+                    <thead className="bg-primary/50">
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Photo</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Size</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Album</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tags</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Source</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Photo</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Size</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Album</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Tags</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Source</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
                       {filteredPhotos.map((photo) => (
-                        <tr key={photo.id} className="hover:bg-gray-700/50 transition-colors">
+                        <tr key={photo.id} className="hover:bg-hover/50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-900">
+                              <div className="w-12 h-12 rounded-lg overflow-hidden bg-primary">
                                 <img src={photo.google_photos_url} alt={photo.filename} className="w-full h-full object-cover" />
                               </div>
                               <div>
                                 <p className="text-white font-medium">{photo.filename}</p>
-                                <p className="text-sm text-gray-400">{photo.width}x{photo.height}</p>
+                                <p className="text-sm text-muted">{photo.width}x{photo.height}</p>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <p className="text-gray-300 max-w-xs truncate">{photo.ai_description || '-'}</p>
+                            <p className="text-secondary max-w-xs truncate">{photo.ai_description || '-'}</p>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-gray-300">{formatFileSize(photo.file_size_bytes)}</span>
+                            <span className="text-secondary">{formatFileSize(photo.file_size_bytes)}</span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-gray-300">{photo.album_name || 'No album'}</span>
+                            <span className="text-secondary">{photo.album_name || 'No album'}</span>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex gap-1 flex-wrap">
@@ -268,7 +268,7 @@ export default function GooglePhotos() {
                                 WhatsApp
                               </span>
                             ) : (
-                              <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-medium">
+                              <span className="px-3 py-1 bg-gray-700 text-secondary rounded-full text-xs font-medium">
                                 Manual
                               </span>
                             )}
@@ -287,33 +287,33 @@ export default function GooglePhotos() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <TrendingUp className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-gray-400">Upload Growth</span>
+                  <span className="text-sm text-muted">Upload Growth</span>
                 </div>
                 <p className="text-3xl font-bold text-white">+34%</p>
                 <p className="text-sm text-green-500 mt-1">vs last month</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <BarChart3 className="w-5 h-5 text-blue-500" />
-                  <span className="text-sm text-gray-400">Avg Photo Size</span>
+                  <span className="text-sm text-muted">Avg Photo Size</span>
                 </div>
                 <p className="text-3xl font-bold text-white">1.6 MB</p>
-                <p className="text-sm text-gray-400 mt-1">Average file size</p>
+                <p className="text-sm text-muted mt-1">Average file size</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <Camera className="w-5 h-5 text-purple-500" />
-                  <span className="text-sm text-gray-400">Monthly Uploads</span>
+                  <span className="text-sm text-muted">Monthly Uploads</span>
                 </div>
                 <p className="text-3xl font-bold text-white">298</p>
-                <p className="text-sm text-gray-400 mt-1">photos this month</p>
+                <p className="text-sm text-muted mt-1">photos this month</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Photos by Album</h3>
               <div className="space-y-4">
                 {mockPhotoAlbums.map((album) => {
@@ -321,8 +321,8 @@ export default function GooglePhotos() {
                   return (
                     <div key={album.id}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-300">{album.name}</span>
-                        <span className="text-gray-400 text-sm">{album.photos_count} photos ({percentage.toFixed(0)}%)</span>
+                        <span className="text-secondary">{album.name}</span>
+                        <span className="text-muted text-sm">{album.photos_count} photos ({percentage.toFixed(0)}%)</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-3">
                         <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full" style={{ width: `${percentage}%` }}></div>
@@ -333,7 +333,7 @@ export default function GooglePhotos() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Most Common AI Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {['laptop', 'office', 'desk', 'technology', 'workspace', 'product', 'professional', 'delivery'].map((tag) => (
@@ -344,18 +344,18 @@ export default function GooglePhotos() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Upload Sources</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-900 rounded-lg p-6 text-center">
+                <div className="bg-primary rounded-lg p-6 text-center">
                   <p className="text-3xl font-bold text-green-500">{stats.whatsappUploads}</p>
-                  <p className="text-gray-400 mt-2">WhatsApp Uploads</p>
-                  <p className="text-sm text-gray-500 mt-1">{((stats.whatsappUploads / stats.totalPhotos) * 100).toFixed(0)}% of total</p>
+                  <p className="text-muted mt-2">WhatsApp Uploads</p>
+                  <p className="text-sm text-muted mt-1">{((stats.whatsappUploads / stats.totalPhotos) * 100).toFixed(0)}% of total</p>
                 </div>
-                <div className="bg-gray-900 rounded-lg p-6 text-center">
+                <div className="bg-primary rounded-lg p-6 text-center">
                   <p className="text-3xl font-bold text-blue-500">{stats.totalPhotos - stats.whatsappUploads}</p>
-                  <p className="text-gray-400 mt-2">Manual Uploads</p>
-                  <p className="text-sm text-gray-500 mt-1">{(((stats.totalPhotos - stats.whatsappUploads) / stats.totalPhotos) * 100).toFixed(0)}% of total</p>
+                  <p className="text-muted mt-2">Manual Uploads</p>
+                  <p className="text-sm text-muted mt-1">{(((stats.totalPhotos - stats.whatsappUploads) / stats.totalPhotos) * 100).toFixed(0)}% of total</p>
                 </div>
               </div>
             </div>
@@ -371,37 +371,37 @@ export default function GooglePhotos() {
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Google Photos Settings</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Account Email</label>
-                  <input type="email" defaultValue="photos@techcorp.com" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
+                  <label className="block text-sm font-medium text-muted mb-2">Account Email</label>
+                  <input type="email" defaultValue="photos@techcorp.com" className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-primary rounded-lg">
                   <div>
                     <p className="text-white font-medium">Auto-upload from WhatsApp</p>
-                    <p className="text-sm text-gray-400">Automatically upload photos sent via WhatsApp</p>
+                    <p className="text-sm text-muted">Automatically upload photos sent via WhatsApp</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-not-allowed">
                     <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-primary rounded-lg">
                   <div>
                     <p className="text-white font-medium">AI photo tagging</p>
-                    <p className="text-sm text-gray-400">Automatically tag photos using AI</p>
+                    <p className="text-sm text-muted">Automatically tag photos using AI</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-not-allowed">
                     <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-primary rounded-lg">
                   <div>
                     <p className="text-white font-medium">Auto-organize albums</p>
-                    <p className="text-sm text-gray-400">Organize photos into albums by date</p>
+                    <p className="text-sm text-muted">Organize photos into albums by date</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-not-allowed">
                     <input type="checkbox" className="sr-only peer" disabled />
@@ -411,18 +411,18 @@ export default function GooglePhotos() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Albums</h3>
               <div className="space-y-3">
                 {mockPhotoAlbums.map((album) => (
-                  <div key={album.id} className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div key={album.id} className="flex items-center justify-between p-4 bg-primary rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
                         <Image className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <p className="text-white font-medium">{album.name}</p>
-                        <p className="text-sm text-gray-400">{album.photos_count} photos</p>
+                        <p className="text-sm text-muted">{album.photos_count} photos</p>
                       </div>
                     </div>
                     <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors">
@@ -433,22 +433,22 @@ export default function GooglePhotos() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Instance Status</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Connection Status</p>
+                  <p className="text-sm text-muted mb-2">Connection Status</p>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-white font-medium">Connected</span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Last Photo Upload</p>
+                  <p className="text-sm text-muted mb-2">Last Photo Upload</p>
                   <p className="text-white font-medium">45 minutes ago</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Service Status</p>
+                  <p className="text-sm text-muted mb-2">Service Status</p>
                   <span className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded-full text-xs font-medium">
                     Active
                   </span>

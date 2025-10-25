@@ -137,7 +137,7 @@ export const storeStatusLabels = {
 };
 
 export const storeStatusColors = {
-  'pending': 'text-gray-400 bg-gray-500/10 border-gray-500/30',
+  'pending': 'text-muted bg-gray-500/10 border-secondary/30',
   'submitted': 'text-orange-400 bg-orange-500/10 border-orange-500/30',
   'in-review': 'text-blue-400 bg-blue-500/10 border-blue-500/30',
   'approved': 'text-green-400 bg-green-500/10 border-green-500/30',
@@ -155,13 +155,13 @@ export const milestoneStatusLabels = {
 export const milestoneStatusColors = {
   'completed': 'text-green-400',
   'in-progress': 'text-blue-400',
-  'pending': 'text-gray-400',
+  'pending': 'text-muted',
   'blocked': 'text-red-400'
 };
 
 export const milestoneStatusBgColors = {
   'completed': 'bg-green-500/10 border-green-500/20',
   'in-progress': 'bg-blue-500/10 border-blue-500/20',
-  'pending': 'bg-gray-500/10 border-gray-500/20',
+  'pending': 'bg-gray-500/10 border-secondary/20',
   'blocked': 'bg-red-500/10 border-red-500/20'
 };

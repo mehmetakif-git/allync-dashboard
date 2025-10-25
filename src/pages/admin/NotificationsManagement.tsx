@@ -128,50 +128,50 @@ export default function NotificationsManagement() {
       case 'service':
         return 'bg-purple-500/20 text-purple-400';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-500/20 text-muted';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">Notifications Management</h1>
-        <p className="text-gray-400 mt-1">Send global notifications to all users</p>
+        <p className="text-muted mt-1">Send global notifications to all users</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Sent</p>
+              <p className="text-muted text-sm">Total Sent</p>
               <p className="text-3xl font-bold text-white mt-2">{notifications.length}</p>
             </div>
             <Send className="w-12 h-12 text-blue-500" />
           </div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Active</p>
+              <p className="text-muted text-sm">Active</p>
               <p className="text-3xl font-bold text-white mt-2">{notifications.length}</p>
             </div>
             <Bell className="w-12 h-12 text-green-500" />
           </div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">This Week</p>
+              <p className="text-muted text-sm">This Week</p>
               <p className="text-3xl font-bold text-white mt-2">4</p>
             </div>
             <Clock className="w-12 h-12 text-purple-500" />
           </div>
         </div>
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Recipients</p>
+              <p className="text-muted text-sm">Recipients</p>
               <p className="text-3xl font-bold text-white mt-2">156</p>
             </div>
             <CheckCircle2 className="w-12 h-12 text-yellow-500" />
@@ -180,7 +180,7 @@ export default function NotificationsManagement() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-gray-800 rounded-lg p-6">
+        <div className="lg:col-span-2 bg-secondary rounded-lg p-6">
           <div className="flex items-center gap-3 mb-6">
             <Bell className="w-6 h-6 text-blue-500" />
             <h2 className="text-xl font-bold text-white">Create Notification</h2>
@@ -188,14 +188,14 @@ export default function NotificationsManagement() {
 
           <form onSubmit={handleSendNotification} className="space-y-4">
             <div>
-              <label className="block text-gray-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Type <span className="text-red-400">*</span>
               </label>
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                 required
               >
                 <option value="info">Info</option>
@@ -207,7 +207,7 @@ export default function NotificationsManagement() {
             </div>
 
             <div>
-              <label className="block text-gray-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Title <span className="text-red-400">*</span>
               </label>
               <input
@@ -215,14 +215,14 @@ export default function NotificationsManagement() {
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 placeholder="Enter notification title"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Message <span className="text-red-400">*</span>
               </label>
               <textarea
@@ -230,7 +230,7 @@ export default function NotificationsManagement() {
                 value={formData.message}
                 onChange={handleInputChange}
                 rows={6}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
                 placeholder="Enter notification message"
                 required
               />
@@ -241,7 +241,7 @@ export default function NotificationsManagement() {
                 <Info className="w-5 h-5 text-blue-400 mt-0.5" />
                 <div>
                   <p className="text-blue-400 font-medium">This notification will be sent to:</p>
-                  <p className="text-gray-300 text-sm mt-1">All 156 registered users across all companies</p>
+                  <p className="text-secondary text-sm mt-1">All 156 registered users across all companies</p>
                 </div>
               </div>
             </div>
@@ -267,7 +267,7 @@ export default function NotificationsManagement() {
               <button
                 type="button"
                 onClick={() => setFormData({ type: 'info', title: '', message: '' })}
-                className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 font-medium"
+                className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-hover font-medium"
                 disabled={isLoading}
               >
                 Clear
@@ -276,7 +276,7 @@ export default function NotificationsManagement() {
           </form>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <h2 className="text-xl font-bold text-white mb-4">Preview</h2>
           <div className={`rounded-lg p-4 border ${
             formData.type === 'info' ? 'bg-blue-500/10 border-blue-500/30' :
@@ -299,7 +299,7 @@ export default function NotificationsManagement() {
                 <h3 className="text-white font-medium">
                   {formData.title || 'Notification Title'}
                 </h3>
-                <p className="text-gray-300 text-sm mt-1">
+                <p className="text-secondary text-sm mt-1">
                   {formData.message || 'Your notification message will appear here...'}
                 </p>
               </div>
@@ -311,30 +311,30 @@ export default function NotificationsManagement() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-blue-400" />
-                <span className="text-gray-300">Info - General information</span>
+                <span className="text-secondary">Info - General information</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-400" />
-                <span className="text-gray-300">Success - Positive updates</span>
+                <span className="text-secondary">Success - Positive updates</span>
               </div>
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-yellow-400" />
-                <span className="text-gray-300">Warning - Important notices</span>
+                <span className="text-secondary">Warning - Important notices</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-orange-400" />
-                <span className="text-gray-300">Maintenance - System updates</span>
+                <span className="text-secondary">Maintenance - System updates</span>
               </div>
               <div className="flex items-center gap-2">
                 <Bell className="w-4 h-4 text-purple-400" />
-                <span className="text-gray-300">Service - New features</span>
+                <span className="text-secondary">Service - New features</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-secondary rounded-lg p-6">
         <h2 className="text-xl font-bold text-white mb-4">Notification History</h2>
         <div className="space-y-3">
           {notifications.map((notification) => (
@@ -347,8 +347,8 @@ export default function NotificationsManagement() {
                   </span>
                   <div className="flex-1">
                     <h3 className="text-white font-medium">{notification.title}</h3>
-                    <p className="text-gray-300 text-sm mt-1">{notification.message}</p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                    <p className="text-secondary text-sm mt-1">{notification.message}</p>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-muted">
                       <span>Sent: {notification.sentDate}</span>
                       <span>By: {notification.sentBy}</span>
                       <span>Recipients: {notification.recipientsCount}</span>

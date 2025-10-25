@@ -66,7 +66,7 @@ const MobileAppDevelopment: React.FC = () => {
   };
 
   const storeStatusColors: any = {
-    'pending': 'bg-gray-500/10 border-gray-500/30 text-gray-400',
+    'pending': 'bg-gray-500/10 border-secondary/30 text-muted',
     'submitted': 'bg-blue-500/10 border-blue-500/30 text-blue-400',
     'in-review': 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400',
     'approved': 'bg-green-500/10 border-green-500/30 text-green-400',
@@ -85,14 +85,14 @@ const MobileAppDevelopment: React.FC = () => {
   const milestoneStatusColors: any = {
     'completed': 'text-green-400',
     'in-progress': 'text-blue-400',
-    'pending': 'text-gray-400',
+    'pending': 'text-muted',
     'blocked': 'text-red-400'
   };
 
   const milestoneStatusBgColors: any = {
     'completed': 'bg-green-500/10 border-green-500/20',
     'in-progress': 'bg-blue-500/10 border-blue-500/20',
-    'pending': 'bg-gray-500/10 border-gray-500/20',
+    'pending': 'bg-gray-500/10 border-secondary/20',
     'blocked': 'bg-red-500/10 border-red-500/20'
   };
 
@@ -133,7 +133,7 @@ const MobileAppDevelopment: React.FC = () => {
       <div className="p-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading project...</p>
+          <p className="text-muted">Loading project...</p>
         </div>
       </div>
     );
@@ -160,10 +160,10 @@ const MobileAppDevelopment: React.FC = () => {
   if (!project || projects.length === 0) {
     return (
       <div className="p-8">
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center">
           <Smartphone className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-300 mb-2">No Active Project</h3>
-          <p className="text-gray-400">No mobile app development project found for your company.</p>
+          <h3 className="text-xl font-semibold text-secondary mb-2">No Active Project</h3>
+          <p className="text-muted">No mobile app development project found for your company.</p>
         </div>
       </div>
     );
@@ -197,18 +197,18 @@ const MobileAppDevelopment: React.FC = () => {
                 <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${platformColors[project.platform]} text-white`}>
                   {platformLabels[project.platform]}
                 </span>
-                <span className="text-gray-400 text-sm">{project.app_name}</span>
+                <span className="text-muted text-sm">{project.app_name}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-4 mb-6 border-b border-gray-700">
+      <div className="flex gap-4 mb-6 border-b border-secondary">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'dashboard' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'dashboard' ? 'text-cyan-400' : 'text-muted hover:text-secondary'
           }`}
         >
           Dashboard
@@ -219,7 +219,7 @@ const MobileAppDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('details')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'details' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'details' ? 'text-cyan-400' : 'text-muted hover:text-secondary'
           }`}
         >
           App Details
@@ -230,7 +230,7 @@ const MobileAppDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('support')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'support' ? 'text-cyan-400' : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'support' ? 'text-cyan-400' : 'text-muted hover:text-secondary'
           }`}
         >
           Support
@@ -243,30 +243,30 @@ const MobileAppDevelopment: React.FC = () => {
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Smartphone className="w-5 h-5 text-cyan-400" />
-                <span className="text-gray-400 text-sm">Platform</span>
+                <span className="text-muted text-sm">Platform</span>
               </div>
               <p className="text-xl font-semibold text-white">
                 {platformLabels[project.platform]}
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-400 text-sm">Estimated Completion</span>
+                <span className="text-muted text-sm">Estimated Completion</span>
               </div>
               <p className="text-xl font-semibold text-white">
                 {project.estimated_completion ? formatDate(project.estimated_completion) : 'TBD'}
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Clock className="w-5 h-5 text-green-400" />
-                <span className="text-gray-400 text-sm">Last Update</span>
+                <span className="text-muted text-sm">Last Update</span>
               </div>
               <p className="text-xl font-semibold text-white">
                 {project.last_update ? getTimeAgo(project.last_update) : 'No updates'}
@@ -274,7 +274,7 @@ const MobileAppDevelopment: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Overall Progress</h3>
               <span className="text-2xl font-bold text-cyan-400">{project.overall_progress || 0}%</span>
@@ -287,11 +287,11 @@ const MobileAppDevelopment: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-4">App Store Publishing Status</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {(project.platform === 'android' || project.platform === 'both') && (
-                <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                <div className="bg-primary/50 border border-secondary rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-white">Google Play Store</h4>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${storeStatusColors[project.play_store_status || 'pending']}`}>
@@ -313,7 +313,7 @@ const MobileAppDevelopment: React.FC = () => {
               )}
 
               {(project.platform === 'ios' || project.platform === 'both') && (
-                <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                <div className="bg-primary/50 border border-secondary rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-white">Apple App Store</h4>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${storeStatusColors[project.app_store_status || 'pending']}`}>
@@ -337,7 +337,7 @@ const MobileAppDevelopment: React.FC = () => {
           </div>
 
           {project.milestones && project.milestones.length > 0 && (
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Development Milestones</h3>
               <div className="space-y-4">
                 {project.milestones.map((milestone: any) => {
@@ -370,11 +370,11 @@ const MobileAppDevelopment: React.FC = () => {
                       )}
 
                       {milestone.notes && (
-                        <p className="text-sm text-gray-400 mt-2">{milestone.notes}</p>
+                        <p className="text-sm text-muted mt-2">{milestone.notes}</p>
                       )}
 
                       {milestone.completed_date && (
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-muted mt-2">
                           Completed: {formatDate(milestone.completed_date)}
                         </p>
                       )}
@@ -389,60 +389,60 @@ const MobileAppDevelopment: React.FC = () => {
 
       {activeTab === 'details' && (
         <div className="space-y-6">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-6">App Information</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Project Name</label>
+                <label className="block text-sm text-muted mb-2">Project Name</label>
                 <input
                   type="text"
                   value={project.project_name || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">App Name</label>
+                <label className="block text-sm text-muted mb-2">App Name</label>
                 <input
                   type="text"
                   value={project.app_name || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Platform</label>
+                <label className="block text-sm text-muted mb-2">Platform</label>
                 <input
                   type="text"
                   value={platformLabels[project.platform] || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               {(project.platform === 'android' || project.platform === 'both') && project.package_name && (
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Package Name (Android)</label>
+                  <label className="block text-sm text-muted mb-2">Package Name (Android)</label>
                   <input
                     type="text"
                     value={project.package_name}
                     readOnly
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                    className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                   />
                 </div>
               )}
 
               {(project.platform === 'ios' || project.platform === 'both') && project.bundle_id && (
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Bundle ID (iOS)</label>
+                  <label className="block text-sm text-muted mb-2">Bundle ID (iOS)</label>
                   <input
                     type="text"
                     value={project.bundle_id}
                     readOnly
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                    className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                   />
                 </div>
               )}
@@ -452,9 +452,9 @@ const MobileAppDevelopment: React.FC = () => {
       )}
 
       {activeTab === 'support' && (
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Need Help?</h3>
-          <p className="text-gray-400 mb-4">
+          <p className="text-muted mb-4">
             For questions about your mobile app development project, please contact our support team.
           </p>
           <button className="px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-lg transition-all">

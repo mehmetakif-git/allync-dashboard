@@ -119,12 +119,12 @@ export default function InvoicesManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
           <h1 className="text-3xl font-bold text-white">Invoices Management</h1>
-          <p className="text-gray-400 mt-1">Manage all invoices across all companies</p>
+          <p className="text-muted mt-1">Manage all invoices across all companies</p>
         </div>
         <button
           onClick={handleExport}
@@ -136,20 +136,20 @@ export default function InvoicesManagement() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Revenue</p>
+              <p className="text-muted text-sm">Total Revenue</p>
               <p className="text-3xl font-bold text-white mt-2">${totalRevenue.toLocaleString()}</p>
             </div>
             <FileText className="w-12 h-12 text-blue-500" />
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Paid Invoices</p>
+              <p className="text-muted text-sm">Paid Invoices</p>
               <p className="text-3xl font-bold text-white mt-2">{paidInvoices.length}</p>
               <p className="text-green-400 text-sm mt-1">${paidInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}</p>
             </div>
@@ -157,10 +157,10 @@ export default function InvoicesManagement() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Pending Invoices</p>
+              <p className="text-muted text-sm">Pending Invoices</p>
               <p className="text-3xl font-bold text-white mt-2">{pendingInvoices.length}</p>
               <p className="text-yellow-400 text-sm mt-1">${pendingInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}</p>
             </div>
@@ -168,10 +168,10 @@ export default function InvoicesManagement() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Overdue Invoices</p>
+              <p className="text-muted text-sm">Overdue Invoices</p>
               <p className="text-3xl font-bold text-white mt-2">{overdueInvoices.length}</p>
               <p className="text-red-400 text-sm mt-1">${overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}</p>
             </div>
@@ -180,25 +180,25 @@ export default function InvoicesManagement() {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-secondary rounded-lg p-6">
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
             <input
               type="text"
               placeholder="Search by company, invoice number, or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="flex gap-2">
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="pl-10 pr-8 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="paid">Paid</option>
@@ -212,26 +212,26 @@ export default function InvoicesManagement() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Invoice #</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Company</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Amount</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Issue Date</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Due Date</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
+              <tr className="border-b border-secondary">
+                <th className="text-left py-3 px-4 text-muted font-medium">Invoice #</th>
+                <th className="text-left py-3 px-4 text-muted font-medium">Company</th>
+                <th className="text-left py-3 px-4 text-muted font-medium">Amount</th>
+                <th className="text-left py-3 px-4 text-muted font-medium">Status</th>
+                <th className="text-left py-3 px-4 text-muted font-medium">Issue Date</th>
+                <th className="text-left py-3 px-4 text-muted font-medium">Due Date</th>
+                <th className="text-left py-3 px-4 text-muted font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b border-gray-700 hover:bg-gray-750">
+                <tr key={invoice.id} className="border-b border-secondary hover:bg-gray-750">
                   <td className="py-4 px-4">
                     <p className="text-white font-medium">{invoice.invoiceNumber}</p>
                   </td>
                   <td className="py-4 px-4">
                     <div>
                       <p className="text-white font-medium">{invoice.company}</p>
-                      <p className="text-gray-400 text-sm">{invoice.companyEmail}</p>
+                      <p className="text-muted text-sm">{invoice.companyEmail}</p>
                     </div>
                   </td>
                   <td className="py-4 px-4">
@@ -247,10 +247,10 @@ export default function InvoicesManagement() {
                     </span>
                   </td>
                   <td className="py-4 px-4">
-                    <p className="text-gray-300 text-sm">{invoice.issueDate}</p>
+                    <p className="text-secondary text-sm">{invoice.issueDate}</p>
                   </td>
                   <td className="py-4 px-4">
-                    <p className="text-gray-300 text-sm">{invoice.dueDate}</p>
+                    <p className="text-secondary text-sm">{invoice.dueDate}</p>
                     {invoice.paidDate && (
                       <p className="text-green-400 text-xs mt-1">Paid: {invoice.paidDate}</p>
                     )}
@@ -266,7 +266,7 @@ export default function InvoicesManagement() {
                       </button>
                       <button
                         onClick={() => alert(`Download invoice ${invoice.invoiceNumber}`)}
-                        className="p-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+                        className="p-2 bg-gray-700 text-white rounded hover:bg-hover"
                         title="Download PDF"
                       >
                         <Download className="w-4 h-4" />
@@ -282,13 +282,13 @@ export default function InvoicesManagement() {
 
       {showDetailsModal && selectedInvoice && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-700">
+          <div className="bg-secondary rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-secondary">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-white">{selectedInvoice.invoiceNumber}</h2>
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="text-gray-400 hover:text-white"
+                  className="text-muted hover:text-white"
                 >
                   <XCircle className="w-6 h-6" />
                 </button>
@@ -298,7 +298,7 @@ export default function InvoicesManagement() {
             <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">Status</p>
+                  <p className="text-muted text-sm">Status</p>
                   <span className={`inline-block mt-1 px-3 py-1 rounded-full text-sm ${
                     selectedInvoice.status === 'paid' ? 'bg-green-500/20 text-green-400' :
                     selectedInvoice.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -308,39 +308,39 @@ export default function InvoicesManagement() {
                   </span>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-400 text-sm">Amount</p>
+                  <p className="text-muted text-sm">Amount</p>
                   <p className="text-2xl font-bold text-white mt-1">${selectedInvoice.amount.toLocaleString()}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-400 text-sm">Company</p>
+                  <p className="text-muted text-sm">Company</p>
                   <p className="text-white font-medium">{selectedInvoice.company}</p>
-                  <p className="text-gray-400 text-sm">{selectedInvoice.companyEmail}</p>
+                  <p className="text-muted text-sm">{selectedInvoice.companyEmail}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Invoice Number</p>
+                  <p className="text-muted text-sm">Invoice Number</p>
                   <p className="text-white">{selectedInvoice.invoiceNumber}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Issue Date</p>
+                  <p className="text-muted text-sm">Issue Date</p>
                   <p className="text-white">{selectedInvoice.issueDate}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Due Date</p>
+                  <p className="text-muted text-sm">Due Date</p>
                   <p className="text-white">{selectedInvoice.dueDate}</p>
                 </div>
                 {selectedInvoice.paidDate && (
                   <div>
-                    <p className="text-gray-400 text-sm">Paid Date</p>
+                    <p className="text-muted text-sm">Paid Date</p>
                     <p className="text-green-400">{selectedInvoice.paidDate}</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <p className="text-gray-400 text-sm mb-3">Services</p>
+                <p className="text-muted text-sm mb-3">Services</p>
                 <div className="space-y-2">
                   {selectedInvoice.services.map((service, index) => (
                     <div key={index} className="bg-gray-700 rounded-lg p-3">
@@ -360,7 +360,7 @@ export default function InvoicesManagement() {
                 </button>
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                  className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-hover"
                 >
                   Close
                 </button>

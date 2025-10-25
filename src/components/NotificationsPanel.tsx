@@ -93,7 +93,7 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
       case 'service':
         return { Icon: Zap, color: 'text-purple-400', bg: 'bg-purple-500/20' };
       default:
-        return { Icon: Bell, color: 'text-gray-400', bg: 'bg-gray-500/20' };
+        return { Icon: Bell, color: 'text-muted', bg: 'bg-gray-500/20' };
     }
   };
 
@@ -106,8 +106,8 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
         onClick={onClose}
       />
 
-      <div className="fixed top-16 right-4 w-96 max-h-[600px] bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-50 flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+      <div className="fixed top-16 right-4 w-96 max-h-[600px] bg-primary border border-primary rounded-xl shadow-2xl z-50 flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-primary">
           <div className="flex items-center gap-3">
             <h3 className="text-lg font-bold text-white">Notifications</h3>
             {unreadCount > 0 && (
@@ -118,14 +118,14 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
           </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-1 hover:bg-secondary rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
         {notifications.length > 0 && (
-          <div className="flex items-center gap-2 p-3 border-b border-gray-800 bg-gray-800/30">
+          <div className="flex items-center gap-2 p-3 border-b border-primary bg-secondary/30">
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
@@ -146,11 +146,11 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
         <div className="flex-1 overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
-              <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
                 <Bell className="w-8 h-8 text-gray-600" />
               </div>
-              <p className="text-gray-400 text-center">No notifications</p>
-              <p className="text-gray-500 text-sm text-center mt-1">You're all caught up!</p>
+              <p className="text-muted text-center">No notifications</p>
+              <p className="text-muted text-sm text-center mt-1">You're all caught up!</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-800">
@@ -159,7 +159,7 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
                 return (
                   <div
                     key={notification.id}
-                    className={`p-4 hover:bg-gray-800/50 transition-colors cursor-pointer ${
+                    className={`p-4 hover:bg-card transition-colors cursor-pointer ${
                       !notification.isRead ? 'bg-blue-500/5' : ''
                     }`}
                     onClick={() => handleMarkAsRead(notification.id)}
@@ -175,8 +175,8 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
                             <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1" />
                           )}
                         </div>
-                        <p className="text-sm text-gray-400 mb-2 line-clamp-2">{notification.message}</p>
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <p className="text-sm text-muted mb-2 line-clamp-2">{notification.message}</p>
+                        <div className="flex items-center gap-1 text-xs text-muted">
                           <Clock className="w-3 h-3" />
                           {notification.timestamp}
                         </div>
@@ -189,8 +189,8 @@ export default function NotificationsPanel({ isOpen, onClose }: NotificationsPan
           )}
         </div>
 
-        <div className="p-3 border-t border-gray-800 bg-gray-800/30">
-          <p className="text-xs text-gray-500 text-center">
+        <div className="p-3 border-t border-primary bg-secondary/30">
+          <p className="text-xs text-muted text-center">
             These are system-wide announcements visible to all users
           </p>
         </div>

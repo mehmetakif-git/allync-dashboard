@@ -129,30 +129,30 @@ export default function AddUserModal({
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-secondary border border-secondary rounded-xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">Add New User</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Full Name *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`w-full px-4 py-3 bg-gray-900 border ${
-                errors.name ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-primary border ${
+                errors.name ? 'border-red-500' : 'border-secondary'
               } rounded-lg text-white focus:outline-none focus:border-blue-500`}
               placeholder="John Doe"
               disabled={isLoading}
@@ -162,15 +162,15 @@ export default function AddUserModal({
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Email *
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={`w-full px-4 py-3 bg-gray-900 border ${
-                errors.email ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-primary border ${
+                errors.email ? 'border-red-500' : 'border-secondary'
               } rounded-lg text-white focus:outline-none focus:border-blue-500`}
               placeholder="john@example.com"
               disabled={isLoading}
@@ -181,14 +181,14 @@ export default function AddUserModal({
           {/* Company Selection */}
           {!defaultCompanyId && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 Company {formData.role !== 'super_admin' && '*'}
               </label>
               <select
                 value={formData.companyId}
                 onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
-                className={`w-full px-4 py-3 bg-gray-900 border ${
-                  errors.companyId ? 'border-red-500' : 'border-gray-700'
+                className={`w-full px-4 py-3 bg-primary border ${
+                  errors.companyId ? 'border-red-500' : 'border-secondary'
                 } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                 disabled={isLoading || loadingCompanies || formData.role === 'super_admin'}
               >
@@ -203,20 +203,20 @@ export default function AddUserModal({
               </select>
               {errors.companyId && <p className="text-red-500 text-xs mt-1">{errors.companyId}</p>}
               {formData.role === 'super_admin' && (
-                <p className="text-xs text-gray-500 mt-1">Super admins don't belong to any company</p>
+                <p className="text-xs text-muted mt-1">Super admins don't belong to any company</p>
               )}
             </div>
           )}
 
           {/* Role */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Role *
             </label>
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               disabled={isLoading}
             >
               {showRoleSuperAdmin && <option value="super_admin">Super Admin</option>}
@@ -227,36 +227,36 @@ export default function AddUserModal({
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Temporary Password *
             </label>
             <input
               type="text"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className={`w-full px-4 py-3 bg-gray-900 border ${
-                errors.password ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-primary border ${
+                errors.password ? 'border-red-500' : 'border-secondary'
               } rounded-lg text-white focus:outline-none focus:border-blue-500`}
               placeholder="Enter temporary password"
               disabled={isLoading}
             />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-            <p className="text-xs text-gray-500 mt-1">User will be required to change this on first login</p>
+            <p className="text-xs text-muted mt-1">User will be required to change this on first login</p>
           </div>
 
           {/* Send Email Checkbox */}
-          <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4">
+          <div className="bg-secondary/50 border border-secondary rounded-lg p-4">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={formData.sendEmail}
                 onChange={(e) => setFormData({ ...formData, sendEmail: e.target.checked })}
-                className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+                className="w-5 h-5 rounded border-secondary bg-gray-700 text-blue-600 focus:ring-blue-500"
                 disabled={isLoading}
               />
               <div>
                 <p className="text-white font-medium">Send welcome email</p>
-                <p className="text-gray-400 text-xs">Email will include login credentials and instructions</p>
+                <p className="text-muted text-xs">Email will include login credentials and instructions</p>
               </div>
             </label>
           </div>
@@ -276,7 +276,7 @@ export default function AddUserModal({
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
           >
             Cancel
           </button>

@@ -54,22 +54,22 @@ export default function SystemSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">System Settings</h1>
-        <p className="text-gray-400 mt-1">Configure system-wide settings and integrations</p>
+        <p className="text-muted mt-1">Configure system-wide settings and integrations</p>
       </div>
 
-      <div className="bg-gray-800 rounded-lg">
-        <div className="border-b border-gray-700">
+      <div className="bg-secondary rounded-lg">
+        <div className="border-b border-secondary">
           <div className="flex overflow-x-auto">
             <button
               onClick={() => setActiveTab('email')}
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
                 activeTab === 'email'
                   ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                  : 'border-transparent text-muted hover:text-white'
               }`}
             >
               <Mail className="w-5 h-5" />
@@ -80,7 +80,7 @@ export default function SystemSettings() {
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
                 activeTab === 'payment'
                   ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                  : 'border-transparent text-muted hover:text-white'
               }`}
             >
               <CreditCard className="w-5 h-5" />
@@ -91,7 +91,7 @@ export default function SystemSettings() {
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
                 activeTab === 'notifications'
                   ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                  : 'border-transparent text-muted hover:text-white'
               }`}
             >
               <Bell className="w-5 h-5" />
@@ -102,7 +102,7 @@ export default function SystemSettings() {
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
                 activeTab === 'database'
                   ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                  : 'border-transparent text-muted hover:text-white'
               }`}
             >
               <Database className="w-5 h-5" />
@@ -113,7 +113,7 @@ export default function SystemSettings() {
               className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
                 activeTab === 'api'
                   ? 'border-blue-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                  : 'border-transparent text-muted hover:text-white'
               }`}
             >
               <Key className="w-5 h-5" />
@@ -127,15 +127,15 @@ export default function SystemSettings() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-white mb-4">Email Configuration</h2>
-                <p className="text-gray-400 text-sm">Configure email service provider for system emails</p>
+                <p className="text-muted text-sm">Configure email service provider for system emails</p>
               </div>
 
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Email Provider</label>
+                <label className="block text-muted text-sm mb-2">Email Provider</label>
                 <select
                   value={emailSettings.provider}
                   onChange={(e) => setEmailSettings({ ...emailSettings, provider: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="resend">Resend.com</option>
                   <option value="smtp">SMTP</option>
@@ -144,33 +144,33 @@ export default function SystemSettings() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-gray-400 text-sm mb-2">From Email</label>
+                  <label className="block text-muted text-sm mb-2">From Email</label>
                   <input
                     type="email"
                     value={emailSettings.fromEmail}
                     onChange={(e) => setEmailSettings({ ...emailSettings, fromEmail: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-400 text-sm mb-2">From Name</label>
+                  <label className="block text-muted text-sm mb-2">From Name</label>
                   <input
                     type="text"
                     value={emailSettings.fromName}
                     onChange={(e) => setEmailSettings({ ...emailSettings, fromName: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               {emailSettings.provider === 'resend' && (
                 <div>
-                  <label className="block text-gray-400 text-sm mb-2">Resend API Key</label>
+                  <label className="block text-muted text-sm mb-2">Resend API Key</label>
                   <input
                     type="password"
                     value={emailSettings.resendApiKey}
                     onChange={(e) => setEmailSettings({ ...emailSettings, resendApiKey: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
               )}
@@ -178,40 +178,40 @@ export default function SystemSettings() {
               {emailSettings.provider === 'smtp' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-400 text-sm mb-2">SMTP Host</label>
+                    <label className="block text-muted text-sm mb-2">SMTP Host</label>
                     <input
                       type="text"
                       value={emailSettings.smtpHost}
                       onChange={(e) => setEmailSettings({ ...emailSettings, smtpHost: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                       placeholder="smtp.example.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-2">SMTP Port</label>
+                    <label className="block text-muted text-sm mb-2">SMTP Port</label>
                     <input
                       type="text"
                       value={emailSettings.smtpPort}
                       onChange={(e) => setEmailSettings({ ...emailSettings, smtpPort: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-2">SMTP Username</label>
+                    <label className="block text-muted text-sm mb-2">SMTP Username</label>
                     <input
                       type="text"
                       value={emailSettings.smtpUser}
                       onChange={(e) => setEmailSettings({ ...emailSettings, smtpUser: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-2">SMTP Password</label>
+                    <label className="block text-muted text-sm mb-2">SMTP Password</label>
                     <input
                       type="password"
                       value={emailSettings.smtpPassword}
                       onChange={(e) => setEmailSettings({ ...emailSettings, smtpPassword: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export default function SystemSettings() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-white mb-4">Payment Gateway Configuration</h2>
-                <p className="text-gray-400 text-sm">Configure payment processors for billing</p>
+                <p className="text-muted text-sm">Configure payment processors for billing</p>
               </div>
 
               <div className="bg-gray-700 rounded-lg p-4">
@@ -232,7 +232,7 @@ export default function SystemSettings() {
                     <CreditCard className="w-6 h-6 text-blue-400" />
                     <div>
                       <h3 className="text-white font-medium">Stripe</h3>
-                      <p className="text-gray-400 text-sm">Primary payment processor</p>
+                      <p className="text-muted text-sm">Primary payment processor</p>
                     </div>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -242,27 +242,27 @@ export default function SystemSettings() {
                       onChange={(e) => setPaymentSettings({ ...paymentSettings, stripeEnabled: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
                 {paymentSettings.stripeEnabled && (
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-gray-400 text-sm mb-2">Public Key</label>
+                      <label className="block text-muted text-sm mb-2">Public Key</label>
                       <input
                         type="text"
                         value={paymentSettings.stripePublicKey}
                         onChange={(e) => setPaymentSettings({ ...paymentSettings, stripePublicKey: e.target.value })}
-                        className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-hover border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-400 text-sm mb-2">Secret Key</label>
+                      <label className="block text-muted text-sm mb-2">Secret Key</label>
                       <input
                         type="password"
                         value={paymentSettings.stripeSecretKey}
                         onChange={(e) => setPaymentSettings({ ...paymentSettings, stripeSecretKey: e.target.value })}
-                        className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-hover border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -275,7 +275,7 @@ export default function SystemSettings() {
                     <CreditCard className="w-6 h-6 text-green-400" />
                     <div>
                       <h3 className="text-white font-medium">PayTR</h3>
-                      <p className="text-gray-400 text-sm">Alternative payment processor</p>
+                      <p className="text-muted text-sm">Alternative payment processor</p>
                     </div>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -285,27 +285,27 @@ export default function SystemSettings() {
                       onChange={(e) => setPaymentSettings({ ...paymentSettings, paytrEnabled: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
                 {paymentSettings.paytrEnabled && (
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-gray-400 text-sm mb-2">Merchant ID</label>
+                      <label className="block text-muted text-sm mb-2">Merchant ID</label>
                       <input
                         type="text"
                         value={paymentSettings.paytrMerchantId}
                         onChange={(e) => setPaymentSettings({ ...paymentSettings, paytrMerchantId: e.target.value })}
-                        className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-hover border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-400 text-sm mb-2">Secret Key</label>
+                      <label className="block text-muted text-sm mb-2">Secret Key</label>
                       <input
                         type="password"
                         value={paymentSettings.paytrSecretKey}
                         onChange={(e) => setPaymentSettings({ ...paymentSettings, paytrSecretKey: e.target.value })}
-                        className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-hover border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -318,14 +318,14 @@ export default function SystemSettings() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-white mb-4">Notification Preferences</h2>
-                <p className="text-gray-400 text-sm">Configure system notification settings</p>
+                <p className="text-muted text-sm">Configure system notification settings</p>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                   <div>
                     <p className="text-white font-medium">Email Notifications</p>
-                    <p className="text-gray-400 text-sm">Receive notifications via email</p>
+                    <p className="text-muted text-sm">Receive notifications via email</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -336,14 +336,14 @@ export default function SystemSettings() {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                   <div>
                     <p className="text-white font-medium">SMS Notifications</p>
-                    <p className="text-gray-400 text-sm">Receive notifications via SMS</p>
+                    <p className="text-muted text-sm">Receive notifications via SMS</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -354,14 +354,14 @@ export default function SystemSettings() {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                   <div>
                     <p className="text-white font-medium">Push Notifications</p>
-                    <p className="text-gray-400 text-sm">Receive browser push notifications</p>
+                    <p className="text-muted text-sm">Receive browser push notifications</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -372,14 +372,14 @@ export default function SystemSettings() {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                   <div>
                     <p className="text-white font-medium">Maintenance Alerts</p>
-                    <p className="text-gray-400 text-sm">Get notified about system maintenance</p>
+                    <p className="text-muted text-sm">Get notified about system maintenance</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -390,14 +390,14 @@ export default function SystemSettings() {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                   <div>
                     <p className="text-white font-medium">Billing Alerts</p>
-                    <p className="text-gray-400 text-sm">Receive payment and billing notifications</p>
+                    <p className="text-muted text-sm">Receive payment and billing notifications</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -408,14 +408,14 @@ export default function SystemSettings() {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                   <div>
                     <p className="text-white font-medium">Security Alerts</p>
-                    <p className="text-gray-400 text-sm">Important security notifications</p>
+                    <p className="text-muted text-sm">Important security notifications</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -426,7 +426,7 @@ export default function SystemSettings() {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
               </div>
@@ -437,13 +437,13 @@ export default function SystemSettings() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-white mb-4">Database & Backup</h2>
-                <p className="text-gray-400 text-sm">Configure database backup settings</p>
+                <p className="text-muted text-sm">Configure database backup settings</p>
               </div>
 
               <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                 <div>
                   <p className="text-white font-medium">Automatic Backups</p>
-                  <p className="text-gray-400 text-sm">Enable scheduled database backups</p>
+                  <p className="text-muted text-sm">Enable scheduled database backups</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -452,18 +452,18 @@ export default function SystemSettings() {
                     onChange={(e) => setDatabaseSettings({ ...databaseSettings, autoBackup: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
 
               {databaseSettings.autoBackup && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-400 text-sm mb-2">Backup Frequency</label>
+                    <label className="block text-muted text-sm mb-2">Backup Frequency</label>
                     <select
                       value={databaseSettings.backupFrequency}
                       onChange={(e) => setDatabaseSettings({ ...databaseSettings, backupFrequency: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     >
                       <option value="hourly">Hourly</option>
                       <option value="daily">Daily</option>
@@ -471,12 +471,12 @@ export default function SystemSettings() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-gray-400 text-sm mb-2">Retention Period (days)</label>
+                    <label className="block text-muted text-sm mb-2">Retention Period (days)</label>
                     <input
                       type="number"
                       value={databaseSettings.retentionDays}
                       onChange={(e) => setDatabaseSettings({ ...databaseSettings, retentionDays: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -487,7 +487,7 @@ export default function SystemSettings() {
                   <Database className="w-5 h-5 text-blue-400" />
                   <div>
                     <p className="text-blue-400 font-medium">Last Backup</p>
-                    <p className="text-gray-300 text-sm mt-1">{databaseSettings.lastBackup}</p>
+                    <p className="text-secondary text-sm mt-1">{databaseSettings.lastBackup}</p>
                   </div>
                 </div>
               </div>
@@ -509,7 +509,7 @@ export default function SystemSettings() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-white mb-4">API Keys Management</h2>
-                <p className="text-gray-400 text-sm">Manage API keys for external integrations</p>
+                <p className="text-muted text-sm">Manage API keys for external integrations</p>
               </div>
 
               <div className="space-y-4">
@@ -518,8 +518,8 @@ export default function SystemSettings() {
                     <p className="text-white font-medium">Master API Key</p>
                     <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Active</span>
                   </div>
-                  <p className="text-gray-400 text-sm mb-3">Full access to all system APIs</p>
-                  <code className="block bg-gray-800 p-3 rounded text-green-400 text-sm font-mono">
+                  <p className="text-muted text-sm mb-3">Full access to all system APIs</p>
+                  <code className="block bg-secondary p-3 rounded text-green-400 text-sm font-mono">
                     sk_live_••••••••••••••••••••••••
                   </code>
                 </div>
@@ -529,8 +529,8 @@ export default function SystemSettings() {
                     <p className="text-white font-medium">Public API Key</p>
                     <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Active</span>
                   </div>
-                  <p className="text-gray-400 text-sm mb-3">Limited access for public endpoints</p>
-                  <code className="block bg-gray-800 p-3 rounded text-blue-400 text-sm font-mono">
+                  <p className="text-muted text-sm mb-3">Limited access for public endpoints</p>
+                  <code className="block bg-secondary p-3 rounded text-blue-400 text-sm font-mono">
                     pk_live_••••••••••••••••••••••••
                   </code>
                 </div>
@@ -540,8 +540,8 @@ export default function SystemSettings() {
                     <p className="text-white font-medium">Webhook Secret</p>
                     <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Active</span>
                   </div>
-                  <p className="text-gray-400 text-sm mb-3">For verifying webhook signatures</p>
-                  <code className="block bg-gray-800 p-3 rounded text-purple-400 text-sm font-mono">
+                  <p className="text-muted text-sm mb-3">For verifying webhook signatures</p>
+                  <code className="block bg-secondary p-3 rounded text-purple-400 text-sm font-mono">
                     whsec_••••••••••••••••••••••••
                   </code>
                 </div>

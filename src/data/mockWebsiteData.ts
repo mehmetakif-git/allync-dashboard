@@ -176,14 +176,14 @@ export const statusLabels = {
 export const statusColors = {
   'completed': 'text-green-400',
   'in-progress': 'text-blue-400',
-  'pending': 'text-gray-400',
+  'pending': 'text-muted',
   'blocked': 'text-red-400'
 };
 
 export const statusBgColors = {
   'completed': 'bg-green-500/10 border-green-500/20',
   'in-progress': 'bg-blue-500/10 border-blue-500/20',
-  'pending': 'bg-gray-500/10 border-gray-500/20',
+  'pending': 'bg-gray-500/10 border-secondary/20',
   'blocked': 'bg-red-500/10 border-red-500/20'
 };
 

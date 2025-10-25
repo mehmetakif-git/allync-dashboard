@@ -56,11 +56,11 @@ export default function MaintenanceMode() {
   const affectedUsers = settings.allowAdminAccess ? totalUsers - 8 : totalUsers;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">Maintenance Mode</h1>
-        <p className="text-gray-400 mt-1">Control system maintenance and scheduled downtime</p>
+        <p className="text-muted mt-1">Control system maintenance and scheduled downtime</p>
       </div>
 
       <div className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border-2 border-orange-500/50 rounded-lg p-6">
@@ -99,30 +99,30 @@ export default function MaintenanceMode() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Users</p>
+              <p className="text-muted text-sm">Total Users</p>
               <p className="text-3xl font-bold text-white mt-2">{totalUsers}</p>
             </div>
             <Users className="w-12 h-12 text-blue-500" />
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Affected Users</p>
+              <p className="text-muted text-sm">Affected Users</p>
               <p className="text-3xl font-bold text-white mt-2">{affectedUsers}</p>
             </div>
             <AlertTriangle className="w-12 h-12 text-orange-500" />
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Status</p>
+              <p className="text-muted text-sm">Status</p>
               <p className={`text-2xl font-bold mt-2 ${isMaintenanceEnabled ? 'text-red-400' : 'text-green-400'}`}>
                 {isMaintenanceEnabled ? 'Active' : 'Normal'}
               </p>
@@ -135,7 +135,7 @@ export default function MaintenanceMode() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center gap-3 mb-6">
             <AlertTriangle className="w-6 h-6 text-orange-500" />
             <h2 className="text-xl font-bold text-white">Maintenance Settings</h2>
@@ -143,23 +143,23 @@ export default function MaintenanceMode() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Maintenance Message</label>
+              <label className="block text-muted text-sm mb-2">Maintenance Message</label>
               <textarea
                 value={settings.message}
                 onChange={(e) => setSettings({ ...settings, message: e.target.value })}
                 rows={4}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
                 placeholder="Enter message to display to users"
               />
             </div>
 
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Estimated Duration (minutes)</label>
+              <label className="block text-muted text-sm mb-2">Estimated Duration (minutes)</label>
               <input
                 type="number"
                 value={settings.estimatedDuration}
                 onChange={(e) => setSettings({ ...settings, estimatedDuration: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                 placeholder="30"
               />
             </div>
@@ -167,7 +167,7 @@ export default function MaintenanceMode() {
             <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
               <div>
                 <p className="text-white font-medium">Notify Users</p>
-                <p className="text-gray-400 text-sm">Send email notification to all users</p>
+                <p className="text-muted text-sm">Send email notification to all users</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -176,14 +176,14 @@ export default function MaintenanceMode() {
                   onChange={(e) => setSettings({ ...settings, notifyUsers: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
             <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
               <div>
                 <p className="text-white font-medium">Allow Admin Access</p>
-                <p className="text-gray-400 text-sm">Super admins can still access the system</p>
+                <p className="text-muted text-sm">Super admins can still access the system</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -192,7 +192,7 @@ export default function MaintenanceMode() {
                   onChange={(e) => setSettings({ ...settings, allowAdminAccess: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
@@ -216,7 +216,7 @@ export default function MaintenanceMode() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center gap-3 mb-6">
             <Calendar className="w-6 h-6 text-blue-500" />
             <h2 className="text-xl font-bold text-white">Schedule Maintenance</h2>
@@ -224,22 +224,22 @@ export default function MaintenanceMode() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-400 text-sm mb-2">Start Time</label>
+              <label className="block text-muted text-sm mb-2">Start Time</label>
               <input
                 type="datetime-local"
                 value={settings.startTime}
                 onChange={(e) => setSettings({ ...settings, startTime: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-gray-400 text-sm mb-2">End Time</label>
+              <label className="block text-muted text-sm mb-2">End Time</label>
               <input
                 type="datetime-local"
                 value={settings.endTime}
                 onChange={(e) => setSettings({ ...settings, endTime: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -249,10 +249,10 @@ export default function MaintenanceMode() {
                   <Clock className="w-5 h-5 text-blue-400 mt-0.5" />
                   <div>
                     <p className="text-blue-400 font-medium">Scheduled Maintenance Window</p>
-                    <p className="text-gray-300 text-sm mt-1">
+                    <p className="text-secondary text-sm mt-1">
                       From: {new Date(settings.startTime).toLocaleString()}
                     </p>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-secondary text-sm">
                       To: {new Date(settings.endTime).toLocaleString()}
                     </p>
                   </div>
@@ -283,7 +283,7 @@ export default function MaintenanceMode() {
                 <AlertTriangle className="w-5 h-5 text-orange-400 mt-0.5" />
                 <div>
                   <p className="text-orange-400 font-medium">Important</p>
-                  <p className="text-gray-300 text-sm mt-1">
+                  <p className="text-secondary text-sm mt-1">
                     Users will receive an email notification 24 hours before the scheduled maintenance.
                   </p>
                 </div>
@@ -293,15 +293,15 @@ export default function MaintenanceMode() {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-secondary rounded-lg p-6">
         <h2 className="text-xl font-bold text-white mb-4">Maintenance Preview</h2>
-        <div className="bg-gray-900 rounded-lg p-8 border-2 border-orange-500/50">
+        <div className="bg-primary rounded-lg p-8 border-2 border-orange-500/50">
           <div className="max-w-2xl mx-auto text-center">
             <AlertTriangle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-white mb-4">System Under Maintenance</h3>
-            <p className="text-gray-300 mb-6">{settings.message}</p>
+            <p className="text-secondary mb-6">{settings.message}</p>
             {settings.estimatedDuration && (
-              <p className="text-gray-400">
+              <p className="text-muted">
                 Estimated time: {settings.estimatedDuration} minutes
               </p>
             )}

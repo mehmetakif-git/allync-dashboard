@@ -161,30 +161,30 @@ export default function MobileAppSettingsModal({
   const statusColors = {
     'completed': 'text-green-400 bg-green-500/10 border-green-500/30',
     'in-progress': 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-    'pending': 'text-gray-400 bg-gray-500/10 border-gray-500/30',
+    'pending': 'text-muted bg-gray-500/10 border-secondary/30',
     'blocked': 'text-red-400 bg-red-500/10 border-red-500/30',
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-6 flex items-center justify-between z-10">
+      <div className="bg-primary border border-secondary rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-primary border-b border-secondary p-6 flex items-center justify-between z-10">
           <div>
             <h2 className="text-2xl font-bold text-white">Mobile App Settings</h2>
-            <p className="text-sm text-gray-400 mt-1">{companyName}</p>
+            <p className="text-sm text-muted mt-1">{companyName}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-secondary rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
         <div className="p-6 space-y-6">
           {/* Project Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Project Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -192,20 +192,20 @@ export default function MobileAppSettingsModal({
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               placeholder="e.g., E-commerce Mobile App, Customer Portal"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               required
             />
           </div>
 
           {/* Platform */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Platform <span className="text-red-400">*</span>
             </label>
             <select
               value={platform}
               onChange={(e) => setPlatform(e.target.value as any)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
               <option value="android">Android</option>
               <option value="ios">iOS</option>
@@ -215,7 +215,7 @@ export default function MobileAppSettingsModal({
 
           {/* App Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               App Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -223,13 +223,13 @@ export default function MobileAppSettingsModal({
               value={appName}
               onChange={(e) => setAppName(e.target.value)}
               placeholder="Display name of your app"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
           </div>
 
           {(platform === 'android' || platform === 'both') && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 Package Name (Android)
               </label>
               <input
@@ -237,14 +237,14 @@ export default function MobileAppSettingsModal({
                 value={packageName}
                 onChange={(e) => setPackageName(e.target.value)}
                 placeholder="com.company.appname"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
             </div>
           )}
 
           {(platform === 'ios' || platform === 'both') && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 Bundle ID (iOS)
               </label>
               <input
@@ -252,38 +252,38 @@ export default function MobileAppSettingsModal({
                 value={bundleId}
                 onChange={(e) => setBundleId(e.target.value)}
                 placeholder="com.company.appname"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
             </div>
           )}
 
           {/* Estimated Completion */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Estimated Completion Date
             </label>
             <input
               type="date"
               value={estimatedCompletion}
               onChange={(e) => setEstimatedCompletion(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
           </div>
 
           {/* Publishing Status */}
-          <div className="border-t border-gray-700 pt-6">
+          <div className="border-t border-secondary pt-6">
             <h3 className="text-lg font-semibold text-white mb-4">App Store Publishing</h3>
 
             {(platform === 'android' || platform === 'both') && (
-              <div className="mb-4 p-4 bg-gray-800/50 rounded-lg">
+              <div className="mb-4 p-4 bg-card rounded-lg">
                 <h4 className="font-medium text-white mb-3">Google Play Store</h4>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Status</label>
+                    <label className="block text-sm text-muted mb-2">Status</label>
                     <select
                       value={playStoreStatus}
                       onChange={(e) => setPlayStoreStatus(e.target.value as any)}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full bg-gray-700 border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     >
                       <option value="pending">Pending</option>
                       <option value="submitted">Submitted</option>
@@ -295,13 +295,13 @@ export default function MobileAppSettingsModal({
                   </div>
                   {playStoreStatus === 'published' && (
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Play Store URL</label>
+                      <label className="block text-sm text-muted mb-2">Play Store URL</label>
                       <input
                         type="url"
                         value={playStoreUrl}
                         onChange={(e) => setPlayStoreUrl(e.target.value)}
                         placeholder="https://play.google.com/store/apps/details?id=..."
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full bg-gray-700 border border-secondary rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       />
                     </div>
                   )}
@@ -310,15 +310,15 @@ export default function MobileAppSettingsModal({
             )}
 
             {(platform === 'ios' || platform === 'both') && (
-              <div className="p-4 bg-gray-800/50 rounded-lg">
+              <div className="p-4 bg-card rounded-lg">
                 <h4 className="font-medium text-white mb-3">Apple App Store</h4>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Status</label>
+                    <label className="block text-sm text-muted mb-2">Status</label>
                     <select
                       value={appStoreStatus}
                       onChange={(e) => setAppStoreStatus(e.target.value as any)}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full bg-gray-700 border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     >
                       <option value="pending">Pending</option>
                       <option value="submitted">Submitted</option>
@@ -330,13 +330,13 @@ export default function MobileAppSettingsModal({
                   </div>
                   {appStoreStatus === 'published' && (
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">App Store URL</label>
+                      <label className="block text-sm text-muted mb-2">App Store URL</label>
                       <input
                         type="url"
                         value={appStoreUrl}
                         onChange={(e) => setAppStoreUrl(e.target.value)}
                         placeholder="https://apps.apple.com/app/..."
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full bg-gray-700 border border-secondary rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       />
                     </div>
                   )}
@@ -346,9 +346,9 @@ export default function MobileAppSettingsModal({
           </div>
 
           {/* Milestones */}
-          <div className="border-t border-gray-700 pt-6">
+          <div className="border-t border-secondary pt-6">
             <div className="flex items-center justify-between mb-4">
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-secondary">
                 Development Milestones
               </label>
               <button
@@ -376,14 +376,14 @@ export default function MobileAppSettingsModal({
                           value={milestone.title}
                           onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)}
                           placeholder="Milestone title"
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          className="w-full bg-card border border-secondary rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                         />
 
                         <div className="grid grid-cols-2 gap-3">
                           <select
                             value={milestone.status}
                             onChange={(e) => handleMilestoneChange(index, 'status', e.target.value)}
-                            className="bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                            className="bg-card border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                           >
                             <option value="pending">Pending</option>
                             <option value="in-progress">In Progress</option>
@@ -398,9 +398,9 @@ export default function MobileAppSettingsModal({
                               max="100"
                               value={milestone.progress}
                               onChange={(e) => handleMilestoneChange(index, 'progress', parseInt(e.target.value) || 0)}
-                              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                              className="w-full bg-card border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                             />
-                            <span className="text-gray-400 text-sm">%</span>
+                            <span className="text-muted text-sm">%</span>
                           </div>
                         </div>
 
@@ -409,7 +409,7 @@ export default function MobileAppSettingsModal({
                           onChange={(e) => handleMilestoneChange(index, 'notes', e.target.value)}
                           placeholder="Notes (optional)"
                           rows={2}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          className="w-full bg-card border border-secondary rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                         />
                       </div>
 
@@ -436,9 +436,9 @@ export default function MobileAppSettingsModal({
           </div>
 
           {/* Overall Progress */}
-          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+          <div className="bg-card border border-secondary rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-400">Overall Progress</span>
+              <span className="text-sm text-muted">Overall Progress</span>
               <span className="text-lg font-bold text-cyan-400">{calculateProgress()}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
@@ -450,10 +450,10 @@ export default function MobileAppSettingsModal({
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-gray-900 border-t border-gray-700 p-6 flex justify-end gap-3">
+        <div className="sticky bottom-0 bg-primary border-t border-secondary p-6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            className="px-6 py-2.5 bg-secondary hover:bg-hover text-white rounded-lg transition-colors"
           >
             Cancel
           </button>

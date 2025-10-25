@@ -166,7 +166,7 @@ export default function ActivityLogs() {
       case 'login':
         return 'bg-green-500/20 text-green-400';
       case 'logout':
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-500/20 text-muted';
       case 'create':
         return 'bg-blue-500/20 text-blue-400';
       case 'update':
@@ -176,7 +176,7 @@ export default function ActivityLogs() {
       case 'system':
         return 'bg-purple-500/20 text-purple-400';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-500/20 text-muted';
     }
   };
 
@@ -187,12 +187,12 @@ export default function ActivityLogs() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Activity Logs</h1>
-          <p className="text-gray-400 mt-1">Monitor all system and user activities</p>
+          <p className="text-muted mt-1">Monitor all system and user activities</p>
         </div>
         <button
           onClick={handleExportLogs}
@@ -204,20 +204,20 @@ export default function ActivityLogs() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Total Activities</p>
+              <p className="text-muted text-sm">Total Activities</p>
               <p className="text-3xl font-bold text-white mt-2">{logs.length}</p>
             </div>
             <Activity className="w-12 h-12 text-blue-500" />
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">User Actions</p>
+              <p className="text-muted text-sm">User Actions</p>
               <p className="text-3xl font-bold text-white mt-2">
                 {logs.filter(l => l.actionType === 'login' || l.actionType === 'logout').length}
               </p>
@@ -226,10 +226,10 @@ export default function ActivityLogs() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">System Events</p>
+              <p className="text-muted text-sm">System Events</p>
               <p className="text-3xl font-bold text-white mt-2">
                 {logs.filter(l => l.actionType === 'system').length}
               </p>
@@ -238,10 +238,10 @@ export default function ActivityLogs() {
           </div>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-secondary rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Changes Made</p>
+              <p className="text-muted text-sm">Changes Made</p>
               <p className="text-3xl font-bold text-white mt-2">
                 {logs.filter(l => l.actionType === 'create' || l.actionType === 'update' || l.actionType === 'delete').length}
               </p>
@@ -251,25 +251,25 @@ export default function ActivityLogs() {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-secondary rounded-lg p-6">
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
             <input
               type="text"
               placeholder="Search activities by user, action, or company..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="flex gap-2">
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
               <select
                 value={actionTypeFilter}
                 onChange={(e) => setActionTypeFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="pl-10 pr-8 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Actions</option>
                 <option value="login">Login</option>
@@ -283,7 +283,7 @@ export default function ActivityLogs() {
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="today">Today</option>
               <option value="week">This Week</option>
@@ -304,8 +304,8 @@ export default function ActivityLogs() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-white font-medium">{log.action}</h3>
-                      <p className="text-gray-300 text-sm mt-1">{log.details}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                      <p className="text-secondary text-sm mt-1">{log.details}</p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-muted">
                         <span className="flex items-center gap-1">
                           <User className="w-3 h-3" />
                           {log.user}
@@ -320,7 +320,7 @@ export default function ActivityLogs() {
                       <span className={`inline-block px-2 py-1 rounded text-xs ${getActionColor(log.actionType)}`}>
                         {log.actionType}
                       </span>
-                      <p className="text-gray-400 text-xs mt-2">{log.timestamp}</p>
+                      <p className="text-muted text-xs mt-2">{log.timestamp}</p>
                     </div>
                   </div>
                 </div>
@@ -330,7 +330,7 @@ export default function ActivityLogs() {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-secondary rounded-lg p-6">
         <h2 className="text-xl font-bold text-white mb-4">Activity Summary</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="bg-gray-700 rounded-lg p-4">
@@ -339,7 +339,7 @@ export default function ActivityLogs() {
                 <LogIn className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Logins</p>
+                <p className="text-muted text-sm">Logins</p>
                 <p className="text-white font-bold text-lg">
                   {logs.filter(l => l.actionType === 'login').length}
                 </p>
@@ -353,7 +353,7 @@ export default function ActivityLogs() {
                 <User className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Created</p>
+                <p className="text-muted text-sm">Created</p>
                 <p className="text-white font-bold text-lg">
                   {logs.filter(l => l.actionType === 'create').length}
                 </p>
@@ -367,7 +367,7 @@ export default function ActivityLogs() {
                 <Settings className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Updated</p>
+                <p className="text-muted text-sm">Updated</p>
                 <p className="text-white font-bold text-lg">
                   {logs.filter(l => l.actionType === 'update').length}
                 </p>
@@ -381,7 +381,7 @@ export default function ActivityLogs() {
                 <Trash2 className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Deleted</p>
+                <p className="text-muted text-sm">Deleted</p>
                 <p className="text-white font-bold text-lg">
                   {logs.filter(l => l.actionType === 'delete').length}
                 </p>
@@ -395,7 +395,7 @@ export default function ActivityLogs() {
                 <Shield className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">System</p>
+                <p className="text-muted text-sm">System</p>
                 <p className="text-white font-bold text-lg">
                   {logs.filter(l => l.actionType === 'system').length}
                 </p>
@@ -405,11 +405,11 @@ export default function ActivityLogs() {
 
           <div className="bg-gray-700 rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-500/20 text-gray-400">
+              <div className="p-2 rounded-lg bg-gray-500/20 text-muted">
                 <LogOut className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Logouts</p>
+                <p className="text-muted text-sm">Logouts</p>
                 <p className="text-white font-bold text-lg">
                   {logs.filter(l => l.actionType === 'logout').length}
                 </p>

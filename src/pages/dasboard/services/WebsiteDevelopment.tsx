@@ -59,14 +59,14 @@ const WebsiteDevelopment: React.FC = () => {
   const statusColors: any = {
     'completed': 'text-green-400',
     'in-progress': 'text-blue-400',
-    'pending': 'text-gray-400',
+    'pending': 'text-muted',
     'blocked': 'text-red-400'
   };
 
   const statusBgColors: any = {
     'completed': 'bg-green-500/10 border-green-500/20',
     'in-progress': 'bg-blue-500/10 border-blue-500/20',
-    'pending': 'bg-gray-500/10 border-gray-500/20',
+    'pending': 'bg-gray-500/10 border-secondary/20',
     'blocked': 'bg-red-500/10 border-red-500/20'
   };
 
@@ -115,7 +115,7 @@ const WebsiteDevelopment: React.FC = () => {
       <div className="p-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading project...</p>
+          <p className="text-muted">Loading project...</p>
         </div>
       </div>
     );
@@ -142,10 +142,10 @@ const WebsiteDevelopment: React.FC = () => {
   if (!project || projects.length === 0) {
     return (
       <div className="p-8">
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center">
           <Globe className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-300 mb-2">No Active Project</h3>
-          <p className="text-gray-400">No website development project found for your company.</p>
+          <h3 className="text-xl font-semibold text-secondary mb-2">No Active Project</h3>
+          <p className="text-muted">No website development project found for your company.</p>
         </div>
       </div>
     );
@@ -161,17 +161,17 @@ const WebsiteDevelopment: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">{project.project_name}</h1>
-              <p className="text-gray-400">{projectTypeLabels[project.project_type]} - Track your website development progress</p>
+              <p className="text-muted">{projectTypeLabels[project.project_type]} - Track your website development progress</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-4 mb-6 border-b border-gray-700">
+      <div className="flex gap-4 mb-6 border-b border-secondary">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'dashboard' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'dashboard' ? 'text-blue-400' : 'text-muted hover:text-secondary'
           }`}
         >
           Dashboard
@@ -182,7 +182,7 @@ const WebsiteDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('details')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'details' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'details' ? 'text-blue-400' : 'text-muted hover:text-secondary'
           }`}
         >
           Project Details
@@ -193,7 +193,7 @@ const WebsiteDevelopment: React.FC = () => {
         <button
           onClick={() => setActiveTab('support')}
           className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'support' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'
+            activeTab === 'support' ? 'text-blue-400' : 'text-muted hover:text-secondary'
           }`}
         >
           Support
@@ -206,30 +206,30 @@ const WebsiteDevelopment: React.FC = () => {
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Globe className="w-5 h-5 text-purple-400" />
-                <span className="text-gray-400 text-sm">Project Type</span>
+                <span className="text-muted text-sm">Project Type</span>
               </div>
               <p className="text-xl font-semibold text-white">
                 {projectTypeLabels[project.project_type]}
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-400 text-sm">Estimated Completion</span>
+                <span className="text-muted text-sm">Estimated Completion</span>
               </div>
               <p className="text-xl font-semibold text-white">
                 {project.estimated_completion ? formatDate(project.estimated_completion) : 'TBD'}
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Clock className="w-5 h-5 text-green-400" />
-                <span className="text-gray-400 text-sm">Last Update</span>
+                <span className="text-muted text-sm">Last Update</span>
               </div>
               <p className="text-xl font-semibold text-white">
                 {project.last_update ? getTimeAgo(project.last_update) : 'No updates'}
@@ -237,7 +237,7 @@ const WebsiteDevelopment: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Overall Progress</h3>
               <span className="text-2xl font-bold text-blue-400">{project.overall_progress || 0}%</span>
@@ -251,7 +251,7 @@ const WebsiteDevelopment: React.FC = () => {
           </div>
 
           {project.milestones && project.milestones.length > 0 && (
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Project Milestones</h3>
               <div className="space-y-4">
                 {project.milestones.map((milestone: any) => {
@@ -284,11 +284,11 @@ const WebsiteDevelopment: React.FC = () => {
                       )}
 
                       {milestone.notes && (
-                        <p className="text-sm text-gray-400 mt-2">{milestone.notes}</p>
+                        <p className="text-sm text-muted mt-2">{milestone.notes}</p>
                       )}
 
                       {milestone.completed_date && (
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-muted mt-2">
                           Completed: {formatDate(milestone.completed_date)}
                         </p>
                       )}
@@ -303,32 +303,32 @@ const WebsiteDevelopment: React.FC = () => {
 
       {activeTab === 'details' && (
         <div className="space-y-6">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-6">Project Information</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Project Name</label>
+                <label className="block text-sm text-muted mb-2">Project Name</label>
                 <input
                   type="text"
                   value={project.project_name || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Project Type</label>
+                <label className="block text-sm text-muted mb-2">Project Type</label>
                 <input
                   type="text"
                   value={projectTypeLabels[project.project_type] || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-muted mb-2">
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4" />
                     Domain
@@ -338,12 +338,12 @@ const WebsiteDevelopment: React.FC = () => {
                   type="text"
                   value={project.domain || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-muted mb-2">
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
                     Email Address
@@ -353,12 +353,12 @@ const WebsiteDevelopment: React.FC = () => {
                   type="text"
                   value={project.email || 'N/A'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-muted mb-2">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Estimated Completion
@@ -368,7 +368,7 @@ const WebsiteDevelopment: React.FC = () => {
                   type="text"
                   value={project.estimated_completion ? formatDate(project.estimated_completion) : 'TBD'}
                   readOnly
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
                 />
               </div>
             </div>
@@ -383,9 +383,9 @@ const WebsiteDevelopment: React.FC = () => {
       )}
 
       {activeTab === 'support' && (
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Need Help?</h3>
-          <p className="text-gray-400 mb-6">
+          <p className="text-muted mb-6">
             Have questions about your website development project? Our team is here to help!
           </p>
           <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all">

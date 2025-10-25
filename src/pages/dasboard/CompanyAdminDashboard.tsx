@@ -92,7 +92,7 @@ export default function CompanyAdminDashboard() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <p className="text-gray-400 mt-1">Welcome back! Here's your services overview</p>
+        <p className="text-muted mt-1">Welcome back! Here's your services overview</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -151,12 +151,12 @@ export default function CompanyAdminDashboard() {
         </div>
 
         {mockActiveServices.length === 0 ? (
-          <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-12 text-center">
-            <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-primary/50 border border-primary rounded-xl p-12 text-center">
+            <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
               <Zap className="w-8 h-8 text-gray-600" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">No Active Services</h3>
-            <p className="text-gray-400 mb-4">You don't have any active services yet. Browse our catalog to get started!</p>
+            <p className="text-muted mb-4">You don't have any active services yet. Browse our catalog to get started!</p>
             <button
               onClick={() => window.location.hash = 'services'}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors inline-flex items-center gap-2"
@@ -175,7 +175,7 @@ export default function CompanyAdminDashboard() {
               return (
                 <div
                   key={service.id}
-                  className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:bg-gray-800/50 transition-all hover:scale-105 cursor-pointer"
+                  className="bg-primary/50 border border-primary rounded-xl p-6 hover:bg-card transition-all hover:scale-105 cursor-pointer"
                   onClick={() => handleViewService(service.id)}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -194,18 +194,18 @@ export default function CompanyAdminDashboard() {
                   </div>
 
                   <h3 className="text-lg font-bold text-white mb-1">{service.name}</h3>
-                  <p className="text-sm text-gray-400 mb-4">Plan: {service.plan}</p>
+                  <p className="text-sm text-muted mb-4">Plan: {service.plan}</p>
 
                   {service.status === 'active' ? (
                     <>
                       <div className="mb-3">
                         <div className="flex items-center justify-between text-sm mb-2">
-                          <span className="text-gray-400">Monthly Usage</span>
+                          <span className="text-muted">Monthly Usage</span>
                           <span className="text-white font-medium">
                             {service.monthlyUsage.current.toLocaleString()} / {service.monthlyUsage.limit.toLocaleString()}
                           </span>
                         </div>
-                        <div className="w-full bg-gray-800 rounded-full h-2">
+                        <div className="w-full bg-secondary rounded-full h-2">
                           <div
                             className={`h-2 rounded-full ${
                               usagePercent > 80 ? 'bg-red-500' : usagePercent > 60 ? 'bg-yellow-500' : 'bg-green-500'
@@ -215,8 +215,8 @@ export default function CompanyAdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-800">
-                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                      <div className="flex items-center justify-between pt-3 border-t border-primary">
+                        <div className="flex items-center gap-1 text-xs text-muted">
                           <Activity className="w-3 h-3" />
                           {service.lastActivity}
                         </div>
@@ -227,7 +227,7 @@ export default function CompanyAdminDashboard() {
                       </div>
                     </>
                   ) : (
-                    <div className="pt-3 border-t border-gray-800">
+                    <div className="pt-3 border-t border-primary">
                       <p className="text-sm text-yellow-400 flex items-center gap-2">
                         <AlertCircle className="w-4 h-4" />
                         Service approved, setup required
@@ -240,7 +240,7 @@ export default function CompanyAdminDashboard() {
                       e.stopPropagation();
                       handleViewService(service.id);
                     }}
-                    className="w-full mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    className="w-full mt-4 px-4 py-2 bg-secondary hover:bg-hover text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     View Details
                     <ArrowRight className="w-4 h-4" />
@@ -253,8 +253,8 @@ export default function CompanyAdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+        <div className="bg-primary/50 border border-primary rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-primary flex items-center justify-between">
             <h3 className="font-bold text-white">Pending Service Requests</h3>
             <button
               onClick={() => window.location.hash = 'services'}
@@ -265,20 +265,20 @@ export default function CompanyAdminDashboard() {
           </div>
           <div className="p-4">
             {mockPendingRequests.length === 0 ? (
-              <p className="text-gray-400 text-center py-4">No pending requests</p>
+              <p className="text-muted text-center py-4">No pending requests</p>
             ) : (
               <div className="space-y-3">
                 {mockPendingRequests.map((request) => (
-                  <div key={request.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                  <div key={request.id} className="flex items-center justify-between p-3 bg-card rounded-lg">
                     <div>
                       <p className="font-medium text-white">{request.service}</p>
-                      <p className="text-sm text-gray-400">Plan: {request.plan}</p>
+                      <p className="text-sm text-muted">Plan: {request.plan}</p>
                     </div>
                     <div className="text-right">
                       <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
                         Pending
                       </span>
-                      <p className="text-xs text-gray-500 mt-1">{request.requestedAt.split(' ')[0]}</p>
+                      <p className="text-xs text-muted mt-1">{request.requestedAt.split(' ')[0]}</p>
                     </div>
                   </div>
                 ))}
@@ -287,14 +287,14 @@ export default function CompanyAdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-gray-800">
+        <div className="bg-primary/50 border border-primary rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-primary">
             <h3 className="font-bold text-white">Recent Activity</h3>
           </div>
           <div className="p-4">
             <div className="space-y-3">
               {mockRecentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg">
+                <div key={activity.id} className="flex items-start gap-3 p-3 bg-card rounded-lg">
                   <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                     {activity.type === 'service' && <Zap className="w-4 h-4 text-blue-400" />}
                     {activity.type === 'invoice' && <CreditCard className="w-4 h-4 text-green-400" />}
@@ -302,8 +302,8 @@ export default function CompanyAdminDashboard() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-white">{activity.title}</p>
-                    <p className="text-xs text-gray-400">{activity.description}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.timestamp}</p>
+                    <p className="text-xs text-muted">{activity.description}</p>
+                    <p className="text-xs text-muted mt-1">{activity.timestamp}</p>
                   </div>
                 </div>
               ))}

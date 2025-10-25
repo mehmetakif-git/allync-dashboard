@@ -19,7 +19,7 @@ function StatCard({ title, value, icon: Icon, gradient, change, onClick }: StatC
   return (
     <div
       onClick={onClick}
-      className={`bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 ${onClick ? 'cursor-pointer hover:border-gray-600 transition-all' : ''}`}
+      className={`bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 ${onClick ? 'cursor-pointer hover:border-secondary transition-all' : ''}`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center`}>
@@ -32,7 +32,7 @@ function StatCard({ title, value, icon: Icon, gradient, change, onClick }: StatC
           </div>
         )}
       </div>
-      <p className="text-gray-400 text-sm mb-1">{title}</p>
+      <p className="text-muted text-sm mb-1">{title}</p>
       <p className="text-3xl font-bold text-white">{value}</p>
     </div>
   );
@@ -70,11 +70,11 @@ export default function SuperAdminDashboard() {
   const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Super Admin Dashboard</h1>
-          <p className="text-gray-400">System overview and key metrics</p>
+          <p className="text-muted">System overview and key metrics</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -140,7 +140,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <h2 className="text-xl font-bold text-white mb-6">Revenue Trend (2024)</h2>
             <div className="relative h-64">
               <svg className="w-full h-full">
@@ -168,7 +168,7 @@ export default function SuperAdminDashboard() {
                   );
                 })}
               </svg>
-              <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500 mt-2">
+              <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-muted mt-2">
                 {revenueData.map((d, i) => (
                   <span key={i}>{d.month}</span>
                 ))}
@@ -176,7 +176,7 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <h2 className="text-xl font-bold text-white mb-6">Service Requests Status</h2>
             <div className="flex items-center justify-center h-64">
               <div className="relative">
@@ -206,7 +206,7 @@ export default function SuperAdminDashboard() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <p className="text-3xl font-bold text-white">{mockServiceRequests.length}</p>
-                    <p className="text-sm text-gray-400">Total</p>
+                    <p className="text-sm text-muted">Total</p>
                   </div>
                 </div>
               </div>
@@ -214,18 +214,18 @@ export default function SuperAdminDashboard() {
             <div className="flex justify-center gap-6 mt-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-orange-500" />
-                <span className="text-sm text-gray-400">Pending ({pendingRequests})</span>
+                <span className="text-sm text-muted">Pending ({pendingRequests})</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-sm text-gray-400">Approved ({mockServiceRequests.filter(r => r.status === 'approved').length})</span>
+                <span className="text-sm text-muted">Approved ({mockServiceRequests.filter(r => r.status === 'approved').length})</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Pending Service Requests</h2>
               <button
@@ -240,7 +240,7 @@ export default function SuperAdminDashboard() {
                 <div
                   key={request.id}
                   onClick={() => handleNavigate('services-catalog')}
-                  className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg hover:border-gray-600 cursor-pointer transition-all"
+                  className="p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-white">{request.service_name}</span>
@@ -249,15 +249,15 @@ export default function SuperAdminDashboard() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">{request.company_name}</span>
-                    <span className="text-gray-500 text-xs">{new Date(request.created_at).toLocaleDateString()}</span>
+                    <span className="text-muted">{request.company_name}</span>
+                    <span className="text-muted text-xs">{new Date(request.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Latest Support Tickets</h2>
               <button
@@ -272,7 +272,7 @@ export default function SuperAdminDashboard() {
                 <div
                   key={ticket.id}
                   onClick={() => handleNavigate('support-tickets')}
-                  className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg hover:border-gray-600 cursor-pointer transition-all"
+                  className="p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-white text-sm">{ticket.subject}</span>
@@ -285,7 +285,7 @@ export default function SuperAdminDashboard() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">{ticket.createdBy}</span>
+                    <span className="text-muted">{ticket.createdBy}</span>
                     <span className={`px-2 py-0.5 rounded text-xs ${
                       ticket.status === 'Open' ? 'bg-blue-500/10 text-blue-500' :
                       ticket.status === 'In Progress' ? 'bg-yellow-500/10 text-yellow-500' :
@@ -300,7 +300,7 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 mb-8">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-white">Recent Companies</h2>
             <button
@@ -315,7 +315,7 @@ export default function SuperAdminDashboard() {
               <div
                 key={company.id}
                 onClick={() => handleNavigate('companies-management')}
-                className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg hover:border-gray-600 cursor-pointer transition-all"
+                className="p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -329,8 +329,8 @@ export default function SuperAdminDashboard() {
                   </span>
                 </div>
                 <h3 className="font-semibold text-white mb-1">{company.name}</h3>
-                <p className="text-sm text-gray-400 mb-2">{company.country}</p>
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <p className="text-sm text-muted mb-2">{company.country}</p>
+                <div className="flex items-center justify-between text-xs text-muted">
                   <span>{company.activeServicesCount} Services</span>
                   <span>{new Date(company.createdAt).toLocaleDateString()}</span>
                 </div>
@@ -339,7 +339,7 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-white">Recent Activity</h2>
             <button
@@ -354,7 +354,7 @@ export default function SuperAdminDashboard() {
               <div
                 key={log.id}
                 onClick={() => handleNavigate('activity-logs')}
-                className="flex items-start gap-4 p-4 bg-gray-900/50 border border-gray-700 rounded-lg hover:border-gray-600 cursor-pointer transition-all"
+                className="flex items-start gap-4 p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
               >
                 <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                   <Activity className="w-5 h-5 text-blue-500" />
@@ -362,10 +362,10 @@ export default function SuperAdminDashboard() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium text-white">{log.action}</span>
-                    <span className="text-xs text-gray-500">{log.timestamp}</span>
+                    <span className="text-xs text-muted">{log.timestamp}</span>
                   </div>
-                  <p className="text-sm text-gray-400">{log.details}</p>
-                  <p className="text-xs text-gray-500 mt-1">{log.user} • {log.company}</p>
+                  <p className="text-sm text-muted">{log.details}</p>
+                  <p className="text-xs text-muted mt-1">{log.user} • {log.company}</p>
                 </div>
               </div>
             ))}

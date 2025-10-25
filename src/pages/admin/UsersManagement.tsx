@@ -94,7 +94,7 @@ export default function UsersManagement() {
       case 'company_admin':
         return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
+        return 'bg-gray-500/20 text-muted border border-secondary/30';
     }
   };
 
@@ -336,13 +336,13 @@ export default function UsersManagement() {
   // ===== RENDER =====
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white">Users Management</h1>
-            <p className="text-gray-400 mt-1">Manage all users across all companies</p>
+            <p className="text-muted mt-1">Manage all users across all companies</p>
           </div>
           <button
             onClick={() => setShowAddModal(true)}
@@ -381,37 +381,37 @@ export default function UsersManagement() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Users</p>
+                <p className="text-muted text-sm">Total Users</p>
                 <p className="text-3xl font-bold text-white mt-2">{stats.total}</p>
               </div>
               <Users className="w-12 h-12 text-blue-500" />
             </div>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Super Admins</p>
+                <p className="text-muted text-sm">Super Admins</p>
                 <p className="text-3xl font-bold text-white mt-2">{stats.superAdmins}</p>
               </div>
               <Shield className="w-12 h-12 text-red-500" />
             </div>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Company Admins</p>
+                <p className="text-muted text-sm">Company Admins</p>
                 <p className="text-3xl font-bold text-white mt-2">{stats.companyAdmins}</p>
               </div>
               <Building2 className="w-12 h-12 text-purple-500" />
             </div>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Active Users</p>
+                <p className="text-muted text-sm">Active Users</p>
                 <p className="text-3xl font-bold text-white mt-2">{stats.active}</p>
               </div>
               <UserCircle className="w-12 h-12 text-green-500" />
@@ -420,26 +420,26 @@ export default function UsersManagement() {
         </div>
 
         {/* Filters & Users Table */}
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
           {/* Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search users by name, email, or company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
               />
             </div>
             <div className="flex gap-2">
               <div className="relative">
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="pl-10 pr-8 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="pl-10 pr-8 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Roles</option>
                   <option value="super_admin">Super Admin</option>
@@ -450,7 +450,7 @@ export default function UsersManagement() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -460,7 +460,7 @@ export default function UsersManagement() {
               <select
                 value={companyFilter}
                 onChange={(e) => setCompanyFilter(e.target.value)}
-                className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Companies</option>
                 {companies.map(company => (
@@ -479,7 +479,7 @@ export default function UsersManagement() {
                   ? 'No users found' 
                   : 'No users yet'}
               </p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted text-sm">
                 {searchTerm || roleFilter !== 'all' || statusFilter !== 'all' || companyFilter !== 'all'
                   ? 'Try adjusting your filters'
                   : 'Users will appear here once they are created'}
@@ -489,14 +489,14 @@ export default function UsersManagement() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">User</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Role</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Company</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Last Login</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
+                  <tr className="border-b border-secondary">
+                    <th className="text-left py-3 px-4 text-muted font-medium">User</th>
+                    <th className="text-left py-3 px-4 text-muted font-medium">Email</th>
+                    <th className="text-left py-3 px-4 text-muted font-medium">Role</th>
+                    <th className="text-left py-3 px-4 text-muted font-medium">Company</th>
+                    <th className="text-left py-3 px-4 text-muted font-medium">Status</th>
+                    <th className="text-left py-3 px-4 text-muted font-medium">Last Login</th>
+                    <th className="text-left py-3 px-4 text-muted font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -509,7 +509,7 @@ export default function UsersManagement() {
                       .slice(0, 2);
 
                     return (
-                      <tr key={user.id} className="border-b border-gray-700 hover:bg-gray-900/30 transition-colors">
+                      <tr key={user.id} className="border-b border-secondary hover:bg-primary/30 transition-colors">
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
@@ -517,7 +517,7 @@ export default function UsersManagement() {
                             </div>
                             <div>
                               <p className="text-white font-medium">{user.full_name}</p>
-                              <p className="text-gray-400 text-sm">
+                              <p className="text-muted text-sm">
                                 Joined {new Date(user.created_at).toLocaleDateString()}
                               </p>
                             </div>
@@ -525,7 +525,7 @@ export default function UsersManagement() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-gray-400" />
+                            <Mail className="w-4 h-4 text-muted" />
                             <span className="text-white text-sm">{user.email}</span>
                           </div>
                         </td>
@@ -564,27 +564,27 @@ export default function UsersManagement() {
                               <Edit3 className="w-4 h-4 text-blue-500" />
                             </button>
                             <div className="relative group">
-                              <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
-                                <MoreVertical className="w-5 h-5 text-gray-400" />
+                              <button className="p-2 hover:bg-hover rounded-lg transition-colors">
+                                <MoreVertical className="w-5 h-5 text-muted" />
                               </button>
-                              <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 border border-gray-600">
+                              <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 border border-secondary">
                                 <button
                                   onClick={() => handleSuspendClick(user)}
-                                  className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 rounded-t-lg transition-colors"
+                                  className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-t-lg transition-colors"
                                   disabled={isProcessing}
                                 >
                                   {user.status === 'suspended' ? '✅ Activate' : '⏸️ Suspend'}
                                 </button>
                                 <button
                                   onClick={() => handleBlockClick(user)}
-                                  className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 transition-colors"
+                                  className="w-full text-left px-4 py-2 text-white hover:bg-hover transition-colors"
                                   disabled={isProcessing}
                                 >
                                   {user.status === 'blocked' ? '🔓 Unblock' : '🚫 Block'}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteClick(user)}
-                                  className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-600 rounded-b-lg transition-colors"
+                                  className="w-full text-left px-4 py-2 text-red-400 hover:bg-hover rounded-b-lg transition-colors"
                                   disabled={isProcessing}
                                 >
                                   🗑️ Delete
@@ -603,7 +603,7 @@ export default function UsersManagement() {
 
           {/* Results Summary */}
           {filteredUsers.length > 0 && (
-            <div className="mt-4 text-center text-sm text-gray-400">
+            <div className="mt-4 text-center text-sm text-muted">
               Showing {filteredUsers.length} of {users.length} users
             </div>
           )}

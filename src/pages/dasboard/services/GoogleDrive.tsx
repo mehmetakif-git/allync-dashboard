@@ -67,45 +67,45 @@ export default function GoogleDrive() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <File className="w-5 h-5 text-yellow-500" />
-              <span className="text-sm text-gray-400">Total Files</span>
+              <span className="text-sm text-muted">Total Files</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.totalFiles}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Share2 className="w-5 h-5 text-blue-500" />
-              <span className="text-sm text-gray-400">Shared Files</span>
+              <span className="text-sm text-muted">Shared Files</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.sharedFiles}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <Upload className="w-5 h-5 text-green-500" />
-              <span className="text-sm text-gray-400">WhatsApp Uploads</span>
+              <span className="text-sm text-muted">WhatsApp Uploads</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.whatsappUploads}</p>
           </div>
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
             <div className="flex items-center gap-3 mb-2">
               <HardDrive className="w-5 h-5 text-purple-500" />
-              <span className="text-sm text-gray-400">Storage Used</span>
+              <span className="text-sm text-muted">Storage Used</span>
             </div>
             <p className="text-2xl font-bold text-white">{stats.totalStorage} MB</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl mb-6">
-          <div className="flex border-b border-gray-700">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl mb-6">
+          <div className="flex border-b border-secondary">
             <button
               onClick={() => setActiveTab('files')}
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'files'
                   ? 'text-yellow-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Files
@@ -118,7 +118,7 @@ export default function GoogleDrive() {
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'analytics'
                   ? 'text-yellow-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Analytics
@@ -131,7 +131,7 @@ export default function GoogleDrive() {
               className={`px-6 py-3 font-medium transition-colors relative ${
                 activeTab === 'settings'
                   ? 'text-yellow-500'
-                  : 'text-gray-400 hover:text-gray-300'
+                  : 'text-muted hover:text-secondary'
               }`}
             >
               Settings
@@ -148,19 +148,19 @@ export default function GoogleDrive() {
             {/* Search and Filter */}
             <div className="flex gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search files..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                  className="w-full pl-12 pr-4 py-3 bg-secondary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
                 />
               </div>
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as any)}
-                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+                className="px-4 py-3 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-yellow-500"
               >
                 <option value="all">All Types</option>
                 <option value="pdf">PDF</option>
@@ -170,42 +170,42 @@ export default function GoogleDrive() {
             </div>
 
             {/* Files Table */}
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50">
+                  <thead className="bg-primary/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">File</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Size</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Folder</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Source</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Shared</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">File</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Size</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Folder</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Source</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Shared</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700">
                     {filteredFiles.map((file) => (
-                      <tr key={file.id} className="hover:bg-gray-700/50 transition-colors">
+                      <tr key={file.id} className="hover:bg-hover/50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
                             <span className="text-2xl">{getFileTypeIcon(file.google_file_type)}</span>
                             <div>
                               <p className="text-white font-medium">{file.google_file_name}</p>
                               {file.ai_summary && (
-                                <p className="text-sm text-gray-400 max-w-xs truncate">{file.ai_summary}</p>
+                                <p className="text-sm text-muted max-w-xs truncate">{file.ai_summary}</p>
                               )}
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-300 capitalize">{file.google_file_type}</span>
+                          <span className="text-secondary capitalize">{file.google_file_type}</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-300">{formatFileSize(file.file_size_bytes)}</span>
+                          <span className="text-secondary">{formatFileSize(file.file_size_bytes)}</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-300">{file.parent_folder_name}</span>
+                          <span className="text-secondary">{file.parent_folder_name}</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {file.uploaded_via_whatsapp ? (
@@ -213,7 +213,7 @@ export default function GoogleDrive() {
                               WhatsApp
                             </span>
                           ) : (
-                            <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-medium">
+                            <span className="px-3 py-1 bg-gray-700 text-secondary rounded-full text-xs font-medium">
                               Manual
                             </span>
                           )}
@@ -222,7 +222,7 @@ export default function GoogleDrive() {
                           {file.is_shared ? (
                             <Share2 className="w-4 h-4 text-blue-500" />
                           ) : (
-                            <span className="text-gray-500">-</span>
+                            <span className="text-muted">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -248,33 +248,33 @@ export default function GoogleDrive() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <TrendingUp className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-gray-400">Upload Growth</span>
+                  <span className="text-sm text-muted">Upload Growth</span>
                 </div>
                 <p className="text-3xl font-bold text-white">+28%</p>
                 <p className="text-sm text-green-500 mt-1">vs last month</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <Share2 className="w-5 h-5 text-blue-500" />
-                  <span className="text-sm text-gray-400">Sharing Activity</span>
+                  <span className="text-sm text-muted">Sharing Activity</span>
                 </div>
                 <p className="text-3xl font-bold text-white">156</p>
-                <p className="text-sm text-gray-400 mt-1">files shared this month</p>
+                <p className="text-sm text-muted mt-1">files shared this month</p>
               </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
                   <BarChart3 className="w-5 h-5 text-purple-500" />
-                  <span className="text-sm text-gray-400">Total Uploads</span>
+                  <span className="text-sm text-muted">Total Uploads</span>
                 </div>
                 <p className="text-3xl font-bold text-white">690</p>
-                <p className="text-sm text-gray-400 mt-1">this month</p>
+                <p className="text-sm text-muted mt-1">this month</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">File Type Distribution</h3>
               <div className="space-y-4">
                 {[
@@ -287,8 +287,8 @@ export default function GoogleDrive() {
                   return (
                     <div key={item.type}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-300">{item.type}</span>
-                        <span className="text-gray-400 text-sm">{item.count} files ({percentage.toFixed(0)}%)</span>
+                        <span className="text-secondary">{item.type}</span>
+                        <span className="text-muted text-sm">{item.count} files ({percentage.toFixed(0)}%)</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-3">
                         <div className="h-3 rounded-full" style={{ width: `${percentage}%`, backgroundColor: item.color }}></div>
@@ -299,7 +299,7 @@ export default function GoogleDrive() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Storage by Folder</h3>
               <div className="space-y-4">
                 {[
@@ -309,7 +309,7 @@ export default function GoogleDrive() {
                   { folder: 'Reports', size: 0.8, color: '#3B82F6' },
                 ].map((item) => (
                   <div key={item.folder} className="space-y-2">
-                    <p className="text-gray-300">{item.folder}</p>
+                    <p className="text-secondary">{item.folder}</p>
                     <div className="flex items-center gap-4">
                       <div className="flex-1 bg-gray-700 rounded-full h-2">
                         <div
@@ -317,7 +317,7 @@ export default function GoogleDrive() {
                           style={{ width: `${(item.size / 3) * 100}%`, backgroundColor: item.color }}
                         />
                       </div>
-                      <span className="text-gray-400 text-sm w-16">{item.size} GB</span>
+                      <span className="text-muted text-sm w-16">{item.size} GB</span>
                     </div>
                   </div>
                 ))}
@@ -335,31 +335,31 @@ export default function GoogleDrive() {
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Google Drive Settings</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Root Folder ID</label>
-                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74Og" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
+                  <label className="block text-sm font-medium text-muted mb-2">Root Folder ID</label>
+                  <input type="text" defaultValue="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74Og" className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Folder Name</label>
-                  <input type="text" defaultValue="Company Files" className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white cursor-not-allowed" readOnly />
+                  <label className="block text-sm font-medium text-muted mb-2">Folder Name</label>
+                  <input type="text" defaultValue="Company Files" className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white cursor-not-allowed" readOnly />
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-primary rounded-lg">
                   <div>
                     <p className="text-white font-medium">Auto-organize files</p>
-                    <p className="text-sm text-gray-400">Automatically organize uploaded files by type</p>
+                    <p className="text-sm text-muted">Automatically organize uploaded files by type</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-not-allowed">
                     <input type="checkbox" className="sr-only peer" defaultChecked disabled />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-primary rounded-lg">
                   <div>
                     <p className="text-white font-medium">AI file tagging</p>
-                    <p className="text-sm text-gray-400">Use AI to automatically tag and categorize files</p>
+                    <p className="text-sm text-muted">Use AI to automatically tag and categorize files</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-not-allowed">
                     <input type="checkbox" className="sr-only peer" defaultChecked disabled />
@@ -369,7 +369,7 @@ export default function GoogleDrive() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Organization Rules</h3>
               <div className="space-y-3">
                 {[
@@ -378,10 +378,10 @@ export default function GoogleDrive() {
                   { fileType: 'Spreadsheets (xlsx, csv)', destination: 'Reports' },
                   { fileType: 'Invoices', destination: 'Invoices' },
                 ].map((rule) => (
-                  <div key={rule.fileType} className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                  <div key={rule.fileType} className="flex items-center justify-between p-4 bg-primary rounded-lg">
                     <div>
                       <p className="text-white font-medium">{rule.fileType}</p>
-                      <p className="text-sm text-gray-400">Auto-move to: {rule.destination}</p>
+                      <p className="text-sm text-muted">Auto-move to: {rule.destination}</p>
                     </div>
                     <button className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm font-medium transition-colors">
                       Edit
@@ -391,22 +391,22 @@ export default function GoogleDrive() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Instance Status</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Connection Status</p>
+                  <p className="text-sm text-muted mb-2">Connection Status</p>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-white font-medium">Connected</span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Last File Upload</p>
+                  <p className="text-sm text-muted mb-2">Last File Upload</p>
                   <p className="text-white font-medium">30 minutes ago</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400 mb-2">Service Status</p>
+                  <p className="text-sm text-muted mb-2">Service Status</p>
                   <span className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded-full text-xs font-medium">
                     Active
                   </span>

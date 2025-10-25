@@ -30,13 +30,13 @@ export default function WhatsAppServiceManagement() {
   const totalRevenue = companiesUsingService.length * 299;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => window.history.back()}
-            className="flex items-center gap-2 text-gray-400 hover:text-white mb-4 transition-colors"
+            className="flex items-center gap-2 text-muted hover:text-white mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Services Catalog
@@ -48,17 +48,17 @@ export default function WhatsAppServiceManagement() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">{serviceData?.name_en}</h1>
-              <p className="text-gray-400">Service Management</p>
+              <p className="text-muted">Service Management</p>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b border-gray-700">
+        <div className="flex gap-4 mb-6 border-b border-secondary">
           <button
             onClick={() => setActiveTab('content')}
             className={`pb-3 px-4 font-medium transition-colors relative ${
-              activeTab === 'content' ? 'text-white' : 'text-gray-400 hover:text-gray-300'
+              activeTab === 'content' ? 'text-white' : 'text-muted hover:text-secondary'
             }`}
           >
             Service Content
@@ -70,7 +70,7 @@ export default function WhatsAppServiceManagement() {
           <button
             onClick={() => setActiveTab('companies')}
             className={`pb-3 px-4 font-medium transition-colors relative ${
-              activeTab === 'companies' ? 'text-white' : 'text-gray-400 hover:text-gray-300'
+              activeTab === 'companies' ? 'text-white' : 'text-muted hover:text-secondary'
             }`}
           >
             Companies
@@ -82,7 +82,7 @@ export default function WhatsAppServiceManagement() {
           <button
             onClick={() => setActiveTab('analytics')}
             className={`pb-3 px-4 font-medium transition-colors relative ${
-              activeTab === 'analytics' ? 'text-white' : 'text-gray-400 hover:text-gray-300'
+              activeTab === 'analytics' ? 'text-white' : 'text-muted hover:text-secondary'
             }`}
           >
             Analytics

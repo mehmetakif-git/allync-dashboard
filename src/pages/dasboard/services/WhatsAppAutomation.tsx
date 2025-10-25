@@ -115,12 +115,12 @@ export default function WhatsAppAutomation() {
 
   if (!selectedInstance) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
         <div className="max-w-[1800px] mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-8 text-center">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center">
             <MessageCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">No WhatsApp Instance</h3>
-            <p className="text-gray-400">No WhatsApp automation instance found for your company.</p>
+            <h3 className="text-xl font-semibold text-secondary mb-2">No WhatsApp Instance</h3>
+            <p className="text-muted">No WhatsApp automation instance found for your company.</p>
           </div>
         </div>
       </div>
@@ -128,13 +128,13 @@ export default function WhatsAppAutomation() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-[1800px] mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">WhatsApp Automation</h1>
-              <p className="text-gray-400">Monitor and manage your WhatsApp business automation</p>
+              <p className="text-muted">Monitor and manage your WhatsApp business automation</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -142,23 +142,23 @@ export default function WhatsAppAutomation() {
                 <div className="relative">
                   <button
                     onClick={() => setShowInstanceDropdown(!showInstanceDropdown)}
-                    className="flex items-center gap-3 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 bg-secondary border border-secondary rounded-lg hover:bg-hover transition-colors"
                   >
                     <div className="text-left">
-                      <div className="text-sm text-gray-400">Current Instance</div>
+                      <div className="text-sm text-muted">Current Instance</div>
                       <div className="flex items-center gap-2">
                         <span className="text-white font-medium">{selectedInstance.instanceName}</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs border ${connectionStatusColors[selectedInstance.connectionStatus]}`}>
                           {connectionStatusLabels[selectedInstance.connectionStatus]}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-500">{selectedInstance.phoneNumber}</div>
+                      <div className="text-xs text-muted">{selectedInstance.phoneNumber}</div>
                     </div>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-muted" />
                   </button>
 
                   {showInstanceDropdown && (
-                    <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+                    <div className="absolute right-0 mt-2 w-80 bg-secondary border border-secondary rounded-lg shadow-xl z-50">
                       <div className="p-2">
                         {instances.map((instance) => (
                           <button
@@ -170,13 +170,13 @@ export default function WhatsAppAutomation() {
                             className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                               instance.id === selectedInstanceId
                                 ? 'bg-blue-600 text-white'
-                                : 'hover:bg-gray-700 text-white'
+                                : 'hover:bg-hover text-white'
                             }`}
                           >
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-medium">{instance.instanceName}</div>
-                                <div className="text-xs text-gray-400">{instance.phoneNumber}</div>
+                                <div className="text-xs text-muted">{instance.phoneNumber}</div>
                               </div>
                               <span className={`px-2 py-0.5 rounded-full text-xs border ${connectionStatusColors[instance.connectionStatus]}`}>
                                 {connectionStatusLabels[instance.connectionStatus]}
@@ -193,19 +193,19 @@ export default function WhatsAppAutomation() {
               <div className="relative">
                 <button
                   onClick={() => setShowAddInstanceInfo(true)}
-                  className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-600 rounded-lg hover:border-green-500 hover:bg-green-500/10 transition-all text-gray-400 hover:text-green-400"
+                  className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-secondary rounded-lg hover:border-green-500 hover:bg-green-500/10 transition-all text-muted hover:text-green-400"
                 >
                   <Plus className="w-5 h-5" />
                   <span className="font-medium">Add Instance</span>
                 </button>
 
                 {showAddInstanceInfo && (
-                  <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 p-4">
+                  <div className="absolute right-0 mt-2 w-80 bg-secondary border border-secondary rounded-lg shadow-xl z-50 p-4">
                     <div className="flex items-start gap-3 mb-3">
                       <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                       <div>
                         <h3 className="text-white font-medium mb-1">Add New WhatsApp Number</h3>
-                        <p className="text-sm text-gray-400">Contact our support team to add additional WhatsApp numbers to your account.</p>
+                        <p className="text-sm text-muted">Contact our support team to add additional WhatsApp numbers to your account.</p>
                       </div>
                     </div>
                     <button
@@ -231,7 +231,7 @@ export default function WhatsAppAutomation() {
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap relative ${
                   activeTab === tab.id
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    : 'bg-secondary text-muted hover:bg-hover'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -249,51 +249,51 @@ export default function WhatsAppAutomation() {
         {activeTab === 'conversations' && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Total Sessions</span>
+                  <span className="text-sm text-muted">Total Sessions</span>
                   <MessageCircle className="w-5 h-5 text-blue-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{stats.totalSessions}</p>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Active Sessions</span>
+                  <span className="text-sm text-muted">Active Sessions</span>
                   <Users className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{stats.activeSessions}</p>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Total Messages</span>
+                  <span className="text-sm text-muted">Total Messages</span>
                   <TrendingUp className="w-5 h-5 text-purple-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{stats.totalMessages}</p>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Avg Response Time</span>
+                  <span className="text-sm text-muted">Avg Response Time</span>
                   <Clock className="w-5 h-5 text-orange-500" />
                 </div>
                 <p className="text-2xl font-bold text-white">{stats.avgResponseTime}</p>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 400px)', minHeight: '500px' }}>
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 400px)', minHeight: '500px' }}>
               <div className="flex h-full">
-                <div className="w-full md:w-96 border-r border-gray-700 flex flex-col">
-                  <div className="p-4 border-b border-gray-700">
+                <div className="w-full md:w-96 border-r border-secondary flex flex-col">
+                  <div className="p-4 border-b border-secondary">
                     <div className="relative mb-3">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                       <input
                         type="text"
                         placeholder="Search conversations..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                        className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                       />
                     </div>
 
@@ -303,7 +303,7 @@ export default function WhatsAppAutomation() {
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           filterStatus === 'all'
                             ? 'bg-blue-600 text-white'
-                            : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
+                            : 'bg-primary text-muted hover:bg-hover'
                         }`}
                       >
                         All
@@ -313,7 +313,7 @@ export default function WhatsAppAutomation() {
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           filterStatus === 'active'
                             ? 'bg-green-600 text-white'
-                            : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
+                            : 'bg-primary text-muted hover:bg-hover'
                         }`}
                       >
                         Active
@@ -322,8 +322,8 @@ export default function WhatsAppAutomation() {
                         onClick={() => setFilterStatus('closed')}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           filterStatus === 'closed'
-                            ? 'bg-gray-600 text-white'
-                            : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
+                            ? 'bg-hover text-white'
+                            : 'bg-primary text-muted hover:bg-hover'
                         }`}
                       >
                         Closed
@@ -336,8 +336,8 @@ export default function WhatsAppAutomation() {
                       <button
                         key={session.id}
                         onClick={() => setSelectedSession(session)}
-                        className={`w-full p-4 border-b border-gray-700 hover:bg-gray-700/50 transition-colors text-left ${
-                          selectedSession.id === session.id ? 'bg-gray-700/50' : ''
+                        className={`w-full p-4 border-b border-secondary hover:bg-hover/50 transition-colors text-left ${
+                          selectedSession.id === session.id ? 'bg-secondary/50' : ''
                         }`}
                       >
                         <div className="flex items-start gap-3">
@@ -352,13 +352,13 @@ export default function WhatsAppAutomation() {
                               <h3 className="text-white font-medium truncate">
                                 {session.customer_name}
                               </h3>
-                              <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                              <span className="text-xs text-muted whitespace-nowrap ml-2">
                                 {formatTime(session.last_message_time)}
                               </span>
                             </div>
 
                             <div className="flex items-center justify-between">
-                              <p className="text-sm text-gray-400 truncate flex-1">
+                              <p className="text-sm text-muted truncate flex-1">
                                 {session.last_message}
                               </p>
                               {session.unread_count > 0 && (
@@ -372,11 +372,11 @@ export default function WhatsAppAutomation() {
                               <span className={`text-xs px-2 py-0.5 rounded ${
                                 session.is_active
                                   ? 'bg-green-500/20 text-green-500'
-                                  : 'bg-gray-500/20 text-gray-400'
+                                  : 'bg-gray-500/20 text-muted'
                               }`}>
                                 {session.is_active ? 'Active' : 'Closed'}
                               </span>
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-muted">
                                 {session.message_count} messages
                               </span>
                             </div>
@@ -388,7 +388,7 @@ export default function WhatsAppAutomation() {
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                  <div className="p-4 border-b border-gray-700 bg-gray-900/50">
+                  <div className="p-4 border-b border-secondary bg-primary/50">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                         <span className="text-white font-semibold">
@@ -397,12 +397,12 @@ export default function WhatsAppAutomation() {
                       </div>
                       <div>
                         <h3 className="text-white font-medium">{selectedSession.customer_name}</h3>
-                        <p className="text-sm text-gray-400">{selectedSession.customer_phone}</p>
+                        <p className="text-sm text-muted">{selectedSession.customer_phone}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-br from-primary via-secondary to-primary">
                     {messages.length > 0 ? (
                       messages.map((message) => (
                         <div
@@ -413,7 +413,7 @@ export default function WhatsAppAutomation() {
                             className={`max-w-[70%] rounded-lg px-4 py-2 ${
                               message.message_owner === 'outgoing'
                                 ? 'bg-green-600 text-white'
-                                : 'bg-gray-800 text-white'
+                                : 'bg-secondary text-white'
                             }`}
                           >
                             {message.sender === 'bot' && message.message_owner === 'outgoing' && (
@@ -435,14 +435,14 @@ export default function WhatsAppAutomation() {
                       <div className="flex items-center justify-center h-full">
                         <div className="text-center">
                           <MessageCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                          <p className="text-gray-400">No messages in this conversation yet</p>
+                          <p className="text-muted">No messages in this conversation yet</p>
                         </div>
                       </div>
                     )}
                   </div>
 
-                  <div className="p-4 border-t border-gray-700 bg-gray-900/50">
-                    <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+                  <div className="p-4 border-t border-secondary bg-primary/50">
+                    <div className="flex items-center justify-center gap-2 text-muted text-sm">
                       <MessageCircle className="w-4 h-4" />
                       <span>View-only mode - Messages are handled by automation</span>
                     </div>
@@ -456,55 +456,55 @@ export default function WhatsAppAutomation() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">This Week</span>
+                  <span className="text-sm text-muted">This Week</span>
                   <TrendingUp className="w-5 h-5 text-blue-500" />
                 </div>
                 <p className="text-3xl font-bold text-white mb-1">370</p>
-                <p className="text-sm text-gray-400">Total Messages</p>
+                <p className="text-sm text-muted">Total Messages</p>
                 <p className="text-xs text-green-500 mt-2">↑ 12% from last week</p>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Avg Response Time</span>
+                  <span className="text-sm text-muted">Avg Response Time</span>
                   <Clock className="w-5 h-5 text-purple-500" />
                 </div>
                 <p className="text-3xl font-bold text-white mb-1">2.3 min</p>
-                <p className="text-sm text-gray-400">Average Speed</p>
+                <p className="text-sm text-muted">Average Speed</p>
                 <p className="text-xs text-green-500 mt-2">↓ 15% faster</p>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Resolution Rate</span>
+                  <span className="text-sm text-muted">Resolution Rate</span>
                   <CheckCheck className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-3xl font-bold text-white mb-1">94%</p>
-                <p className="text-sm text-gray-400">Issues Resolved</p>
+                <p className="text-sm text-muted">Issues Resolved</p>
                 <p className="text-xs text-green-500 mt-2">↑ 3% improvement</p>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Customer Satisfaction</span>
+                  <span className="text-sm text-muted">Customer Satisfaction</span>
                   <Users className="w-5 h-5 text-orange-500" />
                 </div>
                 <p className="text-3xl font-bold text-white mb-1">4.8</p>
-                <p className="text-sm text-gray-400">Out of 5.0</p>
+                <p className="text-sm text-muted">Out of 5.0</p>
                 <p className="text-xs text-green-500 mt-2">↑ 0.2 higher</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h3 className="text-lg font-bold text-white mb-4">Daily Messages</h3>
                 <div className="space-y-3">
                   {dailyMessages.map((day) => (
                     <div key={day.date}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm text-gray-400">{day.date}</span>
+                        <span className="text-sm text-muted">{day.date}</span>
                         <span className="text-sm text-white font-medium">{day.messages} messages</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
@@ -518,13 +518,13 @@ export default function WhatsAppAutomation() {
                 </div>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h3 className="text-lg font-bold text-white mb-4">Peak Hours</h3>
                 <div className="space-y-3">
                   {hourlyDistribution.map((hour) => (
                     <div key={hour.hour}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm text-gray-400">{hour.hour}</span>
+                        <span className="text-sm text-muted">{hour.hour}</span>
                         <span className="text-sm text-white font-medium">{hour.count} messages</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
@@ -540,59 +540,59 @@ export default function WhatsAppAutomation() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h3 className="text-lg font-bold text-white mb-4">Top Customer Intents</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Order Tracking</span>
+                    <span className="text-muted">Order Tracking</span>
                     <span className="text-white font-medium">45%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Product Inquiry</span>
+                    <span className="text-muted">Product Inquiry</span>
                     <span className="text-white font-medium">28%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Support Request</span>
+                    <span className="text-muted">Support Request</span>
                     <span className="text-white font-medium">18%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Other</span>
+                    <span className="text-muted">Other</span>
                     <span className="text-white font-medium">9%</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h3 className="text-lg font-bold text-white mb-4">Sentiment Analysis</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">😊 Positive</span>
+                    <span className="text-muted">😊 Positive</span>
                     <span className="text-green-500 font-medium">67%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">😐 Neutral</span>
-                    <span className="text-gray-400 font-medium">25%</span>
+                    <span className="text-muted">😐 Neutral</span>
+                    <span className="text-muted font-medium">25%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">😞 Negative</span>
+                    <span className="text-muted">😞 Negative</span>
                     <span className="text-red-500 font-medium">8%</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
                 <h3 className="text-lg font-bold text-white mb-4">Bot Performance</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Auto-Resolved</span>
+                    <span className="text-muted">Auto-Resolved</span>
                     <span className="text-white font-medium">82%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Agent Escalation</span>
+                    <span className="text-muted">Agent Escalation</span>
                     <span className="text-white font-medium">18%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Success Rate</span>
+                    <span className="text-muted">Success Rate</span>
                     <span className="text-green-500 font-medium">94%</span>
                   </div>
                 </div>
@@ -603,22 +603,22 @@ export default function WhatsAppAutomation() {
 
         {activeTab === 'customers' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-4">
               <div className="flex gap-4 items-center">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                   <input
                     type="text"
                     placeholder="Search customers by name, phone, or email..."
                     value={customerSearch}
                     onChange={(e) => setCustomerSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <select
                   value={customerFilter}
                   onChange={(e) => setCustomerFilter(e.target.value as any)}
-                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -632,23 +632,23 @@ export default function WhatsAppAutomation() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50 border-b border-gray-700">
+                  <thead className="bg-primary/50 border-b border-secondary">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Customer</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Contact</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Tags</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Messages</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Last Seen</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Customer</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Contact</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Tags</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Messages</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Last Seen</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700">
                     {filteredCustomers.map((customer) => (
-                      <tr key={customer.id} className="hover:bg-gray-700/30 transition-colors">
+                      <tr key={customer.id} className="hover:bg-hover/30 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -658,18 +658,18 @@ export default function WhatsAppAutomation() {
                             </div>
                             <div>
                               <p className="text-white font-medium">{customer.name}</p>
-                              <p className="text-xs text-gray-400">ID: {customer.id}</p>
+                              <p className="text-xs text-muted">ID: {customer.id}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-sm text-gray-300">
+                            <div className="flex items-center gap-2 text-sm text-secondary">
                               <Phone className="w-3 h-3" />
                               {customer.phone_number}
                             </div>
                             {customer.email && (
-                              <div className="flex items-center gap-2 text-sm text-gray-400">
+                              <div className="flex items-center gap-2 text-sm text-muted">
                                 <Mail className="w-3 h-3" />
                                 {customer.email}
                               </div>
@@ -686,7 +686,7 @@ export default function WhatsAppAutomation() {
                                   tag === 'Frequent' ? 'bg-blue-500/20 text-blue-400' :
                                   tag === 'New' ? 'bg-green-500/20 text-green-400' :
                                   tag === 'Issue' ? 'bg-red-500/20 text-red-400' :
-                                  'bg-gray-500/20 text-gray-400'
+                                  'bg-gray-500/20 text-muted'
                                 }`}
                               >
                                 {tag}
@@ -698,7 +698,7 @@ export default function WhatsAppAutomation() {
                           <span className="text-white font-medium">{customer.total_messages}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-400">
+                          <span className="text-sm text-muted">
                             {formatTime(customer.last_seen)}
                           </span>
                         </td>
@@ -707,7 +707,7 @@ export default function WhatsAppAutomation() {
                             customer.customer_status === 'active'
                               ? 'bg-green-500/10 border border-green-500/30 text-green-500'
                               : customer.customer_status === 'inactive'
-                              ? 'bg-gray-500/10 border border-gray-500/30 text-gray-400'
+                              ? 'bg-gray-500/10 border border-secondary/30 text-muted'
                               : 'bg-red-500/10 border border-red-500/30 text-red-500'
                           }`}>
                             {customer.customer_status.charAt(0).toUpperCase() + customer.customer_status.slice(1)}
@@ -739,7 +739,7 @@ export default function WhatsAppAutomation() {
 
             {selectedCustomer && (
               <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6">
+                <div className="bg-secondary border border-secondary rounded-xl max-w-2xl w-full p-6">
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -749,12 +749,12 @@ export default function WhatsAppAutomation() {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-white">{selectedCustomer.name}</h2>
-                        <p className="text-gray-400">{selectedCustomer.phone_number}</p>
+                        <p className="text-muted">{selectedCustomer.phone_number}</p>
                       </div>
                     </div>
                     <button
                       onClick={() => setSelectedCustomer(null)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-muted hover:text-white"
                     >
                       ✕
                     </button>
@@ -762,12 +762,12 @@ export default function WhatsAppAutomation() {
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-gray-900/50 rounded-lg">
-                        <p className="text-sm text-gray-400 mb-1">Total Messages</p>
+                      <div className="p-4 bg-primary/50 rounded-lg">
+                        <p className="text-sm text-muted mb-1">Total Messages</p>
                         <p className="text-2xl font-bold text-white">{selectedCustomer.total_messages}</p>
                       </div>
-                      <div className="p-4 bg-gray-900/50 rounded-lg">
-                        <p className="text-sm text-gray-400 mb-1">Customer Since</p>
+                      <div className="p-4 bg-primary/50 rounded-lg">
+                        <p className="text-sm text-muted mb-1">Customer Since</p>
                         <p className="text-lg font-medium text-white">
                           {new Date(selectedCustomer.created_at).toLocaleDateString()}
                         </p>
@@ -775,8 +775,8 @@ export default function WhatsAppAutomation() {
                     </div>
 
                     {selectedCustomer.email && (
-                      <div className="p-4 bg-gray-900/50 rounded-lg">
-                        <div className="flex items-center gap-2 text-gray-400 mb-1">
+                      <div className="p-4 bg-primary/50 rounded-lg">
+                        <div className="flex items-center gap-2 text-muted mb-1">
                           <Mail className="w-4 h-4" />
                           <span className="text-sm">Email</span>
                         </div>
@@ -784,8 +784,8 @@ export default function WhatsAppAutomation() {
                       </div>
                     )}
 
-                    <div className="p-4 bg-gray-900/50 rounded-lg">
-                      <div className="flex items-center gap-2 text-gray-400 mb-2">
+                    <div className="p-4 bg-primary/50 rounded-lg">
+                      <div className="flex items-center gap-2 text-muted mb-2">
                         <Tag className="w-4 h-4" />
                         <span className="text-sm">Tags</span>
                       </div>
@@ -801,8 +801,8 @@ export default function WhatsAppAutomation() {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gray-900/50 rounded-lg">
-                      <p className="text-sm text-gray-400 mb-2">Notes</p>
+                    <div className="p-4 bg-primary/50 rounded-lg">
+                      <p className="text-sm text-muted mb-2">Notes</p>
                       <p className="text-white">{selectedCustomer.notes}</p>
                     </div>
                   </div>
@@ -810,7 +810,7 @@ export default function WhatsAppAutomation() {
                   <div className="mt-6 flex gap-3">
                     <button
                       onClick={() => setSelectedCustomer(null)}
-                      className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                      className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover text-white rounded-lg font-medium transition-colors"
                     >
                       Close
                     </button>
@@ -844,69 +844,69 @@ export default function WhatsAppAutomation() {
               </p>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Bot Configuration</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Bot Name</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Bot Name</label>
                   <input
                     type="text"
                     value="Tech Support Bot"
                     readOnly
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-muted cursor-not-allowed"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Greeting Message</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Greeting Message</label>
                   <textarea
                     value="Hello! Welcome to our support. How can I help you today?"
                     readOnly
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed resize-none"
+                    className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-muted cursor-not-allowed resize-none"
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Connected Phone Number</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Connected Phone Number</label>
                   <input
                     type="text"
                     value="+974 5555 0000"
                     readOnly
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-muted cursor-not-allowed"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Instance ID</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Instance ID</label>
                   <input
                     type="text"
                     value="wa_instance_techcorp_001"
                     readOnly
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed font-mono text-sm"
+                    className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-muted cursor-not-allowed font-mono text-sm"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Instance Status</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-gray-900/50 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-2">Connection Status</p>
+                <div className="p-4 bg-primary/50 rounded-lg">
+                  <p className="text-sm text-muted mb-2">Connection Status</p>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     <span className="text-white font-medium">Connected</span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-gray-900/50 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-2">Last Connected</p>
+                <div className="p-4 bg-primary/50 rounded-lg">
+                  <p className="text-sm text-muted mb-2">Last Connected</p>
                   <p className="text-white font-medium">2 hours ago</p>
                 </div>
 
-                <div className="p-4 bg-gray-900/50 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-2">Service Status</p>
+                <div className="p-4 bg-primary/50 rounded-lg">
+                  <p className="text-sm text-muted mb-2">Service Status</p>
                   <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-500 rounded text-sm font-medium">
                     Active
                   </span>

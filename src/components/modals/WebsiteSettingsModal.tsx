@@ -138,30 +138,30 @@ export default function WebsiteSettingsModal({
   const statusColors = {
     'completed': 'text-green-400 bg-green-500/10 border-green-500/30',
     'in-progress': 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-    'pending': 'text-gray-400 bg-gray-500/10 border-gray-500/30',
+    'pending': 'text-muted bg-gray-500/10 border-secondary/30',
     'blocked': 'text-red-400 bg-red-500/10 border-red-500/30',
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-6 flex items-center justify-between z-10">
+      <div className="bg-primary border border-secondary rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-primary border-b border-secondary p-6 flex items-center justify-between z-10">
           <div>
             <h2 className="text-2xl font-bold text-white">Website Settings</h2>
-            <p className="text-sm text-gray-400 mt-1">{companyName}</p>
+            <p className="text-sm text-muted mt-1">{companyName}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-secondary rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
         <div className="p-6 space-y-6">
           {/* Project Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Project Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -169,21 +169,21 @@ export default function WebsiteSettingsModal({
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               placeholder="e.g., Main E-commerce Store, Corporate Website"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">A descriptive name to identify this project</p>
+            <p className="text-xs text-muted mt-1">A descriptive name to identify this project</p>
           </div>
 
           {/* Project Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Project Type <span className="text-red-400">*</span>
             </label>
             <select
               value={projectType}
               onChange={(e) => setProjectType(e.target.value as any)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="e-commerce">E-commerce Website</option>
               <option value="corporate">Corporate Website</option>
@@ -193,7 +193,7 @@ export default function WebsiteSettingsModal({
 
           {/* Domain */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Domain <span className="text-red-400">*</span>
             </label>
             <input
@@ -201,13 +201,13 @@ export default function WebsiteSettingsModal({
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               placeholder="www.example.com"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Email Address <span className="text-red-400">*</span>
             </label>
             <input
@@ -215,27 +215,27 @@ export default function WebsiteSettingsModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@example.com"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           {/* Estimated Completion */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Estimated Completion Date
             </label>
             <input
               type="date"
               value={estimatedCompletion}
               onChange={(e) => setEstimatedCompletion(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           {/* Milestones */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-secondary">
                 Project Milestones
               </label>
               <button
@@ -263,14 +263,14 @@ export default function WebsiteSettingsModal({
                           value={milestone.title}
                           onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)}
                           placeholder="Milestone title"
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full bg-card border border-secondary rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
 
                         <div className="grid grid-cols-2 gap-3">
                           <select
                             value={milestone.status}
                             onChange={(e) => handleMilestoneChange(index, 'status', e.target.value)}
-                            className="bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="bg-card border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                           >
                             <option value="pending">Pending</option>
                             <option value="in-progress">In Progress</option>
@@ -285,9 +285,9 @@ export default function WebsiteSettingsModal({
                               max="100"
                               value={milestone.progress}
                               onChange={(e) => handleMilestoneChange(index, 'progress', parseInt(e.target.value) || 0)}
-                              className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full bg-card border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
-                            <span className="text-gray-400 text-sm">%</span>
+                            <span className="text-muted text-sm">%</span>
                           </div>
                         </div>
 
@@ -296,7 +296,7 @@ export default function WebsiteSettingsModal({
                           onChange={(e) => handleMilestoneChange(index, 'notes', e.target.value)}
                           placeholder="Notes (optional)"
                           rows={2}
-                          className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full bg-card border border-secondary rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
 
@@ -323,9 +323,9 @@ export default function WebsiteSettingsModal({
           </div>
 
           {/* Overall Progress */}
-          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+          <div className="bg-card border border-secondary rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-400">Overall Progress</span>
+              <span className="text-sm text-muted">Overall Progress</span>
               <span className="text-lg font-bold text-purple-400">{calculateProgress()}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
@@ -337,10 +337,10 @@ export default function WebsiteSettingsModal({
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-gray-900 border-t border-gray-700 p-6 flex justify-end gap-3">
+        <div className="sticky bottom-0 bg-primary border-t border-secondary p-6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            className="px-6 py-2.5 bg-secondary hover:bg-hover text-white rounded-lg transition-colors"
           >
             Cancel
           </button>

@@ -43,11 +43,11 @@ export default function Services() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Services Catalog</h1>
-          <p className="text-gray-400">
+          <p className="text-muted">
             {isCompanyAdmin ? 'Request new services or manage your active services' : 'Explore available services'}
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function Services() {
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === 'all'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                : 'bg-secondary text-muted hover:bg-hover'
             }`}
           >
             All Services ({serviceTypes.length})
@@ -68,7 +68,7 @@ export default function Services() {
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === 'ai'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                : 'bg-secondary text-muted hover:bg-hover'
             }`}
           >
             AI Services ({serviceTypes.filter(s => s.category === 'ai').length})
@@ -78,7 +78,7 @@ export default function Services() {
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === 'digital'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                : 'bg-secondary text-muted hover:bg-hover'
             }`}
           >
             Digital Services ({serviceTypes.filter(s => s.category === 'digital').length})
@@ -94,20 +94,20 @@ export default function Services() {
             return (
               <div
                 key={service.id}
-                className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 hover:border-gray-600 transition-all"
+                className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-secondary transition-all"
               >
                 <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4`}>
                   <Icon className="w-8 h-8 text-white" />
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
-                <p className="text-gray-400 text-sm mb-4">{service.description_en}</p>
+                <p className="text-muted text-sm mb-4">{service.description_en}</p>
 
                 <div className="mb-4">
-                  <p className="text-xs text-gray-500 mb-2">Key Features:</p>
+                  <p className="text-xs text-muted mb-2">Key Features:</p>
                   <ul className="space-y-1">
                     {service.features.slice(0, 3).map((feature, index) => (
-                      <li key={index} className="text-xs text-gray-400 flex items-start">
+                      <li key={index} className="text-xs text-muted flex items-start">
                         <span className="text-green-500 mr-2">✓</span>
                         {feature}
                       </li>
@@ -125,9 +125,9 @@ export default function Services() {
                     </p>
                   </div>
                 ) : (
-                  <div className="mb-4 p-3 bg-gray-900/50 rounded-lg">
-                    <p className="text-xs text-gray-500 mb-1">Starting from</p>
-                    <p className="text-2xl font-bold text-white">${service.pricing.basic}<span className="text-sm text-gray-400">/month</span></p>
+                  <div className="mb-4 p-3 bg-primary/50 rounded-lg">
+                    <p className="text-xs text-muted mb-1">Starting from</p>
+                    <p className="text-2xl font-bold text-white">${service.pricing.basic}<span className="text-sm text-muted">/month</span></p>
                   </div>
                 )}
 
@@ -172,11 +172,11 @@ export default function Services() {
                     <div>
                       <button
                         disabled
-                        className="w-full px-4 py-3 bg-gray-700 text-gray-400 rounded-lg font-medium cursor-not-allowed mb-2"
+                        className="w-full px-4 py-3 bg-gray-700 text-muted rounded-lg font-medium cursor-not-allowed mb-2"
                       >
                         Service Under Maintenance
                       </button>
-                      <p className="text-xs text-center text-gray-500">
+                      <p className="text-xs text-center text-muted">
                         This service is temporarily unavailable
                       </p>
                     </div>
@@ -201,7 +201,7 @@ export default function Services() {
                       {isCompanyAdmin && status && status.status === 'pending' && (
                         <button
                           disabled
-                          className="w-full px-4 py-3 bg-gray-700 text-gray-400 rounded-lg font-medium cursor-not-allowed"
+                          className="w-full px-4 py-3 bg-gray-700 text-muted rounded-lg font-medium cursor-not-allowed"
                         >
                           Request Pending
                         </button>
@@ -219,7 +219,7 @@ export default function Services() {
                   )}
                 </div>
 
-                <p className="text-xs text-gray-500 mt-3 text-center">
+                <p className="text-xs text-muted mt-3 text-center">
                   Delivery: {service.delivery}
                 </p>
               </div>

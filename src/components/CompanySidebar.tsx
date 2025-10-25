@@ -95,12 +95,12 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
       )}
 
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 z-50 ${
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-primary border-r border-primary flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 z-50 ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } w-64`}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-800 flex items-center justify-between">
+        <div className="p-6 border-b border-primary flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
               src="/logo-white.svg"
@@ -117,8 +117,8 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="lg:hidden p-2 hover:bg-gray-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-400" />
+          <button onClick={onClose} className="lg:hidden p-2 hover:bg-secondary rounded-lg">
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
@@ -137,7 +137,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       active
                         ? 'bg-blue-600 text-white shadow-lg'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                        : 'text-muted hover:bg-secondary hover:text-white'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -151,7 +151,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
             {activeServices.length > 0 && (
               <>
                 <li className="pt-4 pb-2">
-                  <div className="text-xs font-semibold text-gray-500 uppercase px-4">
+                  <div className="text-xs font-semibold text-muted uppercase px-4">
                     ACTIVE SERVICES
                   </div>
                 </li>
@@ -166,7 +166,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                         className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
                           active
                             ? 'bg-blue-600 text-white shadow-lg'
-                            : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                            : 'text-muted hover:bg-secondary hover:text-white'
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
 
             {/* Bottom Menu */}
             <li className="pt-6">
-              <div className="border-t border-gray-800 mb-2"></div>
+              <div className="border-t border-primary mb-2"></div>
             </li>
 
             {bottomMenuItems.map((item) => {
@@ -202,7 +202,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       active
                         ? 'bg-blue-600 text-white shadow-lg'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                        : 'text-muted hover:bg-secondary hover:text-white'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -215,7 +215,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+        <div className="p-4 border-t border-primary bg-primary/50">
           <button
             onClick={() => setShowLogoutConfirm(true)}
             className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"

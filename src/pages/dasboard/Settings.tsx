@@ -50,11 +50,11 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-          <p className="text-gray-400">View your account information and preferences</p>
+          <p className="text-muted">View your account information and preferences</p>
         </div>
 
         <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
@@ -73,7 +73,7 @@ export default function Settings() {
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    : 'bg-secondary text-muted hover:bg-hover'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -85,7 +85,7 @@ export default function Settings() {
 
         {activeTab === 'account' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-white">Profile Information</h2>
                 <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-medium text-blue-500">
@@ -94,7 +94,7 @@ export default function Settings() {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-4 pb-4 border-b border-gray-700">
+                <div className="flex items-center gap-4 pb-4 border-b border-secondary">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                     <span className="text-2xl font-bold text-white">
                       {user?.name?.charAt(0) || 'U'}
@@ -102,55 +102,55 @@ export default function Settings() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white">{user?.name}</h3>
-                    <p className="text-gray-400">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
+                    <p className="text-muted">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="p-4 bg-primary/50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-400">Email</span>
+                      <Mail className="w-4 h-4 text-muted" />
+                      <span className="text-sm text-muted">Email</span>
                     </div>
                     <p className="text-white font-medium">{user?.email}</p>
                   </div>
 
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="p-4 bg-primary/50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-400">Phone</span>
+                      <Phone className="w-4 h-4 text-muted" />
+                      <span className="text-sm text-muted">Phone</span>
                     </div>
                     <p className="text-white font-medium">{user?.phone || 'Not set'}</p>
                   </div>
 
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="p-4 bg-primary/50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Building2 className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-400">Company</span>
+                      <Building2 className="w-4 h-4 text-muted" />
+                      <span className="text-sm text-muted">Company</span>
                     </div>
                     <p className="text-white font-medium">{user?.companyName}</p>
                   </div>
 
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="p-4 bg-primary/50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-gray-400">Account Status</span>
+                      <span className="text-sm text-muted">Account Status</span>
                     </div>
                     <p className="text-green-500 font-medium">Active</p>
                   </div>
 
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="p-4 bg-primary/50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-400">Member Since</span>
+                      <Calendar className="w-4 h-4 text-muted" />
+                      <span className="text-sm text-muted">Member Since</span>
                     </div>
                     <p className="text-white font-medium">March 15, 2024</p>
                   </div>
 
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
+                  <div className="p-4 bg-primary/50 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Globe className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-400">Language</span>
+                      <Globe className="w-4 h-4 text-muted" />
+                      <span className="text-sm text-muted">Language</span>
                     </div>
                     <p className="text-white font-medium">{language === 'en' ? 'English' : 'Türkçe'}</p>
                   </div>
@@ -158,7 +158,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-white">Company Information</h2>
                 <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-medium text-blue-500">
@@ -166,18 +166,18 @@ export default function Settings() {
                 </span>
               </div>
 
-              <div className="p-6 bg-gray-900/50 rounded-lg">
+              <div className="p-6 bg-primary/50 rounded-lg">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                     <Building2 className="w-8 h-8 text-white" />
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-white">{user?.companyName}</h3>
-                    <p className="text-gray-400">Company ID: {user?.companyId}</p>
+                    <p className="text-muted">Company ID: {user?.companyId}</p>
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-400 mb-4">
+                <p className="text-sm text-muted mb-4">
                   Company details are managed by the Super Admin. Contact support if you need to update company information.
                 </p>
               </div>
@@ -187,36 +187,36 @@ export default function Settings() {
 
         {activeTab === 'security' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Security Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-900/50 rounded-lg">
+                <div className="p-4 bg-primary/50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Password</span>
+                    <span className="text-sm text-muted">Password</span>
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   </div>
                   <p className="text-white font-medium">Protected</p>
-                  <p className="text-xs text-gray-500 mt-1">Contact Super Admin to change password</p>
+                  <p className="text-xs text-muted mt-1">Contact Super Admin to change password</p>
                 </div>
 
-                <div className="p-4 bg-gray-900/50 rounded-lg">
+                <div className="p-4 bg-primary/50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Last Login</span>
+                    <span className="text-sm text-muted">Last Login</span>
                     <Clock className="w-4 h-4 text-blue-500" />
                   </div>
                   <p className="text-white font-medium">{loginHistory[0].date}</p>
-                  <p className="text-xs text-gray-500 mt-1">{loginHistory[0].location}</p>
+                  <p className="text-xs text-muted mt-1">{loginHistory[0].location}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Login History</h2>
               <div className="space-y-3">
                 {loginHistory.map((login) => (
                   <div
                     key={login.id}
-                    className="p-4 bg-gray-900/50 border border-gray-700 rounded-lg"
+                    className="p-4 bg-primary/50 border border-secondary rounded-lg"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-3">
@@ -225,14 +225,14 @@ export default function Settings() {
                         </div>
                         <div>
                           <p className="text-white font-medium">{login.device}</p>
-                          <p className="text-sm text-gray-400">{login.date}</p>
+                          <p className="text-sm text-muted">{login.date}</p>
                         </div>
                       </div>
                       <span className="px-2 py-1 bg-green-500/10 border border-green-500/30 rounded text-xs text-green-500">
                         Success
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-400 pl-13">
+                    <div className="flex items-center gap-4 text-sm text-muted pl-13">
                       <div className="flex items-center gap-1">
                         <MapPin className="w-3 h-3" />
                         {login.location}
@@ -251,9 +251,9 @@ export default function Settings() {
 
         {activeTab === 'preferences' && (
           <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Language Preference</h2>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-muted text-sm mb-6">
                 Select your preferred language for the interface
               </p>
 
@@ -263,14 +263,14 @@ export default function Settings() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     language === 'en'
                       ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                      : 'border-secondary bg-primary/50 hover:border-secondary'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-lg font-semibold text-white">English</span>
                     {language === 'en' && <CheckCircle className="w-5 h-5 text-blue-500" />}
                   </div>
-                  <p className="text-sm text-gray-400">Default language</p>
+                  <p className="text-sm text-muted">Default language</p>
                 </button>
 
                 <button
@@ -278,14 +278,14 @@ export default function Settings() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     language === 'tr'
                       ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'
+                      : 'border-secondary bg-primary/50 hover:border-secondary'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-lg font-semibold text-white">Türkçe</span>
                     {language === 'tr' && <CheckCircle className="w-5 h-5 text-blue-500" />}
                   </div>
-                  <p className="text-sm text-gray-400">Turkish language</p>
+                  <p className="text-sm text-muted">Turkish language</p>
                 </button>
               </div>
             </div>

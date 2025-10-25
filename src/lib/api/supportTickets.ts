@@ -961,6 +961,6 @@ export function getSLABadgeColor(status: string): string {
     case 'warning': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30';
     case 'critical': return 'bg-orange-500/10 text-orange-500 border-orange-500/30';
     case 'violated': return 'bg-red-500/10 text-red-500 border-red-500/30';
-    default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
+    default: return 'bg-gray-500/10 text-muted border-secondary/30';
   }
 }

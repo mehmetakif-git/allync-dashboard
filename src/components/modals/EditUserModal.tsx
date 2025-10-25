@@ -80,30 +80,30 @@ export default function EditUserModal({
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-gray-800 border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl">
+      <div className="relative bg-secondary border border-secondary rounded-xl max-w-md w-full p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">Edit User</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Full Name *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`w-full px-4 py-3 bg-gray-900 border ${
-                errors.name ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-primary border ${
+                errors.name ? 'border-red-500' : 'border-secondary'
               } rounded-lg text-white focus:outline-none focus:border-blue-500`}
               placeholder="Enter full name"
               disabled={isLoading}
@@ -113,15 +113,15 @@ export default function EditUserModal({
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Email *
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className={`w-full px-4 py-3 bg-gray-900 border ${
-                errors.email ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-primary border ${
+                errors.email ? 'border-red-500' : 'border-secondary'
               } rounded-lg text-white focus:outline-none focus:border-blue-500`}
               placeholder="user@example.com"
               disabled={isLoading}
@@ -131,13 +131,13 @@ export default function EditUserModal({
 
           {/* Role */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Role *
             </label>
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               disabled={isLoading}
             >
               {showRoleSuperAdmin && <option value="super_admin">Super Admin</option>}
@@ -148,14 +148,14 @@ export default function EditUserModal({
 
           {/* User Info (if provided) */}
           {userInfo && (
-            <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+            <div className="bg-primary/50 border border-secondary rounded-lg p-4">
               {userInfo.company && (
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-muted">
                   <strong className="text-white">Company:</strong> {userInfo.company}
                 </p>
               )}
               {userInfo.joinedDate && (
-                <p className="text-sm text-gray-400 mt-2">
+                <p className="text-sm text-muted mt-2">
                   <strong className="text-white">Joined:</strong> {userInfo.joinedDate}
                 </p>
               )}
@@ -168,7 +168,7 @@ export default function EditUserModal({
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
           >
             Cancel
           </button>

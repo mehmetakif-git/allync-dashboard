@@ -172,13 +172,13 @@ export default function CompaniesManagement() {
   // ===== RENDER =====
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Companies Management</h1>
-            <p className="text-gray-400">Manage companies, users, and their services</p>
+            <p className="text-muted">Manage companies, users, and their services</p>
           </div>
           <button
             onClick={() => setShowAddModal(true)}
@@ -217,25 +217,25 @@ export default function CompaniesManagement() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Total Companies</span>
+              <span className="text-muted">Total Companies</span>
               <Building2 className="w-5 h-5 text-blue-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.total}</p>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Active</span>
+              <span className="text-muted">Active</span>
               <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.active}</p>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Suspended</span>
+              <span className="text-muted">Suspended</span>
               <XCircle className="w-5 h-5 text-red-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.suspended}</p>
@@ -243,23 +243,23 @@ export default function CompaniesManagement() {
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 mb-6">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
               <input
                 type="text"
                 placeholder="Search companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -270,14 +270,14 @@ export default function CompaniesManagement() {
         </div>
 
         {/* Companies Table */}
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
           {filteredCompanies.length === 0 ? (
             <div className="p-12 text-center">
               <Building2 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <p className="text-white font-medium mb-2">
                 {searchTerm || statusFilter !== 'all' ? 'No companies found' : 'No companies yet'}
               </p>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-muted text-sm mb-6">
                 {searchTerm || statusFilter !== 'all' 
                   ? 'Try adjusting your filters'
                   : 'Add your first company to get started'}
@@ -295,19 +295,19 @@ export default function CompaniesManagement() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+                <thead className="bg-primary/50 border-b border-secondary">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Company</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Contact</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Country</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Company</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Contact</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Country</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Created</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
                   {filteredCompanies.map((company) => (
-                    <tr key={company.id} className="hover:bg-gray-900/30 transition-colors">
+                    <tr key={company.id} className="hover:bg-primary/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -315,15 +315,15 @@ export default function CompaniesManagement() {
                           </div>
                           <div>
                             <p className="text-white font-medium">{company.name}</p>
-                            <p className="text-sm text-gray-400">{company.email}</p>
+                            <p className="text-sm text-muted">{company.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-300">{company.phone}</span>
+                        <span className="text-secondary">{company.phone}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-300">{company.country}</span>
+                        <span className="text-secondary">{company.country}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -331,13 +331,13 @@ export default function CompaniesManagement() {
                             ? 'bg-green-500/10 border border-green-500/30 text-green-500'
                             : company.status === 'suspended'
                             ? 'bg-red-500/10 border border-red-500/30 text-red-500'
-                            : 'bg-gray-500/10 border border-gray-500/30 text-gray-500'
+                            : 'bg-gray-500/10 border border-secondary/30 text-muted'
                         }`}>
                           {company.status}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-400 text-sm">
+                        <span className="text-muted text-sm">
                           {new Date(company.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
@@ -373,7 +373,7 @@ export default function CompaniesManagement() {
 
         {/* Results Summary */}
         {filteredCompanies.length > 0 && (
-          <div className="mt-4 text-center text-sm text-gray-400">
+          <div className="mt-4 text-center text-sm text-muted">
             Showing {filteredCompanies.length} of {companies.length} companies
           </div>
         )}

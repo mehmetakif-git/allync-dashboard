@@ -140,33 +140,33 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-secondary border border-secondary rounded-xl max-w-2xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">Add New Company</h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-hover rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-muted" />
           </button>
         </div>
 
         <div className="space-y-6">
           {/* Basic Information */}
-          <div className="border-b border-gray-700 pb-6">
+          <div className="border-b border-secondary pb-6">
             <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Company Name *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full px-4 py-3 bg-gray-900 border ${
-                    errors.name ? 'border-red-500' : 'border-gray-700'
+                  className={`w-full px-4 py-3 bg-primary border ${
+                    errors.name ? 'border-red-500' : 'border-secondary'
                   } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                   placeholder="Enter company name"
                 />
@@ -175,30 +175,30 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Email *
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.email ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.email ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="contact@company.com"
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Phone *
                   </label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.phone ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.phone ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="+1 234 567 8900"
                   />
@@ -207,14 +207,14 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Website
                 </label>
                 <input
                   type="url"
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                   placeholder="https://example.com"
                 />
               </div>
@@ -222,20 +222,20 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
           </div>
 
           {/* Address */}
-          <div className="border-b border-gray-700 pb-6">
+          <div className="border-b border-secondary pb-6">
             <h3 className="text-lg font-semibold text-white mb-4">Address</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Street Address *
                 </label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className={`w-full px-4 py-3 bg-gray-900 border ${
-                    errors.address ? 'border-red-500' : 'border-gray-700'
+                  className={`w-full px-4 py-3 bg-primary border ${
+                    errors.address ? 'border-red-500' : 'border-secondary'
                   } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                   placeholder="123 Main Street"
                 />
@@ -244,45 +244,45 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     City *
                   </label>
                   <input
                     type="text"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.city ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.city ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="New York"
                   />
                   {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Postal Code *
                   </label>
                   <input
                     type="text"
                     value={formData.postalCode}
                     onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.postalCode ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.postalCode ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="10001"
                   />
                   {errors.postalCode && <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Country *
                   </label>
                   <input
                     type="text"
                     value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.country ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.country ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="USA"
                   />
@@ -293,36 +293,36 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
           </div>
 
           {/* Tax & Registration */}
-          <div className="border-b border-gray-700 pb-6">
+          <div className="border-b border-secondary pb-6">
             <h3 className="text-lg font-semibold text-white mb-4">Tax & Registration</h3>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Tax ID / VAT Number *
                   </label>
                   <input
                     type="text"
                     value={formData.taxId}
                     onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.taxId ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.taxId ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="TR1234567890"
                   />
                   {errors.taxId && <p className="text-red-500 text-xs mt-1">{errors.taxId}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Company Registration Number *
                   </label>
                   <input
                     type="text"
                     value={formData.registrationNumber}
                     onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
-                    className={`w-full px-4 py-3 bg-gray-900 border ${
-                      errors.registrationNumber ? 'border-red-500' : 'border-gray-700'
+                    className={`w-full px-4 py-3 bg-primary border ${
+                      errors.registrationNumber ? 'border-red-500' : 'border-secondary'
                     } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                     placeholder="123456"
                   />
@@ -331,20 +331,20 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Billing Email
                 </label>
                 <input
                   type="email"
                   value={formData.billingEmail}
                   onChange={(e) => setFormData({ ...formData, billingEmail: e.target.value })}
-                  className={`w-full px-4 py-3 bg-gray-900 border ${
-                    errors.billingEmail ? 'border-red-500' : 'border-gray-700'
+                  className={`w-full px-4 py-3 bg-primary border ${
+                    errors.billingEmail ? 'border-red-500' : 'border-secondary'
                   } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                   placeholder="billing@company.com"
                 />
                 {errors.billingEmail && <p className="text-red-500 text-xs mt-1">{errors.billingEmail}</p>}
-                <p className="text-xs text-gray-500 mt-1">If different from main email</p>
+                <p className="text-xs text-muted mt-1">If different from main email</p>
               </div>
             </div>
           </div>
@@ -355,27 +355,27 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Admin Name
                 </label>
                 <input
                   type="text"
                   value={formData.adminName}
                   onChange={(e) => setFormData({ ...formData, adminName: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                   placeholder="John Doe"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Admin Email
                 </label>
                 <input
                   type="email"
                   value={formData.adminEmail}
                   onChange={(e) => setFormData({ ...formData, adminEmail: e.target.value })}
-                  className={`w-full px-4 py-3 bg-gray-900 border ${
-                    errors.adminEmail ? 'border-red-500' : 'border-gray-700'
+                  className={`w-full px-4 py-3 bg-primary border ${
+                    errors.adminEmail ? 'border-red-500' : 'border-secondary'
                   } rounded-lg text-white focus:outline-none focus:border-blue-500`}
                   placeholder="admin@company.com"
                 />
@@ -386,11 +386,11 @@ export default function AddCompanyModal({ isOpen, onClose, onSubmit, isLoading =
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mt-8 pt-6 border-t border-gray-700">
+        <div className="flex gap-3 mt-8 pt-6 border-t border-secondary">
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover disabled:bg-gray-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
           >
             Cancel
           </button>

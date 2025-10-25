@@ -170,6 +170,7 @@ export default function SupportTicketsManagement() {
   };
 
   const handleSendReply = async (ticketId: string, message: string) => {
+    console.log('📤 Super Admin sending reply:', { ticketId, message });
     try {
       // TODO: Implement message/reply API when available
       // For now, just show success
@@ -193,8 +194,8 @@ export default function SupportTicketsManagement() {
       case 'in_progress': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30';
       case 'waiting_customer': return 'bg-purple-500/10 text-purple-500 border-purple-500/30';
       case 'resolved': return 'bg-green-500/10 text-green-500 border-green-500/30';
-      case 'closed': return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
+      case 'closed': return 'bg-gray-500/10 text-muted border-secondary/30';
+      default: return 'bg-gray-500/10 text-muted border-secondary/30';
     }
   };
 
@@ -203,8 +204,8 @@ export default function SupportTicketsManagement() {
       case 'urgent': return 'bg-red-500/10 text-red-500 border-red-500/30';
       case 'high': return 'bg-orange-500/10 text-orange-500 border-orange-500/30';
       case 'medium': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30';
-      case 'low': return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
-      default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
+      case 'low': return 'bg-gray-500/10 text-muted border-secondary/30';
+      default: return 'bg-gray-500/10 text-muted border-secondary/30';
     }
   };
 
@@ -225,12 +226,12 @@ export default function SupportTicketsManagement() {
 
   // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         {/* ===== HEADER ===== */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Support Tickets Management</h1>
-          <p className="text-gray-400">View and manage all support tickets from companies</p>
+          <p className="text-muted">View and manage all support tickets from companies</p>
         </div>
 
         {/* ===== SUCCESS MESSAGE ===== */}
@@ -251,41 +252,41 @@ export default function SupportTicketsManagement() {
 
         {/* ===== STATS CARDS ===== */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Total Tickets</span>
+              <span className="text-muted">Total Tickets</span>
               <MessageSquare className="w-5 h-5 text-blue-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.total}</p>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Open</span>
+              <span className="text-muted">Open</span>
               <AlertCircle className="w-5 h-5 text-blue-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.open}</p>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">In Progress</span>
+              <span className="text-muted">In Progress</span>
               <Clock className="w-5 h-5 text-yellow-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Resolved</span>
+              <span className="text-muted">Resolved</span>
               <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.resolved}</p>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6">
+          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400">Urgent</span>
+              <span className="text-muted">Urgent</span>
               <AlertCircle className="w-5 h-5 text-red-500" />
             </div>
             <p className="text-3xl font-bold text-white">{stats.urgent}</p>
@@ -293,23 +294,23 @@ export default function SupportTicketsManagement() {
         </div>
 
         {/* ===== FILTERS ===== */}
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 mb-6">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
               <input
                 type="text"
                 placeholder="Search tickets, company, or user..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">All Status</option>
               <option value="open">Open</option>
@@ -322,7 +323,7 @@ export default function SupportTicketsManagement() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">All Priorities</option>
               <option value="low">Low</option>
@@ -333,33 +334,33 @@ export default function SupportTicketsManagement() {
           </div>
 
           {/* Results Summary */}
-          <div className="mt-4 text-sm text-gray-400">
+          <div className="mt-4 text-sm text-muted">
             Showing {filteredTickets.length} of {tickets.length} tickets
           </div>
         </div>
 
         {/* ===== TICKETS TABLE ===== */}
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
           {filteredTickets.length > 0 ? (
             <div className="overflow-x-auto custom-scrollbar" style={{ maxHeight: 'calc(100vh - 300px)' }}>
               <table className="w-full relative">
-                <thead className="bg-gray-900/50 border-b border-gray-700 sticky top-0 z-10">
+                <thead className="bg-primary/50 border-b border-secondary sticky top-0 z-10">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[120px]">Ticket #</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[250px]">Subject</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[150px]">Company</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[180px]">Created By</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[150px]">Assigned To</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[140px]">Category</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[100px]">Priority</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[120px]">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[120px]">Created</th>
-                    <th className="sticky right-0 bg-gray-900/95 backdrop-blur-sm px-6 py-4 text-left text-sm font-semibold text-gray-300 min-w-[100px] shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.4)] z-20">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[120px]">Ticket #</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[250px]">Subject</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[150px]">Company</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[180px]">Created By</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[150px]">Assigned To</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[140px]">Category</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[100px]">Priority</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[120px]">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[120px]">Created</th>
+                    <th className="sticky right-0 bg-primary/95 backdrop-blur-sm px-6 py-4 text-left text-sm font-semibold text-secondary min-w-[100px] shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.4)] z-20">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
                   {filteredTickets.map((ticket) => (
-                    <tr key={ticket.id} className="hover:bg-gray-900/30 transition-colors">
+                    <tr key={ticket.id} className="hover:bg-primary/30 transition-colors">
                       <td className="px-6 py-4">
                         <span className="text-white font-mono text-sm">{ticket.ticket_number}</span>
                       </td>
@@ -369,15 +370,15 @@ export default function SupportTicketsManagement() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-blue-500" />
-                          <span className="text-gray-300">{ticket.company.name}</span>
+                          <span className="text-secondary">{ticket.company.name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-gray-400" />
+                          <User className="w-4 h-4 text-muted" />
                           <div>
                             <p className="text-white text-sm">{ticket.creator.full_name}</p>
-                            <p className="text-gray-500 text-xs">{ticket.creator.email}</p>
+                            <p className="text-muted text-xs">{ticket.creator.email}</p>
                           </div>
                         </div>
                       </td>
@@ -387,15 +388,15 @@ export default function SupportTicketsManagement() {
                             <UserPlus className="w-4 h-4 text-green-500" />
                             <div>
                               <p className="text-white text-sm">{ticket.assignee.full_name}</p>
-                              <p className="text-gray-500 text-xs">{ticket.assignee.email}</p>
+                              <p className="text-muted text-xs">{ticket.assignee.email}</p>
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-500 text-sm">Unassigned</span>
+                          <span className="text-muted text-sm">Unassigned</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-gray-300">{ticket.category}</span>
+                        <span className="text-secondary">{ticket.category}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(ticket.priority)}`}>
@@ -409,13 +410,13 @@ export default function SupportTicketsManagement() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-500" />
-                          <span className="text-gray-400 text-sm">
+                          <Calendar className="w-4 h-4 text-muted" />
+                          <span className="text-muted text-sm">
                             {new Date(ticket.created_at).toLocaleDateString()}
                           </span>
                         </div>
                       </td>
-                      <td className="sticky right-0 bg-gray-800/95 backdrop-blur-sm px-6 py-4 shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.4)]">
+                      <td className="sticky right-0 bg-secondary/95 backdrop-blur-sm px-6 py-4 shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.4)]">
                         <button
                           onClick={() => handleViewTicket(ticket)}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
@@ -431,8 +432,8 @@ export default function SupportTicketsManagement() {
           ) : (
             <div className="text-center py-16">
               <MessageSquare className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg mb-2">No tickets found</p>
-              <p className="text-gray-500 text-sm">
+              <p className="text-muted text-lg mb-2">No tickets found</p>
+              <p className="text-muted text-sm">
                 {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
                   ? 'Try adjusting your filters'
                   : 'Tickets will appear here when created'}
