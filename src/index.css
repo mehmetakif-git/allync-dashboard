@@ -2,50 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =====================================================
+   CSS VARIABLES - TEK YERDEN KONTROL
+   ===================================================== */
+
+:root {
+  /* Ana renkler - #2C2D2D & #2E2F2F teması */
+  --color-bg-primary: #2d2d2c;
+  --color-bg-secondary: #2E2F2F;
+  --color-bg-card: #333332;
+  --color-bg-hover: #3A3B3B;
+  
+  /* Border renkler */
+  --color-border-primary: #3A3B3B;
+  --color-border-secondary: #424343;
+  
+  /* Text renkler */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #E5E7EB;
+  --color-text-muted: #9CA3AF;
+  
+  /* Vurgu renkler (sadece önemli yerler) */
+  --color-accent-blue: #3B82F6;
+  --color-accent-cyan: #00D9FF;
+  --color-accent-purple: #A855F7;
+  --color-accent-green: #10B981;
+  --color-accent-yellow: #F59E0B;
+  --color-accent-orange: #F97316;
+  --color-accent-red: #EF4444;
+}
+
+/* =====================================================
+   BASE STYLES
+   ===================================================== */
+
 @layer base {
   body {
     @apply text-white;
-    background-color: #1B2432;
+    background-color: var(--color-bg-primary);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* =====================================================
+   UTILITY CLASSES
+   ===================================================== */
 
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 }
 
-/* Custom Scrollbar for Sidebars */
+/* =====================================================
+   CUSTOM SCROLLBAR - SIDEBAR
+   ===================================================== */
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--color-bg-secondary);
+  border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, var(--color-accent-cyan) 0%, var(--color-accent-blue) 100%);
   border-radius: 3px;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--color-accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
 }
 
 /* Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: var(--color-accent-cyan) var(--color-bg-secondary);
 }
 
-/* Global Custom Scrollbar (for main content) */
+/* =====================================================
+   GLOBAL SCROLLBAR - MAIN CONTENT
+   ===================================================== */
+
 body::-webkit-scrollbar,
 html::-webkit-scrollbar,
 *::-webkit-scrollbar {
@@ -56,21 +104,22 @@ html::-webkit-scrollbar,
 body::-webkit-scrollbar-track,
 html::-webkit-scrollbar-track,
 *::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-secondary);
 }
 
 body::-webkit-scrollbar-thumb,
 html::-webkit-scrollbar-thumb,
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(180deg, var(--color-accent-cyan) 0%, var(--color-accent-blue) 100%);
   border-radius: 4px;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 body::-webkit-scrollbar-thumb:hover,
 html::-webkit-scrollbar-thumb:hover,
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
 }
 
 /* Firefox global scrollbar */
@@ -78,5 +127,130 @@ body,
 html,
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.1);
+  scrollbar-color: var(--color-accent-cyan) var(--color-bg-secondary);
+}
+
+/* =====================================================
+   COMPONENT UTILITIES (optional - kullanmak istersen)
+   ===================================================== */
+
+/* Card base style */
+.card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.card-hover {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.card-hover:hover {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-secondary);
+}
+
+/* Button utilities */
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(90deg, var(--color-accent-blue) 0%, var(--color-accent-cyan) 100%);
+  color: white;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 217, 255, 0.2);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 12px rgba(0, 217, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-secondary);
+}
+
+/* Badge utilities */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-width: 1px;
+}
+
+.badge-blue {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--color-accent-blue);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.badge-green {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-accent-green);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.badge-yellow {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--color-accent-yellow);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.badge-red {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-accent-red);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.badge-purple {
+  background-color: rgba(168, 85, 247, 0.1);
+  color: var(--color-accent-purple);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+/* =====================================================
+   ANIMATIONS
+   ===================================================== */
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+  }
+  to { 
+    opacity: 1; 
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* =====================================================
+   RESPONSIVE ADJUSTMENTS
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
 }
