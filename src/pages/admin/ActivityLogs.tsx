@@ -7,7 +7,7 @@ import {
   User,
   Settings,
   LogIn,
-  LogOut,
+  LogOut, // ✅ Already imported!
   Shield,
   Trash2,
   AlertCircle,
@@ -192,7 +192,16 @@ export default function ActivityLogs() {
   // HELPER FUNCTIONS
   // =====================================================
 
-  const getActionIcon = (category: string) => {
+  const getActionIcon = (category: string, action?: string) => {
+    // Special handling for specific actions
+    if (action?.toLowerCase().includes('logout')) {
+      return <LogOut className="w-5 h-5" />;
+    }
+    if (action?.toLowerCase().includes('login')) {
+      return <LogIn className="w-5 h-5" />;
+    }
+    
+    // Category-based icons
     switch (category) {
       case 'auth':
         return <LogIn className="w-5 h-5" />;
@@ -209,6 +218,20 @@ export default function ActivityLogs() {
       default:
         return <Activity className="w-5 h-5" />;
     }
+  };
+
+  // ✅ NEW: Get icon background based on action
+  const getActionIconBackground = (category: string, action?: string, severity: string) => {
+    // Special backgrounds for login/logout
+    if (action?.toLowerCase().includes('logout')) {
+      return 'bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-orange-400'; // 🟧 Orange for logout
+    }
+    if (action?.toLowerCase().includes('login')) {
+      return 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20 text-blue-400'; // 🟦 Blue for login
+    }
+    
+    // Use severity color for other actions
+    return getSeverityColor(severity);
   };
 
   const getRoleBadge = (role: string) => {
@@ -698,11 +721,11 @@ export default function ActivityLogs() {
                         }`}
                       >
                         <div className="flex items-start gap-4">
-                          {/* Icon */}
+                          {/* Icon with Action-Specific Background */}
                           <div
-                            className={`p-2 rounded-lg ${getSeverityColor(log.severity_level)}`}
+                            className={`p-2 rounded-lg ${getActionIconBackground(log.action_category || '', log.action, log.severity_level)}`}
                           >
-                            {getActionIcon(log.action_category || '')}
+                            {getActionIcon(log.action_category || '', log.action)}
                           </div>
 
                           {/* Content */}

@@ -107,7 +107,7 @@ class ActivityLogger {
     this.setUser(userId, companyId);
     await this.log({
       action: 'User Login',
-      category: 'auth',
+      action_category: 'auth',  // ✅ FIXED
       description: 'User logged in successfully',
       status: 'success',
       severity: 'info',
@@ -117,7 +117,7 @@ class ActivityLogger {
   public async logLogout() {
     await this.log({
       action: 'User Logout',
-      category: 'auth',
+      action_category: 'auth',  // ✅ FIXED
       description: 'User logged out',
       status: 'success',
       severity: 'info',
@@ -128,7 +128,7 @@ class ActivityLogger {
   public async logLoginFailed(error: string) {
     await this.log({
       action: 'Login Failed',
-      category: 'auth',
+      action_category: 'auth',  // ✅ FIXED
       description: 'Failed login attempt',
       status: 'failed',
       severity: 'warning',
@@ -140,7 +140,7 @@ class ActivityLogger {
   public async logCreate(entityType: string, entityId: string, details?: any) {
     await this.log({
       action: `${entityType} Created`,
-      category: 'create',
+      action_category: 'create',  // ✅ FIXED
       entity_type: entityType,
       entity_id: entityId,
       description: `Created new ${entityType}`,
@@ -161,7 +161,7 @@ class ActivityLogger {
   ) {
     await this.log({
       action: `${entityType} Updated`,
-      category: 'update',
+      action_category: 'update',  // ✅ FIXED
       entity_type: entityType,
       entity_id: entityId,
       description: `Updated ${entityType}`,
@@ -177,7 +177,7 @@ class ActivityLogger {
   public async logDelete(entityType: string, entityId: string, details?: any) {
     await this.log({
       action: `${entityType} Deleted`,
-      category: 'delete',
+      action_category: 'delete',  // ✅ FIXED
       entity_type: entityType,
       entity_id: entityId,
       description: `Deleted ${entityType}`,
@@ -192,7 +192,7 @@ class ActivityLogger {
   public async logView(entityType: string, entityId: string, details?: any) {
     await this.log({
       action: `${entityType} Viewed`,
-      category: 'view',
+      action_category: 'view',  // ✅ FIXED
       entity_type: entityType,
       entity_id: entityId,
       description: `Viewed ${entityType}`,

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { signIn, signOut, getCurrentUser, onAuthStateChange, AuthUser } from '../lib/auth';
+import activityLogger from '../lib/services/activityLogger'; // ✅ Activity Logger
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -43,8 +44,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await signOut();
-    setUser(null);
+    console.log('👋 Logging out...');
+    
+    try {
+      // ✅ LOGOUT'U LOGLA (signOut ÖNCE!)
+      if (user) {
+        console.log('📝 Tracking logout for user:', user.email);
+        await activityLogger.logLogout();
+      }
+      
+      // Supabase'den çıkış yap
+      await signOut();
+      
+      // Activity logger'ı temizle
+      activityLogger.clearUser();
+      
+      // Local state'i temizle
+      setUser(null);
+      
+      console.log('✅ Logged out successfully');
+    } catch (error) {
+      console.error('❌ Logout failed:', error);
+      
+      // Hata olsa bile temizle
+      activityLogger.clearUser();
+      setUser(null);
+      
+      throw error;
+    }
   };
 
   return (

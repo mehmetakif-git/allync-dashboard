@@ -8,6 +8,7 @@ import { getAllCompanies, createCompany, deleteCompany } from '../../lib/api/com
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import AddCompanyModal, { CompanyFormData } from '../../components/modals/AddCompanyModal';
+import activityLogger from '../../lib/services/activityLogger';
 
 export default function CompaniesManagement() {
   const navigate = useNavigate();
@@ -103,6 +104,13 @@ export default function CompaniesManagement() {
       });
 
       console.log('✅ Company created:', newCompany.id);
+      
+      await activityLogger.logCreate('Company', newCompany.id, {
+        name: data.name,
+        email: data.email,
+        country: data.country,
+        status: data.status,
+      });
 
       // Refresh companies list
       await fetchCompanies();
@@ -143,6 +151,11 @@ export default function CompaniesManagement() {
       await deleteCompany(selectedCompany.id);
 
       console.log('✅ Company deleted successfully');
+      
+      await activityLogger.logDelete('Company', selectedCompany.id, {
+        name: selectedCompany.name,
+        email: selectedCompany.email,
+      });
 
       // Refresh companies list
       await fetchCompanies();

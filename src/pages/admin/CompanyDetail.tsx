@@ -19,6 +19,7 @@ import MobileAppSettingsModal from '../../components/modals/MobileAppSettingsMod
 import EditCompanyModal from '../../components/modals/EditCompanyModal';
 import AddUserModal from '../../components/modals/AddUserModal';
 import EditUserModal from '../../components/modals/EditUserModal';
+import activityLogger from '../../lib/services/activityLogger';
 
 export default function CompanyDetail() {
   const { id: companyId } = useParams<{ id: string }>();
@@ -146,6 +147,10 @@ export default function CompanyDetail() {
       });
 
       console.log('✅ User created successfully');
+      // Track user creation
+      await activityLogger.logCreate('User', 'new-user', {
+        email: data.email, name: data.name, role: data.role
+      });
       await refreshUsers();
       setShowAddUserModal(false);
       showSuccess(`User "${data.name}" has been added successfully!`);
@@ -175,6 +180,11 @@ export default function CompanyDetail() {
       });
 
       console.log('✅ User updated successfully');
+      // Track user update
+      await activityLogger.logUpdate('User', selectedUser.id,
+        { name: selectedUser.full_name, role: selectedUser.role },
+        { name: data.name, role: data.role }
+      );
       await refreshUsers();
       setShowEditUserModal(false);
       showSuccess(`User "${data.name}" has been updated successfully!`);
@@ -200,6 +210,10 @@ export default function CompanyDetail() {
       await deleteUser(selectedUser.id);
 
       console.log('✅ User deleted successfully');
+      // Track user deletion
+      await activityLogger.logDelete('User', selectedUser.id, {
+        name: selectedUser.full_name, email: selectedUser.email
+      });
       await refreshUsers();
       setShowDeleteUserConfirm(false);
       showSuccess(`User "${selectedUser.full_name}" has been removed from the company.`);
@@ -226,6 +240,14 @@ export default function CompanyDetail() {
       await updateUser(selectedUser.id, { status: newStatus });
 
       console.log('✅ User status updated successfully');
+      // Track status change
+      await activityLogger.log({
+        action: `User ${newStatus === 'active' ? 'Activated' : 'Suspended'}`,
+        action_category: 'update',
+        description: `Changed user status from ${selectedUser.status} to ${newStatus}`,
+        entity_type: 'User',
+        entity_id: selectedUser.id,
+      });
       await refreshUsers();
       setShowSuspendConfirm(false);
       showSuccess(`User "${selectedUser.full_name}" has been ${newStatus}.`);
@@ -248,6 +270,11 @@ export default function CompanyDetail() {
       // await updateCompany(companyId!, data);
       
       console.log('✅ Company updated successfully');
+      // Track company update
+      await activityLogger.logUpdate('Company', companyId!, 
+        { name: company.name, status: company.status },
+        { name: data.name, status: data.status }
+      );
       
       // Refresh company data
       const updatedCompany = await getCompanyById(companyId!);
@@ -279,6 +306,14 @@ export default function CompanyDetail() {
       console.log('✅ Approving request:', selectedRequest.id);
       
       await approveServiceRequest(selectedRequest.id, profile.id);
+      // Track service approval
+      await activityLogger.log({
+        action: 'Service Request Approved',
+        action_category: 'update',
+        description: `Approved service: ${selectedRequest.service_type.name_en}`,
+        entity_type: 'ServiceRequest',
+        entity_id: selectedRequest.id,
+      });
       
       // Refresh service requests
       const updatedRequests = await getCompanyServiceRequests(companyId!);
@@ -313,6 +348,14 @@ export default function CompanyDetail() {
       console.log('❌ Rejecting request:', selectedRequest.id);
       
       await rejectServiceRequest(selectedRequest.id, rejectionReason, profile.id);
+      // Track service rejection
+      await activityLogger.log({
+        action: 'Service Request Rejected',
+        action_category: 'update',
+        description: `Rejected service: ${selectedRequest.service_type.name_en}. Reason: ${rejectionReason}`,
+        entity_type: 'ServiceRequest',
+        entity_id: selectedRequest.id,
+      });
       
       // Refresh service requests
       const updatedRequests = await getCompanyServiceRequests(companyId!);

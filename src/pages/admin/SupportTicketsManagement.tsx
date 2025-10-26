@@ -11,6 +11,7 @@ import {
   updateSatisfactionRating,
 } from '../../lib/api/supportTickets';
 import { getAllUsers } from '../../lib/api/users';
+import activityLogger from '../../lib/services/activityLogger';
 
 // =====================================================
 // INTERFACES
@@ -95,7 +96,7 @@ export default function SupportTicketsManagement() {
       ]);
 
       setTickets(ticketsData || []);
-      
+
       // Filter super_admins for assignee list
       const superAdmins = (usersData || []).filter(
         (user: any) => user.role === 'super_admin'
@@ -121,15 +122,15 @@ export default function SupportTicketsManagement() {
 
   // ===== DATA CALCULATIONS =====
   const filteredTickets = tickets.filter(ticket => {
-    const matchesSearch = 
+    const matchesSearch =
       ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.ticket_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.creator.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.company.name.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -150,17 +151,44 @@ export default function SupportTicketsManagement() {
   const handleUpdateTicket = async (ticketId: string, updates: TicketUpdates) => {
     try {
       await updateTicket(ticketId, updates);
-      
+      // Track ticket update
+      await activityLogger.log({
+        action: 'Support Ticket Updated',
+        action_category: 'update',
+        description: `Updated ticket: ${selectedTicket?.ticket_number} - ${selectedTicket?.subject}`,
+        entity_type: 'Ticket',
+        entity_id: ticketId,
+      });
+      // ✅ 1. İLERİ SEVİYE: Status değişikliğini özel logla (ÖNCE)
+      if (updates.status && updates.status !== selectedTicket?.status) {
+        await activityLogger.log({
+          action: `Ticket Status Changed`,
+          action_category: 'update',
+          description: `Changed ticket status from ${selectedTicket?.status} to ${updates.status}`,
+          entity_type: 'Ticket',
+          entity_id: ticketId,
+        });
+      }
+
+      // ✅ 2. GENEL: Ticket update logu (SONRA)
+      await activityLogger.log({
+        action: 'Support Ticket Updated',
+        action_category: 'update',
+        description: `Updated ticket: ${selectedTicket?.ticket_number} - ${selectedTicket?.subject}`,
+        entity_type: 'Ticket',
+        entity_id: ticketId,
+      });
+
       // Refresh tickets and update selectedTicket
       await refreshTickets();
-      
+
       // Update selected ticket
       const updatedTickets = await getAllTickets();
       const updatedTicket = updatedTickets.find((t: any) => t.id === ticketId);
       if (updatedTicket) {
         setSelectedTicket(updatedTicket);
       }
-      
+
       showSuccess('Ticket updated successfully!');
     } catch (error: any) {
       console.error('Error updating ticket:', error);
@@ -175,8 +203,16 @@ export default function SupportTicketsManagement() {
       // TODO: Implement message/reply API when available
       // For now, just show success
       console.log('Send reply:', { ticketId, message });
+      // Track reply
+      await activityLogger.log({
+        action: 'Support Ticket Reply Sent',
+        action_category: 'create',
+        description: `Sent reply to ticket: ${selectedTicket?.ticket_number}`,
+        entity_type: 'Ticket',
+        entity_id: ticketId,
+      });
       showSuccess('Reply sent successfully!');
-      
+
       // In real implementation:
       // await createTicketMessage(ticketId, { message });
       // await refreshTickets();
@@ -210,7 +246,7 @@ export default function SupportTicketsManagement() {
   };
 
   const formatStatusLabel = (status: string) => {
-    return status.split('_').map(word => 
+    return status.split('_').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
   };

@@ -64,22 +64,28 @@ export async function getActivityLogs(
       include_company = true,
     } = options;
 
-    // Build query
-    let query = supabase.from('activity_logs').select('*', { count: 'exact' });
-
-    // Add relations
-    if (include_user) {
-      query = query.select(`
+    // Build query with relations
+    let selectQuery = '*';
+    
+    if (include_user && include_company) {
+      selectQuery = `
+        *,
+        user:profiles!user_id(id, full_name, email, avatar_url, role),
+        company:companies!company_id(id, name, email, country, status)
+      `;
+    } else if (include_user) {
+      selectQuery = `
         *,
         user:profiles!user_id(id, full_name, email, avatar_url, role)
-      `);
-    }
-    if (include_company) {
-      query = query.select(`
+      `;
+    } else if (include_company) {
+      selectQuery = `
         *,
         company:companies!company_id(id, name, email, country, status)
-      `);
+      `;
     }
+
+    let query = supabase.from('activity_logs').select(selectQuery, { count: 'exact' });
 
     // Apply filters
     if (filters.company_id) {
