@@ -198,7 +198,7 @@ export interface ActivityStatistics {
 }
 
 export interface ActivityTimeline {
-  hour: string;
+  hour: string; // ISO timestamp string from PostgreSQL
   log_count: number;
   success_count: number;
   failed_count: number;
@@ -208,6 +208,7 @@ export interface TopActiveUser {
   user_id: string;
   user_name: string;
   user_email: string;
+  user_role: string; // Added role field
   activity_count: number;
   last_activity: string;
 }

@@ -211,6 +211,39 @@ export default function ActivityLogs() {
     }
   };
 
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case 'super_admin':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-400 border border-red-500/30">
+            <Shield className="w-3 h-3" />
+            SUPER ADMIN
+          </span>
+        );
+      case 'company_admin':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 border border-blue-500/30">
+            <User className="w-3 h-3" />
+            COMPANY ADMIN
+          </span>
+        );
+      case 'user':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+            <User className="w-3 h-3" />
+            USER
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
+            <User className="w-3 h-3" />
+            {role || 'SYSTEM'}
+          </span>
+        );
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
@@ -453,19 +486,40 @@ export default function ActivityLogs() {
                 {topUsers.map((user, index) => (
                   <div
                     key={user.user_id}
-                    className="flex items-center justify-between bg-gray-700 rounded-lg p-4"
+                    className={`flex items-center justify-between bg-gray-700 rounded-lg p-4 border-l-4 ${
+                      index === 0
+                        ? 'border-yellow-500'
+                        : index === 1
+                        ? 'border-gray-400'
+                        : index === 2
+                        ? 'border-orange-600'
+                        : 'border-gray-600'
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                        {index + 1}
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                          index === 0
+                            ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                            : index === 1
+                            ? 'bg-gradient-to-r from-gray-400 to-gray-500'
+                            : index === 2
+                            ? 'bg-gradient-to-r from-orange-600 to-orange-700'
+                            : 'bg-gradient-to-r from-blue-500 to-purple-500'
+                        }`}
+                      >
+                        {index === 0 ? '🏆' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                       </div>
                       <div>
-                        <p className="text-white font-medium">{user.user_name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-white font-medium">{user.user_name}</p>
+                          {getRoleBadge(user.user_role)}
+                        </div>
                         <p className="text-muted text-sm">{user.user_email}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-white font-bold">{user.activity_count}</p>
+                      <p className="text-white font-bold text-lg">{user.activity_count}</p>
                       <p className="text-muted text-xs">activities</p>
                     </div>
                   </div>
@@ -633,7 +687,15 @@ export default function ActivityLogs() {
                     {logs.map((log) => (
                       <div
                         key={log.id}
-                        className="bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition-colors"
+                        className={`bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition-colors border-l-4 ${
+                          log.user?.role === 'super_admin'
+                            ? 'border-red-500'
+                            : log.user?.role === 'company_admin'
+                            ? 'border-blue-500'
+                            : log.user?.role === 'user'
+                            ? 'border-green-500'
+                            : 'border-gray-500'
+                        }`}
                       >
                         <div className="flex items-start gap-4">
                           {/* Icon */}
@@ -647,7 +709,8 @@ export default function ActivityLogs() {
                           <div className="flex-1">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <div className="flex items-center gap-2">
+                                {/* Action Title with Status */}
+                                <div className="flex items-center gap-2 flex-wrap">
                                   <h3 className="text-white font-medium">{log.action}</h3>
                                   <span
                                     className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs border ${getStatusColor(log.status)}`}
@@ -661,43 +724,87 @@ export default function ActivityLogs() {
                                     {log.severity_level}
                                   </span>
                                 </div>
+
+                                {/* Description */}
                                 <p className="text-muted text-sm mt-1">{log.description}</p>
-                                <div className="flex items-center gap-4 mt-2 text-xs text-muted">
-                                  <span className="flex items-center gap-1">
-                                    <User className="w-3 h-3" />
-                                    {log.user?.full_name || 'System'}
-                                  </span>
+
+                                {/* User Info Row - ENHANCED */}
+                                <div className="flex items-center gap-3 mt-3 flex-wrap">
+                                  {/* User with Role Badge */}
+                                  {log.user ? (
+                                    <div className="flex items-center gap-2">
+                                      <User className="w-3 h-3 text-muted" />
+                                      <span className="text-white text-sm font-medium">
+                                        {log.user.full_name}
+                                      </span>
+                                      {getRoleBadge(log.user.role)}
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-2">
+                                      <Shield className="w-3 h-3 text-gray-400" />
+                                      <span className="text-gray-400 text-sm">System</span>
+                                    </div>
+                                  )}
+
+                                  {/* Company Badge - ENHANCED */}
                                   {log.company?.name && (
                                     <>
-                                      <span>•</span>
-                                      <span>{log.company.name}</span>
+                                      <span className="text-muted">•</span>
+                                      <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                        <svg
+                                          className="w-3 h-3"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                          />
+                                        </svg>
+                                        {log.company.name}
+                                      </div>
                                     </>
                                   )}
+
+                                  {/* IP Address */}
                                   {log.ip_address && (
                                     <>
-                                      <span>•</span>
-                                      <span>IP: {log.ip_address}</span>
+                                      <span className="text-muted">•</span>
+                                      <span className="text-muted text-xs font-mono">
+                                        IP: {log.ip_address}
+                                      </span>
                                     </>
                                   )}
+
+                                  {/* Device & Browser */}
                                   {log.device_type && (
                                     <>
-                                      <span>•</span>
-                                      <span>{log.device_type}</span>
+                                      <span className="text-muted">•</span>
+                                      <span className="text-muted text-xs capitalize">
+                                        {log.device_type}
+                                      </span>
                                     </>
                                   )}
                                   {log.browser && (
                                     <>
-                                      <span>•</span>
-                                      <span>{log.browser}</span>
+                                      <span className="text-muted">•</span>
+                                      <span className="text-muted text-xs">{log.browser}</span>
                                     </>
                                   )}
                                 </div>
+
+                                {/* Error Message */}
                                 {log.error_message && (
                                   <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs font-mono">
                                     {log.error_message}
                                   </div>
                                 )}
                               </div>
+
+                              {/* Timestamp and Duration */}
                               <div className="text-right ml-4">
                                 <p className="text-muted text-xs whitespace-nowrap">
                                   {formatDate(log.created_at)}

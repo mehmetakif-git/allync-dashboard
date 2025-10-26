@@ -4,6 +4,7 @@ import { Mail, Lock, Shield, Building2, AlertCircle, CheckCircle, KeyRound } fro
 import { useAuth } from '../../contexts/AuthContext';
 import ContactAdminModal from '../../components/ContactAdminModal';
 import { EmailService } from '../../lib/email';
+import activityLogger from '../../lib/services/activityLogger'; // ✅ ACTIVITY LOGGER
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,6 +42,9 @@ export default function Login() {
       console.log('👤 User object:', user);
       console.log('🎭 User role:', user.role);
 
+      // ✅ TRACK SUCCESSFUL LOGIN
+      await activityLogger.logLogin(user.id, user.company_id || null);
+
       // Navigate based on role
       if (user.role === 'super_admin') {
         console.log('➡️ Navigating to /admin');
@@ -52,6 +56,10 @@ export default function Login() {
     } catch (err: any) {
       console.error('❌ Login failed:', err);
       setError(err.message || 'Invalid email or password. Please try again.');
+      
+      // ✅ TRACK FAILED LOGIN
+      await activityLogger.logLoginFailed(err.message || 'Invalid email or password');
+      
       setIsLoading(false);
     }
   };
@@ -79,6 +87,16 @@ export default function Login() {
 
       console.log('✅ Password reset email sent successfully');
 
+      // ✅ TRACK PASSWORD RESET REQUEST
+      await activityLogger.log({
+        action: 'Password Reset Requested',
+        category: 'auth',
+        description: `Password reset email sent to ${resetEmail}`,
+        status: 'success',
+        severity: 'info',
+        tags: ['password_reset', 'email'],
+      });
+
       setResetStatus('success');
       setResetMessage('Password reset link has been sent to your email. Please check your inbox.');
       
@@ -92,6 +110,15 @@ export default function Login() {
 
     } catch (err: any) {
       console.error('❌ Failed to send password reset email:', err);
+      
+      // ✅ TRACK PASSWORD RESET ERROR
+      await activityLogger.logError(
+        'Password Reset Failed',
+        err,
+        { email: resetEmail },
+        'error'
+      );
+      
       setResetStatus('error');
       setResetMessage(err.message || 'Failed to send reset email. Please try again.');
     }
@@ -109,6 +136,9 @@ export default function Login() {
       
       console.log('✅ Demo login successful!', user);
 
+      // ✅ TRACK DEMO LOGIN
+      await activityLogger.logLogin(user.id, user.company_id || null);
+
       // Navigate based on role
       if (user.role === 'super_admin') {
         console.log('➡️ Navigating to /admin');
@@ -120,6 +150,10 @@ export default function Login() {
     } catch (err: any) {
       console.error('❌ Demo login failed:', err);
       setError('Demo login failed. Please contact support.');
+      
+      // ✅ TRACK FAILED DEMO LOGIN
+      await activityLogger.logLoginFailed(`Demo login failed: ${err.message}`);
+      
       setIsLoading(false);
     }
   };
