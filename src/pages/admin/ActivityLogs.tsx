@@ -1,153 +1,201 @@
-import { useState } from 'react';
-import { Activity, Search, Filter, Download, User, Settings, LogIn, LogOut, Shield, Trash2 } from 'lucide-react';
-
-interface ActivityLog {
-  id: string;
-  user: string;
-  userEmail: string;
-  company: string;
-  action: string;
-  actionType: 'login' | 'logout' | 'create' | 'update' | 'delete' | 'system';
-  details: string;
-  ipAddress: string;
-  timestamp: string;
-}
-
-const mockLogs: ActivityLog[] = [
-  {
-    id: '1',
-    user: 'Allync',
-    userEmail: 'info@allyncai.com',
-    company: 'Allync',
-    action: 'System Settings Updated',
-    actionType: 'system',
-    details: 'Updated email configuration settings',
-    ipAddress: '192.168.1.1',
-    timestamp: '2024-03-20 14:30',
-  },
-  {
-    id: '2',
-    user: 'John Smith',
-    userEmail: 'john.smith@techinnovators.com',
-    company: 'Tech Innovators Inc',
-    action: 'User Login',
-    actionType: 'login',
-    details: 'Successful login from Chrome browser',
-    ipAddress: '203.0.113.45',
-    timestamp: '2024-03-20 14:15',
-  },
-  {
-    id: '3',
-    user: 'Allync',
-    userEmail: 'info@allyncai.com',
-    company: 'Allync',
-    action: 'User Created',
-    actionType: 'create',
-    details: 'Created new user: alice.brown@techinnovators.com',
-    ipAddress: '192.168.1.1',
-    timestamp: '2024-03-20 13:45',
-  },
-  {
-    id: '4',
-    user: 'Michael Chen',
-    userEmail: 'michael@globalsolutions.com',
-    company: 'Global Solutions Ltd',
-    action: 'Service Request',
-    actionType: 'create',
-    details: 'Requested new service: Email Marketing Automation',
-    ipAddress: '198.51.100.23',
-    timestamp: '2024-03-20 13:20',
-  },
-  {
-    id: '5',
-    user: 'Allync',
-    userEmail: 'info@allyncai.com',
-    company: 'Allync',
-    action: 'Company Suspended',
-    actionType: 'update',
-    details: 'Suspended company: Digital Marketing Pro',
-    ipAddress: '192.168.1.1',
-    timestamp: '2024-03-20 12:50',
-  },
-  {
-    id: '6',
-    user: 'Emma Davis',
-    userEmail: 'emma.davis@digitalmarketingpro.com',
-    company: 'Digital Marketing Pro',
-    action: 'User Logout',
-    actionType: 'logout',
-    details: 'User logged out',
-    ipAddress: '203.0.113.89',
-    timestamp: '2024-03-20 12:30',
-  },
-  {
-    id: '7',
-    user: 'Allync',
-    userEmail: 'info@allyncai.com',
-    company: 'Allync',
-    action: 'Invoice Generated',
-    actionType: 'create',
-    details: 'Generated invoice INV-2024-006 for Data Analytics Corp',
-    ipAddress: '192.168.1.1',
-    timestamp: '2024-03-20 11:45',
-  },
-  {
-    id: '8',
-    user: 'David Wilson',
-    userEmail: 'david.w@ecommerceplus.com',
-    company: 'E-Commerce Plus',
-    action: 'User Login',
-    actionType: 'login',
-    details: 'Successful login from Firefox browser',
-    ipAddress: '198.51.100.67',
-    timestamp: '2024-03-20 11:20',
-  },
-  {
-    id: '9',
-    user: 'Allync',
-    userEmail: 'info@allyncai.com',
-    company: 'Allync',
-    action: 'Notification Sent',
-    actionType: 'system',
-    details: 'Sent maintenance notification to all users',
-    ipAddress: '192.168.1.1',
-    timestamp: '2024-03-20 10:30',
-  },
-  {
-    id: '10',
-    user: 'Allync',
-    userEmail: 'info@allyncai.com',
-    company: 'Allync',
-    action: 'Service Approved',
-    actionType: 'update',
-    details: 'Approved service request for Tech Innovators Inc',
-    ipAddress: '192.168.1.1',
-    timestamp: '2024-03-20 09:45',
-  },
-];
+import { useState, useEffect } from 'react';
+import {
+  Activity,
+  Search,
+  Filter,
+  Download,
+  User,
+  Settings,
+  LogIn,
+  LogOut,
+  Shield,
+  Trash2,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  TrendingUp,
+  Calendar,
+  RefreshCw,
+  FileText,
+  BarChart3,
+  Eye,
+} from 'lucide-react';
+import {
+  getActivityLogs,
+  getActivityStatistics,
+  getActivityTimeline,
+  getTopActiveUsers,
+  getCriticalActivityLogs,
+} from '../../lib/api/activityLogs';
+import { exportActivityLogs } from '../../lib/utils/exportUtils';
+import type {
+  ActivityLog,
+  ActivityLogFilters,
+  ActivityStatistics,
+  ActivityTimeline,
+  TopActiveUser,
+} from '../../lib/api/activityTypes';
 
 export default function ActivityLogs() {
-  const [logs] = useState<ActivityLog[]>(mockLogs);
+  // =====================================================
+  // STATE
+  // =====================================================
+  const [logs, setLogs] = useState<ActivityLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [statistics, setStatistics] = useState<ActivityStatistics | null>(null);
+  const [timeline, setTimeline] = useState<ActivityTimeline[]>([]);
+  const [topUsers, setTopUsers] = useState<TopActiveUser[]>([]);
+  const [criticalLogs, setCriticalLogs] = useState<ActivityLog[]>([]);
+
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [actionTypeFilter, setActionTypeFilter] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('today');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
+  const [selectedDevice, setSelectedDevice] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<string>('today');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
 
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch =
-      log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.details.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesActionType = actionTypeFilter === 'all' || log.actionType === actionTypeFilter;
-    return matchesSearch && matchesActionType;
-  });
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const ITEMS_PER_PAGE = 20;
 
-  const getActionIcon = (actionType: string) => {
-    switch (actionType) {
-      case 'login':
+  // View mode
+  const [viewMode, setViewMode] = useState<'list' | 'analytics'>('list');
+
+  // =====================================================
+  // LOAD DATA
+  // =====================================================
+
+  useEffect(() => {
+    loadData();
+  }, [
+    searchTerm,
+    selectedCategory,
+    selectedStatus,
+    selectedSeverity,
+    selectedDevice,
+    dateRange,
+    customStartDate,
+    customEndDate,
+    currentPage,
+  ]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      // Build filters
+      const filters: ActivityLogFilters = {};
+
+      if (selectedCategory !== 'all') filters.action_category = selectedCategory;
+      if (selectedStatus !== 'all') filters.status = selectedStatus as any;
+      if (selectedSeverity !== 'all') filters.severity_level = selectedSeverity as any;
+      if (selectedDevice !== 'all') filters.device_type = selectedDevice as any;
+      if (searchTerm) filters.search = searchTerm;
+
+      // Date range filters
+      const now = new Date();
+      if (dateRange === 'today') {
+        const today = new Date(now.setHours(0, 0, 0, 0));
+        filters.start_date = today.toISOString();
+      } else if (dateRange === 'week') {
+        const weekAgo = new Date(now.setDate(now.getDate() - 7));
+        filters.start_date = weekAgo.toISOString();
+      } else if (dateRange === 'month') {
+        const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
+        filters.start_date = monthAgo.toISOString();
+      } else if (dateRange === 'custom') {
+        if (customStartDate) filters.start_date = new Date(customStartDate).toISOString();
+        if (customEndDate) filters.end_date = new Date(customEndDate).toISOString();
+      }
+
+      // Fetch logs with pagination
+      const response = await getActivityLogs({
+        filters,
+        limit: ITEMS_PER_PAGE,
+        offset: (currentPage - 1) * ITEMS_PER_PAGE,
+        include_user: true,
+        include_company: true,
+      });
+
+      setLogs(response.data);
+      setTotalRecords(response.pagination.total);
+      setTotalPages(response.pagination.pages);
+
+      // Load statistics and analytics
+      const [statsData, timelineData, usersData, criticalData] = await Promise.all([
+        getActivityStatistics(),
+        getActivityTimeline(undefined, 24),
+        getTopActiveUsers(undefined, 5, 7),
+        getCriticalActivityLogs(5),
+      ]);
+
+      setStatistics(statsData);
+      setTimeline(timelineData);
+      setTopUsers(usersData);
+      setCriticalLogs(criticalData);
+    } catch (error) {
+      console.error('Failed to load activity logs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =====================================================
+  // EXPORT HANDLERS
+  // =====================================================
+
+  const handleExport = async (format: 'csv' | 'excel' | 'json') => {
+    try {
+      setExporting(true);
+
+      // Build filters for export
+      const filters: ActivityLogFilters = {};
+      if (selectedCategory !== 'all') filters.action_category = selectedCategory;
+      if (selectedStatus !== 'all') filters.status = selectedStatus as any;
+      if (selectedSeverity !== 'all') filters.severity_level = selectedSeverity as any;
+      if (searchTerm) filters.search = searchTerm;
+
+      // Fetch ALL logs (no pagination limit for export)
+      const response = await getActivityLogs({
+        filters,
+        limit: 10000, // High limit for export
+        offset: 0,
+        include_user: true,
+        include_company: true,
+      });
+
+      // Export
+      const result = exportActivityLogs(response.data, {
+        format,
+        filters,
+        include_user_details: true,
+        include_company_details: true,
+      });
+
+      alert(`✅ Successfully exported ${result.record_count} records to ${result.filename}`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('❌ Failed to export activity logs');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // =====================================================
+  // HELPER FUNCTIONS
+  // =====================================================
+
+  const getActionIcon = (category: string) => {
+    switch (category) {
+      case 'auth':
         return <LogIn className="w-5 h-5" />;
-      case 'logout':
-        return <LogOut className="w-5 h-5" />;
       case 'create':
         return <User className="w-5 h-5" />;
       case 'update':
@@ -156,268 +204,551 @@ export default function ActivityLogs() {
         return <Trash2 className="w-5 h-5" />;
       case 'system':
         return <Shield className="w-5 h-5" />;
+      case 'view':
+        return <Eye className="w-5 h-5" />;
       default:
         return <Activity className="w-5 h-5" />;
     }
   };
 
-  const getActionColor = (actionType: string) => {
-    switch (actionType) {
-      case 'login':
-        return 'bg-green-500/20 text-green-400';
-      case 'logout':
-        return 'bg-gray-500/20 text-muted';
-      case 'create':
-        return 'bg-blue-500/20 text-blue-400';
-      case 'update':
-        return 'bg-yellow-500/20 text-yellow-400';
-      case 'delete':
-        return 'bg-red-500/20 text-red-400';
-      case 'system':
-        return 'bg-purple-500/20 text-purple-400';
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'failed':
+        return <XCircle className="w-4 h-4" />;
+      case 'warning':
+        return <AlertCircle className="w-4 h-4" />;
+      case 'pending':
+        return <Clock className="w-4 h-4" />;
       default:
-        return 'bg-gray-500/20 text-muted';
+        return <Activity className="w-4 h-4" />;
     }
   };
 
-  const handleExportLogs = () => {
-    if (confirm('Export activity logs to CSV?')) {
-      alert('Activity logs exported successfully');
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'success':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'failed':
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'warning':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'pending':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical':
+        return 'bg-red-500/20 text-red-400';
+      case 'error':
+        return 'bg-orange-500/20 text-orange-400';
+      case 'warning':
+        return 'bg-yellow-500/20 text-yellow-400';
+      case 'info':
+        return 'bg-blue-500/20 text-blue-400';
+      default:
+        return 'bg-gray-500/20 text-gray-400';
+    }
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleString('tr-TR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Activity Logs</h1>
-          <p className="text-muted mt-1">Monitor all system and user activities</p>
-        </div>
-        <button
-          onClick={handleExportLogs}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <Download className="w-5 h-5" />
-          Export Logs
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">Total Activities</p>
-              <p className="text-3xl font-bold text-white mt-2">{logs.length}</p>
-            </div>
-            <Activity className="w-12 h-12 text-blue-500" />
-          </div>
-        </div>
-
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">User Actions</p>
-              <p className="text-3xl font-bold text-white mt-2">
-                {logs.filter(l => l.actionType === 'login' || l.actionType === 'logout').length}
-              </p>
-            </div>
-            <User className="w-12 h-12 text-green-500" />
-          </div>
-        </div>
-
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">System Events</p>
-              <p className="text-3xl font-bold text-white mt-2">
-                {logs.filter(l => l.actionType === 'system').length}
-              </p>
-            </div>
-            <Shield className="w-12 h-12 text-purple-500" />
-          </div>
-        </div>
-
-        <div className="bg-secondary rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted text-sm">Changes Made</p>
-              <p className="text-3xl font-bold text-white mt-2">
-                {logs.filter(l => l.actionType === 'create' || l.actionType === 'update' || l.actionType === 'delete').length}
-              </p>
-            </div>
-            <Settings className="w-12 h-12 text-yellow-500" />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-secondary rounded-lg p-6">
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search activities by user, action, or company..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-            />
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Activity Logs</h1>
+            <p className="text-muted mt-1">Monitor all system and user activities</p>
           </div>
           <div className="flex gap-2">
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
-              <select
-                value={actionTypeFilter}
-                onChange={(e) => setActionTypeFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
-              >
-                <option value="all">All Actions</option>
-                <option value="login">Login</option>
-                <option value="logout">Logout</option>
-                <option value="create">Create</option>
-                <option value="update">Update</option>
-                <option value="delete">Delete</option>
-                <option value="system">System</option>
-              </select>
-            </div>
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="px-4 py-2 bg-gray-700 border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+            <button
+              onClick={() => setViewMode(viewMode === 'list' ? 'analytics' : 'list')}
+              className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors"
             >
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="all">All Time</option>
-            </select>
+              {viewMode === 'list' ? (
+                <>
+                  <BarChart3 className="w-5 h-5" />
+                  Analytics
+                </>
+              ) : (
+                <>
+                  <FileText className="w-5 h-5" />
+                  List View
+                </>
+              )}
+            </button>
+            <button
+              onClick={loadData}
+              disabled={loading}
+              className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <div className="relative group">
+              <button
+                disabled={exporting}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors disabled:opacity-50"
+              >
+                <Download className="w-5 h-5" />
+                Export
+              </button>
+              <div className="absolute right-0 mt-2 w-48 bg-secondary rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                <button
+                  onClick={() => handleExport('csv')}
+                  className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 rounded-t-lg transition-colors"
+                >
+                  Export as CSV
+                </button>
+                <button
+                  onClick={() => handleExport('excel')}
+                  className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors"
+                >
+                  Export as Excel
+                </button>
+                <button
+                  onClick={() => handleExport('json')}
+                  className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 rounded-b-lg transition-colors"
+                >
+                  Export as JSON
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          {filteredLogs.map((log) => (
-            <div key={log.id} className="bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition-colors">
-              <div className="flex items-start gap-4">
-                <div className={`p-2 rounded-lg ${getActionColor(log.actionType)}`}>
-                  {getActionIcon(log.actionType)}
+        {/* Statistics Cards */}
+        {statistics && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-secondary rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted text-sm">Total Activities</p>
+                  <p className="text-3xl font-bold text-white mt-2">
+                    {statistics.total_logs.toLocaleString()}
+                  </p>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-white font-medium">{log.action}</h3>
-                      <p className="text-secondary text-sm mt-1">{log.details}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted">
-                        <span className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          {log.user}
+                <Activity className="w-12 h-12 text-blue-500" />
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs">
+                <span className="text-green-400">
+                  {statistics.success_count} success
+                </span>
+                <span className="text-muted">•</span>
+                <span className="text-red-400">{statistics.failed_count} failed</span>
+              </div>
+            </div>
+
+            <div className="bg-secondary rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted text-sm">Active Users</p>
+                  <p className="text-3xl font-bold text-white mt-2">
+                    {statistics.unique_users.toLocaleString()}
+                  </p>
+                </div>
+                <User className="w-12 h-12 text-green-500" />
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted">
+                <TrendingUp className="w-3 h-3" />
+                {statistics.login_count} logins today
+              </div>
+            </div>
+
+            <div className="bg-secondary rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted text-sm">Critical Events</p>
+                  <p className="text-3xl font-bold text-white mt-2">
+                    {statistics.critical_count + statistics.warning_count}
+                  </p>
+                </div>
+                <AlertCircle className="w-12 h-12 text-red-500" />
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs">
+                <span className="text-red-400">
+                  {statistics.critical_count} critical
+                </span>
+                <span className="text-muted">•</span>
+                <span className="text-yellow-400">
+                  {statistics.warning_count} warnings
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-secondary rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted text-sm">Avg Response</p>
+                  <p className="text-3xl font-bold text-white mt-2">
+                    {statistics.avg_duration_ms
+                      ? `${Math.round(statistics.avg_duration_ms)}ms`
+                      : 'N/A'}
+                  </p>
+                </div>
+                <Clock className="w-12 h-12 text-purple-500" />
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted">
+                Performance metric
+              </div>
+            </div>
+          </div>
+        )}
+
+        {viewMode === 'analytics' ? (
+          /* Analytics View */
+          <div className="space-y-6">
+            {/* Timeline Chart */}
+            <div className="bg-secondary rounded-lg p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Activity Timeline (24h)</h2>
+              <div className="space-y-2">
+                {timeline.map((item, index) => (
+                  <div key={index} className="flex items-center gap-4">
+                    <span className="text-muted text-sm w-32">
+                      {new Date(item.hour).toLocaleTimeString('tr-TR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                    <div className="flex-1 bg-gray-700 rounded-full h-8 overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-full flex items-center px-3"
+                        style={{
+                          width: `${(Number(item.log_count) / Math.max(...timeline.map((t) => Number(t.log_count)))) * 100}%`,
+                        }}
+                      >
+                        <span className="text-white text-sm font-medium">
+                          {item.log_count}
                         </span>
-                        <span>•</span>
-                        <span>{log.company}</span>
-                        <span>•</span>
-                        <span>IP: {log.ipAddress}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Top Users */}
+            <div className="bg-secondary rounded-lg p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Top Active Users (7 days)</h2>
+              <div className="space-y-3">
+                {topUsers.map((user, index) => (
+                  <div
+                    key={user.user_id}
+                    className="flex items-center justify-between bg-gray-700 rounded-lg p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{user.user_name}</p>
+                        <p className="text-muted text-sm">{user.user_email}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className={`inline-block px-2 py-1 rounded text-xs ${getActionColor(log.actionType)}`}>
-                        {log.actionType}
-                      </span>
-                      <p className="text-muted text-xs mt-2">{log.timestamp}</p>
+                      <p className="text-white font-bold">{user.activity_count}</p>
+                      <p className="text-muted text-xs">activities</p>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Critical Logs */}
+            <div className="bg-secondary rounded-lg p-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <AlertCircle className="w-6 h-6 text-red-500" />
+                Recent Critical Events
+              </h2>
+              <div className="space-y-3">
+                {criticalLogs.map((log) => (
+                  <div
+                    key={log.id}
+                    className="bg-gray-700 rounded-lg p-4 border-l-4 border-red-500"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-white font-medium">{log.action}</h3>
+                        <p className="text-muted text-sm mt-1">{log.description}</p>
+                        {log.error_message && (
+                          <p className="text-red-400 text-xs mt-2 font-mono">
+                            {log.error_message}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-muted text-xs whitespace-nowrap ml-4">
+                        {formatDate(log.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* List View */
+          <>
+            {/* Filters */}
+            <div className="bg-secondary rounded-lg p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search activities..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  />
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      <div className="bg-secondary rounded-lg p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Activity Summary</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-500/20 text-green-400">
-                <LogIn className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-muted text-sm">Logins</p>
-                <p className="text-white font-bold text-lg">
-                  {logs.filter(l => l.actionType === 'login').length}
-                </p>
-              </div>
-            </div>
-          </div>
+                {/* Category Filter */}
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="auth">Authentication</option>
+                  <option value="create">Create</option>
+                  <option value="update">Update</option>
+                  <option value="delete">Delete</option>
+                  <option value="view">View</option>
+                  <option value="system">System</option>
+                  <option value="service">Service</option>
+                  <option value="payment">Payment</option>
+                </select>
 
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
-                <User className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-muted text-sm">Created</p>
-                <p className="text-white font-bold text-lg">
-                  {logs.filter(l => l.actionType === 'create').length}
-                </p>
-              </div>
-            </div>
-          </div>
+                {/* Status Filter */}
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="all">All Status</option>
+                  <option value="success">Success</option>
+                  <option value="failed">Failed</option>
+                  <option value="warning">Warning</option>
+                  <option value="pending">Pending</option>
+                </select>
 
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-yellow-500/20 text-yellow-400">
-                <Settings className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-muted text-sm">Updated</p>
-                <p className="text-white font-bold text-lg">
-                  {logs.filter(l => l.actionType === 'update').length}
-                </p>
-              </div>
-            </div>
-          </div>
+                {/* Date Range */}
+                <select
+                  value={dateRange}
+                  onChange={(e) => setDateRange(e.target.value)}
+                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="all">All Time</option>
+                  <option value="custom">Custom Range</option>
+                </select>
 
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-red-500/20 text-red-400">
-                <Trash2 className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-muted text-sm">Deleted</p>
-                <p className="text-white font-bold text-lg">
-                  {logs.filter(l => l.actionType === 'delete').length}
-                </p>
-              </div>
-            </div>
-          </div>
+                {/* Severity Filter */}
+                <select
+                  value={selectedSeverity}
+                  onChange={(e) => setSelectedSeverity(e.target.value)}
+                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="all">All Severity</option>
+                  <option value="info">Info</option>
+                  <option value="warning">Warning</option>
+                  <option value="error">Error</option>
+                  <option value="critical">Critical</option>
+                </select>
 
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400">
-                <Shield className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-muted text-sm">System</p>
-                <p className="text-white font-bold text-lg">
-                  {logs.filter(l => l.actionType === 'system').length}
-                </p>
-              </div>
-            </div>
-          </div>
+                {/* Device Filter */}
+                <select
+                  value={selectedDevice}
+                  onChange={(e) => setSelectedDevice(e.target.value)}
+                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="all">All Devices</option>
+                  <option value="desktop">Desktop</option>
+                  <option value="mobile">Mobile</option>
+                  <option value="tablet">Tablet</option>
+                </select>
 
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-500/20 text-muted">
-                <LogOut className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-muted text-sm">Logouts</p>
-                <p className="text-white font-bold text-lg">
-                  {logs.filter(l => l.actionType === 'logout').length}
-                </p>
+                {/* Custom Date Range */}
+                {dateRange === 'custom' && (
+                  <>
+                    <input
+                      type="date"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    />
+                    <input
+                      type="date"
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </>
+                )}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+
+            {/* Activity Logs List */}
+            <div className="bg-secondary rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white">
+                  Activity Logs ({totalRecords.toLocaleString()})
+                </h2>
+              </div>
+
+              {loading ? (
+                <div className="flex items-center justify-center py-20">
+                  <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
+                </div>
+              ) : logs.length === 0 ? (
+                <div className="text-center py-20">
+                  <Activity className="w-16 h-16 text-muted mx-auto mb-4" />
+                  <p className="text-muted text-lg">No activity logs found</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-3">
+                    {logs.map((log) => (
+                      <div
+                        key={log.id}
+                        className="bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition-colors"
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Icon */}
+                          <div
+                            className={`p-2 rounded-lg ${getSeverityColor(log.severity_level)}`}
+                          >
+                            {getActionIcon(log.action_category || '')}
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="text-white font-medium">{log.action}</h3>
+                                  <span
+                                    className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs border ${getStatusColor(log.status)}`}
+                                  >
+                                    {getStatusIcon(log.status)}
+                                    {log.status}
+                                  </span>
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded text-xs ${getSeverityColor(log.severity_level)}`}
+                                  >
+                                    {log.severity_level}
+                                  </span>
+                                </div>
+                                <p className="text-muted text-sm mt-1">{log.description}</p>
+                                <div className="flex items-center gap-4 mt-2 text-xs text-muted">
+                                  <span className="flex items-center gap-1">
+                                    <User className="w-3 h-3" />
+                                    {log.user?.full_name || 'System'}
+                                  </span>
+                                  {log.company?.name && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{log.company.name}</span>
+                                    </>
+                                  )}
+                                  {log.ip_address && (
+                                    <>
+                                      <span>•</span>
+                                      <span>IP: {log.ip_address}</span>
+                                    </>
+                                  )}
+                                  {log.device_type && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{log.device_type}</span>
+                                    </>
+                                  )}
+                                  {log.browser && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{log.browser}</span>
+                                    </>
+                                  )}
+                                </div>
+                                {log.error_message && (
+                                  <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs font-mono">
+                                    {log.error_message}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-right ml-4">
+                                <p className="text-muted text-xs whitespace-nowrap">
+                                  {formatDate(log.created_at)}
+                                </p>
+                                {log.duration_ms && (
+                                  <p className="text-muted text-xs mt-1">
+                                    {log.duration_ms}ms
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-700">
+                      <p className="text-muted text-sm">
+                        Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
+                        {Math.min(currentPage * ITEMS_PER_PAGE, totalRecords)} of{' '}
+                        {totalRecords} results
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Previous
+                        </button>
+                        <span className="text-white">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

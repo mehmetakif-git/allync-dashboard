@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import MaintenanceGuard from './components/MaintenanceGuard';
 import Login from './pages/auth/Login';
+import MaintenancePage from './pages/MaintenancePage';
 
 // Layouts
 import SuperAdminLayout from '././layouts/SuperAdminLayout';
@@ -62,8 +64,11 @@ export default function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+            
+            {/* Maintenance Page - Public (no auth required) */}
+            <Route path="/maintenance" element={<MaintenancePage />} />
 
-            {/* Super Admin Routes */}
+            {/* Super Admin Routes - NO MAINTENANCE GUARD (Super admins always have access) */}
             <Route
               path="/admin"
               element={
@@ -106,13 +111,15 @@ export default function App() {
               <Route path="logs" element={<ActivityLogs />} />
             </Route>
 
-            {/* Company Admin & User Routes */}
+            {/* Company Admin & User Routes - WITH MAINTENANCE GUARD */}
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute>
-                  <CompanyLayout />
-                </ProtectedRoute>
+                <MaintenanceGuard>
+                  <ProtectedRoute>
+                    <CompanyLayout />
+                  </ProtectedRoute>
+                </MaintenanceGuard>
               }
             >
               {/* Default route - Company Dashboard */}

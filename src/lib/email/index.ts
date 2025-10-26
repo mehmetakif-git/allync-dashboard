@@ -2,3 +2,4 @@
 
 export { EmailService, emailTemplates, EMAIL_CONFIG } from '././emailServices';
 export type { } from './emailTemplates';
+export { maintenanceEmailService } from './maintenanceEmailService';
