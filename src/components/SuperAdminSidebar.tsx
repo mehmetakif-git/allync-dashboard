@@ -63,7 +63,7 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
     
     // Support
     { type: 'divider', dividerLabel: 'SUPPORT', id: 'divider-support', label: '', icon: null, path: '' },
-    { id: 'support', label: 'Support Tickets', icon: MessageCircle, path: '/admin/support', badge: 3 },
+    { id: 'support', label: 'Support Tickets', icon: MessageCircle, path: '/admin/support-tickets', badge: 3 },
     
     // Communication
     { type: 'divider', dividerLabel: 'COMMUNICATION', id: 'divider-communication', label: '', icon: null, path: '' },
