@@ -11,6 +11,7 @@ import {
 } from '../../lib/api/notifications';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import activityLogger from '../../lib/services/activityLogger';
+import errorHandler from '../../lib/utils/errorHandler';
 
 export default function NotificationsManagement() {
   const { user } = useAuth();
@@ -67,8 +68,8 @@ export default function NotificationsManagement() {
         recipients: recipientsCount,
       });
     } catch (err: any) {
-      console.error('❌ Error fetching data:', err);
-      setError('Failed to load notifications');
+      const errorInfo = errorHandler.handle(err, 'fetchData');
+      setError(errorInfo.userMessage);
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +109,7 @@ export default function NotificationsManagement() {
     }
 
     if (!user?.id) {
-      showError('User not authenticated');
+      showError('Your session has expired. Please log in again.');
       return;
     }
 
@@ -155,8 +156,8 @@ export default function NotificationsManagement() {
       // Refresh data
       await fetchData();
     } catch (err: any) {
-      console.error('❌ Error sending notification:', err);
-      showError(err.message || 'Failed to send notification');
+      const errorInfo = errorHandler.handle(err, 'sendNotification');
+      showError(errorInfo.userMessage);
     } finally {
       setIsSending(false);
     }
@@ -184,8 +185,8 @@ export default function NotificationsManagement() {
       setNotifications(notifications.filter(n => n.id !== notification.id));
       setStats(prev => ({ ...prev, total: prev.total - 1 }));
     } catch (err: any) {
-      console.error('❌ Error deleting notification:', err);
-      showError(err.message || 'Failed to delete notification');
+      const errorInfo = errorHandler.handle(err, 'deleteNotification');
+      showError(errorInfo.userMessage);
     }
   };
 
