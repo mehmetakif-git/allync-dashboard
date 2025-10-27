@@ -116,7 +116,7 @@ export default function NotificationsManagement() {
 
     setIsSending(true);
     try {
-      await createNotification({
+      const newNotification = await createNotification({
         type: formData.type,
         title: formData.title,
         message: formData.message,
