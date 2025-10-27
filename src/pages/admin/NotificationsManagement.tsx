@@ -15,6 +15,15 @@ import activityLogger from '../../lib/services/activityLogger';
 export default function NotificationsManagement() {
   const { user } = useAuth();
 
+  // Type emoji mapping
+  const typeEmoji: Record<string, string> = {
+    info: 'ℹ️',
+    success: '✅',
+    warning: '⚠️',
+    maintenance: '🔧',
+    service: '⚡'
+  };
+
   // Data states
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
   const [stats, setStats] = useState({
@@ -123,14 +132,7 @@ export default function NotificationsManagement() {
         target_audience: formData.target_audience,
         created_by: user.id,
       });;
-      // ✅ BONUS: Emoji mapping 
-      const typeEmoji: Record<string, string> = {
-        info: 'ℹ️',
-        success: '✅',
-        warning: '⚠️',
-        maintenance: '🔧',
-        service: '⚡'
-      };
+
       // Track notification creation
       await activityLogger.log({
         action: 'Notification Sent',
@@ -457,8 +459,8 @@ export default function NotificationsManagement() {
               return (
                 <div className={`rounded-lg p-4 border ${colors.bg} ${colors.border}`}>
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${colors.icon}`}>
-                      {getTypeIcon(formData.type)}
+                    <div className={`p-2 rounded-lg ${colors.icon} text-2xl`}>
+                      {typeEmoji[formData.type]}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-white font-medium">
@@ -477,23 +479,23 @@ export default function NotificationsManagement() {
               <h3 className="text-white font-medium">Notification Types</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Info className="w-4 h-4 text-blue-400" />
+                  <span className="text-lg">ℹ️</span>
                   <span className="text-secondary">Info - General information</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
+                  <span className="text-lg">✅</span>
                   <span className="text-secondary">Success - Positive updates</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-400" />
+                  <span className="text-lg">⚠️</span>
                   <span className="text-secondary">Warning - Important notices</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Wrench className="w-4 h-4 text-orange-400" />
+                  <span className="text-lg">🔧</span>
                   <span className="text-secondary">Maintenance - System updates</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-purple-400" />
+                  <span className="text-lg">⚡</span>
                   <span className="text-secondary">Service - New features</span>
                 </div>
               </div>
@@ -517,7 +519,7 @@ export default function NotificationsManagement() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       <span className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${getTypeBadgeColor(notification.type)} flex-shrink-0`}>
-                        {getTypeIcon(notification.type)}
+                        <span>{typeEmoji[notification.type]}</span>
                         {notification.type}
                       </span>
                       <div className="flex-1 min-w-0">

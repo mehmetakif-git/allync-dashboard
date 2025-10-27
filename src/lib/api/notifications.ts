@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import logger from '../services/consoleLogger';
 
 // =====================================================
 // INTERFACES
@@ -55,7 +56,7 @@ export async function createNotification(data: {
   expires_at?: string;
   created_by: string;
 }) {
-  console.log('📡 [createNotification] Creating notification:', data.title);
+  logger.apiRequest('createNotification', 'POST', { title: data.title });
 
   const { data: notification, error } = await supabase
     .from('system_notifications')
@@ -76,12 +77,12 @@ export async function createNotification(data: {
     .single();
 
   if (error) {
-    console.error('❌ [createNotification] Error:', error);
+    logger.error('Failed to create notification', error);
     throw error;
   }
 
-  console.log('✅ [createNotification] Notification created:', notification.id);
-  console.log('🔔 [createNotification] Trigger will auto-create user_notifications');
+  logger.success('Notification created', { id: notification.id });
+  logger.info('Trigger will auto-create user_notifications');
   
   return notification as SystemNotification;
 }
@@ -92,7 +93,7 @@ export async function getAllNotifications(filters?: {
   is_active?: boolean;
   include_deleted?: boolean;
 }) {
-  console.log('📡 [getAllNotifications] Fetching all notifications');
+  logger.apiRequest('getAllNotifications', 'GET');
 
   let query = supabase
     .from('system_notifications')
@@ -117,11 +118,11 @@ export async function getAllNotifications(filters?: {
   const { data, error } = await query;
 
   if (error) {
-    console.error('❌ [getAllNotifications] Error:', error);
+    logger.error('getAllNotifications failed', error);
     throw error;
   }
 
-  console.log(`✅ [getAllNotifications] Found ${data?.length || 0} notifications`);
+  logger.success('Notifications fetched', { count: data?.length || 0 });
   return data;
 }
 
@@ -130,7 +131,7 @@ export async function updateNotification(
   notificationId: string,
   updates: Partial<SystemNotification>
 ) {
-  console.log('📡 [updateNotification] Updating notification:', notificationId);
+  logger.apiRequest('updateNotification', 'PATCH', { id: notificationId });
 
   const { data, error } = await supabase
     .from('system_notifications')
@@ -140,17 +141,17 @@ export async function updateNotification(
     .single();
 
   if (error) {
-    console.error('❌ [updateNotification] Error:', error);
+    logger.error('updateNotification failed', error);
     throw error;
   }
 
-  console.log('✅ [updateNotification] Notification updated');
+  logger.success('Notification updated');
   return data as SystemNotification;
 }
 
 // Soft delete a notification
 export async function deleteNotification(notificationId: string) {
-  console.log('🗑️ [deleteNotification] Soft deleting notification:', notificationId);
+  logger.apiRequest('deleteNotification', 'DELETE', { id: notificationId });
 
   const { data, error } = await supabase
     .from('system_notifications')
@@ -163,17 +164,17 @@ export async function deleteNotification(notificationId: string) {
     .single();
 
   if (error) {
-    console.error('❌ [deleteNotification] Error:', error);
+    logger.error('deleteNotification failed', error);
     throw error;
   }
 
-  console.log('✅ [deleteNotification] Notification soft deleted');
+  logger.success('Notification soft deleted');
   return data;
 }
 
 // Hard delete a notification (permanent)
 export async function hardDeleteNotification(notificationId: string) {
-  console.log('🗑️ [hardDeleteNotification] Permanently deleting notification:', notificationId);
+  logger.apiRequest('hardDeleteNotification', 'DELETE', { id: notificationId });
 
   const { error } = await supabase
     .from('system_notifications')
@@ -181,16 +182,16 @@ export async function hardDeleteNotification(notificationId: string) {
     .eq('id', notificationId);
 
   if (error) {
-    console.error('❌ [hardDeleteNotification] Error:', error);
+    logger.error('hardDeleteNotification failed', error);
     throw error;
   }
 
-  console.log('✅ [hardDeleteNotification] Notification permanently deleted');
+  logger.success('Notification permanently deleted');
 }
 
 // Toggle notification active status
 export async function toggleNotificationStatus(notificationId: string) {
-  console.log('🔄 [toggleNotificationStatus] Toggling status:', notificationId);
+  logger.apiRequest('toggleNotificationStatus', 'PATCH', { id: notificationId });
 
   const { data: current, error: fetchError } = await supabase
     .from('system_notifications')
@@ -215,7 +216,7 @@ export async function getUserNotifications(userId: string, filters?: {
   type?: SystemNotification['type'];
   limit?: number;
 }) {
-  console.log('📡 [getUserNotifications] Fetching notifications for user:', userId);
+  logger.apiRequest('getUserNotifications', 'GET', { userId });
 
   let query = supabase
     .from('user_notifications')
@@ -240,11 +241,11 @@ export async function getUserNotifications(userId: string, filters?: {
   const { data, error } = await query;
 
   if (error) {
-    console.error('❌ [getUserNotifications] Error:', error);
+    logger.error('getUserNotifications failed', error);
     throw error;
   }
 
-  console.log(`✅ [getUserNotifications] Found ${data?.length || 0} notifications`);
+  logger.success('User notifications fetched', { count: data?.length || 0 });
 
   // Transform data to include read status
   const notifications: NotificationWithReadStatus[] = data
@@ -266,7 +267,7 @@ export async function getUserNotifications(userId: string, filters?: {
 
 // Get unread notification count
 export async function getUnreadCount(userId: string) {
-  console.log('📡 [getUnreadCount] Fetching unread count for user:', userId);
+  logger.apiRequest('getUnreadCount', 'GET', { userId });
 
   const { count, error } = await supabase
     .from('user_notifications')
@@ -275,17 +276,17 @@ export async function getUnreadCount(userId: string) {
     .eq('is_read', false);
 
   if (error) {
-    console.error('❌ [getUnreadCount] Error:', error);
+    logger.error('getUnreadCount failed', error);
     throw error;
   }
 
-  console.log(`✅ [getUnreadCount] Unread count: ${count}`);
+  logger.success('Unread count fetched', { count });
   return count || 0;
 }
 
 // Mark notification as read
 export async function markAsRead(userNotificationId: string) {
-  console.log('✅ [markAsRead] Marking as read:', userNotificationId);
+  logger.apiRequest('markAsRead', 'PATCH', { id: userNotificationId });
 
   const { data, error } = await supabase
     .from('user_notifications')
@@ -298,17 +299,17 @@ export async function markAsRead(userNotificationId: string) {
     .single();
 
   if (error) {
-    console.error('❌ [markAsRead] Error:', error);
+    logger.error('markAsRead failed', error);
     throw error;
   }
 
-  console.log('✅ [markAsRead] Marked as read');
+  logger.success('Marked as read');
   return data;
 }
 
 // Mark all notifications as read for a user
 export async function markAllAsRead(userId: string) {
-  console.log('✅ [markAllAsRead] Marking all as read for user:', userId);
+  logger.apiRequest('markAllAsRead', 'PATCH', { userId });
 
   const { data, error } = await supabase
     .from('user_notifications')
@@ -321,17 +322,17 @@ export async function markAllAsRead(userId: string) {
     .select();
 
   if (error) {
-    console.error('❌ [markAllAsRead] Error:', error);
+    logger.error('markAllAsRead failed', error);
     throw error;
   }
 
-  console.log(`✅ [markAllAsRead] Marked ${data?.length || 0} notifications as read`);
+  logger.success('All notifications marked as read', { count: data?.length || 0 });
   return data;
 }
 
 // Delete user notification (remove from personal list)
 export async function deleteUserNotification(userNotificationId: string) {
-  console.log('🗑️ [deleteUserNotification] Deleting user notification:', userNotificationId);
+  logger.apiRequest('deleteUserNotification', 'DELETE', { id: userNotificationId });
 
   const { error } = await supabase
     .from('user_notifications')
@@ -339,17 +340,16 @@ export async function deleteUserNotification(userNotificationId: string) {
     .eq('id', userNotificationId);
 
   if (error) {
-    console.error('❌ [deleteUserNotification] Error:', error);
+    logger.error('deleteUserNotification failed', error);
     throw error;
   }
 
-  console.log('✅ [deleteUserNotification] User notification deleted');
+  logger.success('User notification deleted');
 }
 
 // Clear all read notifications for a user
 export async function clearReadNotifications(userId: string) {
-  console.log('🗑️ [clearReadNotifications] Clearing read notifications for user:', userId);
-
+  logger.apiRequest('clearReadNotifications', 'DELETE', { userId });
   const { error } = await supabase
     .from('user_notifications')
     .delete()
@@ -357,11 +357,11 @@ export async function clearReadNotifications(userId: string) {
     .eq('is_read', true);
 
   if (error) {
-    console.error('❌ [clearReadNotifications] Error:', error);
+    logger.error('clearReadNotifications failed', error);
     throw error;
   }
 
-  console.log('✅ [clearReadNotifications] Read notifications cleared');
+  logger.success('Read notifications cleared');
 }
 
 // =====================================================
@@ -370,7 +370,7 @@ export async function clearReadNotifications(userId: string) {
 
 // Get notification statistics (Super Admin)
 export async function getNotificationStats() {
-  console.log('📊 [getNotificationStats] Fetching statistics');
+  logger.apiRequest('getNotificationStats', 'GET');
 
   const { data: notifications, error } = await supabase
     .from('system_notifications')
@@ -378,7 +378,7 @@ export async function getNotificationStats() {
     .is('deleted_at', null);
 
   if (error) {
-    console.error('❌ [getNotificationStats] Error:', error);
+    logger.error('getNotificationStats failed', error);
     throw error;
   }
 
@@ -398,24 +398,24 @@ export async function getNotificationStats() {
     },
   };
 
-  console.log('✅ [getNotificationStats] Stats calculated:', stats);
+  logger.success('Notification stats calculated', stats);
   return stats;
 }
 
 // Get total recipients count
 export async function getTotalRecipientsCount() {
-  console.log('📊 [getTotalRecipientsCount] Counting total users');
+  logger.apiRequest('getTotalRecipientsCount', 'GET');
 
   const { count, error } = await supabase
     .from('profiles')
     .select('id', { count: 'exact', head: true });
 
   if (error) {
-    console.error('❌ [getTotalRecipientsCount] Error:', error);
+    logger.error('getTotalRecipientsCount failed', error);
     throw error;
   }
 
-  console.log(`✅ [getTotalRecipientsCount] Total users: ${count}`);
+  logger.success('Total recipients counted', { count });
   return count || 0;
 }
 
@@ -428,7 +428,7 @@ export function subscribeToUserNotifications(
   userId: string,
   callback: (notification: NotificationWithReadStatus) => void
 ) {
-  console.log('🔔 [subscribeToUserNotifications] Setting up realtime subscription');
+  logger.info('Setting up realtime subscription for notifications');
 
   const subscription = supabase
     .channel(`user-notifications-${userId}`)
@@ -441,7 +441,7 @@ export function subscribeToUserNotifications(
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log('🔔 [subscribeToUserNotifications] New notification:', payload);
+        logger.info('New notification received', { id: payload.new.id });
         
         // Fetch full notification details
         const { data } = await supabase
@@ -474,7 +474,7 @@ export function subscribeToUserNotifications(
 
 // Unsubscribe from notifications
 export function unsubscribeFromNotifications(subscription: any) {
-  console.log('🔕 [unsubscribeFromNotifications] Cleaning up subscription');
+  logger.info('Cleaning up notification subscription');
   if (subscription) {
     supabase.removeChannel(subscription);
   }
