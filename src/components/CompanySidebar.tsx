@@ -1,5 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Package, FileText, HelpCircle, Settings, LogOut, X } from 'lucide-react';
+import {
+  Home, Package, FileText, HelpCircle, Settings, LogOut, X,
+  MessageCircle, Instagram, Calendar, Sheet, Mail,
+  FolderOpen, Image, Mic, Heart, Globe, Smartphone, AlertCircle
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -82,7 +86,6 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
 
   // Map service slug to path
   const getServicePath = (slug: string) => {
-    // Map database slugs to route paths
     const slugMap: Record<string, string> = {
       'whatsapp-automation': 'whatsapp',
       'instagram-automation': 'instagram',
@@ -99,6 +102,32 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
     return `/dashboard/services/${slugMap[slug] || slug}`;
   };
 
+  // Map service slug to icon
+  const getServiceIcon = (slug: string) => {
+    const iconMap: Record<string, any> = {
+      'whatsapp-automation': MessageCircle,
+      'instagram-automation': Instagram,
+      'google-calendar-integration': Calendar,
+      'google-calendar': Calendar,
+      'google-sheets-integration': Sheet,
+      'google-sheets': Sheet,
+      'gmail-integration': Mail,
+      'gmail': Mail,
+      'google-docs-integration': FileText,
+      'google-docs': FileText,
+      'google-drive-integration': FolderOpen,
+      'google-drive': FolderOpen,
+      'google-photos-integration': Image,
+      'google-photos': Image,
+      'voice-cloning': Mic,
+      'sentiment-analysis': Heart,
+      'website-development': Globe,
+      'mobile-app-development': Smartphone
+    };
+
+    return iconMap[slug] || Package;
+  };
+
   return (
     <>
       {isOpen && (
@@ -110,7 +139,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
 
       <aside
         className={`fixed lg:sticky top-0 left-0 h-screen bg-primary border-r border-primary flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-          } w-64`}
+          } w-72`}
       >
         {/* Header */}
         <div className="p-6 border-b border-primary flex items-center justify-between">
@@ -170,23 +199,19 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                 {activeServices.map((service: any) => {
                   const path = getServicePath(service.slug);
                   const active = isActive(path);
+                  const ServiceIcon = getServiceIcon(service.slug);
 
                   return (
                     <li key={service.id}>
                       <button
                         onClick={() => handleNavClick(path)}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${active
-                            ? 'bg-blue-600 text-white shadow-lg'
-                            : 'text-muted hover:bg-secondary hover:text-white'
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 border-l-4 ${active
+                            ? 'bg-blue-600 text-white shadow-lg border-l-blue-400'
+                            : 'text-muted hover:bg-secondary/80 hover:text-white hover:border-l-green-400 border-l-green-500/50'
                           }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">{service.icon}</span>
-                          <span className="font-medium truncate">{service.name_en}</span>
-                        </div>
-                        <span className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 text-green-500 text-xs font-medium rounded flex-shrink-0">
-                          Active
-                        </span>
+                        <ServiceIcon className="w-5 h-5 flex-shrink-0" />
+                        <span className="text-sm font-medium flex-1 truncate">{service.name_en}</span>
                       </button>
                     </li>
                   );

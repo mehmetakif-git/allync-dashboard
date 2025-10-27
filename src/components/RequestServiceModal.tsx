@@ -19,8 +19,6 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
       name: 'Basic',
       icon: Zap,
       price: service.pricing_basic?.price || 0,
-      currency: service.pricing_basic?.currency || 'USD',
-      period: service.pricing_basic?.period || 'month',
       color: 'from-gray-600 to-gray-700',
       features: service.pricing_basic?.features_en || ['Standard features', 'Email support', 'Monthly reports', 'Basic analytics'],
     },
@@ -29,8 +27,6 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
       name: 'Standard',
       icon: Star,
       price: service.pricing_standard?.price || 0,
-      currency: service.pricing_standard?.currency || 'USD',
-      period: service.pricing_standard?.period || 'month',
       color: 'from-blue-600 to-cyan-600',
       features: service.pricing_standard?.features_en || ['All Basic features', 'Priority support', 'Weekly reports', 'Advanced analytics', 'API access'],
       popular: true,
@@ -40,8 +36,6 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
       name: 'Premium',
       icon: Crown,
       price: service.pricing_premium?.price || 0,
-      currency: service.pricing_premium?.currency || 'USD',
-      period: service.pricing_premium?.period || 'month',
       color: 'from-purple-600 to-pink-600',
       features: service.pricing_premium?.features_en || ['All Standard features', '24/7 dedicated support', 'Daily reports', 'Custom integrations', 'SLA guarantee', 'Dedicated account manager'],
     },
@@ -101,8 +95,6 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
               {packages.map((pkg) => {
                 const Icon = pkg.icon;
                 const isSelected = selectedPackage === pkg.id;
-                const currencySymbol = pkg.currency === 'USD' ? '$' : pkg.currency === 'EUR' ? '€' : '₺';
-                const periodText = pkg.period === 'month' ? 'month' : pkg.period === 'year' ? 'year' : 'one-time';
 
                 return (
                   <button
@@ -126,9 +118,7 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
 
                     <h4 className="text-lg font-bold text-white mb-1">{pkg.name}</h4>
                     <p className="text-2xl font-bold text-white mb-3">
-                      {currencySymbol}{pkg.price}<span className="text-sm text-muted">/{periodText}</span>
-                      {pkg.currency === 'USD' ? '$' : pkg.currency === 'EUR' ? '€' : '₺'}{pkg.price}
-                      <span className="text-sm text-muted">/{pkg.period === 'month' ? 'month' : pkg.period === 'year' ? 'year' : 'one-time'}</span>
+                      ${pkg.price}<span className="text-sm text-muted">/month</span>
                     </p>
 
                     <ul className="space-y-1.5 mb-3">
@@ -179,10 +169,7 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
               <div className="flex justify-between">
                 <span className="text-muted">Monthly Cost:</span>
                 <span className="text-white font-bold">
-                  {service[`pricing_${selectedPackage}`]?.currency === 'USD' ? '$' :
-                   service[`pricing_${selectedPackage}`]?.currency === 'EUR' ? '€' : '₺'}
-                    service[`pricing_${selectedPackage}`]?.currency === 'EUR' ? '€' : '₺'}
-                  {service[`pricing_${selectedPackage}`]?.price || 0}
+                  ${service[`pricing_${selectedPackage}`]?.price || 0}
                 </span>
               </div>
               <div className="flex justify-between">

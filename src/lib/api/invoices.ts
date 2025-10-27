@@ -132,6 +132,8 @@ export async function getAllInvoices() {
 
 // Get invoices by company (Company Admin)
 export async function getInvoicesByCompany(companyId: string) {
+  console.log('🔍 [API] getInvoicesByCompany called with companyId:', companyId);
+
   const { data, error } = await supabase
     .from('invoices')
     .select(`
@@ -148,8 +150,34 @@ export async function getInvoicesByCompany(companyId: string) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching company invoices:', error);
+    console.error('❌ [API] Error fetching company invoices:', error);
     throw error;
+  }
+
+  console.log('✅ [API] Invoices fetched:', {
+    count: data?.length || 0,
+    companyId: companyId,
+    invoices: data?.map(inv => ({
+      id: inv.id,
+      invoice_number: inv.invoice_number,
+      company_id: inv.company_id,
+      company_name: inv.company?.name,
+      total_amount: inv.total_amount,
+      status: inv.status
+    }))
+  });
+
+  // Security check: Verify all invoices belong to the requested company
+  const wrongCompanyInvoices = data?.filter(inv => inv.company_id !== companyId) || [];
+  if (wrongCompanyInvoices.length > 0) {
+    console.error('🚨 [API] SECURITY WARNING: Found invoices from other companies!', {
+      requestedCompanyId: companyId,
+      wrongInvoices: wrongCompanyInvoices.map(inv => ({
+        invoice_id: inv.id,
+        invoice_company_id: inv.company_id,
+        company_name: inv.company?.name
+      }))
+    });
   }
 
   return data;

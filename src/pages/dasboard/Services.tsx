@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';
+import {
+  AlertCircle, CheckCircle, Clock, Wrench,
+  MessageCircle, Instagram, Calendar, Sheet, Mail,
+  FileText, FolderOpen, Image, Mic, Heart,
+  Globe, Smartphone
+} from 'lucide-react';
 import RequestServiceModal from '../../components/RequestServiceModal';
 import { getActiveServices } from '../../lib/api/serviceTypes';
 import { getCompanyServiceRequests, createServiceRequest } from '../../lib/api/serviceRequests';
@@ -11,8 +16,6 @@ export default function Services() {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
 
-  // Real DB states
-  // ✅ YENİ STATE'LER
   const [services, setServices] = useState<any[]>([]);
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,18 +24,14 @@ export default function Services() {
   const isCompanyAdmin = user?.role === 'company_admin';
   const isRegularUser = user?.role === 'user';
 
-  // Fetch services and requests from DB
-  // ✅ YENİ: Fetch services and requests from DB
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Fetch all active services
         const servicesData = await getActiveServices();
         setServices(servicesData || []);
 
-        // Fetch company's service requests (if company admin)
         if (user?.company_id && isCompanyAdmin) {
           const requestsData = await getCompanyServiceRequests(user.company_id);
           setServiceRequests(requestsData || []);
@@ -50,9 +49,7 @@ export default function Services() {
   }, [user?.company_id, isCompanyAdmin]);
 
   const filteredServices = services.filter(service => {
-    // Hide inactive services from Company Admin and Users
     if (service.status === 'inactive') return false;
-
     if (selectedCategory === 'all') return true;
     return service.category === selectedCategory;
   });
@@ -73,7 +70,6 @@ export default function Services() {
   };
 
   const handleViewDetails = (serviceSlug: string) => {
-    // Map slug to route
     const slugMap: Record<string, string> = {
       'whatsapp-automation': 'whatsapp',
       'instagram-automation': 'instagram',
@@ -91,11 +87,6 @@ export default function Services() {
     window.location.href = `/dashboard/services/${path}`;
   };
 
-  // Submit request to DB
-    // Navigate to service detail page
-    window.location.href = `/dashboard/services/${serviceSlug.replace('-automation', '').replace('-integration', '').replace('-development', '')}`;
-  }
-  // ✅ YENİ: Submit request to DB
   const handleSubmitRequest = async (packageType: 'basic' | 'standard' | 'premium', notes: string) => {
     if (!selectedService || !user?.company_id || !profile?.id) {
       alert('Missing required information');
@@ -113,7 +104,6 @@ export default function Services() {
 
       alert('Service request submitted successfully! Waiting for Super Admin approval.');
 
-      // Refresh requests
       const requestsData = await getCompanyServiceRequests(user.company_id);
       setServiceRequests(requestsData || []);
 
@@ -125,7 +115,6 @@ export default function Services() {
     }
   };
 
-  // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
@@ -134,7 +123,6 @@ export default function Services() {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
@@ -156,28 +144,31 @@ export default function Services() {
         <div className="flex gap-4 mb-8">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'all'
-              ? 'bg-blue-600 text-white'
-              : 'bg-secondary text-muted hover:bg-hover'
-              }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              selectedCategory === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-secondary text-muted hover:bg-hover'
+            }`}
           >
             All Services ({services.length})
           </button>
           <button
             onClick={() => setSelectedCategory('ai')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'ai'
-              ? 'bg-blue-600 text-white'
-              : 'bg-secondary text-muted hover:bg-hover'
-              }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              selectedCategory === 'ai'
+                ? 'bg-blue-600 text-white'
+                : 'bg-secondary text-muted hover:bg-hover'
+            }`}
           >
             AI Services ({services.filter(s => s.category === 'ai').length})
           </button>
           <button
             onClick={() => setSelectedCategory('digital')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'digital'
-              ? 'bg-blue-600 text-white'
-              : 'bg-secondary text-muted hover:bg-hover'
-              }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              selectedCategory === 'digital'
+                ? 'bg-blue-600 text-white'
+                : 'bg-secondary text-muted hover:bg-hover'
+            }`}
           >
             Digital Services ({services.filter(s => s.category === 'digital').length})
           </button>
@@ -188,18 +179,37 @@ export default function Services() {
             const isActive = isServiceActive(service.id);
             const status = getServiceStatus(service.id);
 
-            // Get icon - from emoji string or default
-            const serviceIcon = service.icon || '📦';
+            const iconMap: Record<string, any> = {
+              'whatsapp-automation': MessageCircle,
+              'instagram-automation': Instagram,
+              'google-calendar-integration': Calendar,
+              'google-calendar': Calendar,
+              'google-sheets-integration': Sheet,
+              'google-sheets': Sheet,
+              'gmail-integration': Mail,
+              'gmail': Mail,
+              'google-docs-integration': FileText,
+              'google-docs': FileText,
+              'google-drive-integration': FolderOpen,
+              'google-drive': FolderOpen,
+              'google-photos-integration': Image,
+              'google-photos': Image,
+              'voice-cloning': Mic,
+              'sentiment-analysis': Heart,
+              'website-development': Globe,
+              'mobile-app-development': Smartphone
+            };
 
-            // Get starting price
+            // Get icon - use Package as fallback instead of AlertCircle
+            const ServiceIcon = iconMap[service.slug];
+            if (!ServiceIcon) {
+              console.log('Missing icon mapping for slug:', service.slug);
+            }
+            const FinalIcon = ServiceIcon || AlertCircle;
+
             const startingPrice = service.pricing_basic?.price ||
                                  service.pricing_standard?.price ||
                                  service.pricing_premium?.price || 0;
-            const currency = service.pricing_basic?.currency || 'USD';
-            const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : '₺';
-            const Icon = service.icon;
-            const isActive = isServiceActive(service.id);  // ✅ slug yerine id
-            const status = getServiceStatus(service.id);   // ✅ slug yerine id
 
             return (
               <div
@@ -207,7 +217,7 @@ export default function Services() {
                 className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-secondary transition-all"
               >
                 <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center mb-4`}>
-                  <span className="text-3xl">{serviceIcon}</span>
+                  <FinalIcon className="w-8 h-8 text-white" />
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
@@ -227,17 +237,13 @@ export default function Services() {
 
                 {service.status === 'maintenance' ? (
                   <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                    <p className="text-sm text-orange-500 font-medium text-center">
-                      🔧 Service Under Maintenance
-                    </p>
-                    <p className="text-xs text-orange-400/70 text-center mt-1">
-                      Pricing temporarily unavailable
-                    </p>
+                    <p className="text-sm text-orange-500 font-medium text-center">🔧 Service Under Maintenance</p>
+                    <p className="text-xs text-orange-400/70 text-center mt-1">Pricing temporarily unavailable</p>
                   </div>
                 ) : (
                   <div className="mb-4 p-3 bg-primary/50 rounded-lg">
                     <p className="text-xs text-muted mb-1">Starting from</p>
-                    <p className="text-2xl font-bold text-white">{currencySymbol}{startingPrice}<span className="text-sm text-muted">/month</span></p>
+                    <p className="text-2xl font-bold text-white">${startingPrice}<span className="text-sm text-muted">/month</span></p>
                   </div>
                 )}
 
@@ -278,9 +284,7 @@ export default function Services() {
                       >
                         Service Under Maintenance
                       </button>
-                      <p className="text-xs text-center text-muted">
-                        This service is temporarily unavailable
-                      </p>
+                      <p className="text-xs text-center text-muted">This service is temporarily unavailable</p>
                     </div>
                   ) : (
                     <>
@@ -312,9 +316,7 @@ export default function Services() {
                       {isRegularUser && (
                         <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg flex items-start gap-2">
                           <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm text-orange-500">
-                            Contact Company Admin to request this service
-                          </p>
+                          <p className="text-sm text-orange-500">Contact Company Admin to request this service</p>
                         </div>
                       )}
                     </>
