@@ -12,6 +12,7 @@ import {
 import LoadingSpinner from '../../components/LoadingSpinner';
 import activityLogger from '../../lib/services/activityLogger';
 import errorHandler from '../../lib/utils/errorHandler';
+import inputValidator from '../../lib/utils/inputValidator';
 
 export default function NotificationsManagement() {
   const { user } = useAuth();
@@ -103,15 +104,42 @@ export default function NotificationsManagement() {
   const handleSendNotification = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validation: Check required fields
     if (!formData.title.trim() || !formData.message.trim()) {
-      showError('Please fill in all required fields');
+      showError('Please fill in all required fields.');
       return;
     }
 
+    // Validation: Title validation
+    const titleValidation = inputValidator.validateNotificationTitle(formData.title);
+    if (!titleValidation.isValid) {
+      showError(titleValidation.errors.join(' '));
+      return;
+    }
+
+    // Validation: Message validation
+    const messageValidation = inputValidator.validateNotificationMessage(formData.message);
+    if (!messageValidation.isValid) {
+      showError(messageValidation.errors.join(' '));
+      return;
+    }
+
+    // Validation: XSS check
+    if (inputValidator.containsDangerousContent(formData.title) ||
+      inputValidator.containsDangerousContent(formData.message)) {
+      showError('Your input contains potentially dangerous content. Please remove any HTML or script tags.');
+      return;
+    }
+
+    // Auth check
     if (!user?.id) {
       showError('Your session has expired. Please log in again.');
       return;
     }
+
+    // Sanitize inputs (extra security layer)
+    const cleanTitle = inputValidator.sanitize(formData.title);
+    const cleanMessage = inputValidator.sanitize(formData.message);
 
     const targetText =
       formData.target_audience === 'all' ? 'all users' :
@@ -120,7 +148,7 @@ export default function NotificationsManagement() {
             formData.target_audience === 'users' ? 'all regular users' :
               'specific companies';
 
-    if (!confirm(`Send this notification to ${targetText}?\n\nTitle: ${formData.title}\nMessage: ${formData.message}`)) {
+    if (!confirm(`Send this notification to ${targetText}?\n\nTitle: ${cleanTitle}\nMessage: ${cleanMessage}`)) {
       return;
     }
 
@@ -128,17 +156,17 @@ export default function NotificationsManagement() {
     try {
       const newNotification = await createNotification({
         type: formData.type,
-        title: formData.title,
-        message: formData.message,
+        title: cleanTitle,        // ← Sanitized
+        message: cleanMessage,    // ← Sanitized
         target_audience: formData.target_audience,
         created_by: user.id,
-      });;
+      });
 
       // Track notification creation
       await activityLogger.log({
         action: 'Notification Sent',
         action_category: 'create',
-        description: `Sent ${formData.type} notification to ${targetText}: "${formData.title}"`,
+        description: `Sent ${formData.type} notification to ${targetText}: "${cleanTitle}"`,
         entity_type: 'Notification',
         entity_id: newNotification.id,
       });

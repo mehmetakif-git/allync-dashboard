@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import logger from '../services/consoleLogger';
+import inputValidator from '../utils/inputValidator';
 
 // =====================================================
 // INTERFACES
@@ -55,24 +56,40 @@ export async function createNotification(data: {
   target_company_ids?: string[];
   expires_at?: string;
   created_by: string;
-  Promise<SystemNotification> 
-}) {
+}): Promise<SystemNotification> {
   logger.apiRequest('createNotification', 'POST', { title: data.title });
+
+  // API-level validation (defense in depth)
+  const titleValidation = inputValidator.validateNotificationTitle(data.title);
+  if (!titleValidation.isValid) {
+    throw new Error(titleValidation.errors.join(' '));
+  }
+
+  const messageValidation = inputValidator.validateNotificationMessage(data.message);
+  if (!messageValidation.isValid) {
+    throw new Error(messageValidation.errors.join(' '));
+  }
+
+  // Sanitize at API level (defense in depth)
+  const cleanData = {
+    ...data,
+    title: inputValidator.sanitize(data.title),
+    message: inputValidator.sanitize(data.message),
+  }
 
   const { data: notification, error } = await supabase
     .from('system_notifications')
     .insert([{
-      type: data.type,
-      title: data.title,
-      message: data.message,
-      icon: data.icon || null,
-      action_url: data.action_url || null,
-      action_label: data.action_label || null,
-      target_audience: data.target_audience || 'all',
-      target_company_ids: data.target_company_ids || null,
-      expires_at: data.expires_at || null,
-      created_by: data.created_by,
-      is_active: true,
+      type: cleanData.type,
+      title: cleanData.title,
+      message: cleanData.message,
+      icon: cleanData.icon || null,
+      action_url: cleanData.action_url || null,
+      action_label: cleanData.action_label || null,
+      target_audience: cleanData.target_audience || 'all',
+      target_company_ids: cleanData.target_company_ids || null,
+      expires_at: cleanData.expires_at || null,
+      created_by: cleanData.created_by,
     }])
     .select()
     .single();
@@ -132,7 +149,7 @@ export async function getAllNotifications(filters?: {
 export async function updateNotification(
   notificationId: string,
   updates: Partial<SystemNotification>
-  ): Promise<SystemNotification> {
+): Promise<SystemNotification> {
 
   logger.apiRequest('updateNotification', 'PATCH', { id: notificationId });
 
