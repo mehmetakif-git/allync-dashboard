@@ -12,6 +12,7 @@ import {
   getPaymentGatewayName,
   type Invoice,
 } from '../../lib/api/invoices';
+import activityLogger from '../../lib/services/activityLogger';
 
 // =====================================================
 // COMPONENT
@@ -108,6 +109,15 @@ export default function InvoicesManagement() {
       await markInvoiceAsPaid(invoiceId, {
         paid_at: new Date().toISOString(),
       });
+      // Track invoice payment
+      const invoice = invoices.find(inv => inv.id === invoiceId);
+      await activityLogger.log({
+        action: 'Invoice Marked as Paid',
+        action_category: 'update',
+        description: `Marked invoice ${invoice?.invoice_number} as paid - Amount: ${invoice?.total_amount} ${invoice?.currency}`,
+        entity_type: 'Invoice',
+        entity_id: invoiceId,
+      });
       await fetchInvoices();
       showSuccess('Invoice marked as paid successfully!');
     } catch (error: any) {
@@ -122,6 +132,15 @@ export default function InvoicesManagement() {
     
     try {
       await cancelInvoice(invoiceId, reason);
+      // Track invoice cancellation
+      const invoice = invoices.find(inv => inv.id === invoiceId);
+      await activityLogger.log({
+        action: 'Invoice Cancelled',
+        action_category: 'delete',
+        description: `Cancelled invoice ${invoice?.invoice_number}${reason ? ` - Reason: ${reason}` : ''}`,
+        entity_type: 'Invoice',
+        entity_id: invoiceId,
+      });
       await fetchInvoices();
       showSuccess('Invoice cancelled successfully!');
     } catch (error: any) {
@@ -176,11 +195,68 @@ export default function InvoicesManagement() {
 
   const handleExportAll = () => {
     exportToCSV(invoices, `all-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+        // ✅ BONUS: Export tracking EKLE (exportToCSV'den SONRA)
+    activityLogger.log({
+      action: 'Invoices Exported',
+      action_category: 'view',
+      description: `Exported ${invoices.length} invoices to CSV (All Invoices)`,
+      entity_type: 'Invoice',
+    });
+    
     setShowExportMenu(false);
   };
 
   const handleExportFiltered = () => {
     exportToCSV(filteredInvoices, `filtered-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    
+    // ✅ BONUS: Export tracking EKLE
+    activityLogger.log({
+      action: 'Invoices Exported',
+      action_category: 'view',
+      description: `Exported ${filteredInvoices.length} invoices to CSV (Filtered Results)`,
+      entity_type: 'Invoice',
+    });
+    
+    setShowExportMenu(false);
+  };
+
+  const handleExportByStatus = (status: string) => {
+    const filtered = invoices.filter(inv => inv.status === status);
+    exportToCSV(filtered, `${status}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    
+    // ✅ BONUS: Export tracking EKLE
+    activityLogger.log({
+      action: 'Invoices Exported',
+      action_category: 'view',
+      description: `Exported ${filtered.length} ${status} invoices to CSV`,
+      entity_type: 'Invoice',
+    });
+    
+    setShowExportMenu(false);
+  };
+
+  const handleExportByCompany = () => {
+    const companyName = prompt('Enter company name to export:');
+    if (!companyName) return;
+    
+    const filtered = invoices.filter(inv => 
+      inv.company?.name.toLowerCase().includes(companyName.toLowerCase())
+    );
+    
+    if (filtered.length === 0) {
+      showError('No invoices found for this company');
+      return;
+    }
+    
+    exportToCSV(filtered, `${companyName.replace(/\s/g, '-')}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    
+    // ✅ BONUS: Export tracking EKLE
+    activityLogger.log({
+      action: 'Invoices Exported',
+      action_category: 'view',
+      description: `Exported ${filtered.length} invoices for company: ${companyName}`,
+      entity_type: 'Invoice',
+    });
     setShowExportMenu(false);
   };
 
