@@ -24,24 +24,24 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
   const { user, logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [activeServices, setActiveServices] = useState<any[]>([]);
-  
+
   const isCompanyAdmin = user?.role === 'company_admin';
 
   // Fetch active services
   useEffect(() => {
     const fetchServices = async () => {
       if (!user?.company_id) return;
-      
+
       try {
         const [requests, types] = await Promise.all([
           getServiceRequests(user.company_id),
           getServiceTypes()
         ]);
-        
+
         const approvedIds = requests
           .filter((r: any) => r.status === 'approved')
           .map((r: any) => r.service_type_id);
-        
+
         const services = types.filter((t: any) => approvedIds.includes(t.id));
         setActiveServices(services);
       } catch (err) {
@@ -82,7 +82,21 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
 
   // Map service slug to path
   const getServicePath = (slug: string) => {
-    return `/dashboard/services/${slug.replace('-automation', '').replace('-integration', '')}`;
+    // Map database slugs to route paths
+    const slugMap: Record<string, string> = {
+      'whatsapp-automation': 'whatsapp',
+      'instagram-automation': 'instagram',
+      'google-calendar-integration': 'calendar',
+      'google-sheets-integration': 'sheets',
+      'gmail-integration': 'gmail',
+      'google-docs-integration': 'docs',
+      'google-drive-integration': 'drive',
+      'google-photos-integration': 'photos',
+      'website-development': 'website',
+      'mobile-app-development': 'mobile-app'
+    };
+
+    return `/dashboard/services/${slugMap[slug] || slug}`;
   };
 
   return (
@@ -95,9 +109,8 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
       )}
 
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen bg-primary border-r border-primary flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 z-50 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } w-64`}
+        className={`fixed lg:sticky top-0 left-0 h-screen bg-primary border-r border-primary flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          } w-64`}
       >
         {/* Header */}
         <div className="p-6 border-b border-primary flex items-center justify-between">
@@ -129,16 +142,15 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
             {mainMenuItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
-              
+
               return (
                 <li key={item.id}>
                   <button
                     onClick={() => handleNavClick(item.path)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      active
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${active
                         ? 'bg-blue-600 text-white shadow-lg'
                         : 'text-muted hover:bg-secondary hover:text-white'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
@@ -158,16 +170,15 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                 {activeServices.map((service: any) => {
                   const path = getServicePath(service.slug);
                   const active = isActive(path);
-                  
+
                   return (
                     <li key={service.id}>
                       <button
                         onClick={() => handleNavClick(path)}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
-                          active
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${active
                             ? 'bg-blue-600 text-white shadow-lg'
                             : 'text-muted hover:bg-secondary hover:text-white'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-3">
                           <span className="text-xl">{service.icon}</span>
@@ -191,19 +202,18 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
             {bottomMenuItems.map((item) => {
               // Hide admin-only items for regular users
               if (item.adminOnly && !isCompanyAdmin) return null;
-              
+
               const Icon = item.icon;
               const active = isActive(item.path);
-              
+
               return (
                 <li key={item.id}>
                   <button
                     onClick={() => handleNavClick(item.path)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      active
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${active
                         ? 'bg-blue-600 text-white shadow-lg'
                         : 'text-muted hover:bg-secondary hover:text-white'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
