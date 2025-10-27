@@ -109,11 +109,10 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
                     key={pkg.id}
                     type="button"
                     onClick={() => setSelectedPackage(pkg.id as any)}
-                    className={`relative p-4 rounded-xl border-2 transition-all text-left ${
-                      isSelected
-                        ? 'border-blue-500 bg-blue-500/10'
-                        : 'border-secondary bg-primary/50 hover:border-secondary'
-                    }`}
+                    className={`relative p-4 rounded-xl border-2 transition-all text-left ${isSelected
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-secondary bg-primary/50 hover:border-secondary'
+                      }`}
                   >
                     {pkg.popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs font-bold rounded-full">
@@ -128,6 +127,8 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
                     <h4 className="text-lg font-bold text-white mb-1">{pkg.name}</h4>
                     <p className="text-2xl font-bold text-white mb-3">
                       {currencySymbol}{pkg.price}<span className="text-sm text-muted">/{periodText}</span>
+                      {pkg.currency === 'USD' ? '$' : pkg.currency === 'EUR' ? '€' : '₺'}{pkg.price}
+                      <span className="text-sm text-muted">/{pkg.period === 'month' ? 'month' : pkg.period === 'year' ? 'year' : 'one-time'}</span>
                     </p>
 
                     <ul className="space-y-1.5 mb-3">
@@ -180,6 +181,7 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
                 <span className="text-white font-bold">
                   {service[`pricing_${selectedPackage}`]?.currency === 'USD' ? '$' :
                    service[`pricing_${selectedPackage}`]?.currency === 'EUR' ? '€' : '₺'}
+                    service[`pricing_${selectedPackage}`]?.currency === 'EUR' ? '€' : '₺'}
                   {service[`pricing_${selectedPackage}`]?.price || 0}
                 </span>
               </div>

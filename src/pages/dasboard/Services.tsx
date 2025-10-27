@@ -12,6 +12,7 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState<any>(null);
 
   // Real DB states
+  // ✅ YENİ STATE'LER
   const [services, setServices] = useState<any[]>([]);
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ export default function Services() {
   const isRegularUser = user?.role === 'user';
 
   // Fetch services and requests from DB
+  // ✅ YENİ: Fetch services and requests from DB
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -90,6 +92,10 @@ export default function Services() {
   };
 
   // Submit request to DB
+    // Navigate to service detail page
+    window.location.href = `/dashboard/services/${serviceSlug.replace('-automation', '').replace('-integration', '').replace('-development', '')}`;
+  }
+  // ✅ YENİ: Submit request to DB
   const handleSubmitRequest = async (packageType: 'basic' | 'standard' | 'premium', notes: string) => {
     if (!selectedService || !user?.company_id || !profile?.id) {
       alert('Missing required information');
@@ -150,31 +156,28 @@ export default function Services() {
         <div className="flex gap-4 mb-8">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
-            }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'all'
+              ? 'bg-blue-600 text-white'
+              : 'bg-secondary text-muted hover:bg-hover'
+              }`}
           >
             All Services ({services.length})
           </button>
           <button
             onClick={() => setSelectedCategory('ai')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
-              selectedCategory === 'ai'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
-            }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'ai'
+              ? 'bg-blue-600 text-white'
+              : 'bg-secondary text-muted hover:bg-hover'
+              }`}
           >
             AI Services ({services.filter(s => s.category === 'ai').length})
           </button>
           <button
             onClick={() => setSelectedCategory('digital')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
-              selectedCategory === 'digital'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
-            }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'digital'
+              ? 'bg-blue-600 text-white'
+              : 'bg-secondary text-muted hover:bg-hover'
+              }`}
           >
             Digital Services ({services.filter(s => s.category === 'digital').length})
           </button>
@@ -194,6 +197,9 @@ export default function Services() {
                                  service.pricing_premium?.price || 0;
             const currency = service.pricing_basic?.currency || 'USD';
             const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : '₺';
+            const Icon = service.icon;
+            const isActive = isServiceActive(service.id);  // ✅ slug yerine id
+            const status = getServiceStatus(service.id);   // ✅ slug yerine id
 
             return (
               <div
