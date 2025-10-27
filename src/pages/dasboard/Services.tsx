@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { serviceTypes } from '../../data/services';
-import { mockCompanyRequests } from '../../data/services';
 import { AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';
 import RequestServiceModal from '../../components/RequestServiceModal';
+import { getActiveServices } from '../../lib/api/serviceTypes';
+import { getCompanyServiceRequests, createServiceRequest } from '../../lib/api/serviceRequests';
 
 export default function Services() {
   const { user } = useAuth();
@@ -11,10 +11,43 @@ export default function Services() {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
 
+  // ✅ YENİ STATE'LER
+  const [services, setServices] = useState<any[]>([]);
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const isCompanyAdmin = user?.role === 'company_admin';
   const isRegularUser = user?.role === 'user';
 
-  const filteredServices = serviceTypes.filter(service => {
+  // ✅ YENİ: Fetch services and requests from DB
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch all active services
+        const servicesData = await getActiveServices();
+        setServices(servicesData || []);
+
+        // Fetch company's service requests (if company admin)
+        if (user?.company_id && isCompanyAdmin) {
+          const requestsData = await getCompanyServiceRequests(user.company_id);
+          setServiceRequests(requestsData || []);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        setError('Failed to load services');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.company_id, isCompanyAdmin]);
+
+  const filteredServices = services.filter(service => {
     // Hide inactive services from Company Admin and Users
     if (service.status === 'inactive') return false;
 
@@ -22,15 +55,14 @@ export default function Services() {
     return service.category === selectedCategory;
   });
 
-  const isServiceActive = (serviceSlug: string) => {
-    const request = mockCompanyRequests[serviceSlug];
-    return request && request.status === 'approved';
+  const isServiceActive = (serviceId: string) => {
+    return serviceRequests.some(
+      req => req.service_type_id === serviceId && req.status === 'approved'
+    );
   };
 
-  const getServiceStatus = (serviceSlug: string) => {
-    const request = mockCompanyRequests[serviceSlug];
-    if (!request) return null;
-    return request;
+  const getServiceStatus = (serviceId: string) => {
+    return serviceRequests.find(req => req.service_type_id === serviceId);
   };
 
   const handleRequestService = (service: any) => {
@@ -39,9 +71,47 @@ export default function Services() {
   };
 
   const handleViewDetails = (serviceSlug: string) => {
-    window.location.hash = `service/${serviceSlug}`;
+    // Navigate to service detail page
+    window.location.href = `/dashboard/services/${serviceSlug.replace('-automation', '').replace('-integration', '').replace('-development', '')}`;
+  }
+  // ✅ YENİ: Submit request to DB
+  const handleSubmitRequest = async (packageType: 'basic' | 'standard' | 'premium', notes: string) => {
+    if (!selectedService || !user?.company_id || !profile?.id) {
+      alert('Missing required information');
+      return;
+    }
+
+    try {
+      await createServiceRequest({
+        company_id: user.company_id,
+        service_type_id: selectedService.id,
+        package: packageType,
+        requested_by: profile.id,
+        notes: notes || undefined,
+      });
+
+      alert('Service request submitted successfully! Waiting for Super Admin approval.');
+
+      // Refresh requests
+      const requestsData = await getCompanyServiceRequests(user.company_id);
+      setServiceRequests(requestsData || []);
+
+      setShowRequestModal(false);
+      setSelectedService(null);
+    } catch (err) {
+      console.error('Error submitting request:', err);
+      alert('Failed to submit request. Please try again.');
+    }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+        <div className="text-white text-xl">Loading services...</div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
@@ -55,41 +125,38 @@ export default function Services() {
         <div className="flex gap-4 mb-8">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
-            }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'all'
+              ? 'bg-blue-600 text-white'
+              : 'bg-secondary text-muted hover:bg-hover'
+              }`}
           >
-            All Services ({serviceTypes.length})
+            All Services ({services.length})
           </button>
           <button
             onClick={() => setSelectedCategory('ai')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
-              selectedCategory === 'ai'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
-            }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'ai'
+              ? 'bg-blue-600 text-white'
+              : 'bg-secondary text-muted hover:bg-hover'
+              }`}
           >
-            AI Services ({serviceTypes.filter(s => s.category === 'ai').length})
+            AI Services ({services.filter(s => s.category === 'ai').length})
           </button>
           <button
             onClick={() => setSelectedCategory('digital')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
-              selectedCategory === 'digital'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
-            }`}
+            className={`px-6 py-2 rounded-lg font-medium transition-all ${selectedCategory === 'digital'
+              ? 'bg-blue-600 text-white'
+              : 'bg-secondary text-muted hover:bg-hover'
+              }`}
           >
-            Digital Services ({serviceTypes.filter(s => s.category === 'digital').length})
+            Digital Services ({services.filter(s => s.category === 'digital').length})
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((service) => {
             const Icon = service.icon;
-            const isActive = isServiceActive(service.slug);
-            const status = getServiceStatus(service.slug);
+            const isActive = isServiceActive(service.id);  // ✅ slug yerine id
+            const status = getServiceStatus(service.id);   // ✅ slug yerine id
 
             return (
               <div
@@ -234,16 +301,7 @@ export default function Services() {
               setShowRequestModal(false);
               setSelectedService(null);
             }}
-            onSubmit={(packageType, notes) => {
-              console.log('Service Request Submitted:', {
-                service: selectedService.slug,
-                package: packageType,
-                notes: notes,
-                companyId: user?.companyId,
-                companyName: user?.companyName,
-                requestedBy: user?.name,
-              });
-            }}
+            onSubmit={handleSubmitRequest}
           />
         )}
       </div>
