@@ -6,11 +6,12 @@ import { getActiveServices } from '../../lib/api/serviceTypes';
 import { getCompanyServiceRequests, createServiceRequest } from '../../lib/api/serviceRequests';
 
 export default function Services() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
 
+  // Real DB states
   // ✅ YENİ STATE'LER
   const [services, setServices] = useState<any[]>([]);
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
@@ -20,6 +21,7 @@ export default function Services() {
   const isCompanyAdmin = user?.role === 'company_admin';
   const isRegularUser = user?.role === 'user';
 
+  // Fetch services and requests from DB
   // ✅ YENİ: Fetch services and requests from DB
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +73,25 @@ export default function Services() {
   };
 
   const handleViewDetails = (serviceSlug: string) => {
+    // Map slug to route
+    const slugMap: Record<string, string> = {
+      'whatsapp-automation': 'whatsapp',
+      'instagram-automation': 'instagram',
+      'google-calendar-integration': 'calendar',
+      'google-sheets-integration': 'sheets',
+      'gmail-integration': 'gmail',
+      'google-docs-integration': 'docs',
+      'google-drive-integration': 'drive',
+      'google-photos-integration': 'photos',
+      'website-development': 'website',
+      'mobile-app-development': 'mobile-app'
+    };
+
+    const path = slugMap[serviceSlug] || serviceSlug;
+    window.location.href = `/dashboard/services/${path}`;
+  };
+
+  // Submit request to DB
     // Navigate to service detail page
     window.location.href = `/dashboard/services/${serviceSlug.replace('-automation', '').replace('-integration', '').replace('-development', '')}`;
   }
@@ -112,6 +133,16 @@ export default function Services() {
       </div>
     );
   }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+        <div className="text-red-500 text-xl">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
@@ -154,6 +185,18 @@ export default function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((service) => {
+            const isActive = isServiceActive(service.id);
+            const status = getServiceStatus(service.id);
+
+            // Get icon - from emoji string or default
+            const serviceIcon = service.icon || '📦';
+
+            // Get starting price
+            const startingPrice = service.pricing_basic?.price ||
+                                 service.pricing_standard?.price ||
+                                 service.pricing_premium?.price || 0;
+            const currency = service.pricing_basic?.currency || 'USD';
+            const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : '₺';
             const Icon = service.icon;
             const isActive = isServiceActive(service.id);  // ✅ slug yerine id
             const status = getServiceStatus(service.id);   // ✅ slug yerine id
@@ -163,20 +206,20 @@ export default function Services() {
                 key={service.id}
                 className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-secondary transition-all"
               >
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4`}>
-                  <Icon className="w-8 h-8 text-white" />
+                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center mb-4`}>
+                  <span className="text-3xl">{serviceIcon}</span>
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
-                <p className="text-muted text-sm mb-4">{service.description_en}</p>
+                <p className="text-muted text-sm mb-4">{service.description_en || service.short_description_en}</p>
 
                 <div className="mb-4">
                   <p className="text-xs text-muted mb-2">Key Features:</p>
                   <ul className="space-y-1">
-                    {service.features.slice(0, 3).map((feature, index) => (
+                    {(service.features?.en || service.features || []).slice(0, 3).map((feature: any, index: number) => (
                       <li key={index} className="text-xs text-muted flex items-start">
                         <span className="text-green-500 mr-2">✓</span>
-                        {feature}
+                        {typeof feature === 'string' ? feature : feature.name || feature.title || 'Feature'}
                       </li>
                     ))}
                   </ul>
@@ -194,14 +237,14 @@ export default function Services() {
                 ) : (
                   <div className="mb-4 p-3 bg-primary/50 rounded-lg">
                     <p className="text-xs text-muted mb-1">Starting from</p>
-                    <p className="text-2xl font-bold text-white">${service.pricing.basic}<span className="text-sm text-muted">/month</span></p>
+                    <p className="text-2xl font-bold text-white">{currencySymbol}{startingPrice}<span className="text-sm text-muted">/month</span></p>
                   </div>
                 )}
 
                 {isActive && (
                   <div className="mb-4 flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-green-500 font-medium">Active - {status?.plan.toUpperCase()} Plan</span>
+                    <span className="text-sm text-green-500 font-medium">Active - {status?.package?.toUpperCase()} Plan</span>
                   </div>
                 )}
 
@@ -222,15 +265,7 @@ export default function Services() {
                 <div className="mt-4">
                   {isActive ? (
                     <button
-                      onClick={() => {
-                        if (service.slug === 'whatsapp-automation') {
-                          window.location.hash = 'whatsapp-automation';
-                        } else if (service.slug === 'instagram-automation') {
-                          window.location.hash = 'instagram-automation';
-                        } else {
-                          handleViewDetails(service.slug);
-                        }
-                      }}
+                      onClick={() => handleViewDetails(service.slug)}
                       className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-lg font-medium transition-all"
                     >
                       View Dashboard
@@ -287,7 +322,7 @@ export default function Services() {
                 </div>
 
                 <p className="text-xs text-muted mt-3 text-center">
-                  Delivery: {service.delivery}
+                  Delivery: {service.metadata?.delivery_time || '1-2 weeks'}
                 </p>
               </div>
             );

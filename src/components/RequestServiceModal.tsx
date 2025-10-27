@@ -101,6 +101,8 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
               {packages.map((pkg) => {
                 const Icon = pkg.icon;
                 const isSelected = selectedPackage === pkg.id;
+                const currencySymbol = pkg.currency === 'USD' ? '$' : pkg.currency === 'EUR' ? '€' : '₺';
+                const periodText = pkg.period === 'month' ? 'month' : pkg.period === 'year' ? 'year' : 'one-time';
 
                 return (
                   <button
@@ -124,6 +126,7 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
 
                     <h4 className="text-lg font-bold text-white mb-1">{pkg.name}</h4>
                     <p className="text-2xl font-bold text-white mb-3">
+                      {currencySymbol}{pkg.price}<span className="text-sm text-muted">/{periodText}</span>
                       {pkg.currency === 'USD' ? '$' : pkg.currency === 'EUR' ? '€' : '₺'}{pkg.price}
                       <span className="text-sm text-muted">/{pkg.period === 'month' ? 'month' : pkg.period === 'year' ? 'year' : 'one-time'}</span>
                     </p>
@@ -177,13 +180,14 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
                 <span className="text-muted">Monthly Cost:</span>
                 <span className="text-white font-bold">
                   {service[`pricing_${selectedPackage}`]?.currency === 'USD' ? '$' :
+                   service[`pricing_${selectedPackage}`]?.currency === 'EUR' ? '€' : '₺'}
                     service[`pricing_${selectedPackage}`]?.currency === 'EUR' ? '€' : '₺'}
                   {service[`pricing_${selectedPackage}`]?.price || 0}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted">Delivery Time:</span>
-                <span className="text-white font-medium">{service.delivery}</span>
+                <span className="text-white font-medium">{service.metadata?.delivery_time || '1-2 weeks'}</span>
               </div>
             </div>
           </div>
