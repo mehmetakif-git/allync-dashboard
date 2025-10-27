@@ -14,9 +14,9 @@ const MobileAppDevelopment: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       console.log('🔍 MobileAppDevelopment - User:', user);
-      console.log('🔍 MobileAppDevelopment - Company ID:', user?.companyId);
+      console.log('🔍 MobileAppDevelopment - Company ID:', user?.company_id);
 
-      if (!user?.companyId) {
+      if (!user?.company_id) {
         console.log('❌ No company ID found!');
         setLoading(false);
         return;
@@ -25,7 +25,7 @@ const MobileAppDevelopment: React.FC = () => {
       try {
         setLoading(true);
         console.log('📡 Fetching mobile app projects...');
-        const data = await getMobileAppProjectsByCompany(user.companyId);
+        const data = await getMobileAppProjectsByCompany(user.company_id);
         console.log('✅ Projects fetched:', data);
         console.log('🔍 First project:', data?.[0]);
         setProjects(data || []);
@@ -38,7 +38,7 @@ const MobileAppDevelopment: React.FC = () => {
     };
 
     fetchProjects();
-  }, [user?.companyId]);
+  }, [user?.company_id]);
 
   const project = projects[0];
 
