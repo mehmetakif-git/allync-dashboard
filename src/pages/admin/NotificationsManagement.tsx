@@ -10,9 +10,10 @@ import {
   type SystemNotification,
 } from '../../lib/api/notifications';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import activityLogger from '../../lib/services/activityLogger';
 
 export default function NotificationsManagement() {
-  const { profile } = useAuth();
+  const { user } = useAuth();
   
   // Data states
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
@@ -97,7 +98,7 @@ export default function NotificationsManagement() {
       return;
     }
 
-    if (!profile?.id) {
+    if (!user?.id) {
       showError('User not authenticated');
       return;
     }
@@ -120,7 +121,23 @@ export default function NotificationsManagement() {
         title: formData.title,
         message: formData.message,
         target_audience: formData.target_audience,
-        created_by: profile.id,
+        created_by: user.id,
+      });
+      // ✅ BONUS: Emoji mapping 
+      const typeEmoji: Record<string, string> = {
+        info: 'ℹ️',
+        success: '✅',
+        warning: '⚠️',
+        maintenance: '🔧',
+        service: '⚡'
+      };
+      // Track notification creation
+      await activityLogger.log({
+        action: 'Notification Sent',
+        action_category: 'create',
+        description: `Sent ${formData.type} notification to ${targetText}: "${formData.title}"`,
+        entity_type: 'Notification',
+        entity_id: newNotification.id,
       });
 
       showSuccess('Notification sent successfully!');
@@ -151,6 +168,14 @@ export default function NotificationsManagement() {
 
     try {
       await deleteNotification(notification.id);
+      // Track notification deletion
+      await activityLogger.log({
+        action: 'Notification Deleted',
+        action_category: 'delete',
+        description: `Deleted notification: "${notification.title}"`,
+        entity_type: 'Notification',
+        entity_id: notification.id,
+      });
       showSuccess('Notification deleted successfully');
       
       // Update local state

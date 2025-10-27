@@ -260,29 +260,6 @@ export default function InvoicesManagement() {
     setShowExportMenu(false);
   };
 
-  const handleExportByStatus = (status: string) => {
-    const filtered = invoices.filter(inv => inv.status === status);
-    exportToCSV(filtered, `${status}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
-    setShowExportMenu(false);
-  };
-
-  const handleExportByCompany = () => {
-    const companyName = prompt('Enter company name to export:');
-    if (!companyName) return;
-    
-    const filtered = invoices.filter(inv => 
-      inv.company?.name.toLowerCase().includes(companyName.toLowerCase())
-    );
-    
-    if (filtered.length === 0) {
-      showError('No invoices found for this company');
-      return;
-    }
-    
-    exportToCSV(filtered, `${companyName.replace(/\s/g, '-')}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
-    setShowExportMenu(false);
-  };
-
   // ===== LOADING STATE =====
   if (isLoading) {
     return <LoadingSpinner />;
