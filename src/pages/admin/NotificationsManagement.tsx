@@ -14,7 +14,7 @@ import activityLogger from '../../lib/services/activityLogger';
 
 export default function NotificationsManagement() {
   const { user } = useAuth();
-  
+
   // Data states
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
   const [stats, setStats] = useState({
@@ -103,12 +103,12 @@ export default function NotificationsManagement() {
       return;
     }
 
-    const targetText = 
+    const targetText =
       formData.target_audience === 'all' ? 'all users' :
-      formData.target_audience === 'super_admins' ? 'all Super Admins' :
-      formData.target_audience === 'company_admins' ? 'all Company Admins' :
-      formData.target_audience === 'users' ? 'all regular users' :
-      'specific companies';
+        formData.target_audience === 'super_admins' ? 'all Super Admins' :
+          formData.target_audience === 'company_admins' ? 'all Company Admins' :
+            formData.target_audience === 'users' ? 'all regular users' :
+              'specific companies';
 
     if (!confirm(`Send this notification to ${targetText}?\n\nTitle: ${formData.title}\nMessage: ${formData.message}`)) {
       return;
@@ -116,13 +116,13 @@ export default function NotificationsManagement() {
 
     setIsSending(true);
     try {
-      await createNotification({
+      const newNotification = await createNotification({
         type: formData.type,
         title: formData.title,
         message: formData.message,
         target_audience: formData.target_audience,
         created_by: user.id,
-      });
+      });;
       // ✅ BONUS: Emoji mapping 
       const typeEmoji: Record<string, string> = {
         info: 'ℹ️',
@@ -141,7 +141,7 @@ export default function NotificationsManagement() {
       });
 
       showSuccess('Notification sent successfully!');
-      
+
       // Reset form
       setFormData({
         type: 'info',
@@ -177,7 +177,7 @@ export default function NotificationsManagement() {
         entity_id: notification.id,
       });
       showSuccess('Notification deleted successfully');
-      
+
       // Update local state
       setNotifications(notifications.filter(n => n.id !== notification.id));
       setStats(prev => ({ ...prev, total: prev.total - 1 }));
@@ -451,7 +451,7 @@ export default function NotificationsManagement() {
           {/* Preview */}
           <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <h2 className="text-xl font-bold text-white mb-4">Preview</h2>
-            
+
             {(() => {
               const colors = getPreviewColors(formData.type);
               return (
@@ -504,7 +504,7 @@ export default function NotificationsManagement() {
         {/* Notification History */}
         <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-4">Notification History</h2>
-          
+
           {notifications.length === 0 ? (
             <div className="text-center py-12">
               <Bell className="w-12 h-12 text-gray-600 mx-auto mb-3" />
