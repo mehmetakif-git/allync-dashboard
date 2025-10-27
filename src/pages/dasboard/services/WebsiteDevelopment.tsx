@@ -14,9 +14,9 @@ const WebsiteDevelopment: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       console.log('🔍 WebsiteDevelopment - User:', user);
-      console.log('🔍 WebsiteDevelopment - Company ID:', user?.companyId);
+      console.log('🔍 WebsiteDevelopment - Company ID:', user?.company_id);
 
-      if (!user?.companyId) {
+      if (!user?.company_id) {
         console.log('❌ No company ID found!');
         setLoading(false);
         return;
@@ -25,7 +25,7 @@ const WebsiteDevelopment: React.FC = () => {
       try {
         setLoading(true);
         console.log('📡 Fetching website projects...');
-        const data = await getWebsiteProjectsByCompany(user.companyId);
+        const data = await getWebsiteProjectsByCompany(user.company_id);
         console.log('✅ Projects fetched:', data);
         console.log('🔍 First project:', data?.[0]);
         setProjects(data || []);
@@ -38,7 +38,7 @@ const WebsiteDevelopment: React.FC = () => {
     };
 
     fetchProjects();
-  }, [user?.companyId]);
+  }, [user?.company_id]);
 
   const project = projects[0];
 
