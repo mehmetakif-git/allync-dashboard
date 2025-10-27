@@ -55,6 +55,7 @@ export async function createNotification(data: {
   target_company_ids?: string[];
   expires_at?: string;
   created_by: string;
+  Promise<SystemNotification> 
 }) {
   logger.apiRequest('createNotification', 'POST', { title: data.title });
 
@@ -83,7 +84,7 @@ export async function createNotification(data: {
 
   logger.success('Notification created', { id: notification.id });
   logger.info('Trigger will auto-create user_notifications');
-  
+
   return notification as SystemNotification;
 }
 
@@ -92,6 +93,7 @@ export async function getAllNotifications(filters?: {
   type?: SystemNotification['type'];
   is_active?: boolean;
   include_deleted?: boolean;
+  Promise<SystemNotification>
 }) {
   logger.apiRequest('getAllNotifications', 'GET');
 
@@ -123,14 +125,15 @@ export async function getAllNotifications(filters?: {
   }
 
   logger.success('Notifications fetched', { count: data?.length || 0 });
-  return data;
+  return (data || []) as SystemNotification[];
 }
 
 // Update a system notification
 export async function updateNotification(
   notificationId: string,
   updates: Partial<SystemNotification>
-) {
+  ): Promise<SystemNotification> {
+
   logger.apiRequest('updateNotification', 'PATCH', { id: notificationId });
 
   const { data, error } = await supabase
@@ -150,14 +153,14 @@ export async function updateNotification(
 }
 
 // Soft delete a notification
-export async function deleteNotification(notificationId: string) {
+export async function deleteNotification(notificationId: string): Promise<SystemNotification> {
   logger.apiRequest('deleteNotification', 'DELETE', { id: notificationId });
 
   const { data, error } = await supabase
     .from('system_notifications')
-    .update({ 
+    .update({
       deleted_at: new Date().toISOString(),
-      is_active: false 
+      is_active: false
     })
     .eq('id', notificationId)
     .select()
@@ -169,11 +172,11 @@ export async function deleteNotification(notificationId: string) {
   }
 
   logger.success('Notification soft deleted');
-  return data;
+  return data as SystemNotification;
 }
 
 // Hard delete a notification (permanent)
-export async function hardDeleteNotification(notificationId: string) {
+export async function hardDeleteNotification(notificationId: string): Promise<void> {
   logger.apiRequest('hardDeleteNotification', 'DELETE', { id: notificationId });
 
   const { error } = await supabase
@@ -190,7 +193,7 @@ export async function hardDeleteNotification(notificationId: string) {
 }
 
 // Toggle notification active status
-export async function toggleNotificationStatus(notificationId: string) {
+export async function toggleNotificationStatus(notificationId: string): Promise<SystemNotification> {
   logger.apiRequest('toggleNotificationStatus', 'PATCH', { id: notificationId });
 
   const { data: current, error: fetchError } = await supabase
@@ -215,7 +218,8 @@ export async function getUserNotifications(userId: string, filters?: {
   is_read?: boolean;
   type?: SystemNotification['type'];
   limit?: number;
-}) {
+}): Promise<NotificationWithReadStatus[]> {
+
   logger.apiRequest('getUserNotifications', 'GET', { userId });
 
   let query = supabase
@@ -266,7 +270,7 @@ export async function getUserNotifications(userId: string, filters?: {
 }
 
 // Get unread notification count
-export async function getUnreadCount(userId: string) {
+export async function getUnreadCount(userId: string): Promise<number> {
   logger.apiRequest('getUnreadCount', 'GET', { userId });
 
   const { count, error } = await supabase
@@ -285,7 +289,7 @@ export async function getUnreadCount(userId: string) {
 }
 
 // Mark notification as read
-export async function markAsRead(userNotificationId: string) {
+export async function markAsRead(userNotificationId: string): Promise<UserNotification> {
   logger.apiRequest('markAsRead', 'PATCH', { id: userNotificationId });
 
   const { data, error } = await supabase
@@ -304,11 +308,11 @@ export async function markAsRead(userNotificationId: string) {
   }
 
   logger.success('Marked as read');
-  return data;
+  return data as UserNotification;
 }
 
 // Mark all notifications as read for a user
-export async function markAllAsRead(userId: string) {
+export async function markAllAsRead(userId: string): Promise<UserNotification[]> {
   logger.apiRequest('markAllAsRead', 'PATCH', { userId });
 
   const { data, error } = await supabase
@@ -327,11 +331,11 @@ export async function markAllAsRead(userId: string) {
   }
 
   logger.success('All notifications marked as read', { count: data?.length || 0 });
-  return data;
+  return (data || []) as UserNotification[];
 }
 
 // Delete user notification (remove from personal list)
-export async function deleteUserNotification(userNotificationId: string) {
+export async function deleteUserNotification(userNotificationId: string): Promise<void> {
   logger.apiRequest('deleteUserNotification', 'DELETE', { id: userNotificationId });
 
   const { error } = await supabase
@@ -348,7 +352,7 @@ export async function deleteUserNotification(userNotificationId: string) {
 }
 
 // Clear all read notifications for a user
-export async function clearReadNotifications(userId: string) {
+export async function clearReadNotifications(userId: string): Promise<void> {
   logger.apiRequest('clearReadNotifications', 'DELETE', { userId });
   const { error } = await supabase
     .from('user_notifications')
@@ -369,7 +373,18 @@ export async function clearReadNotifications(userId: string) {
 // =====================================================
 
 // Get notification statistics (Super Admin)
-export async function getNotificationStats() {
+export async function getNotificationStats(): Promise<{
+  total: number;
+  active: number;
+  this_week: number;
+  by_type: {
+    success: number;
+    warning: number;
+    info: number;
+    maintenance: number;
+    service: number;
+  };
+}> {
   logger.apiRequest('getNotificationStats', 'GET');
 
   const { data: notifications, error } = await supabase
@@ -403,7 +418,7 @@ export async function getNotificationStats() {
 }
 
 // Get total recipients count
-export async function getTotalRecipientsCount() {
+export async function getTotalRecipientsCount(): Promise<number> {
   logger.apiRequest('getTotalRecipientsCount', 'GET');
 
   const { count, error } = await supabase
@@ -427,7 +442,7 @@ export async function getTotalRecipientsCount() {
 export function subscribeToUserNotifications(
   userId: string,
   callback: (notification: NotificationWithReadStatus) => void
-) {
+): any {
   logger.info('Setting up realtime subscription for notifications');
 
   const subscription = supabase
@@ -442,7 +457,7 @@ export function subscribeToUserNotifications(
       },
       async (payload) => {
         logger.info('New notification received', { id: payload.new.id });
-        
+
         // Fetch full notification details
         const { data } = await supabase
           .from('user_notifications')
@@ -473,7 +488,7 @@ export function subscribeToUserNotifications(
 }
 
 // Unsubscribe from notifications
-export function unsubscribeFromNotifications(subscription: any) {
+export function unsubscribeFromNotifications(subscription: any): void {
   logger.info('Cleaning up notification subscription');
   if (subscription) {
     supabase.removeChannel(subscription);
@@ -492,7 +507,7 @@ export default {
   deleteNotification,
   hardDeleteNotification,
   toggleNotificationStatus,
-  
+
   // User
   getUserNotifications,
   getUnreadCount,
@@ -500,11 +515,11 @@ export default {
   markAllAsRead,
   deleteUserNotification,
   clearReadNotifications,
-  
+
   // Stats
   getNotificationStats,
   getTotalRecipientsCount,
-  
+
   // Realtime
   subscribeToUserNotifications,
   unsubscribeFromNotifications,
