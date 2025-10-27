@@ -75,7 +75,7 @@ export async function createNotification(data: {
     ...data,
     title: inputValidator.sanitize(data.title),
     message: inputValidator.sanitize(data.message),
-  }
+   };
 
   const { data: notification, error } = await supabase
     .from('system_notifications')
@@ -110,8 +110,8 @@ export async function getAllNotifications(filters?: {
   type?: SystemNotification['type'];
   is_active?: boolean;
   include_deleted?: boolean;
-  Promise<SystemNotification>
-}) {
+  }): Promise<SystemNotification[]> {
+
   logger.apiRequest('getAllNotifications', 'GET');
 
   let query = supabase
@@ -371,6 +371,7 @@ export async function deleteUserNotification(userNotificationId: string): Promis
 // Clear all read notifications for a user
 export async function clearReadNotifications(userId: string): Promise<void> {
   logger.apiRequest('clearReadNotifications', 'DELETE', { userId });
+  
   const { error } = await supabase
     .from('user_notifications')
     .delete()
