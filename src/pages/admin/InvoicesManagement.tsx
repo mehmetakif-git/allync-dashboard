@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle, AlertCircle, DollarSign, Building2, ChevronDown, Plus } from 'lucide-react';
+import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle, AlertCircle, DollarSign, Building2, ChevronDown, Plus, Edit } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import InvoiceDetailModal from '../../components/modals/InvoiceDetailModal';
 import InvoicePreviewModal from '../../components/modals/InvoicePreviewModal';
 import CreateInvoiceModal, { CreateInvoiceFormData } from '../../components/modals/CreateInvoiceModal';
+import EditInvoicePriceModal from '../../components/modals/EditInvoicePriceModal';
 import {
   getAllInvoices,
   markInvoiceAsPaid,
   cancelInvoice,
+  updateInvoice,
   formatCurrency,
   getInvoiceStatusColor,
   getPaymentGatewayName,
@@ -34,8 +36,10 @@ export default function InvoicesManagement() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditPriceModal, setShowEditPriceModal] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isUpdatingPrice, setIsUpdatingPrice] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -136,7 +140,7 @@ export default function InvoicesManagement() {
   const handleCancelInvoice = async (invoiceId: string) => {
     const reason = prompt('Cancellation reason (optional):');
     if (reason === null) return;
-    
+
     try {
       await cancelInvoice(invoiceId, reason);
       // Track invoice cancellation
@@ -153,6 +157,45 @@ export default function InvoicesManagement() {
     } catch (error: any) {
       console.error('Error cancelling invoice:', error);
       showError(error.message || 'Failed to cancel invoice');
+    }
+  };
+
+  const handleEditPrice = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
+    setShowEditPriceModal(true);
+  };
+
+  const handleUpdatePrice = async (newAmount: number) => {
+    if (!selectedInvoice) return;
+
+    setIsUpdatingPrice(true);
+    try {
+      const oldAmount = selectedInvoice.total_amount;
+
+      await updateInvoice(selectedInvoice.id, {
+        subtotal: newAmount,
+        total_amount: newAmount,
+      });
+
+      // Track price update
+      await activityLogger.log({
+        action: 'Invoice Amount Updated',
+        action_category: 'update',
+        description: `Updated invoice ${selectedInvoice.invoice_number} amount from $${oldAmount} to $${newAmount}`,
+        entity_type: 'Invoice',
+        entity_id: selectedInvoice.id,
+      });
+
+      await fetchInvoices();
+      setShowEditPriceModal(false);
+      setSelectedInvoice(null);
+      showSuccess('Invoice amount updated successfully!');
+    } catch (error: any) {
+      console.error('Error updating invoice amount:', error);
+      showError(error.message || 'Failed to update invoice amount');
+      throw error;
+    } finally {
+      setIsUpdatingPrice(false);
     }
   };
 
@@ -602,13 +645,22 @@ export default function InvoicesManagement() {
                             </button>
                           )}
                           {invoice.status === 'pending' && (
-                            <button
-                              onClick={() => handleMarkAsPaid(invoice.id)}
-                              className="p-2 bg-accent-green/10 hover:bg-accent-green/20 text-accent-green rounded-lg transition-colors"
-                              title="Mark as Paid"
-                            >
-                              <CheckCircle2 className="w-4 h-4" />
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleEditPrice(invoice)}
+                                className="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors"
+                                title="Edit Amount"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleMarkAsPaid(invoice.id)}
+                                className="p-2 bg-accent-green/10 hover:bg-accent-green/20 text-accent-green rounded-lg transition-colors"
+                                title="Mark as Paid"
+                              >
+                                <CheckCircle2 className="w-4 h-4" />
+                              </button>
+                            </>
                           )}
                           {invoice.status !== 'cancelled' && invoice.status !== 'paid' && (
                             <button
@@ -668,6 +720,22 @@ export default function InvoicesManagement() {
         onSubmit={handleCreateInvoice}
         isLoading={isCreating}
       />
+
+      {/* ===== EDIT INVOICE PRICE MODAL ===== */}
+      {selectedInvoice && (
+        <EditInvoicePriceModal
+          isOpen={showEditPriceModal}
+          onClose={() => {
+            setShowEditPriceModal(false);
+            setSelectedInvoice(null);
+          }}
+          onSubmit={handleUpdatePrice}
+          currentAmount={selectedInvoice.total_amount}
+          invoiceNumber={selectedInvoice.invoice_number}
+          companyName={selectedInvoice.company?.name || 'Unknown'}
+          isLoading={isUpdatingPrice}
+        />
+      )}
 
       {/* Click outside to close export menu */}
       {showExportMenu && (
