@@ -9,6 +9,7 @@ import {
 import RequestServiceModal from '../../components/RequestServiceModal';
 import { getActiveServices } from '../../lib/api/serviceTypes';
 import { getCompanyServiceRequests, createServiceRequest } from '../../lib/api/serviceRequests';
+import { getCompanyServices } from '../../lib/api/companyServices';
 
 export default function Services() {
   const { user, profile } = useAuth();
@@ -18,6 +19,7 @@ export default function Services() {
 
   const [services, setServices] = useState<any[]>([]);
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [companyServices, setCompanyServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,8 +35,12 @@ export default function Services() {
         setServices(servicesData || []);
 
         if (user?.company_id && isCompanyAdmin) {
-          const requestsData = await getCompanyServiceRequests(user.company_id);
+          const [requestsData, companyServicesData] = await Promise.all([
+            getCompanyServiceRequests(user.company_id),
+            getCompanyServices(user.company_id)
+          ]);
           setServiceRequests(requestsData || []);
+          setCompanyServices(companyServicesData || []);
         }
 
         setLoading(false);
@@ -62,6 +68,11 @@ export default function Services() {
 
   const getServiceStatus = (serviceId: string) => {
     return serviceRequests.find(req => req.service_type_id === serviceId);
+  };
+
+  // Get company_services status for a service (for maintenance check)
+  const getCompanyServiceStatus = (serviceId: string) => {
+    return companyServices.find(cs => cs.service_type_id === serviceId);
   };
 
   const handleRequestService = (service: any) => {
@@ -185,6 +196,10 @@ export default function Services() {
           {filteredServices.map((service) => {
             const isActive = isServiceActive(service.id);
             const status = getServiceStatus(service.id);
+            const companyServiceStatus = getCompanyServiceStatus(service.id);
+
+            // Check if service is in maintenance mode (either globally or for this company)
+            const isInMaintenance = service.status === 'maintenance' || companyServiceStatus?.status === 'maintenance';
 
             const iconMap: Record<string, any> = {
               'whatsapp-automation': MessageCircle,
@@ -242,10 +257,10 @@ export default function Services() {
                   </ul>
                 </div>
 
-                {service.status === 'maintenance' ? (
+                {isInMaintenance ? (
                   <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
                     <p className="text-sm text-orange-500 font-medium text-center">🔧 Service Under Maintenance</p>
-                    <p className="text-xs text-orange-400/70 text-center mt-1">Pricing temporarily unavailable</p>
+                    <p className="text-xs text-orange-400/70 text-center mt-1">Temporarily unavailable - Please check back later</p>
                   </div>
                 ) : (
                   <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
@@ -268,7 +283,7 @@ export default function Services() {
                   </div>
                 )}
 
-                {service.status === 'maintenance' && (
+                {isInMaintenance && (
                   <div className="mb-4 flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
                     <Wrench className="w-4 h-4 text-orange-500" />
                     <span className="text-sm text-orange-500 font-medium">Under Maintenance</span>
@@ -276,14 +291,24 @@ export default function Services() {
                 )}
 
                 <div className="mt-4">
-                  {isActive ? (
+                  {isActive && !isInMaintenance ? (
                     <button
                       onClick={() => handleViewDetails(service.slug)}
                       className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-lg font-medium transition-all"
                     >
                       View Dashboard
                     </button>
-                  ) : service.status === 'maintenance' ? (
+                  ) : isActive && isInMaintenance ? (
+                    <div>
+                      <button
+                        onClick={() => handleViewDetails(service.slug)}
+                        className="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-all mb-2"
+                      >
+                        View Service (Maintenance Mode)
+                      </button>
+                      <p className="text-xs text-center text-orange-400">⚠️ Service temporarily unavailable</p>
+                    </div>
+                  ) : isInMaintenance ? (
                     <div>
                       <button
                         disabled
@@ -295,20 +320,13 @@ export default function Services() {
                     </div>
                   ) : (
                     <>
-                      {isCompanyAdmin && !status && service.status !== 'maintenance' && (
+                      {isCompanyAdmin && !status && !isInMaintenance && (
                         <button
                           onClick={() => handleRequestService(service)}
                           className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all"
                         >
                           Request Service
                         </button>
-                      )}
-
-                      {isCompanyAdmin && !status && service.status === 'maintenance' && (
-                        <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                          <p className="text-orange-500 font-medium text-sm mb-1">Service Under Maintenance</p>
-                          <p className="text-orange-400 text-xs">This service is temporarily unavailable</p>
-                        </div>
                       )}
 
                       {isCompanyAdmin && status && status.status === 'pending' && (
