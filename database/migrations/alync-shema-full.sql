@@ -232,6 +232,25 @@ CREATE TABLE public.company_daily_metrics (
   CONSTRAINT company_daily_metrics_pkey PRIMARY KEY (id),
   CONSTRAINT company_daily_metrics_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id)
 );
+CREATE TABLE public.company_service_pricing (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  company_id uuid NOT NULL,
+  service_type_id uuid NOT NULL,
+  package text NOT NULL CHECK (package = ANY (ARRAY['basic'::text, 'standard'::text, 'premium'::text])),
+  price numeric NOT NULL,
+  currency text NOT NULL DEFAULT 'USD'::text,
+  period text NOT NULL DEFAULT 'month'::text CHECK (period = ANY (ARRAY['month'::text, 'year'::text, 'one-time'::text])),
+  custom_features_en ARRAY,
+  custom_features_tr ARRAY,
+  custom_limits jsonb DEFAULT '{}'::jsonb,
+  notes text,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT company_service_pricing_pkey PRIMARY KEY (id),
+  CONSTRAINT company_service_pricing_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id),
+  CONSTRAINT company_service_pricing_service_type_id_fkey FOREIGN KEY (service_type_id) REFERENCES public.service_types(id)
+);
 CREATE TABLE public.company_services (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   company_id uuid NOT NULL,
@@ -1160,6 +1179,7 @@ CREATE TABLE public.service_types (
   metadata jsonb DEFAULT '{}'::jsonb,
   updated_at timestamp with time zone DEFAULT now(),
   status text DEFAULT 'active'::text CHECK (status = ANY (ARRAY['active'::text, 'maintenance'::text, 'inactive'::text])),
+  payment_type text DEFAULT 'recurring'::text CHECK (payment_type = ANY (ARRAY['recurring'::text, 'one-time'::text])),
   CONSTRAINT service_types_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.service_usage_metrics (
