@@ -37,14 +37,6 @@ import Support from './pages/dasboard/Support';
 import Settings from './pages/dasboard/Settings';
 
 // Service Pages (Company/User)
-import WhatsAppAutomation from './pages/dasboard/services/WhatsAppAutomation';
-import InstagramAutomation from './pages/dasboard/services/InstagramAutomation';
-import GoogleCalendar from './pages/dasboard/services/GoogleCalendar';
-import GoogleSheets from './pages/dasboard/services/GoogleSheets';
-import Gmail from './pages/dasboard/services/Gmail';
-import GoogleDocs from './pages/dasboard/services/GoogleDocs';
-import GoogleDrive from './pages/dasboard/services/GoogleDrive';
-import GooglePhotos from './pages/dasboard/services/GooglePhotos';
 import WebsiteDevelopment from './pages/dasboard/services/WebsiteDevelopment';
 import MobileAppDevelopment from './pages/dasboard/services/MobileAppDevelopment';
 
@@ -114,14 +106,6 @@ export default function App() {
               <Route path="settings" element={<Settings />} />
               
               {/* Service Pages */}
-              <Route path="services/whatsapp" element={<WhatsAppAutomation />} />
-              <Route path="services/instagram" element={<InstagramAutomation />} />
-              <Route path="services/calendar" element={<GoogleCalendar />} />
-              <Route path="services/sheets" element={<GoogleSheets />} />
-              <Route path="services/gmail" element={<Gmail />} />
-              <Route path="services/docs" element={<GoogleDocs />} />
-              <Route path="services/drive" element={<GoogleDrive />} />
-              <Route path="services/photos" element={<GooglePhotos />} />
               <Route path="services/website" element={<WebsiteDevelopment />} />
               <Route path="services/mobile-app" element={<MobileAppDevelopment />} />
             </Route>
