@@ -348,13 +348,21 @@ export default function ServicesCatalog() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => navigateToManagement(service.slug)}
-                  className={`w-full px-6 py-3 bg-gradient-to-r ${colorGradient} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 mb-4`}
-                >
-                  <Settings className="w-5 h-5" />
-                  Manage Service
-                </button>
+                {/* Only show Manage button for Website and Mobile App */}
+                {(service.slug === 'website-development' || service.slug === 'mobile-app-development') ? (
+                  <button
+                    onClick={() => navigateToManagement(service.slug)}
+                    className={`w-full px-6 py-3 bg-gradient-to-r ${colorGradient} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 mb-4`}
+                  >
+                    <Settings className="w-5 h-5" />
+                    Manage Service
+                  </button>
+                ) : (
+                  <div className="w-full px-6 py-3 bg-gray-700/50 border border-secondary text-muted rounded-lg font-medium text-center mb-4">
+                    <p className="text-sm">Management Dashboard Coming Soon</p>
+                    <p className="text-xs text-muted mt-1">Status controls available below</p>
+                  </div>
+                )}
 
                 {/* Status Control Buttons */}
                 <div className="border-t border-secondary pt-4">

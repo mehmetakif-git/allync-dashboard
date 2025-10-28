@@ -32,20 +32,12 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
     
     // Services
     { type: 'divider', dividerLabel: 'SERVICES', id: 'divider-services', label: '', icon: null, path: '' },
-    { id: 'services', label: 'Services Catalog', icon: Zap, path: '/admin/services' },
-    
-    // Service Management
+    { id: 'services', label: 'Services Catalog', icon: Zap, path: '/admin/services-catalog' },
+
+    // Service Management (Website & Mobile App Only)
     { type: 'divider', dividerLabel: 'SERVICE MANAGEMENT', id: 'divider-service-mgmt', label: '', icon: null, path: '' },
-    { id: 'whatsapp', label: 'WhatsApp Automation', icon: MessageCircle, path: '/admin/services/whatsapp' },
-    { id: 'instagram', label: 'Instagram Automation', icon: Instagram, path: '/admin/services/instagram' },
-    { id: 'calendar', label: 'Google Calendar', icon: Calendar, path: '/admin/services/calendar' },
-    { id: 'sheets', label: 'Google Sheets', icon: Sheet, path: '/admin/services/sheets' },
-    { id: 'gmail', label: 'Gmail Integration', icon: Mail, path: '/admin/services/gmail' },
-    { id: 'docs', label: 'Google Docs', icon: FileText, path: '/admin/services/docs' },
-    { id: 'drive', label: 'Google Drive', icon: FolderOpen, path: '/admin/services/drive' },
-    { id: 'photos', label: 'Google Photos', icon: Image, path: '/admin/services/photos' },
-    { id: 'website', label: 'Website Development', icon: Globe, path: '/admin/services/website' },
-    { id: 'mobile-app', label: 'Mobile App Development', icon: Smartphone, path: '/admin/services/mobile-app' },
+    { id: 'website', label: 'Website Development', icon: Globe, path: '/admin/services/website-development' },
+    { id: 'mobile-app', label: 'Mobile App Development', icon: Smartphone, path: '/admin/services/mobile-app-development' },
     
     // User Management
     { type: 'divider', dividerLabel: 'USER MANAGEMENT', id: 'divider-users', label: '', icon: null, path: '' },

@@ -70,15 +70,22 @@ export default function Services() {
   };
 
   const handleViewDetails = (serviceSlug: string) => {
+    // Map service slugs to dashboard routes
     const slugMap: Record<string, string> = {
       'whatsapp-automation': 'whatsapp',
       'instagram-automation': 'instagram',
       'google-calendar-integration': 'calendar',
+      'google-calendar': 'calendar',
       'google-sheets-integration': 'sheets',
+      'google-sheets': 'sheets',
       'gmail-integration': 'gmail',
+      'gmail': 'gmail',
       'google-docs-integration': 'docs',
+      'google-docs': 'docs',
       'google-drive-integration': 'drive',
+      'google-drive': 'drive',
       'google-photos-integration': 'photos',
+      'google-photos': 'photos',
       'website-development': 'website',
       'mobile-app-development': 'mobile-app'
     };
