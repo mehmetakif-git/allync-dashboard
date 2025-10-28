@@ -109,6 +109,7 @@ export async function getServicePricingForCompany(
 
 /**
  * Get all companies using a specific service (with custom pricing)
+ * NOTE: This only returns companies that HAVE custom pricing
  */
 export async function getCompaniesByService(serviceTypeId: string): Promise<CompanyServicePricing[]> {
   console.log('🔍 [API] getCompaniesByService:', serviceTypeId);
@@ -133,6 +134,86 @@ export async function getCompaniesByService(serviceTypeId: string): Promise<Comp
   });
 
   return data || [];
+}
+
+/**
+ * Get ALL companies using a specific service (including those without custom pricing)
+ * Returns companies with their custom pricing data (if available)
+ */
+export async function getAllCompaniesWithServicePricing(serviceTypeId: string): Promise<any[]> {
+  console.log('🔍 [API] getAllCompaniesWithServicePricing:', serviceTypeId);
+
+  // Step 1: Get all companies using this service from company_services
+  const { data: companyServices, error: servicesError } = await supabase
+    .from('company_services')
+    .select(`
+      id,
+      company_id,
+      status,
+      package,
+      created_at,
+      company:companies(id, name, email, country, status)
+    `)
+    .eq('service_type_id', serviceTypeId)
+    .eq('status', 'active');
+
+  if (servicesError) {
+    console.error('❌ [API] Error fetching company services:', servicesError);
+    throw servicesError;
+  }
+
+  if (!companyServices || companyServices.length === 0) {
+    console.log('ℹ️ [API] No companies using this service');
+    return [];
+  }
+
+  // Step 2: Get custom pricing for all these companies
+  const companyIds = companyServices.map(cs => cs.company_id);
+
+  const { data: customPricing, error: pricingError } = await supabase
+    .from('company_service_pricing')
+    .select('*')
+    .eq('service_type_id', serviceTypeId)
+    .in('company_id', companyIds)
+    .eq('is_active', true);
+
+  if (pricingError) {
+    console.error('❌ [API] Error fetching custom pricing:', pricingError);
+    throw pricingError;
+  }
+
+  // Step 3: Combine data - map each company with its custom pricing
+  const result = companyServices.map(cs => {
+    const pricing = (customPricing || []).filter(p => p.company_id === cs.company_id);
+
+    // Convert array of pricing to object with basic, standard, premium keys
+    const pricingByPackage: any = {};
+    pricing.forEach(p => {
+      pricingByPackage[p.package] = {
+        price: p.price,
+        currency: p.currency,
+        period: p.period,
+      };
+    });
+
+    return {
+      id: cs.company?.id || cs.company_id,
+      name: cs.company?.name || 'Unknown Company',
+      email: cs.company?.email,
+      country: cs.company?.country,
+      status: cs.status,
+      activePackage: cs.package,
+      customPricing: Object.keys(pricingByPackage).length > 0 ? pricingByPackage : undefined,
+    };
+  });
+
+  console.log('✅ [API] All companies with service pricing:', {
+    serviceTypeId,
+    totalCompanies: result.length,
+    withCustomPricing: result.filter(r => r.customPricing).length
+  });
+
+  return result;
 }
 
 /**
@@ -320,14 +401,71 @@ export async function getPricingForDisplay(
   return null;
 }
 
+/**
+ * Set custom pricing for a company (upsert - create or update)
+ * This is a convenience function for the UI that handles both create and update
+ */
+export async function setCompanyServicePricing(
+  companyId: string,
+  serviceTypeId: string,
+  pricing: {
+    basic?: { price: number; period: string; currency: string } | null;
+    standard?: { price: number; period: string; currency: string } | null;
+    premium?: { price: number; period: string; currency: string } | null;
+  }
+): Promise<void> {
+  console.log('💾 [API] setCompanyServicePricing:', { companyId, serviceTypeId, pricing });
+
+  // Get existing pricing
+  const existing = await getServicePricingForCompany(companyId, serviceTypeId);
+
+  // Process each package
+  for (const [packageName, packagePricing] of Object.entries(pricing)) {
+    if (!packagePricing) {
+      // If null, delete existing pricing for this package
+      const existingForPackage = existing.find(p => p.package === packageName as any);
+      if (existingForPackage) {
+        await deleteCompanyServicePricing(existingForPackage.id);
+      }
+      continue;
+    }
+
+    // Check if pricing exists for this package
+    const existingForPackage = existing.find(p => p.package === packageName as any);
+
+    if (existingForPackage) {
+      // Update existing
+      await updateCompanyServicePricing(existingForPackage.id, {
+        price: packagePricing.price,
+        period: packagePricing.period as any,
+        currency: packagePricing.currency,
+      });
+    } else {
+      // Create new
+      await createCompanyServicePricing({
+        company_id: companyId,
+        service_type_id: serviceTypeId,
+        package: packageName as any,
+        price: packagePricing.price,
+        period: packagePricing.period as any,
+        currency: packagePricing.currency,
+      });
+    }
+  }
+
+  console.log('✅ [API] Company service pricing set successfully');
+}
+
 export default {
   getCompanyServicePricing,
   getServicePricingForCompany,
   getCompaniesByService,
+  getAllCompaniesWithServicePricing,
   createCompanyServicePricing,
   updateCompanyServicePricing,
   deleteCompanyServicePricing,
   createBulkServicePricing,
+  setCompanyServicePricing,
   hasCustomPricing,
   getPricingForDisplay,
 };

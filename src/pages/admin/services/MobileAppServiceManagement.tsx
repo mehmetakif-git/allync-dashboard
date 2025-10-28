@@ -3,6 +3,7 @@ import { Smartphone, ArrowLeft, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { OverallTab, CompaniesTab, ServiceContentTab } from '../../../components/admin/ServiceManagementTabs';
 import serviceTypesAPI from '../../../lib/api/serviceTypes';
+import { getAllCompaniesWithServicePricing, setCompanyServicePricing } from '../../../lib/api/companyServicePricing';
 
 export default function MobileAppServiceManagement() {
   const navigate = useNavigate();
@@ -25,19 +26,16 @@ export default function MobileAppServiceManagement() {
       const mobileService = allServices.find((s: any) => s.slug === 'mobile-app-development');
       setServiceData(mobileService);
 
-      // TODO: Fetch companies using this service with their custom pricing
-      // For now using mock data
-      setCompanies([
-        {
-          id: '1',
-          name: 'Tech Corp',
-          status: 'active',
-          activePackage: 'Premium',
-          customPricing: {
-            premium: { price: 8000, period: 'one-time', currency: 'USD' }
-          }
-        }
-      ]);
+      if (!mobileService) {
+        console.error('Mobile app service not found');
+        return;
+      }
+
+      // Fetch companies using this service with their custom pricing
+      const companiesData = await getAllCompaniesWithServicePricing(mobileService.id);
+      setCompanies(companiesData);
+
+      console.log('📊 Loaded companies:', companiesData);
     } catch (error) {
       console.error('Error loading service data:', error);
     } finally {
@@ -46,14 +44,21 @@ export default function MobileAppServiceManagement() {
   };
 
   const handleSetPricing = async (companyId: string, pricing: any) => {
-    // TODO: Implement API call to save custom pricing
-    console.log('Setting pricing for company:', companyId, pricing);
+    if (!serviceData) return;
 
-    // Mock implementation
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      console.log('💾 Setting pricing for company:', companyId, pricing);
 
-    // Refresh data
-    await loadServiceData();
+      await setCompanyServicePricing(companyId, serviceData.id, pricing);
+
+      console.log('✅ Pricing set successfully');
+
+      // Refresh data
+      await loadServiceData();
+    } catch (error) {
+      console.error('❌ Error setting pricing:', error);
+      throw error; // Re-throw so modal can show error
+    }
   };
 
   const handleViewDetails = (companyId: string) => {
