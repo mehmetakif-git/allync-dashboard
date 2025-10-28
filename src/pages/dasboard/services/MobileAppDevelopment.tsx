@@ -222,7 +222,7 @@ const MobileAppDevelopment: React.FC = () => {
             activeTab === 'details' ? 'text-cyan-400' : 'text-muted hover:text-secondary'
           }`}
         >
-          App Details
+          Project Details
           {activeTab === 'details' && (
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400" />
           )}
@@ -390,7 +390,7 @@ const MobileAppDevelopment: React.FC = () => {
       {activeTab === 'details' && (
         <div className="space-y-6">
           <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-white mb-6">App Information</h3>
+            <h3 className="text-lg font-semibold text-white mb-6">Project Information</h3>
 
             <div className="space-y-4">
               <div>
@@ -446,6 +446,21 @@ const MobileAppDevelopment: React.FC = () => {
                   />
                 </div>
               )}
+
+              <div>
+                <label className="block text-sm text-muted mb-2">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Estimated Completion
+                  </div>
+                </label>
+                <input
+                  type="text"
+                  value={project.estimated_completion ? formatDate(project.estimated_completion) : 'TBD'}
+                  readOnly
+                  className="w-full bg-secondary/50 border border-secondary rounded-lg px-4 py-2 text-white cursor-not-allowed"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -454,10 +469,10 @@ const MobileAppDevelopment: React.FC = () => {
       {activeTab === 'support' && (
         <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Need Help?</h3>
-          <p className="text-muted mb-4">
+          <p className="text-muted mb-6">
             For questions about your mobile app development project, please contact our support team.
           </p>
-          <button className="px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-lg transition-all">
+          <button className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white rounded-lg transition-all">
             Contact Support
           </button>
         </div>

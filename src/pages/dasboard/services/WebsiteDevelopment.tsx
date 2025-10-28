@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle } from 'lucide-react';
+import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle, Info } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getWebsiteProjectsByCompany } from '../../../lib/api/websiteProjects';
 
@@ -153,6 +153,20 @@ const WebsiteDevelopment: React.FC = () => {
 
   return (
     <div className="p-8">
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <Info className="w-6 h-6 text-blue-400" />
+          </div>
+          <div>
+            <p className="text-blue-400 font-medium mb-1">Website Settings Managed by Allync</p>
+            <p className="text-blue-300/70 text-sm">
+              All website configuration and deployment is handled by the Allync team. View-only access provided for tracking progress.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 mb-2">
@@ -372,12 +386,6 @@ const WebsiteDevelopment: React.FC = () => {
                 />
               </div>
             </div>
-
-            <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-              <p className="text-sm text-blue-400">
-                <strong>Note:</strong> Project settings are managed by Allync team. Contact support for any changes.
-              </p>
-            </div>
           </div>
         </div>
       )}
@@ -386,9 +394,9 @@ const WebsiteDevelopment: React.FC = () => {
         <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Need Help?</h3>
           <p className="text-muted mb-6">
-            Have questions about your website development project? Our team is here to help!
+            For questions about your website development project, please contact our support team.
           </p>
-          <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all">
+          <button className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-all">
             Contact Support
           </button>
         </div>
