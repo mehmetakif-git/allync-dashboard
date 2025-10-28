@@ -117,9 +117,10 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
                     </div>
 
                     <h4 className="text-lg font-bold text-white mb-1">{pkg.name}</h4>
-                    <p className="text-2xl font-bold text-white mb-3">
-                      ${pkg.price}<span className="text-sm text-muted">/month</span>
-                    </p>
+                    <div className="mb-3 px-3 py-2 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                      <p className="text-sm font-semibold text-blue-400">Contact for pricing</p>
+                      <p className="text-xs text-blue-300/70 mt-0.5">Custom pricing available</p>
+                    </div>
 
                     <ul className="space-y-1.5 mb-3">
                       {pkg.features.map((feature, index) => (

@@ -241,9 +241,9 @@ export default function Services() {
                     <p className="text-xs text-orange-400/70 text-center mt-1">Pricing temporarily unavailable</p>
                   </div>
                 ) : (
-                  <div className="mb-4 p-3 bg-primary/50 rounded-lg">
-                    <p className="text-xs text-muted mb-1">Starting from</p>
-                    <p className="text-2xl font-bold text-white">${startingPrice}<span className="text-sm text-muted">/month</span></p>
+                  <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                    <p className="text-sm font-semibold text-blue-400 text-center">💬 Contact for pricing</p>
+                    <p className="text-xs text-blue-300/70 text-center mt-1">Custom pricing tailored for your business</p>
                   </div>
                 )}
 
