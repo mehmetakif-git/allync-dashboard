@@ -97,9 +97,9 @@ CREATE POLICY "Super admins have full access to company_service_pricing"
   FOR ALL
   USING (
     EXISTS (
-      SELECT 1 FROM auth.users
-      WHERE auth.uid() = auth.users.id
-      AND auth.users.raw_user_meta_data->>'role' = 'super_admin'
+      SELECT 1 FROM profiles
+      WHERE auth.uid() = profiles.id
+      AND profiles.role = 'super_admin'
     )
   );
 
@@ -109,9 +109,8 @@ CREATE POLICY "Company admins can view their own pricing"
   FOR SELECT
   USING (
     EXISTS (
-      SELECT 1 FROM auth.users
-      JOIN profiles ON profiles.user_id = auth.users.id
-      WHERE auth.uid() = auth.users.id
+      SELECT 1 FROM profiles
+      WHERE auth.uid() = profiles.id
       AND profiles.company_id = company_service_pricing.company_id
       AND profiles.role = 'company_admin'
       AND company_service_pricing.is_active = true
