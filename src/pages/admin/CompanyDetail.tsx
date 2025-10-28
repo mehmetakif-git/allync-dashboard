@@ -20,7 +20,9 @@ import EditCompanyModal from '../../components/modals/EditCompanyModal';
 import AddUserModal from '../../components/modals/AddUserModal';
 import EditUserModal from '../../components/modals/EditUserModal';
 import CreateInvoiceModal, { CreateInvoiceFormData } from '../../components/modals/CreateInvoiceModal';
+import CreateTicketModal, { CreateTicketFormData } from '../../components/modals/CreateTicketModal';
 import { createManualInvoice } from '../../lib/api/manualInvoice';
+import { createTicket, assignTicket } from '../../lib/api/supportTickets';
 import activityLogger from '../../lib/services/activityLogger';
 
 export default function CompanyDetail() {
@@ -61,6 +63,10 @@ export default function CompanyDetail() {
   // Invoice Modal
   const [showCreateInvoiceModal, setShowCreateInvoiceModal] = useState(false);
   const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
+
+  // Ticket Modal
+  const [showCreateTicketModal, setShowCreateTicketModal] = useState(false);
+  const [isCreatingTicket, setIsCreatingTicket] = useState(false);
 
   // Service Request Modals
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
@@ -144,6 +150,17 @@ export default function CompanyDetail() {
     } catch (err: any) {
       console.error('❌ Error refreshing invoices:', err);
       showError('Failed to refresh invoices list');
+    }
+  };
+
+  // Refresh company tickets list
+  const refreshTickets = async () => {
+    try {
+      const updatedTickets = await getSupportTickets(companyId!);
+      setSupportTickets(updatedTickets);
+    } catch (err: any) {
+      console.error('❌ Error refreshing tickets:', err);
+      showError('Failed to refresh tickets list');
     }
   };
 
@@ -439,6 +456,60 @@ export default function CompanyDetail() {
       throw error;
     } finally {
       setIsCreatingInvoice(false);
+    }
+  };
+
+  // ===== TICKET MANAGEMENT HANDLERS =====
+
+  const handleCreateTicket = async (data: CreateTicketFormData) => {
+    if (!profile?.id) {
+      showError('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+
+    setIsCreatingTicket(true);
+    try {
+      console.log('🎫 Creating support ticket for company:', companyId);
+
+      // 1. Create ticket
+      const newTicket = await createTicket({
+        company_id: data.companyId,
+        created_by: profile.id,
+        subject: data.subject,
+        description: data.description,
+        category: data.category,
+        priority: data.priority,
+        service_type_id: data.serviceTypeId || undefined,
+        tags: data.tags.length > 0 ? data.tags : undefined,
+      });
+
+      // 2. Assign ticket if assignee is specified
+      if (data.assignedTo) {
+        await assignTicket(newTicket.id, data.assignedTo);
+      }
+
+      console.log('✅ Ticket created successfully:', newTicket.ticket_number);
+
+      // 3. Track ticket creation
+      await activityLogger.log({
+        action: 'Support Ticket Created',
+        action_category: 'create',
+        description: `Created support ticket ${newTicket.ticket_number} for ${company?.name}: ${data.subject}`,
+        entity_type: 'Ticket',
+        entity_id: newTicket.id,
+      });
+
+      // 4. Refresh tickets list
+      await refreshTickets();
+
+      setShowCreateTicketModal(false);
+      showSuccess(`Ticket ${newTicket.ticket_number} created successfully!`);
+    } catch (error: any) {
+      console.error('❌ Error creating ticket:', error);
+      showError(error.message || 'Failed to create ticket');
+      throw error;
+    } finally {
+      setIsCreatingTicket(false);
     }
   };
 
@@ -995,13 +1066,22 @@ export default function CompanyDetail() {
           <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Support Tickets</h2>
-              <button
-                onClick={() => navigate('/admin/support-tickets')}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                View All Tickets
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowCreateTicketModal(true)}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Ticket
+                </button>
+                <button
+                  onClick={() => navigate('/admin/support-tickets')}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View All Tickets
+                </button>
+              </div>
             </div>
 
             {supportTickets.length > 0 ? (
@@ -1301,6 +1381,17 @@ export default function CompanyDetail() {
             onClose={() => setShowCreateInvoiceModal(false)}
             onSubmit={handleCreateInvoice}
             isLoading={isCreatingInvoice}
+            initialCompanyId={companyId}
+          />
+        )}
+
+        {/* Create Ticket Modal */}
+        {showCreateTicketModal && company && (
+          <CreateTicketModal
+            isOpen={showCreateTicketModal}
+            onClose={() => setShowCreateTicketModal(false)}
+            onSubmit={handleCreateTicket}
+            isLoading={isCreatingTicket}
             initialCompanyId={companyId}
           />
         )}

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Clock, AlertCircle, CheckCircle, MessageSquare, User, Calendar, Building2, UserPlus } from 'lucide-react';
+import { Search, Filter, Clock, AlertCircle, CheckCircle, MessageSquare, User, Calendar, Building2, UserPlus, Plus } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TicketDetailModal, { TicketUpdates } from '../../components/modals/TicketDetailModal';
+import CreateTicketModal, { CreateTicketFormData } from '../../components/modals/CreateTicketModal';
 import {
   getAllTickets,
+  createTicket,
   updateTicket,
   updateTicketStatus,
   assignTicket,
@@ -11,6 +13,7 @@ import {
   updateSatisfactionRating,
 } from '../../lib/api/supportTickets';
 import { getAllUsers } from '../../lib/api/users';
+import { useAuth } from '../../contexts/AuthContext';
 import activityLogger from '../../lib/services/activityLogger';
 
 // =====================================================
@@ -58,6 +61,9 @@ interface Ticket {
 // =====================================================
 
 export default function SupportTicketsManagement() {
+  // ===== HOOKS =====
+  const { user } = useAuth();
+
   // ===== STATES =====
   const [isLoading, setIsLoading] = useState(true);
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -67,6 +73,8 @@ export default function SupportTicketsManagement() {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showTicketModal, setShowTicketModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -146,6 +154,53 @@ export default function SupportTicketsManagement() {
   const handleViewTicket = (ticket: Ticket) => {
     setSelectedTicket(ticket);
     setShowTicketModal(true);
+  };
+
+  const handleCreateTicket = async (data: CreateTicketFormData) => {
+    if (!user?.id) {
+      showError('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+
+    setIsCreating(true);
+    try {
+      // 1. Create ticket
+      const newTicket = await createTicket({
+        company_id: data.companyId,
+        created_by: user.id,
+        subject: data.subject,
+        description: data.description,
+        category: data.category,
+        priority: data.priority,
+        service_type_id: data.serviceTypeId || undefined,
+        tags: data.tags.length > 0 ? data.tags : undefined,
+      });
+
+      // 2. Assign ticket if assignee is specified
+      if (data.assignedTo) {
+        await assignTicket(newTicket.id, data.assignedTo);
+      }
+
+      // 3. Track ticket creation
+      await activityLogger.log({
+        action: 'Support Ticket Created',
+        action_category: 'create',
+        description: `Created support ticket ${newTicket.ticket_number}: ${data.subject}`,
+        entity_type: 'Ticket',
+        entity_id: newTicket.id,
+      });
+
+      // 4. Refresh tickets
+      await refreshTickets();
+      setShowCreateModal(false);
+      showSuccess(`Ticket ${newTicket.ticket_number} created successfully!`);
+    } catch (error: any) {
+      console.error('❌ Error creating ticket:', error);
+      showError(error.message || 'Failed to create ticket');
+      throw error;
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleUpdateTicket = async (ticketId: string, updates: TicketUpdates) => {
@@ -265,9 +320,18 @@ export default function SupportTicketsManagement() {
     <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
       <div className="max-w-7xl mx-auto">
         {/* ===== HEADER ===== */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Support Tickets Management</h1>
-          <p className="text-muted">View and manage all support tickets from companies</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Support Tickets Management</h1>
+            <p className="text-muted">View and manage all support tickets from companies</p>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Create Ticket
+          </button>
         </div>
 
         {/* ===== SUCCESS MESSAGE ===== */}
@@ -487,6 +551,14 @@ export default function SupportTicketsManagement() {
         onUpdate={handleUpdateTicket}
         onSendReply={handleSendReply}
         availableAssignees={availableAssignees}
+      />
+
+      {/* ===== CREATE TICKET MODAL ===== */}
+      <CreateTicketModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateTicket}
+        isLoading={isCreating}
       />
     </div>
   );
