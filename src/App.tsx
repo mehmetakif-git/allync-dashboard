@@ -25,15 +25,7 @@ import SystemSettings from './pages/admin/SystemSettings';
 import MaintenanceMode from './pages/admin/MaintenanceMode';
 import ActivityLogs from './pages/admin/ActivityLogs';
 
-// Service Management Pages
-import WhatsAppServiceManagement from './pages/admin/services/WhatsAppServiceManagement';
-import InstagramServiceManagement from './pages/admin/services/InstagramServiceManagement';
-import CalendarServiceManagement from './pages/admin/services/CalendarServiceManagement';
-import SheetsServiceManagement from './pages/admin/services/SheetsServiceManagement';
-import GmailServiceManagement from './pages/admin/services/GmailServiceManagement';
-import DocsServiceManagement from './pages/admin/services/DocsServiceManagement';
-import DriveServiceManagement from './pages/admin/services/DriveServiceManagement';
-import PhotosServiceManagement from './pages/admin/services/PhotosServiceManagement';
+// Service Management Pages (Super Admin Only)
 import WebsiteServiceManagement from './pages/admin/services/WebsiteServiceManagement';
 import MobileAppServiceManagement from './pages/admin/services/MobileAppServiceManagement';
 
@@ -89,17 +81,9 @@ export default function App() {
               <Route path="users/invite" element={<UserInvite />} />
               
               {/* Services */}
-              <Route path="services" element={<ServicesCatalog />} />
-              <Route path="services/whatsapp" element={<WhatsAppServiceManagement />} />
-              <Route path="services/instagram" element={<InstagramServiceManagement />} />
-              <Route path="services/calendar" element={<CalendarServiceManagement />} />
-              <Route path="services/sheets" element={<SheetsServiceManagement />} />
-              <Route path="services/gmail" element={<GmailServiceManagement />} />
-              <Route path="services/docs" element={<DocsServiceManagement />} />
-              <Route path="services/drive" element={<DriveServiceManagement />} />
-              <Route path="services/photos" element={<PhotosServiceManagement />} />
-              <Route path="services/website" element={<WebsiteServiceManagement />} />
-              <Route path="services/mobile-app" element={<MobileAppServiceManagement />} />
+              <Route path="services-catalog" element={<ServicesCatalog />} />
+              <Route path="services/website-development" element={<WebsiteServiceManagement />} />
+              <Route path="services/mobile-app-development" element={<MobileAppServiceManagement />} />
               
               {/* Management */}
               <Route path="notifications" element={<NotificationsManagement />} />
