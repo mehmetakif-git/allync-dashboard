@@ -19,6 +19,8 @@ import MobileAppSettingsModal from '../../components/modals/MobileAppSettingsMod
 import EditCompanyModal from '../../components/modals/EditCompanyModal';
 import AddUserModal from '../../components/modals/AddUserModal';
 import EditUserModal from '../../components/modals/EditUserModal';
+import CreateInvoiceModal, { CreateInvoiceFormData } from '../../components/modals/CreateInvoiceModal';
+import { createManualInvoice } from '../../lib/api/manualInvoice';
 import activityLogger from '../../lib/services/activityLogger';
 
 export default function CompanyDetail() {
@@ -55,6 +57,10 @@ export default function CompanyDetail() {
   const [showDeleteUserConfirm, setShowDeleteUserConfirm] = useState(false);
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  // Invoice Modal
+  const [showCreateInvoiceModal, setShowCreateInvoiceModal] = useState(false);
+  const [isCreatingInvoice, setIsCreatingInvoice] = useState(false);
 
   // Service Request Modals
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
@@ -127,6 +133,17 @@ export default function CompanyDetail() {
     } catch (err: any) {
       console.error('❌ Error refreshing users:', err);
       showError('Failed to refresh users list');
+    }
+  };
+
+  // Refresh company invoices list
+  const refreshInvoices = async () => {
+    try {
+      const updatedInvoices = await getInvoices(companyId!);
+      setCompanyInvoices(updatedInvoices);
+    } catch (err: any) {
+      console.error('❌ Error refreshing invoices:', err);
+      showError('Failed to refresh invoices list');
     }
   };
 
@@ -370,6 +387,58 @@ export default function CompanyDetail() {
       showError(err.message || 'Failed to reject request');
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  // ===== INVOICE MANAGEMENT HANDLERS =====
+
+  const handleCreateInvoice = async (data: CreateInvoiceFormData) => {
+    if (!profile?.id) {
+      showError('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+
+    setIsCreatingInvoice(true);
+    try {
+      console.log('📝 Creating manual invoice for company:', companyId);
+
+      const response = await createManualInvoice({
+        companyId: data.companyId,
+        createdBy: profile.id,
+        amount: data.amount,
+        dueDate: data.dueDate,
+        serviceId: data.serviceId || undefined,
+        customDescription: data.customDescription,
+        notes: data.notes || undefined,
+        autoSuspendOnOverdue: data.autoSuspendOnOverdue,
+      });
+
+      if (!response.success || !response.invoice) {
+        throw new Error(response.error || 'Failed to create invoice');
+      }
+
+      console.log('✅ Invoice created successfully:', response.invoice.invoice_number);
+
+      // Track invoice creation
+      await activityLogger.log({
+        action: 'Manual Invoice Created',
+        action_category: 'create',
+        description: `Created manual invoice ${response.invoice.invoice_number} for ${company?.name} - Amount: $${data.amount}`,
+        entity_type: 'Invoice',
+        entity_id: response.invoice.id,
+      });
+
+      // Refresh invoices list
+      await refreshInvoices();
+
+      setShowCreateInvoiceModal(false);
+      showSuccess(`Invoice ${response.invoice.invoice_number} created successfully!`);
+    } catch (error: any) {
+      console.error('❌ Error creating invoice:', error);
+      showError(error.message || 'Failed to create invoice');
+      throw error;
+    } finally {
+      setIsCreatingInvoice(false);
     }
   };
 
@@ -985,13 +1054,22 @@ export default function CompanyDetail() {
           <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Invoices</h2>
-              <button
-                onClick={() => navigate('/admin/invoices')}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                View All Invoices
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowCreateInvoiceModal(true)}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Invoice
+                </button>
+                <button
+                  onClick={() => navigate('/admin/invoices')}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View All Invoices
+                </button>
+              </div>
             </div>
 
             {companyInvoices.length > 0 ? (
@@ -1213,6 +1291,17 @@ export default function CompanyDetail() {
             companyName={company.name}
             onClose={() => setShowMobileAppSettings(false)}
             onSave={(settings) => console.log('Mobile app settings saved:', settings)}
+          />
+        )}
+
+        {/* Create Invoice Modal */}
+        {showCreateInvoiceModal && company && (
+          <CreateInvoiceModal
+            isOpen={showCreateInvoiceModal}
+            onClose={() => setShowCreateInvoiceModal(false)}
+            onSubmit={handleCreateInvoice}
+            isLoading={isCreatingInvoice}
+            initialCompanyId={companyId}
           />
         )}
       </div>

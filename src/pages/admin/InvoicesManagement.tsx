@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle, AlertCircle, DollarSign, Building2, ChevronDown } from 'lucide-react';
+import { FileText, Search, Filter, Download, Eye, CheckCircle2, Clock, XCircle, AlertCircle, DollarSign, Building2, ChevronDown, Plus } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import InvoiceDetailModal from '../../components/modals/InvoiceDetailModal';
 import InvoicePreviewModal from '../../components/modals/InvoicePreviewModal';
+import CreateInvoiceModal, { CreateInvoiceFormData } from '../../components/modals/CreateInvoiceModal';
 import {
   getAllInvoices,
   markInvoiceAsPaid,
@@ -12,6 +13,8 @@ import {
   getPaymentGatewayName,
   type Invoice,
 } from '../../lib/api/invoices';
+import { createManualInvoice } from '../../lib/api/manualInvoice';
+import { useAuth } from '../../contexts/AuthContext';
 import activityLogger from '../../lib/services/activityLogger';
 
 // =====================================================
@@ -19,6 +22,8 @@ import activityLogger from '../../lib/services/activityLogger';
 // =====================================================
 
 export default function InvoicesManagement() {
+  const { user } = useAuth();
+
   // ===== STATES =====
   const [isLoading, setIsLoading] = useState(true);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -28,7 +33,9 @@ export default function InvoicesManagement() {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -238,18 +245,18 @@ export default function InvoicesManagement() {
   const handleExportByCompany = () => {
     const companyName = prompt('Enter company name to export:');
     if (!companyName) return;
-    
-    const filtered = invoices.filter(inv => 
+
+    const filtered = invoices.filter(inv =>
       inv.company?.name.toLowerCase().includes(companyName.toLowerCase())
     );
-    
+
     if (filtered.length === 0) {
       showError('No invoices found for this company');
       return;
     }
-    
+
     exportToCSV(filtered, `${companyName.replace(/\s/g, '-')}-invoices-${new Date().toISOString().split('T')[0]}.csv`);
-    
+
     // ✅ BONUS: Export tracking EKLE
     activityLogger.log({
       action: 'Invoices Exported',
@@ -258,6 +265,57 @@ export default function InvoicesManagement() {
       entity_type: 'Invoice',
     });
     setShowExportMenu(false);
+  };
+
+  // ===== CREATE INVOICE HANDLER =====
+  const handleCreateInvoice = async (data: CreateInvoiceFormData) => {
+    if (!user?.id) {
+      showError('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+
+    setIsCreating(true);
+    try {
+      console.log('📝 Creating manual invoice:', data);
+
+      const response = await createManualInvoice({
+        companyId: data.companyId,
+        createdBy: user.id,
+        amount: data.amount,
+        dueDate: data.dueDate,
+        serviceId: data.serviceId || undefined,
+        customDescription: data.customDescription,
+        notes: data.notes || undefined,
+        autoSuspendOnOverdue: data.autoSuspendOnOverdue,
+      });
+
+      if (!response.success || !response.invoice) {
+        throw new Error(response.error || 'Failed to create invoice');
+      }
+
+      console.log('✅ Invoice created successfully:', response.invoice.invoice_number);
+
+      // Track invoice creation
+      await activityLogger.log({
+        action: 'Manual Invoice Created',
+        action_category: 'create',
+        description: `Created manual invoice ${response.invoice.invoice_number} for ${response.invoice.companies?.name} - Amount: $${data.amount}`,
+        entity_type: 'Invoice',
+        entity_id: response.invoice.id,
+      });
+
+      // Refresh invoices list
+      await fetchInvoices();
+
+      setShowCreateModal(false);
+      showSuccess(`Invoice ${response.invoice.invoice_number} created successfully!`);
+    } catch (error: any) {
+      console.error('❌ Error creating invoice:', error);
+      showError(error.message || 'Failed to create invoice');
+      throw error;
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   // ===== LOADING STATE =====
@@ -275,17 +333,28 @@ export default function InvoicesManagement() {
             <h1 className="text-3xl font-bold text-white">Invoices Management</h1>
             <p className="text-muted mt-1">Manage all invoices across all companies</p>
           </div>
-          
-          {/* Export Menu */}
-          <div className="relative">
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            {/* Create Invoice Button */}
             <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="px-4 py-2 bg-gradient-to-r from-accent-blue to-accent-cyan text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+              onClick={() => setShowCreateModal(true)}
+              className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg transition-all flex items-center gap-2 font-medium"
             >
-              <Download className="w-5 h-5" />
-              Export
-              <ChevronDown className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
+              Create Invoice
             </button>
+
+            {/* Export Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="px-4 py-2 bg-gradient-to-r from-accent-blue to-accent-cyan text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+              >
+                <Download className="w-5 h-5" />
+                Export
+                <ChevronDown className="w-4 h-4" />
+              </button>
 
             {showExportMenu && (
               <div className="absolute right-0 mt-2 w-56 bg-card border border-primary rounded-xl shadow-xl z-50">
@@ -590,6 +659,14 @@ export default function InvoicesManagement() {
           }}
         />
       )}
+
+      {/* ===== CREATE INVOICE MODAL ===== */}
+      <CreateInvoiceModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateInvoice}
+        isLoading={isCreating}
+      />
 
       {/* Click outside to close export menu */}
       {showExportMenu && (
