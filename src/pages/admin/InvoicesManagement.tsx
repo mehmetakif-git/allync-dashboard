@@ -400,6 +400,7 @@ export default function InvoicesManagement() {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
 
