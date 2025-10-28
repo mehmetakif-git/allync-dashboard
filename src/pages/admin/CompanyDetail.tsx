@@ -21,8 +21,10 @@ import AddUserModal from '../../components/modals/AddUserModal';
 import EditUserModal from '../../components/modals/EditUserModal';
 import CreateInvoiceModal, { CreateInvoiceFormData } from '../../components/modals/CreateInvoiceModal';
 import CreateTicketModal, { CreateTicketFormData } from '../../components/modals/CreateTicketModal';
+import AddServiceModal, { AddServiceFormData } from '../../components/modals/AddServiceModal';
 import { createManualInvoice } from '../../lib/api/manualInvoice';
 import { createTicket, assignTicket } from '../../lib/api/supportTickets';
+import { addServiceToCompany } from '../../lib/api/companyServices';
 import activityLogger from '../../lib/services/activityLogger';
 
 export default function CompanyDetail() {
@@ -67,6 +69,10 @@ export default function CompanyDetail() {
   // Ticket Modal
   const [showCreateTicketModal, setShowCreateTicketModal] = useState(false);
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
+
+  // Add Service Modal
+  const [showAddServiceModal, setShowAddServiceModal] = useState(false);
+  const [isAddingService, setIsAddingService] = useState(false);
 
   // Service Request Modals
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
@@ -161,6 +167,17 @@ export default function CompanyDetail() {
     } catch (err: any) {
       console.error('❌ Error refreshing tickets:', err);
       showError('Failed to refresh tickets list');
+    }
+  };
+
+  // Refresh company services and requests
+  const refreshServices = async () => {
+    try {
+      const updatedRequests = await getCompanyServiceRequests(companyId!);
+      setServiceRequests(updatedRequests);
+    } catch (err: any) {
+      console.error('❌ Error refreshing services:', err);
+      showError('Failed to refresh services list');
     }
   };
 
@@ -510,6 +527,54 @@ export default function CompanyDetail() {
       throw error;
     } finally {
       setIsCreatingTicket(false);
+    }
+  };
+
+  // ===== SERVICE MANAGEMENT HANDLERS =====
+
+  const handleAddService = async (data: AddServiceFormData) => {
+    if (!profile?.id) {
+      showError('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+
+    setIsAddingService(true);
+    try {
+      console.log('🔧 Adding service to company:', companyId);
+
+      const newService = await addServiceToCompany({
+        companyId: data.companyId,
+        serviceTypeId: data.serviceTypeId,
+        package: data.package,
+        priceAmount: data.priceAmount,
+        billingCycle: data.billingCycle,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        notes: data.notes,
+      });
+
+      console.log('✅ Service added successfully:', newService.id);
+
+      // Track service addition
+      await activityLogger.log({
+        action: 'Service Added to Company',
+        action_category: 'create',
+        description: `Added ${newService.service_type.name_en} (${data.package}) to ${company?.name}`,
+        entity_type: 'CompanyService',
+        entity_id: newService.id,
+      });
+
+      // Refresh services list
+      await refreshServices();
+
+      setShowAddServiceModal(false);
+      showSuccess(`Service ${newService.service_type.name_en} added successfully!`);
+    } catch (error: any) {
+      console.error('❌ Error adding service:', error);
+      showError(error.message || 'Failed to add service');
+      throw error;
+    } finally {
+      setIsAddingService(false);
     }
   };
 
@@ -955,9 +1020,18 @@ export default function CompanyDetail() {
         {activeTab === 'services' && (
           <div className="space-y-6">
             <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-white">Active Services</h2>
-                <p className="text-sm text-muted mt-1">Configure service settings for this company</p>
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Active Services</h2>
+                  <p className="text-sm text-muted mt-1">Configure service settings for this company</p>
+                </div>
+                <button
+                  onClick={() => setShowAddServiceModal(true)}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Service
+                </button>
               </div>
 
               {(() => {
@@ -1392,6 +1466,17 @@ export default function CompanyDetail() {
             onClose={() => setShowCreateTicketModal(false)}
             onSubmit={handleCreateTicket}
             isLoading={isCreatingTicket}
+            initialCompanyId={companyId}
+          />
+        )}
+
+        {/* Add Service Modal */}
+        {showAddServiceModal && company && (
+          <AddServiceModal
+            isOpen={showAddServiceModal}
+            onClose={() => setShowAddServiceModal(false)}
+            onSubmit={handleAddService}
+            isLoading={isAddingService}
             initialCompanyId={companyId}
           />
         )}
