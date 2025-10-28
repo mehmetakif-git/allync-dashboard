@@ -30,7 +30,7 @@ import activityLogger from '../../lib/services/activityLogger';
 export default function CompanyDetail() {
   const { id: companyId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'services' | 'tickets' | 'invoices'>('overview');
   const [company, setCompany] = useState<any>(null);
@@ -356,7 +356,7 @@ export default function CompanyDetail() {
     try {
       console.log('✅ Approving request:', selectedRequest.id);
       
-      await approveServiceRequest(selectedRequest.id, profile.id);
+      await approveServiceRequest(selectedRequest.id, user.id);
       // Track service approval
       await activityLogger.log({
         action: 'Service Request Approved',
@@ -398,7 +398,7 @@ export default function CompanyDetail() {
     try {
       console.log('❌ Rejecting request:', selectedRequest.id);
       
-      await rejectServiceRequest(selectedRequest.id, rejectionReason, profile.id);
+      await rejectServiceRequest(selectedRequest.id, rejectionReason, user.id);
       // Track service rejection
       await activityLogger.log({
         action: 'Service Request Rejected',
@@ -427,7 +427,7 @@ export default function CompanyDetail() {
   // ===== INVOICE MANAGEMENT HANDLERS =====
 
   const handleCreateInvoice = async (data: CreateInvoiceFormData) => {
-    if (!profile?.id) {
+    if (!user?.id) {
       showError('User not authenticated');
       throw new Error('User not authenticated');
     }
@@ -438,7 +438,7 @@ export default function CompanyDetail() {
 
       const response = await createManualInvoice({
         companyId: data.companyId,
-        createdBy: profile.id,
+        createdBy: user.id,
         amount: data.amount,
         dueDate: data.dueDate,
         serviceId: data.serviceId || undefined,
@@ -479,7 +479,7 @@ export default function CompanyDetail() {
   // ===== TICKET MANAGEMENT HANDLERS =====
 
   const handleCreateTicket = async (data: CreateTicketFormData) => {
-    if (!profile?.id) {
+    if (!user?.id) {
       showError('User not authenticated');
       throw new Error('User not authenticated');
     }
@@ -491,7 +491,7 @@ export default function CompanyDetail() {
       // 1. Create ticket
       const newTicket = await createTicket({
         company_id: data.companyId,
-        created_by: profile.id,
+        created_by: user.id,
         subject: data.subject,
         description: data.description,
         category: data.category,
@@ -533,7 +533,7 @@ export default function CompanyDetail() {
   // ===== SERVICE MANAGEMENT HANDLERS =====
 
   const handleAddService = async (data: AddServiceFormData) => {
-    if (!profile?.id) {
+    if (!user?.id) {
       showError('User not authenticated');
       throw new Error('User not authenticated');
     }
