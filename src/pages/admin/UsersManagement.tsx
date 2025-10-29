@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Users, Search, Filter, MoreVertical, Shield, UserCircle,
-  Building2, Mail, XCircle, CheckCircle, Edit3, Plus
+  Building2, Mail, XCircle, CheckCircle, Edit3, Plus, Trash2
 } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getAllUsers, updateUserStatus, deleteUser, updateUser, createUser } from '../../lib/api/users';

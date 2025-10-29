@@ -4,7 +4,7 @@ import {
   ArrowLeft, Building2, Users, Zap, Mail, Phone,
   MessageCircle, MapPin, Instagram, CheckCircle, Smartphone, XCircle,
   Sheet, Globe, FolderOpen, FileText, Edit3, Trash2, Plus, Settings, Image,
-  ThumbsUp, ThumbsDown, ExternalLink
+  ThumbsUp, ThumbsDown, ExternalLink, DollarSign, Calendar, Activity
 } from 'lucide-react';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { getCompanyById, getSupportTickets, getInvoices, getServiceTypes } from '../../lib/api/companies';
