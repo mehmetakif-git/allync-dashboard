@@ -167,13 +167,13 @@ const WebsiteDevelopment = () => {
   }
 
   // No project state
-  if (!project || projects.length === 0) {
+  if (!project) {
     return (
       <div className="p-8">
         <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center">
           <Globe className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-secondary mb-2">No Active Project</h3>
-          <p className="text-muted">No website development project found for your company.</p>
+          <p className="text-muted">No website development project found for this service instance.</p>
         </div>
       </div>
     );
