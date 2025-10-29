@@ -88,6 +88,18 @@ export async function updateMobileAppProject(projectId: string, updates: Partial
   return data;
 }
 
+// Create milestone
+export async function createMobileAppMilestone(milestone: Omit<MobileAppMilestone, 'id' | 'created_at' | 'updated_at'>) {
+  const { data, error } = await supabase
+    .from('mobile_app_milestones')
+    .insert([milestone])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 // Update milestones (bulk update)
 export async function updateMobileAppMilestones(projectId: string, milestones: Partial<MobileAppMilestone>[]) {
   // Delete existing milestones

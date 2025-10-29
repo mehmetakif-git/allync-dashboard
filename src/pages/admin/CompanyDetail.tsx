@@ -782,6 +782,16 @@ export default function CompanyDetail() {
         return;
       }
 
+      // Map milestones from modal format (displayOrder) to database format (display_order)
+      const mappedMilestones = settings.milestones.map((m: any, index: number) => ({
+        title: m.title,
+        status: m.status,
+        progress: m.progress || 0,
+        notes: m.notes,
+        completed_date: m.completed_date,
+        display_order: m.displayOrder || index
+      }));
+
       if (websiteProjectData) {
         // Update existing project
         await updateWebsiteProjectWithMilestones(
@@ -795,12 +805,13 @@ export default function CompanyDetail() {
             overall_progress: settings.overallProgress,
             last_update: new Date().toISOString()
           },
-          settings.milestones
+          mappedMilestones
         );
         showSuccess('Website settings updated successfully!');
       } else {
-        // Create new project
-        await createWebsiteProject({
+        // Create new project with milestones
+        const { createWebsiteMilestone } = await import('../../lib/api/websiteProjects');
+        const newProject = await createWebsiteProject({
           company_id: companyId,
           project_name: settings.projectName,
           project_type: settings.projectType,
@@ -810,6 +821,17 @@ export default function CompanyDetail() {
           overall_progress: settings.overallProgress,
           status: 'active'
         });
+
+        // Now create milestones for the new project
+        if (newProject && mappedMilestones.length > 0) {
+          for (const milestone of mappedMilestones) {
+            await createWebsiteMilestone({
+              project_id: newProject.id,
+              ...milestone
+            });
+          }
+        }
+
         showSuccess('Website project created successfully!');
       }
 
@@ -839,6 +861,16 @@ export default function CompanyDetail() {
         return;
       }
 
+      // Map milestones from modal format (displayOrder) to database format (display_order)
+      const mappedMilestones = settings.milestones.map((m: any, index: number) => ({
+        title: m.title,
+        status: m.status,
+        progress: m.progress || 0,
+        notes: m.notes,
+        completed_date: m.completed_date,
+        display_order: m.displayOrder || index
+      }));
+
       if (mobileAppProjectData) {
         // Update existing project
         await updateMobileAppProjectWithMilestones(
@@ -851,12 +883,13 @@ export default function CompanyDetail() {
             overall_progress: settings.overallProgress,
             last_update: new Date().toISOString()
           },
-          settings.milestones
+          mappedMilestones
         );
         showSuccess('Mobile app settings updated successfully!');
       } else {
-        // Create new project
-        await createMobileAppProject({
+        // Create new project with milestones
+        const { createMobileAppMilestone } = await import('../../lib/api/mobileAppProjects');
+        const newProject = await createMobileAppProject({
           company_id: companyId,
           app_name: settings.appName,
           platform: settings.platform,
@@ -865,6 +898,17 @@ export default function CompanyDetail() {
           overall_progress: settings.overallProgress,
           status: 'active'
         });
+
+        // Now create milestones for the new project
+        if (newProject && mappedMilestones.length > 0) {
+          for (const milestone of mappedMilestones) {
+            await createMobileAppMilestone({
+              project_id: newProject.id,
+              ...milestone
+            });
+          }
+        }
+
         showSuccess('Mobile app project created successfully!');
       }
 
@@ -1801,7 +1845,14 @@ export default function CompanyDetail() {
               domain: websiteProjectData.domain,
               email: websiteProjectData.email,
               estimatedCompletion: websiteProjectData.estimated_completion,
-              milestones: websiteProjectData.milestones || []
+              milestones: (websiteProjectData.milestones || []).map((m: any) => ({
+                id: m.id,
+                title: m.title,
+                status: m.status,
+                progress: m.progress,
+                notes: m.notes,
+                displayOrder: m.display_order  // Map display_order to displayOrder
+              }))
             } : undefined}
           />
         )}
@@ -1819,7 +1870,14 @@ export default function CompanyDetail() {
               platform: mobileAppProjectData.platform,
               appType: mobileAppProjectData.app_type,
               estimatedCompletion: mobileAppProjectData.estimated_completion,
-              milestones: mobileAppProjectData.milestones || []
+              milestones: (mobileAppProjectData.milestones || []).map((m: any) => ({
+                id: m.id,
+                title: m.title,
+                status: m.status,
+                progress: m.progress,
+                notes: m.notes,
+                displayOrder: m.display_order  // Map display_order to displayOrder
+              }))
             } : undefined}
           />
         )}
