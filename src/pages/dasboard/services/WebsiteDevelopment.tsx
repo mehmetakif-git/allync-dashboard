@@ -119,7 +119,14 @@ const WebsiteDevelopment: React.FC = () => {
   const websiteService = companyServices.find(
     (cs: any) => cs.service_type?.slug === 'website-development'
   );
+
+  // Debug logs
+  console.log('🔍 [WebsiteDevelopment] Company Services:', companyServices);
+  console.log('🔍 [WebsiteDevelopment] Website Service:', websiteService);
+  console.log('🔍 [WebsiteDevelopment] Status:', websiteService?.status);
+
   const isInMaintenance = websiteService?.status === 'maintenance';
+  console.log('🔍 [WebsiteDevelopment] Is In Maintenance:', isInMaintenance);
 
   // Loading state
   if (loading) {

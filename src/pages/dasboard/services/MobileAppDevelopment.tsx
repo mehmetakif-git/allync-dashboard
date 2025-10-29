@@ -137,7 +137,14 @@ const MobileAppDevelopment: React.FC = () => {
   const mobileAppService = companyServices.find(
     (cs: any) => cs.service_type?.slug === 'mobile-app-development'
   );
+
+  // Debug logs
+  console.log('🔍 [MobileAppDevelopment] Company Services:', companyServices);
+  console.log('🔍 [MobileAppDevelopment] Mobile App Service:', mobileAppService);
+  console.log('🔍 [MobileAppDevelopment] Status:', mobileAppService?.status);
+
   const isInMaintenance = mobileAppService?.status === 'maintenance';
+  console.log('🔍 [MobileAppDevelopment] Is In Maintenance:', isInMaintenance);
 
   // Loading state
   if (loading) {

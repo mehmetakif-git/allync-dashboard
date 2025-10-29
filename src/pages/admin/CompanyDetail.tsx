@@ -173,8 +173,13 @@ export default function CompanyDetail() {
   // Refresh company services and requests
   const refreshServices = async () => {
     try {
-      const updatedRequests = await getCompanyServiceRequests(companyId!);
+      const [updatedRequests, updatedServices] = await Promise.all([
+        getCompanyServiceRequests(companyId!),
+        getCompanyServices(companyId!)
+      ]);
       setServiceRequests(updatedRequests);
+      setCompanyServices(updatedServices);
+      console.log('✅ Services refreshed:', updatedServices);
     } catch (err: any) {
       console.error('❌ Error refreshing services:', err);
       showError('Failed to refresh services list');
@@ -1085,6 +1090,11 @@ export default function CompanyDetail() {
                       const companyService = companyServices.find((cs: any) => cs.service_type_id === service.id);
                       const currentStatus = companyService?.status || 'active';
 
+                      // Debug logs
+                      console.log('🔍 [CompanyDetail] Service:', service.name_en);
+                      console.log('🔍 [CompanyDetail] Company Service:', companyService);
+                      console.log('🔍 [CompanyDetail] Current Status:', currentStatus);
+
                       // Status badge colors
                       const statusColors: Record<string, string> = {
                         'active': 'bg-green-500/10 border-green-500/30 text-green-500',
@@ -1092,6 +1102,12 @@ export default function CompanyDetail() {
                         'suspended': 'bg-red-500/10 border-red-500/30 text-red-500',
                         'inactive': 'bg-gray-500/10 border-secondary/30 text-muted'
                       };
+
+                      // If no company service record exists, don't render dropdown (shouldn't happen in active services)
+                      if (!companyService) {
+                        console.warn('⚠️ [CompanyDetail] No company service record found for:', service.name_en);
+                        return null;
+                      }
 
                       return (
                         <div key={service.id} className="bg-primary/50 border border-secondary rounded-xl p-5 hover:border-secondary transition-all">
@@ -1104,7 +1120,10 @@ export default function CompanyDetail() {
                               {/* Status Dropdown */}
                               <select
                                 value={currentStatus}
-                                onChange={(e) => handleChangeServiceStatus(companyService.id, e.target.value as any, service.name_en)}
+                                onChange={(e) => {
+                                  console.log('🔄 [CompanyDetail] Status change:', e.target.value);
+                                  handleChangeServiceStatus(companyService.id, e.target.value as any, service.name_en);
+                                }}
                                 className={`px-3 py-1 border rounded-full text-xs font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[currentStatus]}`}
                               >
                                 <option value="active">Active</option>
