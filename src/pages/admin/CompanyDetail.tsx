@@ -177,10 +177,18 @@ export default function CompanyDetail() {
     const fetchMobileAppProject = async () => {
       if (showMobileAppSettings && selectedCompanyService) {
         try {
+          console.log('🔍 [DEBUG] Selected Company Service:', selectedCompanyService);
+          console.log('🔍 [DEBUG] Company Service ID:', selectedCompanyService.id);
+          console.log('🔍 [DEBUG] Service Type:', selectedCompanyService.service_type);
           console.log('📡 Fetching mobile app project for service:', selectedCompanyService.id);
+
           const project = await getMobileAppProjectByCompanyService(selectedCompanyService.id);
+
+          console.log('🔍 [DEBUG] API Response:', project);
+
           if (project) {
             console.log('✅ Mobile app project found:', project);
+            console.log('✅ Milestones count:', project.milestones?.length || 0);
             setMobileAppProjectData(project);
           } else {
             console.log('ℹ️ No mobile app project found, will create new');
@@ -796,8 +804,11 @@ export default function CompanyDetail() {
         display_order: m.displayOrder || index
       }));
 
+      let savedProjectId: string;
+
       if (websiteProjectData) {
         // Update existing project
+        savedProjectId = websiteProjectData.id;
         await updateWebsiteProjectWithMilestones(
           websiteProjectData.id,
           {
@@ -832,6 +843,8 @@ export default function CompanyDetail() {
           status: 'active'
         });
 
+        savedProjectId = newProject.id;
+
         // Now create milestones for the new project
         if (newProject && mappedMilestones.length > 0) {
           for (const milestone of mappedMilestones) {
@@ -850,7 +863,8 @@ export default function CompanyDetail() {
         await activityLogger.logServiceConfigured(
           user.id,
           companyId,
-          'website-development',
+          savedProjectId,
+          'Website Development',
           websiteProjectData ? 'updated' : 'created'
         );
       }
@@ -881,14 +895,23 @@ export default function CompanyDetail() {
         display_order: m.displayOrder || index
       }));
 
+      let savedProjectId: string;
+
       if (mobileAppProjectData) {
         // Update existing project
+        savedProjectId = mobileAppProjectData.id;
         await updateMobileAppProjectWithMilestones(
           mobileAppProjectData.id,
           {
+            project_name: settings.projectName,
             app_name: settings.appName,
             platform: settings.platform,
-            app_type: settings.appType,
+            package_name: settings.packageName,
+            bundle_id: settings.bundleId,
+            play_store_status: settings.playStoreStatus,
+            play_store_url: settings.playStoreUrl,
+            app_store_status: settings.appStoreStatus,
+            app_store_url: settings.appStoreUrl,
             estimated_completion: settings.estimatedCompletion,
             overall_progress: settings.overallProgress,
             last_update: new Date().toISOString()
@@ -907,13 +930,21 @@ export default function CompanyDetail() {
         const newProject = await createMobileAppProject({
           company_id: companyId,
           company_service_id: selectedCompanyService.id, // Link to specific service instance
+          project_name: settings.projectName,
           app_name: settings.appName,
           platform: settings.platform,
-          app_type: settings.appType,
+          package_name: settings.packageName,
+          bundle_id: settings.bundleId,
+          play_store_status: settings.playStoreStatus,
+          play_store_url: settings.playStoreUrl,
+          app_store_status: settings.appStoreStatus,
+          app_store_url: settings.appStoreUrl,
           estimated_completion: settings.estimatedCompletion,
           overall_progress: settings.overallProgress,
           status: 'active'
         });
+
+        savedProjectId = newProject.id;
 
         // Now create milestones for the new project
         if (newProject && mappedMilestones.length > 0) {
@@ -925,6 +956,9 @@ export default function CompanyDetail() {
           }
         }
 
+        // Update local state with new project
+        setMobileAppProjectData(newProject);
+
         showSuccess('Mobile app project created successfully!');
       }
 
@@ -933,7 +967,8 @@ export default function CompanyDetail() {
         await activityLogger.logServiceConfigured(
           user.id,
           companyId,
-          'mobile-app-development',
+          savedProjectId,
+          'Mobile App Development',
           mobileAppProjectData ? 'updated' : 'created'
         );
       }
@@ -1849,7 +1884,9 @@ export default function CompanyDetail() {
 
         {showWebsiteSettings && (
           <WebsiteSettingsModal
+            key={websiteProjectData?.id || 'new-website-project'}
             companyName={company.name}
+            instanceName={selectedCompanyService?.instance_name}
             onClose={() => {
               setShowWebsiteSettings(false);
               setWebsiteProjectData(null); // Clear data when closing
@@ -1875,16 +1912,24 @@ export default function CompanyDetail() {
 
         {showMobileAppSettings && (
           <MobileAppSettingsModal
+            key={mobileAppProjectData?.id || 'new-mobile-project'}
             companyName={company.name}
+            instanceName={selectedCompanyService?.instance_name}
             onClose={() => {
               setShowMobileAppSettings(false);
               setMobileAppProjectData(null); // Clear data when closing
             }}
             onSave={handleSaveMobileAppSettings}
             initialSettings={mobileAppProjectData ? {
+              projectName: mobileAppProjectData.project_name,
               appName: mobileAppProjectData.app_name,
               platform: mobileAppProjectData.platform,
-              appType: mobileAppProjectData.app_type,
+              packageName: mobileAppProjectData.package_name,
+              bundleId: mobileAppProjectData.bundle_id,
+              playStoreStatus: mobileAppProjectData.play_store_status,
+              playStoreUrl: mobileAppProjectData.play_store_url,
+              appStoreStatus: mobileAppProjectData.app_store_status,
+              appStoreUrl: mobileAppProjectData.app_store_url,
               estimatedCompletion: mobileAppProjectData.estimated_completion,
               milestones: (mobileAppProjectData.milestones || []).map((m: any) => ({
                 id: m.id,

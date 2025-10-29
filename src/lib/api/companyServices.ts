@@ -66,7 +66,8 @@ export async function getCompanyServices(companyId: string): Promise<CompanyServ
         slug,
         category,
         icon,
-        color
+        color,
+        status
       )
     `)
     .eq('company_id', companyId)
@@ -96,7 +97,8 @@ export async function getCompanyServiceById(serviceId: string): Promise<CompanyS
         slug,
         category,
         icon,
-        color
+        color,
+        status
       )
     `)
     .eq('id', serviceId)

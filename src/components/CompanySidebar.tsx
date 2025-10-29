@@ -192,46 +192,86 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                     ACTIVE SERVICES
                   </div>
                 </li>
-                {companyServices.map((companyService: any) => {
-                  const service = companyService.service_type;
-                  if (!service) return null;
+                {(() => {
+                  // Group services by service_type_id to show one item per service type
+                  // IMPORTANT: Filter out globally inactive services (service_type.status === 'inactive')
+                  const serviceGroups = companyServices.reduce((acc: any, cs: any) => {
+                    // Skip if service type is inactive (disabled by super admin for ALL companies)
+                    if (cs.service_type?.status === 'inactive') {
+                      return acc;
+                    }
 
-                  const path = getServicePath(service.slug, companyService.id); // Pass company_service_id
-                  const active = isActive(path);
-                  const ServiceIcon = getServiceIcon(service.slug);
-                  const instanceName = companyService.instance_name || service.name_en;
+                    const typeId = cs.service_type_id;
+                    if (!acc[typeId]) {
+                      acc[typeId] = [];
+                    }
+                    acc[typeId].push(cs);
+                    return acc;
+                  }, {});
 
-                  // Show instance count badge if there are multiple instances of same service type
-                  const sameTypeCount = companyServices.filter(
-                    (cs: any) => cs.service_type_id === companyService.service_type_id
-                  ).length;
+                  return Object.entries(serviceGroups).map(([typeId, instances]: [string, any]) => {
+                    const firstInstance = instances[0];
+                    const service = firstInstance.service_type;
+                    if (!service) return null;
 
-                  return (
-                    <li key={companyService.id}>
-                      <button
-                        onClick={() => handleNavClick(path)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 border-l-4 ${active
-                            ? 'bg-blue-600 text-white shadow-lg border-l-blue-400'
-                            : 'text-muted hover:bg-secondary/80 hover:text-white hover:border-l-green-400 border-l-green-500/50'
+                    // Check maintenance status
+                    const isGloballyInMaintenance = service.status === 'maintenance';
+                    const hasInstanceInMaintenance = instances.some((inst: any) => inst.status === 'maintenance');
+                    const isInMaintenance = isGloballyInMaintenance || hasInstanceInMaintenance;
+
+                    // Navigate to first instance (user can switch between instances on the page)
+                    const path = getServicePath(service.slug, firstInstance.id);
+                    const active = isActive(`/dashboard/services/${getServicePath(service.slug, '').split('/').pop()}`);
+                    const ServiceIcon = getServiceIcon(service.slug);
+                    const instanceCount = instances.length;
+
+                    // Dynamic styling based on maintenance status
+                    const getBorderColor = () => {
+                      if (active) return 'border-l-blue-400';
+                      if (isInMaintenance) return 'border-l-orange-400 hover:border-l-orange-500';
+                      return 'border-l-green-500/50 hover:border-l-green-400';
+                    };
+
+                    const getHoverBg = () => {
+                      if (active) return 'bg-blue-600';
+                      if (isInMaintenance) return 'hover:bg-orange-500/10';
+                      return 'hover:bg-secondary/80';
+                    };
+
+                    return (
+                      <li key={typeId}>
+                        <button
+                          onClick={() => handleNavClick(path)}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 border-l-4 ${getBorderColor()} ${getHoverBg()} ${
+                            active ? 'text-white shadow-lg' : 'text-muted hover:text-white'
                           }`}
-                        title={`${instanceName}${sameTypeCount > 1 ? ` (${sameTypeCount} instances)` : ''}`}
-                      >
-                        <ServiceIcon className="w-5 h-5 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium block truncate">{instanceName}</span>
-                          {sameTypeCount > 1 && (
-                            <span className="text-xs text-blue-300 block truncate">{service.name_en}</span>
+                          title={`${service.name_en}${instanceCount > 1 ? ` (${instanceCount} projects)` : ''}${isInMaintenance ? ' - Under Maintenance' : ''}`}
+                        >
+                          <ServiceIcon className="w-5 h-5 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium block truncate">{service.name_en}</span>
+                            {instanceCount > 1 && (
+                              <span className="text-xs text-blue-300 block truncate">{instanceCount} projects</span>
+                            )}
+                            {isInMaintenance && (
+                              <span className="text-xs text-orange-400 block truncate">Under Maintenance</span>
+                            )}
+                          </div>
+                          {isInMaintenance && (
+                            <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-xs rounded-full flex-shrink-0 border border-orange-500/30">
+                              ⚠️
+                            </span>
                           )}
-                        </div>
-                        {sameTypeCount > 1 && (
-                          <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full flex-shrink-0">
-                            {companyServices.filter((cs: any) => cs.service_type_id === companyService.service_type_id).indexOf(companyService) + 1}
-                          </span>
-                        )}
-                      </button>
-                    </li>
-                  );
-                })}
+                          {!isInMaintenance && instanceCount > 1 && (
+                            <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full flex-shrink-0">
+                              {instanceCount}
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  });
+                })()}
               </>
             )}
 

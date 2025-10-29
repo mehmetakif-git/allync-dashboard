@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, CheckCircle2, Clock, Circle, XCircle } from 'lucide-react';
 
 interface WebsiteMilestone {
@@ -12,6 +12,7 @@ interface WebsiteMilestone {
 
 interface WebsiteSettingsModalProps {
   companyName: string;
+  instanceName?: string; // Instance name from company_services
   onClose: () => void;
   onSave: (settings: any) => void;
   initialSettings?: {
@@ -26,11 +27,12 @@ interface WebsiteSettingsModalProps {
 
 export default function WebsiteSettingsModal({
   companyName,
+  instanceName,
   onClose,
   onSave,
   initialSettings
 }: WebsiteSettingsModalProps) {
-  const [projectName, setProjectName] = useState(initialSettings?.projectName || '');
+  const [projectName, setProjectName] = useState(initialSettings?.projectName || instanceName || '');
   const [projectType, setProjectType] = useState<'e-commerce' | 'corporate' | 'personal'>(
     initialSettings?.projectType || 'corporate'
   );
@@ -48,6 +50,23 @@ export default function WebsiteSettingsModal({
       { title: 'Launch & Deployment', status: 'pending', progress: 0, displayOrder: 5 },
     ]
   );
+
+  // Update state when initialSettings changes (when data loads from API)
+  useEffect(() => {
+    if (initialSettings) {
+      console.log('🔄 Website Modal: Updating state with initialSettings:', initialSettings);
+      setProjectName(initialSettings.projectName || instanceName || '');
+      setProjectType(initialSettings.projectType || 'corporate');
+      setDomain(initialSettings.domain || '');
+      setEmail(initialSettings.email || '');
+      setEstimatedCompletion(initialSettings.estimatedCompletion || '');
+
+      if (initialSettings.milestones && initialSettings.milestones.length > 0) {
+        console.log('✅ Website Modal: Setting milestones:', initialSettings.milestones.length);
+        setMilestones(initialSettings.milestones);
+      }
+    }
+  }, [initialSettings]);
 
   const calculateProgress = () => {
     if (milestones.length === 0) return 0;
@@ -148,7 +167,15 @@ export default function WebsiteSettingsModal({
         <div className="sticky top-0 bg-primary border-b border-secondary p-6 flex items-center justify-between z-10">
           <div>
             <h2 className="text-2xl font-bold text-white">Website Settings</h2>
-            <p className="text-sm text-muted mt-1">{companyName}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm text-muted">{companyName}</p>
+              {instanceName && (
+                <>
+                  <span className="text-muted">•</span>
+                  <span className="text-sm text-purple-400">{instanceName}</span>
+                </>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}

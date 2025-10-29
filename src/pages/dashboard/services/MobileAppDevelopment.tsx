@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Smartphone, Calendar, CheckCircle2, Circle, Clock, XCircle, ExternalLink, Info, Wrench } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Smartphone, Calendar, CheckCircle2, Circle, Clock, XCircle, ExternalLink, Info, Wrench, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getMobileAppProjectByCompanyService } from '../../../lib/api/mobileAppProjects';
 import { getCompanyServices } from '../../../lib/api/companyServices';
 
 const MobileAppDevelopment = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { serviceId } = useParams<{ serviceId: string }>(); // Get company_service_id from URL
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
   const [project, setProject] = useState<any>(null);
   const [companyServices, setCompanyServices] = useState<any[]>([]);
+  const [availableProjects, setAvailableProjects] = useState<any[]>([]); // All mobile app projects for this company
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   // Fetch project by company_service_id
   useEffect(() => {
@@ -44,6 +47,36 @@ const MobileAppDevelopment = () => {
         console.log('✅ Services fetched:', servicesData);
         setProject(projectData);
         setCompanyServices(servicesData || []);
+
+        // Fetch all mobile app projects for this company (for dropdown)
+        const mobileAppServices = (servicesData || []).filter(
+          (s: any) => s.service_type?.slug === 'mobile-app-development'
+        );
+        console.log('🔍 Mobile App Services:', mobileAppServices);
+
+        if (mobileAppServices.length > 0) {
+          // Fetch projects for all mobile app services
+          const projectsPromises = mobileAppServices.map((service: any) =>
+            getMobileAppProjectByCompanyService(service.id)
+          );
+          const projectsData = await Promise.all(projectsPromises);
+
+          // Filter out null projects and add service info
+          const validProjects = projectsData
+            .map((proj, idx) => proj ? { ...proj, companyService: mobileAppServices[idx] } : null)
+            .filter(Boolean);
+
+          console.log('✅ Available Projects:', validProjects);
+          setAvailableProjects(validProjects);
+
+          // AUTO-REDIRECT: If current service has no project but other projects exist, redirect to first available
+          if (!projectData && validProjects.length > 0) {
+            console.log('🔄 No project for current service, redirecting to first available project...');
+            const firstAvailableProject = validProjects[0];
+            navigate(`/dashboard/services/mobile-app/${firstAvailableProject.company_service_id}`, { replace: true });
+            return;
+          }
+        }
       } catch (err) {
         console.error('❌ Error fetching data:', err);
         setError('Failed to load data');
@@ -53,7 +86,7 @@ const MobileAppDevelopment = () => {
     };
 
     fetchData();
-  }, [serviceId, user?.company_id]);
+  }, [serviceId, user?.company_id, navigate]);
 
   // Platform labels
   const platformLabels: any = {
@@ -140,19 +173,34 @@ const MobileAppDevelopment = () => {
     return `${diffInDays} days ago`;
   };
 
-  // Check if this service is in maintenance mode
-  const mobileAppService = companyServices.find(
-    (cs: any) => cs.service_type?.slug === 'mobile-app-development'
+  // Check if THIS SPECIFIC service instance is in maintenance mode
+  // IMPORTANT: Check BOTH global service type AND individual instance
+  const currentServiceInstance = companyServices.find(
+    (cs: any) => cs.id === serviceId
   );
 
   // Debug logs
   console.log('🔍 [MobileAppDevelopment] Company Services:', companyServices);
-  console.log('🔍 [MobileAppDevelopment] Mobile App Service:', mobileAppService);
-  console.log('🔍 [MobileAppDevelopment] Status:', mobileAppService?.status);
+  console.log('🔍 [MobileAppDevelopment] Current Service Instance:', currentServiceInstance);
+  console.log('🔍 [MobileAppDevelopment] Service Type Status:', currentServiceInstance?.service_type?.status);
+  console.log('🔍 [MobileAppDevelopment] Instance Status:', currentServiceInstance?.status);
 
-  const isInMaintenance = mobileAppService?.status === 'maintenance';
-  const maintenanceReason = mobileAppService?.metadata?.maintenance_reason;
-  console.log('🔍 [MobileAppDevelopment] Is In Maintenance:', isInMaintenance);
+  // CHECK 1: Global service type status (affects ALL companies)
+  const isGloballyInactive = currentServiceInstance?.service_type?.status === 'inactive';
+  const isGloballyInMaintenance = currentServiceInstance?.service_type?.status === 'maintenance';
+
+  // CHECK 2: Individual instance status (affects only this company's instance)
+  const isInstanceInMaintenance = currentServiceInstance?.status === 'maintenance';
+
+  // Final maintenance state: TRUE if either global OR instance is in maintenance
+  const isInMaintenance = isGloballyInMaintenance || isInstanceInMaintenance;
+  const maintenanceReason = currentServiceInstance?.metadata?.maintenance_reason ||
+    (isGloballyInMaintenance ? 'This service is temporarily unavailable for all users.' : undefined);
+
+  console.log('🔍 [MobileAppDevelopment] Is Globally Inactive:', isGloballyInactive);
+  console.log('🔍 [MobileAppDevelopment] Is Globally In Maintenance:', isGloballyInMaintenance);
+  console.log('🔍 [MobileAppDevelopment] Is Instance In Maintenance:', isInstanceInMaintenance);
+  console.log('🔍 [MobileAppDevelopment] Final Is In Maintenance:', isInMaintenance);
   console.log('🔍 [MobileAppDevelopment] Maintenance Reason:', maintenanceReason);
 
   // Loading state
@@ -162,6 +210,31 @@ const MobileAppDevelopment = () => {
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted">Loading project...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ GLOBALLY INACTIVE - Service type disabled by Super Admin for ALL companies
+  if (isGloballyInactive) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-500/10 border-2 border-red-500/50 rounded-xl p-8 text-center max-w-2xl mx-auto mt-12">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-24 h-24 rounded-full bg-red-500/20 flex items-center justify-center">
+              <XCircle className="w-12 h-12 text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-red-400 mb-3">Service Unavailable</h2>
+              <p className="text-red-300/80 text-lg mb-4">
+                Mobile App Development service is currently unavailable
+              </p>
+              <p className="text-red-200/60 text-sm">
+                This service has been temporarily disabled by the system administrator.
+                Please check back later or contact support for more information.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -188,10 +261,40 @@ const MobileAppDevelopment = () => {
   if (!project) {
     return (
       <div className="p-8">
-        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center">
+        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center max-w-2xl mx-auto">
           <Smartphone className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-secondary mb-2">No Active Project</h3>
-          <p className="text-muted">No mobile app development project found for this service instance.</p>
+          <p className="text-muted mb-4">
+            This mobile app service instance hasn't been configured yet.
+          </p>
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-left">
+            <p className="text-sm text-blue-300 mb-2">
+              <strong>For Company Admins:</strong>
+            </p>
+            <p className="text-sm text-muted">
+              Please contact your Allync administrator to configure this service with your project details, milestones, and app information.
+            </p>
+          </div>
+          {availableProjects.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm text-muted mb-3">You have other mobile app projects available:</p>
+              <div className="space-y-2">
+                {availableProjects.map((proj: any) => (
+                  <button
+                    key={proj.id}
+                    onClick={() => navigate(`/dashboard/services/mobile-app/${proj.company_service_id}`)}
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-secondary/50 hover:bg-secondary rounded-lg transition-colors border border-secondary"
+                  >
+                    <Smartphone className="w-5 h-5 text-cyan-400" />
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium text-white">{proj.project_name || proj.app_name}</p>
+                      <p className="text-xs text-muted">{proj.app_name}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -255,7 +358,7 @@ const MobileAppDevelopment = () => {
               <Smartphone className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">{project.project_name}</h1>
+              <h1 className="text-3xl font-bold text-white">{project.project_name || project.app_name}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${platformColors[project.platform]} text-white`}>
                   {platformLabels[project.platform]}
@@ -264,6 +367,61 @@ const MobileAppDevelopment = () => {
               </div>
             </div>
           </div>
+
+          {/* Project Switcher Dropdown */}
+          {availableProjects.length > 1 && (
+            <div className="relative">
+              <button
+                onClick={() => setShowProjectDropdown(!showProjectDropdown)}
+                className="flex items-center gap-2 px-4 py-2 bg-secondary/80 hover:bg-secondary border border-secondary rounded-lg transition-colors text-white"
+              >
+                <span className="text-sm font-medium">Switch Project</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showProjectDropdown ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showProjectDropdown && (
+                <div className="absolute right-0 mt-2 w-72 bg-card border border-secondary rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto">
+                  {availableProjects.map((proj: any) => (
+                    <button
+                      key={proj.id}
+                      onClick={() => {
+                        navigate(`/dashboard/services/mobile-app/${proj.company_service_id}`);
+                        setShowProjectDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-secondary/50 last:border-b-0 ${
+                        proj.id === project.id ? 'bg-blue-500/10' : ''
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 bg-gradient-to-br ${platformColors[proj.platform]} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                          <Smartphone className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">
+                            {proj.project_name || proj.app_name}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-xs text-muted">{proj.app_name}</span>
+                            {proj.companyService?.instance_name && (
+                              <>
+                                <span className="text-xs text-muted">•</span>
+                                <span className="text-xs text-blue-400">{proj.companyService.instance_name}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        {proj.id === project.id && (
+                          <div className="flex-shrink-0">
+                            <CheckCircle2 className="w-5 h-5 text-blue-400" />
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

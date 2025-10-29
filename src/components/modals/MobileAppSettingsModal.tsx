@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, CheckCircle2, Clock, Circle, XCircle } from 'lucide-react';
 
 interface MobileAppMilestone {
@@ -12,6 +12,7 @@ interface MobileAppMilestone {
 
 interface MobileAppSettingsModalProps {
   companyName: string;
+  instanceName?: string; // Instance name from company_services
   onClose: () => void;
   onSave: (settings: any) => void;
   initialSettings?: {
@@ -31,11 +32,12 @@ interface MobileAppSettingsModalProps {
 
 export default function MobileAppSettingsModal({
   companyName,
+  instanceName,
   onClose,
   onSave,
   initialSettings
 }: MobileAppSettingsModalProps) {
-  const [projectName, setProjectName] = useState(initialSettings?.projectName || '');
+  const [projectName, setProjectName] = useState(initialSettings?.projectName || instanceName || '');
   const [platform, setPlatform] = useState<'android' | 'ios' | 'both'>(
     initialSettings?.platform || 'both'
   );
@@ -63,6 +65,28 @@ export default function MobileAppSettingsModal({
       { title: 'App Store Submission', status: 'pending', progress: 0, displayOrder: 6 },
     ]
   );
+
+  // Update state when initialSettings changes (when data loads from API)
+  useEffect(() => {
+    if (initialSettings) {
+      console.log('🔄 Modal: Updating state with initialSettings:', initialSettings);
+      setProjectName(initialSettings.projectName || instanceName || '');
+      setPlatform(initialSettings.platform || 'both');
+      setAppName(initialSettings.appName || '');
+      setPackageName(initialSettings.packageName || '');
+      setBundleId(initialSettings.bundleId || '');
+      setPlayStoreStatus(initialSettings.playStoreStatus || 'pending');
+      setPlayStoreUrl(initialSettings.playStoreUrl || '');
+      setAppStoreStatus(initialSettings.appStoreStatus || 'pending');
+      setAppStoreUrl(initialSettings.appStoreUrl || '');
+      setEstimatedCompletion(initialSettings.estimatedCompletion || '');
+
+      if (initialSettings.milestones && initialSettings.milestones.length > 0) {
+        console.log('✅ Modal: Setting milestones:', initialSettings.milestones.length);
+        setMilestones(initialSettings.milestones);
+      }
+    }
+  }, [initialSettings]);
 
   const calculateProgress = () => {
     if (milestones.length === 0) return 0;
@@ -171,7 +195,15 @@ export default function MobileAppSettingsModal({
         <div className="sticky top-0 bg-primary border-b border-secondary p-6 flex items-center justify-between z-10">
           <div>
             <h2 className="text-2xl font-bold text-white">Mobile App Settings</h2>
-            <p className="text-sm text-muted mt-1">{companyName}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm text-muted">{companyName}</p>
+              {instanceName && (
+                <>
+                  <span className="text-muted">•</span>
+                  <span className="text-sm text-cyan-400">{instanceName}</span>
+                </>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}

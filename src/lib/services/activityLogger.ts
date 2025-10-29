@@ -289,6 +289,31 @@ class ActivityLogger {
     });
   }
 
+  // SERVICE CONFIGURATION
+  public async logServiceConfigured(
+    userId: string,
+    companyId: string,
+    serviceName: string,
+    action: 'created' | 'updated'
+  ) {
+    await this.log({
+      action: `Service Configuration ${action === 'created' ? 'Created' : 'Updated'}`,
+      category: 'service',
+      entity_type: 'service_configuration',
+      entity_id: serviceName,
+      description: `${action === 'created' ? 'Created' : 'Updated'} ${serviceName} service configuration`,
+      details: {
+        service_name: serviceName,
+        configured_by: userId,
+        company_id: companyId,
+        action: action,
+      },
+      status: 'success',
+      severity: 'info',
+      tags: ['service', 'configuration', serviceName.toLowerCase(), action],
+    });
+  }
+
   // PAYMENT ACTIONS
   public async logPayment(
     action: string,
