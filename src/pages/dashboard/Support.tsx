@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, Send, Plus, Clock, CheckCircle, XCircle, AlertCircle, Search, Building2, User, Filter } from 'lucide-react';
+import { MessageSquare, Send, Plus, Clock, CheckCircle, XCircle, AlertCircle, Search, Filter } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import {

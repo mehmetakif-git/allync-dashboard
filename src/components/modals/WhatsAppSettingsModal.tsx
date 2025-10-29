@@ -12,7 +12,6 @@ interface WhatsAppSettingsModalProps {
 export default function WhatsAppSettingsModal({
   isOpen,
   onClose,
-  onSave,
   companyName,
 }: WhatsAppSettingsModalProps) {
   if (!isOpen) return null;

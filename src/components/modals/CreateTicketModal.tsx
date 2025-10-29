@@ -31,7 +31,6 @@ export default function CreateTicketModal({
   isLoading = false,
   initialCompanyId
 }: CreateTicketModalProps) {
-  const { user } = useAuth();
   const [companies, setCompanies] = useState<any[]>([]);
   const [serviceTypes, setServiceTypes] = useState<any[]>([]);
   const [availableAssignees, setAvailableAssignees] = useState<any[]>([]);

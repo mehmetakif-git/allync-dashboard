@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Home, Package, FileText, HelpCircle, Settings, LogOut, X,
   MessageCircle, Instagram, Calendar, Sheet, Mail,
-  FolderOpen, Image, Mic, Heart, Globe, Smartphone, AlertCircle
+  FolderOpen, Image, Mic, Heart, Globe, Smartphone
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';

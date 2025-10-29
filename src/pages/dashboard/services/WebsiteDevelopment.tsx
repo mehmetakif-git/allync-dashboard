@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getWebsiteProjectsByCompany } from '../../../lib/api/websiteProjects';
 import { getCompanyServices } from '../../../lib/api/companyServices';
 
-const WebsiteDevelopment: React.FC = () => {
+const WebsiteDevelopment = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
   const [projects, setProjects] = useState<any[]>([]);

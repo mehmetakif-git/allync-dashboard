@@ -147,7 +147,7 @@ export default function AddServiceModal({
     try {
       await onSubmit(formData);
       handleClose();
-    } catch (error) {
+    } catch {
       // Error handled by parent
     }
   };

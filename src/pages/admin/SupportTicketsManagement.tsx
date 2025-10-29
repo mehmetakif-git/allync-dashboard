@@ -10,7 +10,6 @@ import {
   updateTicketStatus,
   assignTicket,
   addResolutionNote,
-  updateSatisfactionRating,
 } from '../../lib/api/supportTickets';
 import { getAllUsers } from '../../lib/api/users';
 import { useAuth } from '../../contexts/AuthContext';

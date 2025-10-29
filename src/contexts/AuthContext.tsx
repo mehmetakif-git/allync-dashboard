@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { signIn, signOut, getCurrentUser, onAuthStateChange, AuthUser } from '../lib/auth';
+import { signIn, signOut, getCurrentUser, AuthUser } from '../lib/auth';
 import activityLogger from '../lib/services/activityLogger'; // ✅ Activity Logger
 
 interface AuthContextType {

@@ -195,11 +195,6 @@ export default function Invoices() {
     setShowPreviewModal(true);
   };
 
-  const handleOpenInNewTab = (invoice: Invoice) => {
-    console.log('🔗 [Invoices] Opening in new tab:', invoice.invoice_number);
-    window.open(`/invoice-preview/${invoice.id}`, '_blank');
-  };
-
   // ===== GATEWAY INFO =====
   const getGatewayInfo = (gateway: string) => {
     console.log('💳 [Invoices] Getting gateway info:', gateway);

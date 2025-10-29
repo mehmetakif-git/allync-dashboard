@@ -12,7 +12,7 @@ import { getCompanyServiceRequests, createServiceRequest } from '../../lib/api/s
 import { getCompanyServices } from '../../lib/api/companyServices';
 
 export default function Services() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -113,7 +113,7 @@ export default function Services() {
   };
 
   const handleSubmitRequest = async (packageType: 'basic' | 'standard' | 'premium', notes: string) => {
-    if (!selectedService || !user?.company_id || !profile?.id) {
+    if (!selectedService || !user?.company_id || !user?.id) {
       alert('Missing required information');
       return;
     }
@@ -123,7 +123,7 @@ export default function Services() {
         company_id: user.company_id,
         service_type_id: selectedService.id,
         package: packageType,
-        requested_by: profile.id,
+        requested_by: user.id,
         notes: notes || undefined,
       });
 

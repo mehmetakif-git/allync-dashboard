@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Zap, TrendingUp, AlertCircle, Clock, CheckCircle, CreditCard,
-  MessageSquare, ArrowRight, Activity, Package, DollarSign,
+  Zap, TrendingUp, Clock, CheckCircle, CreditCard,
+  ArrowRight, Package, DollarSign,
   MessageCircle, Instagram, Calendar, Sheet, Mail, FileText,
   FolderOpen, Image, Mic, Heart, Globe, Smartphone
 } from 'lucide-react';

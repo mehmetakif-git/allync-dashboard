@@ -1,3 +1,5 @@
+export type Language = 'en' | 'tr';
+
 export interface Translations {
   [key: string]: {
     en: string;

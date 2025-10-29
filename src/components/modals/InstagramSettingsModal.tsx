@@ -12,7 +12,6 @@ interface InstagramSettingsModalProps {
 export default function InstagramSettingsModal({
   isOpen,
   onClose,
-  onSave,
   companyName,
 }: InstagramSettingsModalProps) {
   if (!isOpen) return null;

@@ -123,7 +123,7 @@ export default function RequestServiceModal({ service, onClose, onSubmit }: Requ
                     </div>
 
                     <ul className="space-y-1.5 mb-3">
-                      {pkg.features.map((feature, index) => (
+                      {pkg.features.map((feature: string, index: number) => (
                         <li key={index} className="text-xs text-muted flex items-start">
                           <Check className="w-3 h-3 text-green-500 mr-1.5 flex-shrink-0 mt-0.5" />
                           {feature}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, Plus, Trash2, CheckCircle2, Clock, Circle, XCircle } from 'lucide-react';
 
 interface WebsiteMilestone {

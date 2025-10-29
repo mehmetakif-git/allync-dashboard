@@ -92,8 +92,8 @@ export default function Login() {
         action: 'Password Reset Requested',
         category: 'auth',
         description: `Password reset email sent to ${resetEmail}`,
-        status: 'success',
-        severity: 'info',
+        status: 'success' as const,
+        severity: 'info' as const,
         tags: ['password_reset', 'email'],
       });
 
@@ -116,7 +116,7 @@ export default function Login() {
         'Password Reset Failed',
         err,
         { email: resetEmail },
-        'error'
+        'error' as const
       );
       
       setResetStatus('error');

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Settings,
   Mail,
   CreditCard,
   Bell,
@@ -89,7 +88,7 @@ export default function SystemSettings() {
 
       console.log('💾 Saving settings...');
 
-      let categoryToSave = activeTab;
+      const categoryToSave = activeTab;
       let settingsToSave: CategorySettings = {};
 
       switch (activeTab) {

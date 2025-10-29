@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getMobileAppProjectsByCompany } from '../../../lib/api/mobileAppProjects';
 import { getCompanyServices } from '../../../lib/api/companyServices';
 
-const MobileAppDevelopment: React.FC = () => {
+const MobileAppDevelopment = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
   const [projects, setProjects] = useState<any[]>([]);

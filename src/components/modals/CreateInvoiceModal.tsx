@@ -28,7 +28,6 @@ export default function CreateInvoiceModal({
   isLoading = false,
   initialCompanyId
 }: CreateInvoiceModalProps) {
-  const { user } = useAuth();
   const [companies, setCompanies] = useState<any[]>([]);
   const [loadingCompanies, setLoadingCompanies] = useState(true);
   const [selectedCompanyServices, setSelectedCompanyServices] = useState<any[]>([]);

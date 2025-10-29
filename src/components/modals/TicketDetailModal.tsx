@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Save, CheckCircle, Building2, User, Calendar, Star, AlertCircle, MessageSquare, Clock } from 'lucide-react';
+import { X, Save, CheckCircle, Building2, User, Calendar, Star, MessageSquare, Clock } from 'lucide-react';
 import { getTicketMessages, createTicketMessage } from '../../lib/api/supportTickets';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../LoadingSpinner';
@@ -57,7 +57,6 @@ interface TicketDetailModalProps {
   onClose: () => void;
   ticket: Ticket | null;
   onUpdate: (ticketId: string, updates: TicketUpdates) => Promise<void>;
-  onSendReply: (ticketId: string, message: string) => Promise<void>;
   availableAssignees?: Array<{ id: string; full_name: string; email: string }>;
   isLoading?: boolean;
 }
@@ -79,7 +78,6 @@ export default function TicketDetailModal({
   onClose,
   ticket,
   onUpdate,
-  onSendReply,
   availableAssignees = [],
   isLoading = false,
 }: TicketDetailModalProps) {
@@ -157,7 +155,7 @@ export default function TicketDetailModal({
     return new Date(dateString).toLocaleString();
   };
 
-  const showSuccess = (message: string) => {
+  const showSuccess = () => {
     setShowSuccessMessage(true);
     setTimeout(() => setShowSuccessMessage(false), 3000);
   };

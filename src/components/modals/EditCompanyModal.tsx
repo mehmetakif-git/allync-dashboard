@@ -29,7 +29,6 @@ export default function EditCompanyModal({
   onClose,
   onSave,
   initialData,
-  companyName,
 }: EditCompanyModalProps) {
   const [formData, setFormData] = useState<CompanyFormData>(initialData);
   const [isProcessing, setIsProcessing] = useState(false);

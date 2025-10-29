@@ -1,4 +1,4 @@
-import { Menu, Bell, User, LogOut } from 'lucide-react';
+import { Menu, Bell, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';

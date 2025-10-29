@@ -13,7 +13,6 @@ interface GoogleServiceSettingsModalProps {
 export default function GoogleServiceSettingsModal({
   isOpen,
   onClose,
-  onSave,
   serviceType,
   companyName,
 }: GoogleServiceSettingsModalProps) {

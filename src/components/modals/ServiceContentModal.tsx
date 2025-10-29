@@ -34,8 +34,8 @@ export default function ServiceContentModal({ serviceData, onClose, onSave }: Se
   const handleRemoveFeature = (index: number) => {
     setFormData({
       ...formData,
-      features_en: formData.features_en.filter((_, i) => i !== index),
-      features_tr: formData.features_tr.filter((_, i) => i !== index)
+      features_en: formData.features_en.filter((_: string, i: number) => i !== index),
+      features_tr: formData.features_tr.filter((_: string, i: number) => i !== index)
     });
   };
 
@@ -132,7 +132,7 @@ export default function ServiceContentModal({ serviceData, onClose, onSave }: Se
             </div>
 
             <div className="space-y-3">
-              {formData.features_en.map((_, index) => (
+              {formData.features_en.map((_: string, index: number) => (
                 <div key={index} className="grid grid-cols-2 gap-4 items-start">
                   <input
                     type="text"

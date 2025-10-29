@@ -10,7 +10,6 @@ interface OverallTabProps {
   totalRevenue: number;
   activeSubscriptions: number;
   monthlyGrowth: number;
-  serviceGradient: string;
   revenueByPackage?: {
     basic: number;
     standard: number;
@@ -23,7 +22,6 @@ export function OverallTab({
   totalRevenue,
   activeSubscriptions,
   monthlyGrowth,
-  serviceGradient,
   revenueByPackage = { basic: 0, standard: 0, premium: 0 }
 }: OverallTabProps) {
   return (
@@ -449,14 +447,12 @@ interface ServiceContentTabProps {
     payment_type?: string;
   };
   onEdit: () => void;
-  serviceGradient: string;
   showPricing?: boolean; // For one-time services (website/mobile), hide pricing
 }
 
 export function ServiceContentTab({
   serviceData,
   onEdit,
-  serviceGradient,
   showPricing = true
 }: ServiceContentTabProps) {
   return (

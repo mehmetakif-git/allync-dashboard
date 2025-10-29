@@ -49,6 +49,7 @@ export interface Invoice {
     address: string | null;
     city: string | null;
     postal_code: string | null;
+    phone?: string | null;
   };
 }
 

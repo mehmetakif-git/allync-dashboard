@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, Building2, Users, Zap, DollarSign, Calendar, Mail, Phone, 
-  MessageCircle, MapPin, Instagram, CheckCircle, Smartphone, XCircle, 
+import {
+  ArrowLeft, Building2, Users, Zap, Mail, Phone,
+  MessageCircle, MapPin, Instagram, CheckCircle, Smartphone, XCircle,
   Sheet, Globe, FolderOpen, FileText, Edit3, Trash2, Plus, Settings, Image,
   ThumbsUp, ThumbsDown, ExternalLink
 } from 'lucide-react';

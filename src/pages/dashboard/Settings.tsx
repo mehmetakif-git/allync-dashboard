@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   User, Building2, Shield, Globe, Calendar, MapPin, Mail, Phone,
-  CheckCircle, Clock, Monitor, CreditCard, FileText, Hash, ExternalLink
+  CheckCircle, Clock, Monitor, FileText, Hash, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -36,7 +36,7 @@ interface ActivityLog {
 }
 
 export default function Settings() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const { language, setLanguage } = useLanguage();
   const [activeTab, setActiveTab] = useState<'account' | 'company' | 'security' | 'preferences'>('account');
   const [companyData, setCompanyData] = useState<CompanyData | null>(null);
@@ -55,10 +55,10 @@ export default function Settings() {
         setCompanyData(company);
 
         // Fetch activity logs (login history)
-        if (profile?.id) {
+        if (user?.id) {
           const activities = await getActivityLogs({
             filters: {
-              user_id: profile.id,
+              user_id: user.id,
               action: 'login'
             },
             limit: 10,
@@ -76,7 +76,7 @@ export default function Settings() {
     };
 
     fetchData();
-  }, [user?.company_id, profile?.id]);
+  }, [user?.company_id, user?.id]);
 
   // Parse user agent to get device info
   const parseUserAgent = (userAgent?: string) => {
@@ -163,7 +163,7 @@ export default function Settings() {
                   </span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">{user?.name || profile?.full_name}</h3>
+                  <h3 className="text-xl font-bold text-white">{user?.name}</h3>
                   <p className="text-muted">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
                   <p className="text-sm text-muted mt-1">{companyData?.name}</p>
                 </div>
@@ -176,7 +176,7 @@ export default function Settings() {
                     <Mail className="w-4 h-4 text-muted" />
                     <span className="text-sm text-muted">Email</span>
                   </div>
-                  <p className="text-white font-medium">{user?.email || profile?.email}</p>
+                  <p className="text-white font-medium">{user?.email}</p>
                 </div>
 
                 <div className="p-4 bg-primary/50 rounded-lg">
@@ -184,7 +184,7 @@ export default function Settings() {
                     <Phone className="w-4 h-4 text-muted" />
                     <span className="text-sm text-muted">Phone</span>
                   </div>
-                  <p className="text-white font-medium">{profile?.phone || 'Not set'}</p>
+                  <p className="text-white font-medium">{'Not set'}</p>
                 </div>
 
                 <div className="p-4 bg-primary/50 rounded-lg">
@@ -200,7 +200,7 @@ export default function Settings() {
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span className="text-sm text-muted">Account Status</span>
                   </div>
-                  <p className="text-green-500 font-medium capitalize">{profile?.status || 'Active'}</p>
+                  <p className="text-green-500 font-medium capitalize">Active</p>
                 </div>
 
                 <div className="p-4 bg-primary/50 rounded-lg">
@@ -209,7 +209,7 @@ export default function Settings() {
                     <span className="text-sm text-muted">Member Since</span>
                   </div>
                   <p className="text-white font-medium">
-                    {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+                    {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                   </p>
                 </div>
 

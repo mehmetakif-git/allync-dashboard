@@ -7,8 +7,8 @@ import Login from './pages/auth/Login';
 import MaintenancePage from './pages/MaintenancePage';
 
 // Layouts
-import SuperAdminLayout from '././layouts/SuperAdminLayout';
-import CompanyLayout from '././layouts/CompanyLayout';
+import SuperAdminLayout from './layouts/SuperAdminLayout';
+import CompanyLayout from './layouts/CompanyLayout';
 
 // Super Admin Pages
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
@@ -30,15 +30,15 @@ import WebsiteServiceManagement from './pages/admin/services/WebsiteServiceManag
 import MobileAppServiceManagement from './pages/admin/services/MobileAppServiceManagement';
 
 // Company/User Pages
-import CompanyAdminDashboard from './pages/dasboard/CompanyAdminDashboard';
-import Services from './pages/dasboard/Services';
-import Invoices from './pages/dasboard/Invoices';
-import Support from './pages/dasboard/Support';
-import Settings from './pages/dasboard/Settings';
+import CompanyAdminDashboard from './pages/dashboard/CompanyAdminDashboard';
+import Services from './pages/dashboard/Services';
+import Invoices from './pages/dashboard/Invoices';
+import Support from './pages/dashboard/Support';
+import Settings from './pages/dashboard/Settings';
 
 // Service Pages (Company/User)
-import WebsiteDevelopment from './pages/dasboard/services/WebsiteDevelopment';
-import MobileAppDevelopment from './pages/dasboard/services/MobileAppDevelopment';
+import WebsiteDevelopment from './pages/dashboard/services/WebsiteDevelopment';
+import MobileAppDevelopment from './pages/dashboard/services/MobileAppDevelopment';
 
 export default function App() {
   return (
