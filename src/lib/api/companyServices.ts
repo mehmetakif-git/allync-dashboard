@@ -38,6 +38,7 @@ export interface CompanyServiceWithDetails extends CompanyService {
 export interface AddServiceData {
   companyId: string;
   serviceTypeId: string;
+  instanceName: string; // ✅ NEW: Unique name for this service instance
   package: 'basic' | 'pro' | 'premium' | 'custom';
   priceAmount?: number;
   billingCycle?: 'monthly' | 'yearly' | 'one-time';
@@ -141,6 +142,7 @@ export async function addServiceToCompany(serviceData: AddServiceData): Promise<
     const insertData = {
       company_id: serviceData.companyId,
       service_type_id: serviceData.serviceTypeId,
+      instance_name: serviceData.instanceName, // ✅ NEW: Instance name
       package: serviceData.package,
       status: 'active' as const,
       start_date: serviceData.startDate || new Date().toISOString().split('T')[0],
@@ -233,11 +235,46 @@ export async function updateCompanyService(
 
 export async function updateServiceStatus(
   serviceId: string,
-  status: 'active' | 'suspended' | 'inactive' | 'maintenance'
+  status: 'active' | 'suspended' | 'inactive' | 'maintenance',
+  reason?: string
 ): Promise<CompanyServiceWithDetails> {
-  console.log('🔄 [updateServiceStatus] Updating status:', { serviceId, status });
+  console.log('🔄 [updateServiceStatus] Updating status:', { serviceId, status, reason });
 
-  return await updateCompanyService(serviceId, { status });
+  // First, get the current service to get existing metadata
+  const currentService = await getCompanyServiceById(serviceId);
+
+  // Update metadata with reason if provided
+  const updatedMetadata = { ...currentService.metadata };
+
+  if (reason) {
+    // Store reason based on status type
+    if (status === 'maintenance') {
+      updatedMetadata.maintenance_reason = reason;
+      updatedMetadata.maintenance_set_at = new Date().toISOString();
+    } else if (status === 'suspended') {
+      updatedMetadata.suspension_reason = reason;
+      updatedMetadata.suspended_at = new Date().toISOString();
+    } else if (status === 'inactive') {
+      updatedMetadata.inactive_reason = reason;
+      updatedMetadata.inactive_set_at = new Date().toISOString();
+    }
+  } else {
+    // Clear status-specific metadata when returning to active
+    if (status === 'active') {
+      delete updatedMetadata.maintenance_reason;
+      delete updatedMetadata.maintenance_set_at;
+      delete updatedMetadata.suspension_reason;
+      delete updatedMetadata.suspended_at;
+      delete updatedMetadata.inactive_reason;
+      delete updatedMetadata.inactive_set_at;
+      updatedMetadata.reactivated_at = new Date().toISOString();
+    }
+  }
+
+  return await updateCompanyService(serviceId, {
+    status,
+    metadata: updatedMetadata
+  });
 }
 
 // =====================================================

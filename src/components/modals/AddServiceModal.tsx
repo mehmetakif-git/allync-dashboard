@@ -10,6 +10,7 @@ import { supabase } from '../../lib/supabase';
 export interface AddServiceFormData {
   companyId: string;
   serviceTypeId: string;
+  instanceName: string; // ✅ NEW: Unique name for this service instance
   package: 'basic' | 'pro' | 'premium' | 'custom';
   priceAmount?: number;
   billingCycle?: 'monthly' | 'yearly' | 'one-time';
@@ -46,6 +47,7 @@ export default function AddServiceModal({
   const [formData, setFormData] = useState<AddServiceFormData>({
     companyId: '',
     serviceTypeId: '',
+    instanceName: '', // ✅ NEW: Instance name
     package: 'basic',
     priceAmount: undefined,
     billingCycle: 'monthly',
@@ -110,6 +112,10 @@ export default function AddServiceModal({
       newErrors.serviceTypeId = 'Please select a service type';
     }
 
+    if (!formData.instanceName || !formData.instanceName.trim()) {
+      newErrors.instanceName = 'Please provide a unique name for this service instance';
+    }
+
     if (!formData.startDate) {
       newErrors.startDate = 'Start date is required';
     }
@@ -150,6 +156,7 @@ export default function AddServiceModal({
     setFormData({
       companyId: initialCompanyId || '',
       serviceTypeId: '',
+      instanceName: '', // ✅ Reset instance name
       package: 'basic',
       priceAmount: undefined,
       billingCycle: 'monthly',
@@ -306,6 +313,34 @@ export default function AddServiceModal({
                           <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
                             <AlertCircle className="w-4 h-4" />
                             {errors.serviceTypeId}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* ✅ NEW: Instance Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-secondary mb-2 flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          Service Instance Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.instanceName}
+                          onChange={(e) => setFormData({ ...formData, instanceName: e.target.value })}
+                          disabled={isLoading}
+                          placeholder="e.g., E-commerce Store, Corporate Website, iOS App, Main Website..."
+                          className={`w-full px-4 py-3 bg-primary border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 ${
+                            errors.instanceName ? 'border-red-500' : 'border-secondary'
+                          }`}
+                          maxLength={100}
+                        />
+                        <p className="mt-1 text-xs text-muted">
+                          Give this service a unique name to distinguish it from other services of the same type
+                        </p>
+                        {errors.instanceName && (
+                          <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                            <AlertCircle className="w-4 h-4" />
+                            {errors.instanceName}
                           </p>
                         )}
                       </div>

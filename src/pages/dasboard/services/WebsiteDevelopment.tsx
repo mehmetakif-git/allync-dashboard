@@ -126,7 +126,9 @@ const WebsiteDevelopment: React.FC = () => {
   console.log('🔍 [WebsiteDevelopment] Status:', websiteService?.status);
 
   const isInMaintenance = websiteService?.status === 'maintenance';
+  const maintenanceReason = websiteService?.metadata?.maintenance_reason;
   console.log('🔍 [WebsiteDevelopment] Is In Maintenance:', isInMaintenance);
+  console.log('🔍 [WebsiteDevelopment] Maintenance Reason:', maintenanceReason);
 
   // Loading state
   if (loading) {
@@ -170,44 +172,56 @@ const WebsiteDevelopment: React.FC = () => {
     );
   }
 
-  return (
-    <div className="p-8">
-      {/* Maintenance Mode Panel */}
-      {isInMaintenance && (
-        <div className="bg-orange-500/10 border-2 border-orange-500/50 rounded-xl p-8 mb-6 text-center">
+  // ✅ MAINTENANCE MODE - Show ONLY maintenance panel, hide all content
+  if (isInMaintenance) {
+    return (
+      <div className="p-8">
+        <div className="bg-orange-500/10 border-2 border-orange-500/50 rounded-xl p-8 text-center max-w-2xl mx-auto mt-12">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-orange-500/20 flex items-center justify-center">
-              <Wrench className="w-10 h-10 text-orange-400" />
+            <div className="w-24 h-24 rounded-full bg-orange-500/20 flex items-center justify-center">
+              <Wrench className="w-12 h-12 text-orange-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-orange-400 mb-2">🔧 Service Under Maintenance</h2>
+              <h2 className="text-3xl font-bold text-orange-400 mb-3">🔧 Service Under Maintenance</h2>
               <p className="text-orange-300/80 text-lg mb-4">
                 Website Development service is temporarily unavailable
               </p>
+              {maintenanceReason && (
+                <div className="bg-orange-500/5 border border-orange-500/20 rounded-lg p-4 mb-4">
+                  <p className="text-orange-200/90 text-sm font-medium mb-1">Maintenance Reason:</p>
+                  <p className="text-orange-300/70 text-sm">{maintenanceReason}</p>
+                </div>
+              )}
               <p className="text-orange-200/60 text-sm">
-                We're working on improvements. Please check back shortly. Your project data is safe.
+                We're working on improvements. Please check back shortly.
+              </p>
+              <p className="text-orange-200/50 text-xs mt-3">
+                Your project data is safe and will be available once maintenance is complete.
               </p>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
+  // ✅ NORMAL MODE - Show all content
+  return (
+    <div className="p-8">
       {/* Normal Info Panel */}
-      {!isInMaintenance && (
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-              <Info className="w-6 h-6 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-blue-400 font-medium mb-1">Website Settings Managed by Allync</p>
-              <p className="text-blue-300/70 text-sm">
-                All website configuration and deployment is handled by the Allync team. View-only access provided for tracking progress.
-              </p>
-            </div>
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <Info className="w-6 h-6 text-blue-400" />
+          </div>
+          <div>
+            <p className="text-blue-400 font-medium mb-1">Website Settings Managed by Allync</p>
+            <p className="text-blue-300/70 text-sm">
+              All website configuration and deployment is handled by the Allync team. View-only access provided for tracking progress.
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
       <div className="mb-8">
         <div className="flex items-center justify-between">

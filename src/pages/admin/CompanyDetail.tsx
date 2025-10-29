@@ -10,6 +10,7 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { getCompanyById, getSupportTickets, getInvoices, getServiceTypes } from '../../lib/api/companies';
 import { getCompanyUsers, createUser, updateUser, deleteUser } from '../../lib/api/users';
 import { getCompanyServiceRequests, approveServiceRequest, rejectServiceRequest } from '../../lib/api/serviceRequests';
+import { getCompanyServices } from '../../lib/api/companyServices';
 import { useAuth } from '../../contexts/AuthContext';
 import WhatsAppSettingsModal from '../../components/modals/WhatsAppSettingsModal';
 import InstagramSettingsModal from '../../components/modals/InstagramSettingsModal';
@@ -40,6 +41,7 @@ export default function CompanyDetail() {
 
   // API Data States
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [companyServices, setCompanyServices] = useState<any[]>([]); // ✅ ADDED: company_services state
   const [supportTickets, setSupportTickets] = useState<any[]>([]);
   const [companyInvoices, setCompanyInvoices] = useState<any[]>([]);
   const [serviceTypes, setServiceTypes] = useState<any[]>([]);
@@ -104,9 +106,10 @@ export default function CompanyDetail() {
         setLoading(true);
         console.log('📡 Fetching company data:', companyId);
 
-        const [companyData, servicesData, ticketsData, invoicesData, serviceTypesData, usersData] = await Promise.all([
+        const [companyData, serviceRequestsData, companyServicesData, ticketsData, invoicesData, serviceTypesData, usersData] = await Promise.all([
           getCompanyById(companyId),
           getCompanyServiceRequests(companyId),
+          getCompanyServices(companyId),  // ✅ EKLEDIM!
           getSupportTickets(companyId),
           getInvoices(companyId),
           getServiceTypes(),
@@ -114,9 +117,12 @@ export default function CompanyDetail() {
         ]);
 
         console.log('✅ All data fetched successfully');
+        console.log('📊 Company Services:', companyServicesData);
+        console.log('📊 Service Requests:', serviceRequestsData);
 
         setCompany(companyData);
-        setServiceRequests(servicesData || []);
+        setServiceRequests(serviceRequestsData || []);
+        setCompanyServices(companyServicesData || []);  // ✅ EKLEDIM!
         setSupportTickets(ticketsData || []);
         setCompanyInvoices(invoicesData || []);
         setServiceTypes(serviceTypesData || []);
@@ -362,7 +368,7 @@ export default function CompanyDetail() {
   };
 
   const handleApproveConfirm = async () => {
-    if (!selectedRequest || !profile) return;
+    if (!selectedRequest || !user) return;
 
     setIsProcessing(true);
     try {
@@ -400,7 +406,7 @@ export default function CompanyDetail() {
   };
 
   const handleRejectConfirm = async () => {
-    if (!selectedRequest || !profile) return;
+    if (!selectedRequest || !user) return;
     if (!rejectionReason.trim()) {
       showError('Please provide a rejection reason');
       return;
@@ -563,8 +569,8 @@ export default function CompanyDetail() {
         reason
       });
 
-      // Update status in database
-      await updateServiceStatus(companyService.id, newServiceStatus);
+      // Update status in database with reason
+      await updateServiceStatus(companyService.id, newServiceStatus, reason);
 
       // Track status change with reason
       await activityLogger.log({
@@ -610,6 +616,7 @@ export default function CompanyDetail() {
       const newService = await addServiceToCompany({
         companyId: data.companyId,
         serviceTypeId: data.serviceTypeId,
+        instanceName: data.instanceName, // ✅ NEW: Instance name
         package: data.package,
         priceAmount: data.priceAmount,
         billingCycle: data.billingCycle,
@@ -624,7 +631,7 @@ export default function CompanyDetail() {
       await activityLogger.log({
         action: 'Service Added to Company',
         action_category: 'create',
-        description: `Added ${newService.service_type.name_en} (${data.package}) to ${company?.name}`,
+        description: `Added ${newService.service_type.name_en} "${data.instanceName}" (${data.package}) to ${company?.name}`,
         entity_type: 'CompanyService',
         entity_id: newService.id,
       });
@@ -633,7 +640,7 @@ export default function CompanyDetail() {
       await refreshServices();
 
       setShowAddServiceModal(false);
-      showSuccess(`Service ${newService.service_type.name_en} added successfully!`);
+      showSuccess(`Service "${data.instanceName}" added successfully!`);
     } catch (error: any) {
       console.error('❌ Error adding service:', error);
       showError(error.message || 'Failed to add service');
@@ -730,7 +737,7 @@ export default function CompanyDetail() {
   }
 
   // ===== DATA CALCULATIONS =====
-  const companyServices = serviceRequests.filter(req => req.status === 'approved');
+  // companyServices is now from state (company_services table), not filtered from serviceRequests
   const pendingRequests = serviceRequests.filter(req => req.status === 'pending');
   const totalRevenue = companyInvoices
     .filter((i: any) => i.status === 'paid')
@@ -1152,44 +1159,22 @@ export default function CompanyDetail() {
                                 <ServiceIcon className="w-6 h-6 text-white" />
                               </div>
 
-                              {/* Status Badge - Opens Menu */}
-                              <div className="relative">
-                                <button
-                                  onClick={() => {
-                                    const btn = document.getElementById(`status-menu-${service.id}`);
-                                    if (btn) {
-                                      btn.classList.toggle('hidden');
-                                    }
-                                  }}
-                                  className={`px-3 py-1 border rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${statusColors[currentStatus]}`}
-                                >
-                                  {currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
-                                </button>
+                              {/* Status Badge - Click to open modal */}
+                              <button
+                                onClick={() => {
+                                  console.log('🔘 Status badge clicked!');
+                                  console.log('📋 Service:', service.name_en);
+                                  console.log('📋 Company Service ID:', companyService.id);
+                                  console.log('📋 Current Status:', currentStatus);
 
-                                {/* Dropdown Menu */}
-                                <div
-                                  id={`status-menu-${service.id}`}
-                                  className="hidden absolute right-0 mt-2 w-48 bg-secondary border border-secondary rounded-lg shadow-xl z-10"
-                                >
-                                  <div className="py-1">
-                                    {(['active', 'maintenance', 'suspended', 'inactive'] as const).map((status) => (
-                                      <button
-                                        key={status}
-                                        onClick={() => {
-                                          const btn = document.getElementById(`status-menu-${service.id}`);
-                                          if (btn) btn.classList.add('hidden');
-                                          handleOpenStatusModal(companyService, service, status);
-                                        }}
-                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-hover transition-colors ${
-                                          status === currentStatus ? 'font-bold text-white' : 'text-muted'
-                                        }`}
-                                      >
-                                        {status.charAt(0).toUpperCase() + status.slice(1)}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
+                                  // Open modal directly - let user choose status
+                                  handleOpenStatusModal(companyService, service, currentStatus === 'active' ? 'maintenance' : 'active');
+                                }}
+                                className={`px-4 py-2 border rounded-lg text-sm font-medium cursor-pointer hover:opacity-80 transition-all ${statusColors[currentStatus]}`}
+                              >
+                                <span>{currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}</span>
+                                <span className="ml-2 text-xs">⚙️ Change</span>
+                              </button>
                             </div>
                           </div>
 
