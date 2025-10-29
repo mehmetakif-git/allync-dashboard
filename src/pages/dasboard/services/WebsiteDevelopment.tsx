@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle, Info } from 'lucide-react';
+import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle, Info, Wrench } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getWebsiteProjectsByCompany } from '../../../lib/api/websiteProjects';
+import { getCompanyServices } from '../../../lib/api/companyServices';
 
 const WebsiteDevelopment: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
   const [projects, setProjects] = useState<any[]>([]);
+  const [companyServices, setCompanyServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch projects on mount
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       console.log('🔍 WebsiteDevelopment - User:', user);
       console.log('🔍 WebsiteDevelopment - Company ID:', user?.company_id);
 
@@ -24,20 +26,24 @@ const WebsiteDevelopment: React.FC = () => {
 
       try {
         setLoading(true);
-        console.log('📡 Fetching website projects...');
-        const data = await getWebsiteProjectsByCompany(user.company_id);
-        console.log('✅ Projects fetched:', data);
-        console.log('🔍 First project:', data?.[0]);
-        setProjects(data || []);
+        console.log('📡 Fetching website projects and services...');
+        const [projectsData, servicesData] = await Promise.all([
+          getWebsiteProjectsByCompany(user.company_id),
+          getCompanyServices(user.company_id)
+        ]);
+        console.log('✅ Projects fetched:', projectsData);
+        console.log('✅ Services fetched:', servicesData);
+        setProjects(projectsData || []);
+        setCompanyServices(servicesData || []);
       } catch (err) {
-        console.error('❌ Error fetching website projects:', err);
-        setError('Failed to load projects');
+        console.error('❌ Error fetching data:', err);
+        setError('Failed to load data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProjects();
+    fetchData();
   }, [user?.company_id]);
 
   const project = projects[0];
@@ -109,6 +115,12 @@ const WebsiteDevelopment: React.FC = () => {
     return `${diffInDays} days ago`;
   };
 
+  // Check if this service is in maintenance mode
+  const websiteService = companyServices.find(
+    (cs: any) => cs.service_type?.slug === 'website-development'
+  );
+  const isInMaintenance = websiteService?.status === 'maintenance';
+
   // Loading state
   if (loading) {
     return (
@@ -153,19 +165,42 @@ const WebsiteDevelopment: React.FC = () => {
 
   return (
     <div className="p-8">
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-            <Info className="w-6 h-6 text-blue-400" />
-          </div>
-          <div>
-            <p className="text-blue-400 font-medium mb-1">Website Settings Managed by Allync</p>
-            <p className="text-blue-300/70 text-sm">
-              All website configuration and deployment is handled by the Allync team. View-only access provided for tracking progress.
-            </p>
+      {/* Maintenance Mode Panel */}
+      {isInMaintenance && (
+        <div className="bg-orange-500/10 border-2 border-orange-500/50 rounded-xl p-8 mb-6 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-orange-500/20 flex items-center justify-center">
+              <Wrench className="w-10 h-10 text-orange-400" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-orange-400 mb-2">🔧 Service Under Maintenance</h2>
+              <p className="text-orange-300/80 text-lg mb-4">
+                Website Development service is temporarily unavailable
+              </p>
+              <p className="text-orange-200/60 text-sm">
+                We're working on improvements. Please check back shortly. Your project data is safe.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Normal Info Panel */}
+      {!isInMaintenance && (
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <Info className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-blue-400 font-medium mb-1">Website Settings Managed by Allync</p>
+              <p className="text-blue-300/70 text-sm">
+                All website configuration and deployment is handled by the Allync team. View-only access provided for tracking progress.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mb-8">
         <div className="flex items-center justify-between">
