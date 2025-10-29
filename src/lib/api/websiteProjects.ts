@@ -35,10 +35,11 @@ export async function getWebsiteProjectsByCompany(companyId: string) {
     .from('website_projects')
     .select(`
       *,
-      milestones:website_milestones(*)
+      milestones:website_milestones!website_milestones_project_id_fkey(*)
     `)
     .eq('company_id', companyId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .order('display_order', { referencedTable: 'website_milestones', ascending: true });
 
   if (error) throw error;
   return data;
@@ -50,9 +51,10 @@ export async function getWebsiteProjectByCompanyService(companyServiceId: string
     .from('website_projects')
     .select(`
       *,
-      milestones:website_milestones(*)
+      milestones:website_milestones!website_milestones_project_id_fkey(*)
     `)
     .eq('company_service_id', companyServiceId)
+    .order('display_order', { referencedTable: 'website_milestones', ascending: true })
     .single();
 
   if (error) {
@@ -69,9 +71,10 @@ export async function getWebsiteProjectById(projectId: string) {
     .from('website_projects')
     .select(`
       *,
-      milestones:website_milestones(*)
+      milestones:website_milestones!website_milestones_project_id_fkey(*)
     `)
     .eq('id', projectId)
+    .order('display_order', { referencedTable: 'website_milestones', ascending: true })
     .single();
 
   if (error) throw error;
@@ -144,15 +147,16 @@ export async function getAllWebsiteProjects() {
     .select(`
       *,
       company:companies(id, name),
-      milestones:website_milestones(*)
+      milestones:website_milestones!website_milestones_project_id_fkey(*)
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .order('display_order', { referencedTable: 'website_milestones', ascending: true });
 
   if (error) {
     console.error('Error fetching all website projects:', error);
     throw error;
   }
-  
+
   return data;
 }
 

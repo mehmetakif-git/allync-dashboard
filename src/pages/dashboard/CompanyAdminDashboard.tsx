@@ -7,28 +7,19 @@ import {
   FolderOpen, Image, Mic, Heart, Globe, Smartphone
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getServiceRequests, getServiceTypes } from '../../lib/api/companies';
+import { getServiceTypes } from '../../lib/api/companies';
 import { getInvoicesByCompany } from '../../lib/api/invoices';
+import { getCompanyServices } from '../../lib/api/companyServices'; // ✅ NEW: Use company_services
 
 interface ActiveService {
-  id: string;
+  id: string; // company_services.id
+  companyServiceId: string; // company_services.id
   name_en: string;
   slug: string;
   package: string;
   status: string;
+  instanceName: string;
   approved_at: string;
-}
-
-interface ServiceRequest {
-  id: string;
-  service_type_id: string;
-  package: string;
-  status: string;
-  created_at: string;
-  service_types?: {
-    name_en: string;
-    slug: string;
-  };
 }
 
 interface Invoice {
@@ -45,7 +36,6 @@ export default function CompanyAdminDashboard() {
   const navigate = useNavigate();
 
   const [activeServices, setActiveServices] = useState<ActiveService[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<ServiceRequest[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [monthlyCost, setMonthlyCost] = useState(0);
@@ -59,46 +49,36 @@ export default function CompanyAdminDashboard() {
 
         console.log('📊 [CompanyAdminDashboard] Fetching data for company:', user.company_id);
 
-        const [requestsData, invoicesData, serviceTypesData] = await Promise.all([
-          getServiceRequests(user.company_id),
+        // ✅ FIXED: Use company_services instead of service_requests
+        const [companyServicesData, invoicesData, serviceTypesData] = await Promise.all([
+          getCompanyServices(user.company_id), // ✅ NEW
           getInvoicesByCompany(user.company_id),
           getServiceTypes()
         ]);
 
         console.log('📦 [CompanyAdminDashboard] Data fetched:', {
-          requests: requestsData?.length || 0,
+          companyServices: companyServicesData?.length || 0,
           invoices: invoicesData?.length || 0,
           serviceTypes: serviceTypesData?.length || 0
         });
 
-        // Filter approved requests as active services
-        const approved = requestsData
-          .filter((r: any) => r.status === 'approved')
-          .map((r: any) => {
-            const serviceType = serviceTypesData.find((t: any) => t.id === r.service_type_id);
+        // ✅ FIXED: Map company_services to active services
+        const activeServicesData = companyServicesData
+          .filter((cs: any) => cs.status === 'active')
+          .map((cs: any) => {
             return {
-              id: r.id,
-              name_en: serviceType?.name_en || 'Unknown Service',
-              slug: serviceType?.slug || '',
-              package: r.package,
-              status: 'active',
-              approved_at: r.updated_at || r.created_at,
+              id: cs.id, // company_services.id
+              companyServiceId: cs.id, // ✅ IMPORTANT: Store for navigation
+              name_en: cs.service_type?.name_en || 'Unknown Service',
+              slug: cs.service_type?.slug || '',
+              package: cs.package,
+              status: cs.status,
+              instanceName: cs.instance_name || cs.service_type?.name_en || 'Service',
+              approved_at: cs.created_at,
             };
           });
 
-        // Filter pending requests
-        const pending = requestsData
-          .filter((r: any) => r.status === 'pending')
-          .map((r: any) => {
-            const serviceType = serviceTypesData.find((t: any) => t.id === r.service_type_id);
-            return {
-              ...r,
-              service_types: {
-                name_en: serviceType?.name_en || 'Unknown Service',
-                slug: serviceType?.slug || ''
-              }
-            };
-          });
+        console.log('✅ [CompanyAdminDashboard] Active services:', activeServicesData);
 
         // Calculate monthly cost from unpaid invoices
         const cost = invoicesData
@@ -110,13 +90,12 @@ export default function CompanyAdminDashboard() {
           totalCost: cost
         });
 
-        setActiveServices(approved);
-        setPendingRequests(pending);
+        setActiveServices(activeServicesData);
         setInvoices(invoicesData);
         setMonthlyCost(cost);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('❌ [CompanyAdminDashboard] Error fetching dashboard data:', error);
         setLoading(false);
       }
     };
@@ -170,8 +149,8 @@ export default function CompanyAdminDashboard() {
     return gradientMap[slug] || 'from-blue-500 to-blue-700';
   };
 
-  // Navigate to service page
-  const handleViewService = (slug: string) => {
+  // ✅ FIXED: Navigate to service page WITH serviceId parameter
+  const handleViewService = (slug: string, serviceId: string) => {
     const slugMap: Record<string, string> = {
       'whatsapp-automation': 'whatsapp',
       'instagram-automation': 'instagram',
@@ -192,7 +171,10 @@ export default function CompanyAdminDashboard() {
     };
 
     const path = slugMap[slug] || slug;
-    navigate(`/dashboard/services/${path}`);
+    
+    // ✅ CRITICAL FIX: Include serviceId in URL
+    console.log('🔗 [CompanyAdminDashboard] Navigating to:', `/dashboard/services/${path}/${serviceId}`);
+    navigate(`/dashboard/services/${path}/${serviceId}`);
   };
 
   if (loading) {
@@ -230,8 +212,8 @@ export default function CompanyAdminDashboard() {
               <Clock className="w-6 h-6" />
             </div>
           </div>
-          <p className="text-yellow-200 text-sm mb-1">Pending Requests</p>
-          <p className="text-3xl font-bold">{pendingRequests.length}</p>
+          <p className="text-yellow-200 text-sm mb-1">Service Instances</p>
+          <p className="text-3xl font-bold">{activeServices.length}</p>
         </div>
 
         <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-6 text-white">
@@ -240,8 +222,8 @@ export default function CompanyAdminDashboard() {
               <CheckCircle className="w-6 h-6" />
             </div>
           </div>
-          <p className="text-green-200 text-sm mb-1">Total Services</p>
-          <p className="text-3xl font-bold">{activeServices.length + pendingRequests.length}</p>
+          <p className="text-green-200 text-sm mb-1">All Services</p>
+          <p className="text-3xl font-bold">{activeServices.length}</p>
         </div>
 
         <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-6 text-white">
@@ -293,7 +275,7 @@ export default function CompanyAdminDashboard() {
                 <div
                   key={service.id}
                   className="bg-primary/50 border border-primary rounded-xl p-6 hover:bg-card transition-all hover:scale-105 cursor-pointer"
-                  onClick={() => handleViewService(service.slug)}
+                  onClick={() => handleViewService(service.slug, service.companyServiceId)}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center`}>
@@ -304,13 +286,14 @@ export default function CompanyAdminDashboard() {
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white mb-1">{service.name_en}</h3>
+                  <h3 className="text-lg font-bold text-white mb-1">{service.instanceName}</h3>
+                  <p className="text-sm text-blue-400 mb-1">{service.name_en}</p>
                   <p className="text-sm text-muted mb-4">Plan: {service.package.toUpperCase()}</p>
 
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleViewService(service.slug);
+                      handleViewService(service.slug, service.companyServiceId);
                     }}
                     className="w-full mt-4 px-4 py-2 bg-secondary hover:bg-hover text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
                   >
@@ -324,52 +307,8 @@ export default function CompanyAdminDashboard() {
         )}
       </div>
 
-      {/* Pending Requests and Recent Activity */}
+      {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Service Requests */}
-        <div className="bg-primary/50 border border-primary rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-primary flex items-center justify-between">
-            <h3 className="font-bold text-white">Pending Service Requests</h3>
-            <button
-              onClick={() => navigate('/dashboard/services')}
-              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              View All
-            </button>
-          </div>
-          <div className="p-4">
-            {pendingRequests.length === 0 ? (
-              <p className="text-muted text-center py-4">No pending requests</p>
-            ) : (
-              <div className="space-y-3">
-                {pendingRequests.slice(0, 3).map((request) => (
-                  <div key={request.id} className="flex items-center justify-between p-3 bg-card rounded-lg">
-                    <div className="flex items-center gap-3">
-                      {getServiceIcon(request.service_types?.slug || '') === Package ? (
-                        <Package className="w-5 h-5 text-blue-400" />
-                      ) : (
-                        React.createElement(getServiceIcon(request.service_types?.slug || ''), {
-                          className: 'w-5 h-5 text-blue-400'
-                        })
-                      )}
-                      <div>
-                        <p className="font-medium text-white">{request.service_types?.name_en || 'Service'}</p>
-                        <p className="text-sm text-muted">Plan: {request.package.toUpperCase()}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
-                        Pending
-                      </span>
-                      <p className="text-xs text-muted mt-1">{new Date(request.created_at).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Invoices Summary */}
         <div className="bg-primary/50 border border-primary rounded-xl overflow-hidden">
           <div className="p-4 border-b border-primary flex items-center justify-between">

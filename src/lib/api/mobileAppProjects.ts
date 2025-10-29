@@ -40,10 +40,11 @@ export async function getMobileAppProjectsByCompany(companyId: string) {
     .from('mobile_app_projects')
     .select(`
       *,
-      milestones:mobile_app_milestones(*)
+      milestones:mobile_app_milestones!mobile_app_milestones_project_id_fkey(*)
     `)
     .eq('company_id', companyId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .order('display_order', { referencedTable: 'mobile_app_milestones', ascending: true });
 
   if (error) throw error;
   return data;
@@ -55,9 +56,10 @@ export async function getMobileAppProjectByCompanyService(companyServiceId: stri
     .from('mobile_app_projects')
     .select(`
       *,
-      milestones:mobile_app_milestones(*)
+      milestones:mobile_app_milestones!mobile_app_milestones_project_id_fkey(*)
     `)
     .eq('company_service_id', companyServiceId)
+    .order('display_order', { referencedTable: 'mobile_app_milestones', ascending: true })
     .single();
 
   if (error) {
@@ -74,9 +76,10 @@ export async function getMobileAppProjectById(projectId: string) {
     .from('mobile_app_projects')
     .select(`
       *,
-      milestones:mobile_app_milestones(*)
+      milestones:mobile_app_milestones!mobile_app_milestones_project_id_fkey(*)
     `)
     .eq('id', projectId)
+    .order('display_order', { referencedTable: 'mobile_app_milestones', ascending: true })
     .single();
 
   if (error) throw error;
@@ -144,15 +147,16 @@ export async function getAllMobileAppProjects() {
     .select(`
       *,
       company:companies(id, name),
-      milestones:mobile_app_milestones(*)
+      milestones:mobile_app_milestones!mobile_app_milestones_project_id_fkey(*)
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .order('display_order', { referencedTable: 'mobile_app_milestones', ascending: true });
 
   if (error) {
     console.error('Error fetching all mobile app projects:', error);
     throw error;
   }
-  
+
   return data;
 }
 
