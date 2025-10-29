@@ -28,8 +28,8 @@ import { createManualInvoice } from '../../lib/api/manualInvoice';
 import { createTicket, assignTicket } from '../../lib/api/supportTickets';
 import { addServiceToCompany, updateServiceStatus } from '../../lib/api/companyServices';
 import activityLogger from '../../lib/services/activityLogger';
-import { getWebsiteProjectsByCompany, createWebsiteProject, updateWebsiteProjectWithMilestones } from '../../lib/api/websiteProjects';
-import { getMobileAppProjectsByCompany, createMobileAppProject, updateMobileAppProjectWithMilestones } from '../../lib/api/mobileAppProjects';
+import { getWebsiteProjectByCompanyService, createWebsiteProject, updateWebsiteProjectWithMilestones } from '../../lib/api/websiteProjects';
+import { getMobileAppProjectByCompanyService, createMobileAppProject, updateMobileAppProjectWithMilestones } from '../../lib/api/mobileAppProjects';
 
 export default function CompanyDetail() {
   const { id: companyId } = useParams<{ id: string }>();
@@ -151,13 +151,15 @@ export default function CompanyDetail() {
   // Fetch website project data when website settings modal opens
   useEffect(() => {
     const fetchWebsiteProject = async () => {
-      if (showWebsiteSettings && companyId) {
+      if (showWebsiteSettings && selectedCompanyService) {
         try {
-          const projects = await getWebsiteProjectsByCompany(companyId);
-          // Get the first project (or create a new one if none exists)
-          if (projects && projects.length > 0) {
-            setWebsiteProjectData(projects[0]); // Use the first project
+          console.log('📡 Fetching website project for service:', selectedCompanyService.id);
+          const project = await getWebsiteProjectByCompanyService(selectedCompanyService.id);
+          if (project) {
+            console.log('✅ Website project found:', project);
+            setWebsiteProjectData(project);
           } else {
+            console.log('ℹ️ No website project found, will create new');
             setWebsiteProjectData(null); // No project exists yet
           }
         } catch (err) {
@@ -168,18 +170,20 @@ export default function CompanyDetail() {
     };
 
     fetchWebsiteProject();
-  }, [showWebsiteSettings, companyId]);
+  }, [showWebsiteSettings, selectedCompanyService]);
 
   // Fetch mobile app project data when mobile app settings modal opens
   useEffect(() => {
     const fetchMobileAppProject = async () => {
-      if (showMobileAppSettings && companyId) {
+      if (showMobileAppSettings && selectedCompanyService) {
         try {
-          const projects = await getMobileAppProjectsByCompany(companyId);
-          // Get the first project (or create a new one if none exists)
-          if (projects && projects.length > 0) {
-            setMobileAppProjectData(projects[0]); // Use the first project
+          console.log('📡 Fetching mobile app project for service:', selectedCompanyService.id);
+          const project = await getMobileAppProjectByCompanyService(selectedCompanyService.id);
+          if (project) {
+            console.log('✅ Mobile app project found:', project);
+            setMobileAppProjectData(project);
           } else {
+            console.log('ℹ️ No mobile app project found, will create new');
             setMobileAppProjectData(null); // No project exists yet
           }
         } catch (err) {
@@ -190,7 +194,7 @@ export default function CompanyDetail() {
     };
 
     fetchMobileAppProject();
-  }, [showMobileAppSettings, companyId]);
+  }, [showMobileAppSettings, selectedCompanyService]);
 
   // Show success message with auto-hide
   const showSuccess = (message: string) => {
@@ -810,9 +814,15 @@ export default function CompanyDetail() {
         showSuccess('Website settings updated successfully!');
       } else {
         // Create new project with milestones
+        if (!selectedCompanyService) {
+          showError('Service instance not found');
+          return;
+        }
+
         const { createWebsiteMilestone } = await import('../../lib/api/websiteProjects');
         const newProject = await createWebsiteProject({
           company_id: companyId,
+          company_service_id: selectedCompanyService.id, // Link to specific service instance
           project_name: settings.projectName,
           project_type: settings.projectType,
           domain: settings.domain,
@@ -888,9 +898,15 @@ export default function CompanyDetail() {
         showSuccess('Mobile app settings updated successfully!');
       } else {
         // Create new project with milestones
+        if (!selectedCompanyService) {
+          showError('Service instance not found');
+          return;
+        }
+
         const { createMobileAppMilestone } = await import('../../lib/api/mobileAppProjects');
         const newProject = await createMobileAppProject({
           company_id: companyId,
+          company_service_id: selectedCompanyService.id, // Link to specific service instance
           app_name: settings.appName,
           platform: settings.platform,
           app_type: settings.appType,

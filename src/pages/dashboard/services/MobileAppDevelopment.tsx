@@ -1,22 +1,31 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Smartphone, Calendar, CheckCircle2, Circle, Clock, XCircle, ExternalLink, Info, Wrench } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
-import { getMobileAppProjectsByCompany } from '../../../lib/api/mobileAppProjects';
+import { getMobileAppProjectByCompanyService } from '../../../lib/api/mobileAppProjects';
 import { getCompanyServices } from '../../../lib/api/companyServices';
 
 const MobileAppDevelopment = () => {
   const { user } = useAuth();
+  const { serviceId } = useParams<{ serviceId: string }>(); // Get company_service_id from URL
   const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
-  const [projects, setProjects] = useState<any[]>([]);
+  const [project, setProject] = useState<any>(null);
   const [companyServices, setCompanyServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch projects on mount
+  // Fetch project by company_service_id
   useEffect(() => {
     const fetchData = async () => {
+      console.log('🔍 MobileAppDevelopment - Service ID:', serviceId);
       console.log('🔍 MobileAppDevelopment - User:', user);
-      console.log('🔍 MobileAppDevelopment - Company ID:', user?.company_id);
+
+      if (!serviceId) {
+        console.log('❌ No service ID found in URL!');
+        setError('Service ID not found');
+        setLoading(false);
+        return;
+      }
 
       if (!user?.company_id) {
         console.log('❌ No company ID found!');
@@ -26,14 +35,14 @@ const MobileAppDevelopment = () => {
 
       try {
         setLoading(true);
-        console.log('📡 Fetching mobile app projects and services...');
-        const [projectsData, servicesData] = await Promise.all([
-          getMobileAppProjectsByCompany(user.company_id),
+        console.log('📡 Fetching mobile app project for service:', serviceId);
+        const [projectData, servicesData] = await Promise.all([
+          getMobileAppProjectByCompanyService(serviceId),
           getCompanyServices(user.company_id)
         ]);
-        console.log('✅ Projects fetched:', projectsData);
+        console.log('✅ Project fetched:', projectData);
         console.log('✅ Services fetched:', servicesData);
-        setProjects(projectsData || []);
+        setProject(projectData);
         setCompanyServices(servicesData || []);
       } catch (err) {
         console.error('❌ Error fetching data:', err);
@@ -44,9 +53,7 @@ const MobileAppDevelopment = () => {
     };
 
     fetchData();
-  }, [user?.company_id]);
-
-  const project = projects[0];
+  }, [serviceId, user?.company_id]);
 
   // Platform labels
   const platformLabels: any = {

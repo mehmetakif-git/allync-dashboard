@@ -78,8 +78,8 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  // Map service slug to path
-  const getServicePath = (slug: string) => {
+  // Map service slug to path (with company_service_id for dynamic routing)
+  const getServicePath = (slug: string, companyServiceId?: string) => {
     const slugMap: Record<string, string> = {
       'whatsapp-automation': 'whatsapp',
       'instagram-automation': 'instagram',
@@ -93,7 +93,9 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
       'mobile-app-development': 'mobile-app'
     };
 
-    return `/dashboard/services/${slugMap[slug] || slug}`;
+    const basePath = slugMap[slug] || slug;
+    // Add company_service_id to path for services that support multiple instances
+    return companyServiceId ? `/dashboard/services/${basePath}/${companyServiceId}` : `/dashboard/services/${basePath}`;
   };
 
   // Map service slug to icon
@@ -194,7 +196,7 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
                   const service = companyService.service_type;
                   if (!service) return null;
 
-                  const path = getServicePath(service.slug);
+                  const path = getServicePath(service.slug, companyService.id); // Pass company_service_id
                   const active = isActive(path);
                   const ServiceIcon = getServiceIcon(service.slug);
                   const instanceName = companyService.instance_name || service.name_en;

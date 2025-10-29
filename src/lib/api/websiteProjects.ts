@@ -16,6 +16,7 @@ export interface WebsiteMilestone {
 export interface WebsiteProject {
   id: string;
   company_id?: string | null;
+  company_service_id: string; // Links to specific company_services instance
   project_name?: string | null;
   project_type: string; // 'e-commerce' | 'corporate' | 'personal'
   domain?: string | null;
@@ -40,6 +41,25 @@ export async function getWebsiteProjectsByCompany(companyId: string) {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
+  return data;
+}
+
+// Get project by company service ID (for specific service instance)
+export async function getWebsiteProjectByCompanyService(companyServiceId: string) {
+  const { data, error } = await supabase
+    .from('website_projects')
+    .select(`
+      *,
+      milestones:website_milestones(*)
+    `)
+    .eq('company_service_id', companyServiceId)
+    .single();
+
+  if (error) {
+    // If no project found, return null instead of throwing
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
   return data;
 }
 

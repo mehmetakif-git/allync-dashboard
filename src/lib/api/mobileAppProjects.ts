@@ -16,6 +16,7 @@ export interface MobileAppMilestone {
 export interface MobileAppProject {
   id: string;
   company_id?: string | null;
+  company_service_id: string; // Links to specific company_services instance
   project_name?: string | null;
   platform: string; // 'android' | 'ios' | 'both'
   app_name: string;
@@ -45,6 +46,25 @@ export async function getMobileAppProjectsByCompany(companyId: string) {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
+  return data;
+}
+
+// Get project by company service ID (for specific service instance)
+export async function getMobileAppProjectByCompanyService(companyServiceId: string) {
+  const { data, error } = await supabase
+    .from('mobile_app_projects')
+    .select(`
+      *,
+      milestones:mobile_app_milestones(*)
+    `)
+    .eq('company_service_id', companyServiceId)
+    .single();
+
+  if (error) {
+    // If no project found, return null instead of throwing
+    if (error.code === 'PGRST116') return null;
+    throw error;
+  }
   return data;
 }
 

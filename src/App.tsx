@@ -105,9 +105,9 @@ export default function App() {
               <Route path="support" element={<Support />} />
               <Route path="settings" element={<Settings />} />
               
-              {/* Service Pages */}
-              <Route path="services/website" element={<WebsiteDevelopment />} />
-              <Route path="services/mobile-app" element={<MobileAppDevelopment />} />
+              {/* Service Pages - with serviceId parameter to support multiple instances */}
+              <Route path="services/website/:serviceId" element={<WebsiteDevelopment />} />
+              <Route path="services/mobile-app/:serviceId" element={<MobileAppDevelopment />} />
             </Route>
 
             {/* Redirects */}
