@@ -22,6 +22,7 @@ import EditUserModal from '../../components/modals/EditUserModal';
 import CreateInvoiceModal, { CreateInvoiceFormData } from '../../components/modals/CreateInvoiceModal';
 import CreateTicketModal, { CreateTicketFormData } from '../../components/modals/CreateTicketModal';
 import AddServiceModal, { AddServiceFormData } from '../../components/modals/AddServiceModal';
+import ServiceStatusModal from '../../components/modals/ServiceStatusModal';
 import { createManualInvoice } from '../../lib/api/manualInvoice';
 import { createTicket, assignTicket } from '../../lib/api/supportTickets';
 import { addServiceToCompany, updateServiceStatus } from '../../lib/api/companyServices';
@@ -73,6 +74,12 @@ export default function CompanyDetail() {
   // Add Service Modal
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
   const [isAddingService, setIsAddingService] = useState(false);
+
+  // Service Status Modal
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedServiceForStatus, setSelectedServiceForStatus] = useState<any>(null);
+  const [newServiceStatus, setNewServiceStatus] = useState<'active' | 'maintenance' | 'suspended' | 'inactive'>('active');
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   // Service Request Modals
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
@@ -537,28 +544,56 @@ export default function CompanyDetail() {
 
   // ===== SERVICE MANAGEMENT HANDLERS =====
 
-  const handleChangeServiceStatus = async (serviceId: string, newStatus: 'active' | 'maintenance' | 'suspended' | 'inactive', serviceName: string) => {
+  const handleOpenStatusModal = (companyService: any, service: any, newStatus: 'active' | 'maintenance' | 'suspended' | 'inactive') => {
+    setSelectedServiceForStatus({ companyService, service });
+    setNewServiceStatus(newStatus);
+    setShowStatusModal(true);
+  };
+
+  const handleChangeServiceStatus = async (reason: string) => {
+    if (!selectedServiceForStatus) return;
+
+    const { companyService, service } = selectedServiceForStatus;
+    setIsChangingStatus(true);
+
     try {
-      console.log('🔄 Changing service status:', { serviceId, newStatus });
+      console.log('🔄 Changing service status:', {
+        serviceId: companyService.id,
+        newStatus: newServiceStatus,
+        reason
+      });
 
-      await updateServiceStatus(serviceId, newStatus);
+      // Update status in database
+      await updateServiceStatus(companyService.id, newServiceStatus);
 
-      // Track status change
+      // Track status change with reason
       await activityLogger.log({
         action: 'Service Status Changed',
         action_category: 'update',
-        description: `Changed ${serviceName} status to ${newStatus} for ${company?.name}`,
+        description: `Changed ${service.name_en} status to ${newServiceStatus} for ${company?.name}${reason ? ` - Reason: ${reason}` : ''}`,
         entity_type: 'CompanyService',
-        entity_id: serviceId,
+        entity_id: companyService.id,
+        metadata: {
+          previousStatus: companyService.status,
+          newStatus: newServiceStatus,
+          reason: reason || null,
+          companyId: company?.id,
+          serviceName: service.name_en
+        }
       });
 
       // Refresh services
       await refreshServices();
 
-      showSuccess(`Service status changed to ${newStatus}`);
+      showSuccess(`Service status changed to ${newServiceStatus}`);
+      setShowStatusModal(false);
+      setSelectedServiceForStatus(null);
     } catch (error: any) {
       console.error('❌ Error changing service status:', error);
       showError(error.message || 'Failed to change service status');
+      throw error;
+    } finally {
+      setIsChangingStatus(false);
     }
   };
 
@@ -1117,20 +1152,44 @@ export default function CompanyDetail() {
                                 <ServiceIcon className="w-6 h-6 text-white" />
                               </div>
 
-                              {/* Status Dropdown */}
-                              <select
-                                value={currentStatus}
-                                onChange={(e) => {
-                                  console.log('🔄 [CompanyDetail] Status change:', e.target.value);
-                                  handleChangeServiceStatus(companyService.id, e.target.value as any, service.name_en);
-                                }}
-                                className={`px-3 py-1 border rounded-full text-xs font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[currentStatus]}`}
-                              >
-                                <option value="active">Active</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="suspended">Suspended</option>
-                                <option value="inactive">Inactive</option>
-                              </select>
+                              {/* Status Badge - Opens Menu */}
+                              <div className="relative">
+                                <button
+                                  onClick={() => {
+                                    const btn = document.getElementById(`status-menu-${service.id}`);
+                                    if (btn) {
+                                      btn.classList.toggle('hidden');
+                                    }
+                                  }}
+                                  className={`px-3 py-1 border rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${statusColors[currentStatus]}`}
+                                >
+                                  {currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                <div
+                                  id={`status-menu-${service.id}`}
+                                  className="hidden absolute right-0 mt-2 w-48 bg-secondary border border-secondary rounded-lg shadow-xl z-10"
+                                >
+                                  <div className="py-1">
+                                    {(['active', 'maintenance', 'suspended', 'inactive'] as const).map((status) => (
+                                      <button
+                                        key={status}
+                                        onClick={() => {
+                                          const btn = document.getElementById(`status-menu-${service.id}`);
+                                          if (btn) btn.classList.add('hidden');
+                                          handleOpenStatusModal(companyService, service, status);
+                                        }}
+                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-hover transition-colors ${
+                                          status === currentStatus ? 'font-bold text-white' : 'text-muted'
+                                        }`}
+                                      >
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
 
@@ -1543,6 +1602,23 @@ export default function CompanyDetail() {
             onSubmit={handleAddService}
             isLoading={isAddingService}
             initialCompanyId={companyId}
+          />
+        )}
+
+        {/* Service Status Change Modal */}
+        {showStatusModal && selectedServiceForStatus && company && (
+          <ServiceStatusModal
+            isOpen={showStatusModal}
+            onClose={() => {
+              setShowStatusModal(false);
+              setSelectedServiceForStatus(null);
+            }}
+            onConfirm={handleChangeServiceStatus}
+            serviceName={selectedServiceForStatus.service.name_en}
+            currentStatus={selectedServiceForStatus.companyService.status}
+            newStatus={newServiceStatus}
+            companyName={company.name}
+            isLoading={isChangingStatus}
           />
         )}
       </div>
