@@ -8,6 +8,10 @@ export interface AuthUser {
   company_id: string | null;
   avatar_url?: string | null;
   language: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+  last_login?: string;
 }
 
 // Login with email/password

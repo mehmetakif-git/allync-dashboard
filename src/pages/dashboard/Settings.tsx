@@ -159,11 +159,11 @@ export default function Settings() {
               <div className="flex items-center gap-4 pb-6 border-b border-secondary mb-6">
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                   <span className="text-2xl font-bold text-white">
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    {user?.full_name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">{user?.name}</h3>
+                  <h3 className="text-xl font-bold text-white">{user?.full_name}</h3>
                   <p className="text-muted">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
                   <p className="text-sm text-muted mt-1">{companyData?.name}</p>
                 </div>
