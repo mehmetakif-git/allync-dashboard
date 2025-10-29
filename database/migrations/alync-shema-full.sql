@@ -259,15 +259,16 @@ CREATE TABLE public.company_services (
   status text NOT NULL DEFAULT 'active'::text CHECK (status = ANY (ARRAY['active'::text, 'suspended'::text, 'inactive'::text, 'maintenance'::text])),
   start_date date NOT NULL DEFAULT CURRENT_DATE,
   end_date date,
-  next_billing_date date,
+  next_billing_date date CHECK (next_billing_date IS NULL OR next_billing_date >= CURRENT_DATE),
   usage_limits jsonb DEFAULT '{}'::jsonb,
   current_usage jsonb DEFAULT '{}'::jsonb,
   metadata jsonb DEFAULT '{}'::jsonb,
-  price_amount numeric,
+  price_amount numeric CHECK (price_amount IS NULL OR price_amount >= 0::numeric),
   price_currency text DEFAULT 'USD'::text CHECK (price_currency = 'USD'::text),
   billing_cycle text CHECK (billing_cycle = ANY (ARRAY['monthly'::text, 'yearly'::text, 'one-time'::text])),
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  instance_name text,
   CONSTRAINT company_services_pkey PRIMARY KEY (id),
   CONSTRAINT company_services_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id),
   CONSTRAINT company_services_service_type_id_fkey FOREIGN KEY (service_type_id) REFERENCES public.service_types(id)
@@ -902,8 +903,10 @@ CREATE TABLE public.mobile_app_projects (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   project_name character varying DEFAULT 'Main App'::character varying,
+  company_service_id uuid NOT NULL,
   CONSTRAINT mobile_app_projects_pkey PRIMARY KEY (id),
-  CONSTRAINT mobile_app_projects_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id)
+  CONSTRAINT mobile_app_projects_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id),
+  CONSTRAINT mobile_app_projects_company_service_id_fkey FOREIGN KEY (company_service_id) REFERENCES public.company_services(id)
 );
 CREATE TABLE public.notifications (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -1646,8 +1649,10 @@ CREATE TABLE public.website_projects (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   project_name character varying DEFAULT 'Main Website'::character varying,
+  company_service_id uuid NOT NULL,
   CONSTRAINT website_projects_pkey PRIMARY KEY (id),
-  CONSTRAINT website_projects_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id)
+  CONSTRAINT website_projects_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id),
+  CONSTRAINT website_projects_company_service_id_fkey FOREIGN KEY (company_service_id) REFERENCES public.company_services(id)
 );
 CREATE TABLE public.whatsapp_hourly_metrics (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
