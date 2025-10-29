@@ -10,7 +10,7 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { getCompanyById, getSupportTickets, getInvoices, getServiceTypes } from '../../lib/api/companies';
 import { getCompanyUsers, createUser, updateUser, deleteUser } from '../../lib/api/users';
 import { getCompanyServiceRequests, approveServiceRequest, rejectServiceRequest } from '../../lib/api/serviceRequests';
-import { getCompanyServices } from '../../lib/api/companyServices';
+import { getCompanyServices, deleteCompanyService } from '../../lib/api/companyServices';
 import { useAuth } from '../../contexts/AuthContext';
 import WhatsAppSettingsModal from '../../components/modals/WhatsAppSettingsModal';
 import InstagramSettingsModal from '../../components/modals/InstagramSettingsModal';
@@ -82,6 +82,11 @@ export default function CompanyDetail() {
   const [selectedServiceForStatus, setSelectedServiceForStatus] = useState<any>(null);
   const [newServiceStatus, setNewServiceStatus] = useState<'active' | 'maintenance' | 'suspended' | 'inactive'>('active');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
+
+  // Delete Service Modal
+  const [showDeleteServiceConfirm, setShowDeleteServiceConfirm] = useState(false);
+  const [selectedServiceForDelete, setSelectedServiceForDelete] = useState<any>(null);
+  const [isDeletingService, setIsDeletingService] = useState(false);
 
   // Service Request Modals
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
@@ -650,6 +655,55 @@ export default function CompanyDetail() {
     }
   };
 
+  const handleDeleteServiceClick = (companyService: any, service: any) => {
+    setSelectedServiceForDelete({ companyService, service });
+    setShowDeleteServiceConfirm(true);
+  };
+
+  const handleDeleteServiceConfirm = async () => {
+    if (!selectedServiceForDelete) return;
+
+    const { companyService, service } = selectedServiceForDelete;
+    setIsDeletingService(true);
+
+    try {
+      console.log('🗑️ Deleting service:', {
+        serviceId: companyService.id,
+        instanceName: companyService.instance_name
+      });
+
+      // Delete from database
+      await deleteCompanyService(companyService.id);
+
+      // Track deletion
+      await activityLogger.log({
+        action: 'Service Deleted from Company',
+        action_category: 'delete',
+        description: `Deleted ${service.name_en} "${companyService.instance_name || service.name_en}" (${companyService.package}) from ${company?.name}`,
+        entity_type: 'CompanyService',
+        entity_id: companyService.id,
+        metadata: {
+          companyId: company?.id,
+          serviceName: service.name_en,
+          instanceName: companyService.instance_name,
+          package: companyService.package
+        }
+      });
+
+      // Refresh services
+      await refreshServices();
+
+      showSuccess(`Service "${companyService.instance_name || service.name_en}" deleted successfully!`);
+      setShowDeleteServiceConfirm(false);
+      setSelectedServiceForDelete(null);
+    } catch (error: any) {
+      console.error('❌ Error deleting service:', error);
+      showError(error.message || 'Failed to delete service');
+    } finally {
+      setIsDeletingService(false);
+    }
+  };
+
   // ===== SERVICE CONFIGURATION HANDLERS =====
 
   const handleConfigureService = (slug: string) => {
@@ -1107,12 +1161,8 @@ export default function CompanyDetail() {
               </div>
 
               {(() => {
-                const approvedServiceTypeIds = companyServices.map((sr: any) => sr.service_type_id);
-                const activeServices = serviceTypes.filter((service: any) =>
-                  approvedServiceTypeIds.includes(service.id)
-                );
-
-                if (activeServices.length === 0) {
+                // Show each service instance separately (not grouped by service type)
+                if (companyServices.length === 0) {
                   return (
                     <div className="text-center py-12">
                       <Zap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
@@ -1124,18 +1174,25 @@ export default function CompanyDetail() {
 
                 return (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {activeServices.map((service: any) => {
+                    {companyServices.map((companyService: any) => {
+                      const service = serviceTypes.find((st: any) => st.id === companyService.service_type_id);
+
+                      // If service type not found, skip this instance
+                      if (!service) {
+                        console.warn('⚠️ [CompanyDetail] Service type not found for company service:', companyService.id);
+                        return null;
+                      }
+
                       const ServiceIcon = getServiceIcon(service.slug);
                       const serviceColor = getServiceColor(service.slug);
+                      const currentStatus = companyService.status || 'active';
+                      const instanceName = companyService.instance_name || service.name_en;
 
-                      // Find the company_service record for this service
-                      const companyService = companyServices.find((cs: any) => cs.service_type_id === service.id);
-                      const currentStatus = companyService?.status || 'active';
-
-                      // Debug logs
-                      console.log('🔍 [CompanyDetail] Service:', service.name_en);
-                      console.log('🔍 [CompanyDetail] Company Service:', companyService);
-                      console.log('🔍 [CompanyDetail] Current Status:', currentStatus);
+                      // Count instances of same service type
+                      const sameTypeInstances = companyServices.filter(
+                        (cs: any) => cs.service_type_id === companyService.service_type_id
+                      );
+                      const instanceCount = sameTypeInstances.length;
 
                       // Status badge colors
                       const statusColors: Record<string, string> = {
@@ -1145,41 +1202,66 @@ export default function CompanyDetail() {
                         'inactive': 'bg-gray-500/10 border-secondary/30 text-muted'
                       };
 
-                      // If no company service record exists, don't render dropdown (shouldn't happen in active services)
-                      if (!companyService) {
-                        console.warn('⚠️ [CompanyDetail] No company service record found for:', service.name_en);
-                        return null;
-                      }
-
                       return (
-                        <div key={service.id} className="bg-primary/50 border border-secondary rounded-xl p-5 hover:border-secondary transition-all">
+                        <div key={companyService.id} className="bg-primary/50 border border-secondary rounded-xl p-5 hover:border-blue-500/30 transition-all relative group">
+                          {/* Delete Button - Top Right */}
+                          <button
+                            onClick={() => handleDeleteServiceClick(companyService, service)}
+                            className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            title="Delete Service"
+                          >
+                            <Trash2 className="w-4 h-4 text-red-400" />
+                          </button>
+
                           <div className="mb-4">
                             <div className="flex items-center justify-between mb-3">
-                              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${serviceColor} flex items-center justify-center shadow-lg`}>
-                                <ServiceIcon className="w-6 h-6 text-white" />
+                              <div className="relative">
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${serviceColor} flex items-center justify-center shadow-lg`}>
+                                  <ServiceIcon className="w-6 h-6 text-white" />
+                                </div>
+                                {/* Instance Count Badge */}
+                                {instanceCount > 1 && (
+                                  <span
+                                    className="absolute -top-2 -right-2 w-6 h-6 bg-blue-600 border-2 border-primary rounded-full flex items-center justify-center text-xs font-bold text-white"
+                                    title={`${instanceCount} instances of this service`}
+                                  >
+                                    {instanceCount}
+                                  </span>
+                                )}
                               </div>
 
                               {/* Status Badge - Click to open modal */}
                               <button
                                 onClick={() => {
-                                  console.log('🔘 Status badge clicked!');
-                                  console.log('📋 Service:', service.name_en);
-                                  console.log('📋 Company Service ID:', companyService.id);
-                                  console.log('📋 Current Status:', currentStatus);
-
-                                  // Open modal directly - let user choose status
                                   handleOpenStatusModal(companyService, service, currentStatus === 'active' ? 'maintenance' : 'active');
                                 }}
                                 className={`px-4 py-2 border rounded-lg text-sm font-medium cursor-pointer hover:opacity-80 transition-all ${statusColors[currentStatus]}`}
                               >
                                 <span>{currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}</span>
-                                <span className="ml-2 text-xs">⚙️ Change</span>
+                                <span className="ml-2 text-xs">⚙️</span>
                               </button>
                             </div>
                           </div>
 
-                          <h3 className="text-white font-semibold text-lg mb-2">{service.name_en}</h3>
-                          <p className="text-muted text-sm mb-4 line-clamp-2">{service.description_en}</p>
+                          {/* Instance Name - Prominently displayed */}
+                          <h3 className="text-white font-bold text-lg mb-1">{instanceName}</h3>
+
+                          {/* Service Type - Smaller, secondary text */}
+                          <p className="text-blue-400 text-sm font-medium mb-3">{service.name_en}</p>
+
+                          {/* Package & Billing Info */}
+                          {companyService.package && (
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="px-2 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs rounded-md font-medium">
+                                {companyService.package.toUpperCase()}
+                              </span>
+                              {companyService.billing_cycle && (
+                                <span className="text-muted text-xs">
+                                  {companyService.billing_cycle}
+                                </span>
+                              )}
+                            </div>
+                          )}
 
                           <button
                             onClick={() => handleConfigureService(service.slug)}
@@ -1589,6 +1671,24 @@ export default function CompanyDetail() {
             initialCompanyId={companyId}
           />
         )}
+
+        {/* Delete Service Confirmation */}
+        <ConfirmationDialog
+          isOpen={showDeleteServiceConfirm}
+          onClose={() => {
+            setShowDeleteServiceConfirm(false);
+            setSelectedServiceForDelete(null);
+          }}
+          onConfirm={handleDeleteServiceConfirm}
+          title="Delete Service"
+          message={selectedServiceForDelete ?
+            `Are you sure you want to delete "${selectedServiceForDelete.companyService.instance_name || selectedServiceForDelete.service.name_en}" from ${company?.name}? This will permanently remove all related data including settings, projects, and configurations. This action cannot be undone.` :
+            'Are you sure you want to delete this service?'
+          }
+          confirmText="Delete Service"
+          confirmColor="from-red-600 to-red-700"
+          isLoading={isDeletingService}
+        />
 
         {/* Service Status Change Modal */}
         {showStatusModal && selectedServiceForStatus && company && (

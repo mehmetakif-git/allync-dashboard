@@ -7,7 +7,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
-import { getServiceRequests, getServiceTypes } from '../lib/api/companies';
+import { getCompanyServices } from '../lib/api/companyServices';
 
 interface MenuItem {
   id: string;
@@ -27,29 +27,23 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
   const location = useLocation();
   const { user, logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [activeServices, setActiveServices] = useState<any[]>([]);
+  const [companyServices, setCompanyServices] = useState<any[]>([]);
 
   const isCompanyAdmin = user?.role === 'company_admin';
 
-  // Fetch active services
+  // Fetch company service instances
   useEffect(() => {
     const fetchServices = async () => {
       if (!user?.company_id) return;
 
       try {
-        const [requests, types] = await Promise.all([
-          getServiceRequests(user.company_id),
-          getServiceTypes()
-        ]);
-
-        const approvedIds = requests
-          .filter((r: any) => r.status === 'approved')
-          .map((r: any) => r.service_type_id);
-
-        const services = types.filter((t: any) => approvedIds.includes(t.id));
-        setActiveServices(services);
+        const services = await getCompanyServices(user.company_id);
+        // Filter only active services for sidebar display
+        const activeServices = services.filter((s: any) => s.status === 'active');
+        setCompanyServices(activeServices);
+        console.log('🔍 [CompanySidebar] Company Services:', activeServices);
       } catch (err) {
-        console.error('Error fetching services:', err);
+        console.error('❌ [CompanySidebar] Error fetching services:', err);
       }
     };
 
@@ -188,30 +182,50 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
               );
             })}
 
-            {/* Active Services */}
-            {activeServices.length > 0 && (
+            {/* Active Service Instances */}
+            {companyServices.length > 0 && (
               <>
                 <li className="pt-4 pb-2">
                   <div className="text-xs font-semibold text-muted uppercase px-4">
                     ACTIVE SERVICES
                   </div>
                 </li>
-                {activeServices.map((service: any) => {
+                {companyServices.map((companyService: any) => {
+                  const service = companyService.service_type;
+                  if (!service) return null;
+
                   const path = getServicePath(service.slug);
                   const active = isActive(path);
                   const ServiceIcon = getServiceIcon(service.slug);
+                  const instanceName = companyService.instance_name || service.name_en;
+
+                  // Show instance count badge if there are multiple instances of same service type
+                  const sameTypeCount = companyServices.filter(
+                    (cs: any) => cs.service_type_id === companyService.service_type_id
+                  ).length;
 
                   return (
-                    <li key={service.id}>
+                    <li key={companyService.id}>
                       <button
                         onClick={() => handleNavClick(path)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 border-l-4 ${active
                             ? 'bg-blue-600 text-white shadow-lg border-l-blue-400'
                             : 'text-muted hover:bg-secondary/80 hover:text-white hover:border-l-green-400 border-l-green-500/50'
                           }`}
+                        title={`${instanceName}${sameTypeCount > 1 ? ` (${sameTypeCount} instances)` : ''}`}
                       >
                         <ServiceIcon className="w-5 h-5 flex-shrink-0" />
-                        <span className="text-sm font-medium flex-1 truncate">{service.name_en}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium block truncate">{instanceName}</span>
+                          {sameTypeCount > 1 && (
+                            <span className="text-xs text-blue-300 block truncate">{service.name_en}</span>
+                          )}
+                        </div>
+                        {sameTypeCount > 1 && (
+                          <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full flex-shrink-0">
+                            {companyServices.filter((cs: any) => cs.service_type_id === companyService.service_type_id).indexOf(companyService) + 1}
+                          </span>
+                        )}
                       </button>
                     </li>
                   );
