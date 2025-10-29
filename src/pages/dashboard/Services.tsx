@@ -68,13 +68,37 @@ export default function Services() {
   });
 
   const isServiceActive = (serviceId: string) => {
-    return serviceRequests.some(
+    // Check if service is in service_requests (user requested and got approved)
+    const hasApprovedRequest = serviceRequests.some(
       req => req.service_type_id === serviceId && req.status === 'approved'
     );
+
+    // Check if service is directly in company_services (admin added directly)
+    const hasActiveService = companyServices.some(
+      cs => cs.service_type_id === serviceId && cs.status === 'active'
+    );
+
+    return hasApprovedRequest || hasActiveService;
   };
 
   const getServiceStatus = (serviceId: string) => {
-    return serviceRequests.find(req => req.service_type_id === serviceId);
+    // First check service_requests (for user-requested services)
+    const request = serviceRequests.find(req => req.service_type_id === serviceId);
+    if (request) return request;
+
+    // Then check company_services (for admin-added services)
+    const companyService = companyServices.find(cs => cs.service_type_id === serviceId && cs.status === 'active');
+    if (companyService) {
+      // Return in same format as service_requests for consistency
+      return {
+        service_type_id: companyService.service_type_id,
+        package: companyService.package,
+        status: 'approved', // company_services are already active
+        company_id: companyService.company_id
+      };
+    }
+
+    return null;
   };
 
   // Get company_services status for a service (for maintenance check)
