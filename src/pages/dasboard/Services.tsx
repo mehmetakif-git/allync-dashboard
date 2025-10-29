@@ -55,7 +55,14 @@ export default function Services() {
   }, [user?.company_id, isCompanyAdmin]);
 
   const filteredServices = services.filter(service => {
+    // Filter out globally inactive services
     if (service.status === 'inactive') return false;
+
+    // Filter out company-specific inactive services
+    const companyServiceStatus = companyServices.find(cs => cs.service_type_id === service.id);
+    if (companyServiceStatus?.status === 'inactive') return false;
+
+    // Category filter
     if (selectedCategory === 'all') return true;
     return service.category === selectedCategory;
   });

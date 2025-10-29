@@ -24,7 +24,7 @@ import CreateTicketModal, { CreateTicketFormData } from '../../components/modals
 import AddServiceModal, { AddServiceFormData } from '../../components/modals/AddServiceModal';
 import { createManualInvoice } from '../../lib/api/manualInvoice';
 import { createTicket, assignTicket } from '../../lib/api/supportTickets';
-import { addServiceToCompany } from '../../lib/api/companyServices';
+import { addServiceToCompany, updateServiceStatus } from '../../lib/api/companyServices';
 import activityLogger from '../../lib/services/activityLogger';
 
 export default function CompanyDetail() {
@@ -531,6 +531,31 @@ export default function CompanyDetail() {
   };
 
   // ===== SERVICE MANAGEMENT HANDLERS =====
+
+  const handleChangeServiceStatus = async (serviceId: string, newStatus: 'active' | 'maintenance' | 'suspended' | 'inactive', serviceName: string) => {
+    try {
+      console.log('🔄 Changing service status:', { serviceId, newStatus });
+
+      await updateServiceStatus(serviceId, newStatus);
+
+      // Track status change
+      await activityLogger.log({
+        action: 'Service Status Changed',
+        action_category: 'update',
+        description: `Changed ${serviceName} status to ${newStatus} for ${company?.name}`,
+        entity_type: 'CompanyService',
+        entity_id: serviceId,
+      });
+
+      // Refresh services
+      await refreshServices();
+
+      showSuccess(`Service status changed to ${newStatus}`);
+    } catch (error: any) {
+      console.error('❌ Error changing service status:', error);
+      showError(error.message || 'Failed to change service status');
+    }
+  };
 
   const handleAddService = async (data: AddServiceFormData) => {
     if (!user?.id) {
@@ -1056,6 +1081,18 @@ export default function CompanyDetail() {
                       const ServiceIcon = getServiceIcon(service.slug);
                       const serviceColor = getServiceColor(service.slug);
 
+                      // Find the company_service record for this service
+                      const companyService = companyServices.find((cs: any) => cs.service_type_id === service.id);
+                      const currentStatus = companyService?.status || 'active';
+
+                      // Status badge colors
+                      const statusColors: Record<string, string> = {
+                        'active': 'bg-green-500/10 border-green-500/30 text-green-500',
+                        'maintenance': 'bg-orange-500/10 border-orange-500/30 text-orange-500',
+                        'suspended': 'bg-red-500/10 border-red-500/30 text-red-500',
+                        'inactive': 'bg-gray-500/10 border-secondary/30 text-muted'
+                      };
+
                       return (
                         <div key={service.id} className="bg-primary/50 border border-secondary rounded-xl p-5 hover:border-secondary transition-all">
                           <div className="mb-4">
@@ -1063,9 +1100,18 @@ export default function CompanyDetail() {
                               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${serviceColor} flex items-center justify-center shadow-lg`}>
                                 <ServiceIcon className="w-6 h-6 text-white" />
                               </div>
-                              <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-500 font-medium">
-                                Active
-                              </span>
+
+                              {/* Status Dropdown */}
+                              <select
+                                value={currentStatus}
+                                onChange={(e) => handleChangeServiceStatus(companyService.id, e.target.value as any, service.name_en)}
+                                className={`px-3 py-1 border rounded-full text-xs font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[currentStatus]}`}
+                              >
+                                <option value="active">Active</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="inactive">Inactive</option>
+                              </select>
                             </div>
                           </div>
 
