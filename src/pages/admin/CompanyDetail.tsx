@@ -28,6 +28,8 @@ import { createManualInvoice } from '../../lib/api/manualInvoice';
 import { createTicket, assignTicket } from '../../lib/api/supportTickets';
 import { addServiceToCompany, updateServiceStatus } from '../../lib/api/companyServices';
 import activityLogger from '../../lib/services/activityLogger';
+import { getWebsiteProjectsByCompany, createWebsiteProject, updateWebsiteProjectWithMilestones } from '../../lib/api/websiteProjects';
+import { getMobileAppProjectsByCompany, createMobileAppProject, updateMobileAppProjectWithMilestones } from '../../lib/api/mobileAppProjects';
 
 export default function CompanyDetail() {
   const { id: companyId } = useParams<{ id: string }>();
@@ -54,6 +56,9 @@ export default function CompanyDetail() {
   const [selectedGoogleService, setSelectedGoogleService] = useState<string | null>(null);
   const [showWebsiteSettings, setShowWebsiteSettings] = useState(false);
   const [showMobileAppSettings, setShowMobileAppSettings] = useState(false);
+  const [selectedCompanyService, setSelectedCompanyService] = useState<any>(null); // Track which company service is being configured
+  const [websiteProjectData, setWebsiteProjectData] = useState<any>(null); // Current website project data
+  const [mobileAppProjectData, setMobileAppProjectData] = useState<any>(null); // Current mobile app project data
 
   // Company Edit Modal
   const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
@@ -142,6 +147,50 @@ export default function CompanyDetail() {
 
     fetchData();
   }, [companyId, navigate]);
+
+  // Fetch website project data when website settings modal opens
+  useEffect(() => {
+    const fetchWebsiteProject = async () => {
+      if (showWebsiteSettings && companyId) {
+        try {
+          const projects = await getWebsiteProjectsByCompany(companyId);
+          // Get the first project (or create a new one if none exists)
+          if (projects && projects.length > 0) {
+            setWebsiteProjectData(projects[0]); // Use the first project
+          } else {
+            setWebsiteProjectData(null); // No project exists yet
+          }
+        } catch (err) {
+          console.error('❌ Error fetching website project:', err);
+          setWebsiteProjectData(null);
+        }
+      }
+    };
+
+    fetchWebsiteProject();
+  }, [showWebsiteSettings, companyId]);
+
+  // Fetch mobile app project data when mobile app settings modal opens
+  useEffect(() => {
+    const fetchMobileAppProject = async () => {
+      if (showMobileAppSettings && companyId) {
+        try {
+          const projects = await getMobileAppProjectsByCompany(companyId);
+          // Get the first project (or create a new one if none exists)
+          if (projects && projects.length > 0) {
+            setMobileAppProjectData(projects[0]); // Use the first project
+          } else {
+            setMobileAppProjectData(null); // No project exists yet
+          }
+        } catch (err) {
+          console.error('❌ Error fetching mobile app project:', err);
+          setMobileAppProjectData(null);
+        }
+      }
+    };
+
+    fetchMobileAppProject();
+  }, [showMobileAppSettings, companyId]);
 
   // Show success message with auto-hide
   const showSuccess = (message: string) => {
@@ -706,7 +755,10 @@ export default function CompanyDetail() {
 
   // ===== SERVICE CONFIGURATION HANDLERS =====
 
-  const handleConfigureService = (slug: string) => {
+  const handleConfigureService = (companyService: any, slug: string) => {
+    // Store the selected company service so we can fetch its related data
+    setSelectedCompanyService(companyService);
+
     if (slug === 'whatsapp-automation') {
       setShowWhatsAppSettings(true);
     } else if (slug === 'instagram-automation') {
@@ -719,6 +771,118 @@ export default function CompanyDetail() {
       setShowWebsiteSettings(true);
     } else if (slug === 'mobile-app-development') {
       setShowMobileAppSettings(true);
+    }
+  };
+
+  // Save website settings (create or update)
+  const handleSaveWebsiteSettings = async (settings: any) => {
+    try {
+      if (!companyId) {
+        showError('Company ID not found');
+        return;
+      }
+
+      if (websiteProjectData) {
+        // Update existing project
+        await updateWebsiteProjectWithMilestones(
+          websiteProjectData.id,
+          {
+            project_name: settings.projectName,
+            project_type: settings.projectType,
+            domain: settings.domain,
+            email: settings.email,
+            estimated_completion: settings.estimatedCompletion,
+            overall_progress: settings.overallProgress,
+            last_update: new Date().toISOString()
+          },
+          settings.milestones
+        );
+        showSuccess('Website settings updated successfully!');
+      } else {
+        // Create new project
+        await createWebsiteProject({
+          company_id: companyId,
+          project_name: settings.projectName,
+          project_type: settings.projectType,
+          domain: settings.domain,
+          email: settings.email,
+          estimated_completion: settings.estimatedCompletion,
+          overall_progress: settings.overallProgress,
+          status: 'active'
+        });
+        showSuccess('Website project created successfully!');
+      }
+
+      // Log activity
+      if (user?.id) {
+        await activityLogger.logServiceConfigured(
+          user.id,
+          companyId,
+          'website-development',
+          websiteProjectData ? 'updated' : 'created'
+        );
+      }
+
+      setShowWebsiteSettings(false);
+      setWebsiteProjectData(null);
+    } catch (error: any) {
+      console.error('❌ Error saving website settings:', error);
+      showError(error.message || 'Failed to save website settings');
+    }
+  };
+
+  // Save mobile app settings (create or update)
+  const handleSaveMobileAppSettings = async (settings: any) => {
+    try {
+      if (!companyId) {
+        showError('Company ID not found');
+        return;
+      }
+
+      if (mobileAppProjectData) {
+        // Update existing project
+        await updateMobileAppProjectWithMilestones(
+          mobileAppProjectData.id,
+          {
+            app_name: settings.appName,
+            platform: settings.platform,
+            app_type: settings.appType,
+            estimated_completion: settings.estimatedCompletion,
+            overall_progress: settings.overallProgress,
+            last_update: new Date().toISOString()
+          },
+          settings.milestones
+        );
+        showSuccess('Mobile app settings updated successfully!');
+      } else {
+        // Create new project
+        await createMobileAppProject({
+          company_id: companyId,
+          app_name: settings.appName,
+          platform: settings.platform,
+          app_type: settings.appType,
+          estimated_completion: settings.estimatedCompletion,
+          overall_progress: settings.overallProgress,
+          status: 'active'
+        });
+        showSuccess('Mobile app project created successfully!');
+      }
+
+      // Log activity
+      if (user?.id) {
+        await activityLogger.logServiceConfigured(
+          user.id,
+          companyId,
+          'mobile-app-development',
+          mobileAppProjectData ? 'updated' : 'created'
+        );
+      }
+
+      setShowMobileAppSettings(false);
+      setMobileAppProjectData(null);
+    } catch (error: any) {
+      console.error('❌ Error saving mobile app settings:', error);
+      showError(error.message || 'Failed to save mobile app settings');
     }
   };
 
@@ -1264,7 +1428,7 @@ export default function CompanyDetail() {
                           )}
 
                           <button
-                            onClick={() => handleConfigureService(service.slug)}
+                            onClick={() => handleConfigureService(companyService, service.slug)}
                             className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
                           >
                             <Settings className="w-4 h-4" />
@@ -1626,16 +1790,37 @@ export default function CompanyDetail() {
         {showWebsiteSettings && (
           <WebsiteSettingsModal
             companyName={company.name}
-            onClose={() => setShowWebsiteSettings(false)}
-            onSave={(settings) => console.log('Website settings saved:', settings)}
+            onClose={() => {
+              setShowWebsiteSettings(false);
+              setWebsiteProjectData(null); // Clear data when closing
+            }}
+            onSave={handleSaveWebsiteSettings}
+            initialSettings={websiteProjectData ? {
+              projectName: websiteProjectData.project_name,
+              projectType: websiteProjectData.project_type,
+              domain: websiteProjectData.domain,
+              email: websiteProjectData.email,
+              estimatedCompletion: websiteProjectData.estimated_completion,
+              milestones: websiteProjectData.milestones || []
+            } : undefined}
           />
         )}
 
         {showMobileAppSettings && (
           <MobileAppSettingsModal
             companyName={company.name}
-            onClose={() => setShowMobileAppSettings(false)}
-            onSave={(settings) => console.log('Mobile app settings saved:', settings)}
+            onClose={() => {
+              setShowMobileAppSettings(false);
+              setMobileAppProjectData(null); // Clear data when closing
+            }}
+            onSave={handleSaveMobileAppSettings}
+            initialSettings={mobileAppProjectData ? {
+              appName: mobileAppProjectData.app_name,
+              platform: mobileAppProjectData.platform,
+              appType: mobileAppProjectData.app_type,
+              estimatedCompletion: mobileAppProjectData.estimated_completion,
+              milestones: mobileAppProjectData.milestones || []
+            } : undefined}
           />
         )}
 
