@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, Mail, UserPlus, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getAllCompanies } from '../../lib/api/companies';
-import { getInvites, createInvite } from '../../lib/api/users';
+import { getInvites, createInvite, createUser } from '../../lib/api/users';
 import { EmailService } from '../../lib/email';
 import { supabase } from '../../lib/supabase';
 
@@ -138,9 +138,21 @@ export default function UserInvite() {
     setIsSubmitting(true);
 
     try {
-      console.log('📤 Creating invite...');
-      
-      // Create invite in database
+      console.log('📤 Creating user and invite...');
+
+      // STEP 1: Create actual auth user and profile (so they can login immediately)
+      console.log('👤 Creating auth user...');
+      await createUser({
+        email: formData.email,
+        password: formData.password,
+        full_name: `${formData.firstName} ${formData.lastName}`,
+        company_id: formData.company,
+        role: formData.role as 'user' | 'company_admin',
+        language: 'en',
+      });
+      console.log('✅ Auth user created successfully');
+
+      // STEP 2: Create invite record (for tracking purposes)
       const newInvite = await createInvite({
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -151,13 +163,13 @@ export default function UserInvite() {
         invited_by: currentUserId,
       });
 
-      console.log('✅ Invite created:', newInvite);
+      console.log('✅ Invite record created:', newInvite);
 
-      // Send invitation email via Supabase
+      // STEP 3: Send invitation email
       if (formData.sendEmail) {
         try {
           const company = companies.find(c => c.id === formData.company);
-          
+
           await EmailService.sendInvitationEmail({
             userName: `${formData.firstName} ${formData.lastName}`,
             userEmail: formData.email,
@@ -171,7 +183,7 @@ export default function UserInvite() {
         } catch (emailError: any) {
           console.error('⚠️ Failed to send invitation email:', emailError);
           // Don't fail the entire process if email fails
-          showError('Invite created but email failed to send. Please share credentials manually.');
+          showError('User created but email failed to send. Please share credentials manually.');
         }
       }
 

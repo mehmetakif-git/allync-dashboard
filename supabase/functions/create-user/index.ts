@@ -49,7 +49,9 @@ serve(async (req) => {
       email_confirm: true, // Auto-confirm email
       user_metadata: {
         full_name,
-      }
+      },
+      // Force email confirmation with timestamp
+      email_confirmed_at: new Date().toISOString(),
     })
 
     if (authError) {
