@@ -50,6 +50,9 @@ export default {
       animation: {
         'gradient-x': 'gradient-x 3s ease infinite',
         'fadeIn': 'fadeIn 0.2s ease-in-out',
+        'slide-in-right': 'slide-in-right 0.5s ease-out',
+        'shake': 'shake 0.5s ease-in-out',
+        'ring': 'ring 0.8s ease-in-out',
       },
       keyframes: {
         'gradient-x': {
@@ -63,6 +66,35 @@ export default {
         'fadeIn': {
           'from': { opacity: '0' },
           'to': { opacity: '1' },
+        },
+        'slide-in-right': {
+          '0%': {
+            transform: 'translateX(100%)',
+            opacity: '0',
+          },
+          '100%': {
+            transform: 'translateX(0)',
+            opacity: '1',
+          },
+        },
+        'shake': {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'rotate(-10deg)' },
+          '20%, 40%, 60%, 80%': { transform: 'rotate(10deg)' },
+        },
+        'ring': {
+          '0%': { transform: 'rotate(0deg)' },
+          '5%': { transform: 'rotate(15deg)' },
+          '10%': { transform: 'rotate(-12deg)' },
+          '15%': { transform: 'rotate(15deg)' },
+          '20%': { transform: 'rotate(-12deg)' },
+          '25%': { transform: 'rotate(10deg)' },
+          '30%': { transform: 'rotate(-8deg)' },
+          '35%': { transform: 'rotate(6deg)' },
+          '40%': { transform: 'rotate(-4deg)' },
+          '45%': { transform: 'rotate(2deg)' },
+          '50%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(0deg)' },
         },
       },
     },

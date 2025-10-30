@@ -246,7 +246,7 @@ export async function getUserNotifications(userId: string, filters?: {
       is_read,
       read_at,
       created_at,
-      notification:system_notifications(*)
+      notification:system_notifications!inner(*)
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
@@ -270,7 +270,17 @@ export async function getUserNotifications(userId: string, filters?: {
 
   // Transform data to include read status
   const notifications: NotificationWithReadStatus[] = data
-    ?.filter((un: any) => un.notification) // Filter out null notifications
+    ?.filter((un: any) => {
+      // Filter out notifications that are:
+      // 1. Null/undefined
+      // 2. Deleted (deleted_at is not null)
+      // 3. Inactive (is_active is false)
+      return (
+        un.notification &&
+        !un.notification.deleted_at &&
+        un.notification.is_active !== false
+      );
+    })
     .map((un: any) => ({
       ...un.notification,
       is_read: un.is_read,
@@ -290,9 +300,13 @@ export async function getUserNotifications(userId: string, filters?: {
 export async function getUnreadCount(userId: string): Promise<number> {
   logger.apiRequest('getUnreadCount', 'GET', { userId });
 
-  const { count, error } = await supabase
+  // Get unread notifications with JOIN to check system_notifications status
+  const { data, error } = await supabase
     .from('user_notifications')
-    .select('id', { count: 'exact', head: true })
+    .select(`
+      id,
+      notification:system_notifications!inner(id, is_active, deleted_at)
+    `)
     .eq('user_id', userId)
     .eq('is_read', false);
 
@@ -301,8 +315,15 @@ export async function getUnreadCount(userId: string): Promise<number> {
     throw error;
   }
 
-  logger.success('Unread count fetched', { count });
-  return count || 0;
+  // Filter out deleted or inactive notifications
+  const activeUnreadCount = data?.filter((un: any) =>
+    un.notification &&
+    !un.notification.deleted_at &&
+    un.notification.is_active !== false
+  ).length || 0;
+
+  logger.success('Unread count fetched', { count: activeUnreadCount });
+  return activeUnreadCount;
 }
 
 // Mark notification as read

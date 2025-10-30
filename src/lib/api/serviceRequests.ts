@@ -12,11 +12,10 @@ export interface ServiceRequest {
   status: 'pending' | 'approved' | 'rejected';
   requested_by: string | null;
   notes: string | null;
-  rejection_reason: string | null;
-  approved_by: string | null;
-  approved_at: string | null;
+  admin_notes: string | null; // Rejection reason or admin comments
+  reviewed_by: string | null;
+  reviewed_at: string | null;
   created_at: string;
-  updated_at: string | null;
 }
 
 export interface ServiceRequestWithDetails extends ServiceRequest {
@@ -98,9 +97,9 @@ export async function getCompanyServiceRequests(companyId: string) {
     .select(`
       *,
       service_type:service_types(
-        id, 
-        name_en, 
-        name_tr, 
+        id,
+        name_en,
+        name_tr,
         slug,
         pricing_basic,
         pricing_standard,
@@ -117,6 +116,35 @@ export async function getCompanyServiceRequests(companyId: string) {
   }
 
   console.log(`✅ [getCompanyServiceRequests] Found ${data?.length || 0} requests`);
+  return data as ServiceRequestWithDetails[];
+}
+
+// Get service requests for a specific service type (for service management pages)
+export async function getServiceRequestsByServiceType(serviceTypeId: string, status?: 'pending' | 'approved' | 'rejected') {
+  console.log('📡 [getServiceRequestsByServiceType] Fetching for service:', serviceTypeId);
+
+  let query = supabase
+    .from('service_requests')
+    .select(`
+      *,
+      company:companies(id, name, email),
+      requester:profiles!requested_by(id, full_name, email)
+    `)
+    .eq('service_type_id', serviceTypeId)
+    .order('created_at', { ascending: false });
+
+  if (status) {
+    query = query.eq('status', status);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('❌ [getServiceRequestsByServiceType] Error:', error);
+    throw error;
+  }
+
+  console.log(`✅ [getServiceRequestsByServiceType] Found ${data?.length || 0} requests`);
   return data as ServiceRequestWithDetails[];
 }
 
@@ -169,9 +197,8 @@ export async function approveServiceRequest(
       .from('service_requests')
       .update({
         status: 'approved',
-        approved_by: approvedBy,
-        approved_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        reviewed_by: approvedBy,
+        reviewed_at: new Date().toISOString(),
       })
       .eq('id', requestId)
       .select(`
@@ -210,15 +237,16 @@ export async function rejectServiceRequest(
   rejectedBy: string
 ) {
   console.log('❌ [rejectServiceRequest] Rejecting request:', requestId);
+  console.log('📝 [rejectServiceRequest] Reason:', rejectionReason);
 
   try {
     const { data, error } = await supabase
       .from('service_requests')
       .update({
         status: 'rejected',
-        rejection_reason: rejectionReason,
-        approved_by: rejectedBy, // Track who rejected it
-        updated_at: new Date().toISOString(),
+        admin_notes: rejectionReason, // FIX: Use admin_notes instead of rejection_reason
+        reviewed_by: rejectedBy,
+        reviewed_at: new Date().toISOString(),
       })
       .eq('id', requestId)
       .select(`
@@ -372,6 +400,7 @@ export default {
   // Get
   getAllServiceRequests,
   getCompanyServiceRequests,
+  getServiceRequestsByServiceType,
   getServiceRequestById,
   
   // Actions

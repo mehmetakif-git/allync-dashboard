@@ -230,16 +230,73 @@ html,
    ===================================================== */
 
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
+  from {
+    opacity: 0;
   }
-  to { 
-    opacity: 1; 
+  to {
+    opacity: 1;
   }
 }
 
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Bell ring animation - for notification bell icon */
+@keyframes ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  5% {
+    transform: rotate(15deg);
+  }
+  10% {
+    transform: rotate(-12deg);
+  }
+  15% {
+    transform: rotate(15deg);
+  }
+  20% {
+    transform: rotate(-12deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  30% {
+    transform: rotate(-8deg);
+  }
+  35% {
+    transform: rotate(6deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  45% {
+    transform: rotate(2deg);
+  }
+  50%, 100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-ring {
+  animation: ring 0.8s ease-in-out;
+}
+
+/* Slide in from right - for new notifications */
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s ease-out;
 }
 
 /* =====================================================

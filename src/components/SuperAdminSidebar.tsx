@@ -1,8 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Zap, MessageCircle, Globe, Smartphone, Building2, Users, UserPlus, Receipt, DollarSign, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
+import { getSuperAdminStats, subscribeToStatsChanges, SuperAdminStats } from '../lib/api/stats';
 
 interface MenuItem {
   id: string;
@@ -10,6 +11,7 @@ interface MenuItem {
   icon: any;
   path: string;
   badge?: number;
+  badgeColor?: 'red' | 'yellow' | 'blue' | 'green' | 'orange';
   type?: 'item' | 'divider';
   dividerLabel?: string;
 }
@@ -24,43 +26,128 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
   const location = useLocation();
   const { logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [stats, setStats] = useState<SuperAdminStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  // Fetch stats and set up real-time listeners
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchStats = async () => {
+      try {
+        const data = await getSuperAdminStats();
+        if (isMounted) {
+          setStats(data);
+          setStatsLoading(false);
+        }
+      } catch (error) {
+        console.error('❌ [SuperAdminSidebar] Failed to fetch stats:', error);
+        if (isMounted) {
+          setStatsLoading(false);
+        }
+      }
+    };
+
+    // Initial fetch
+    fetchStats();
+
+    // Set up real-time listeners
+    const cleanup = subscribeToStatsChanges(() => {
+      console.log('🔔 [SuperAdminSidebar] Stats changed, refetching...');
+      fetchStats();
+    });
+
+    return () => {
+      isMounted = false;
+      cleanup();
+    };
+  }, []);
 
   const menuItems: MenuItem[] = [
     // Main
     { type: 'divider', dividerLabel: 'MAIN', id: 'divider-main', label: '', icon: null, path: '' },
     { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/admin' },
-    
+
     // Services
     { type: 'divider', dividerLabel: 'SERVICES', id: 'divider-services', label: '', icon: null, path: '' },
-    { id: 'services', label: 'Services Catalog', icon: Zap, path: '/admin/services-catalog' },
+    {
+      id: 'services',
+      label: 'Services Catalog',
+      icon: Zap,
+      path: '/admin/services-catalog',
+      badge: stats?.maintenanceServicesCount || undefined,
+      badgeColor: 'orange'
+    },
 
     // Service Management (Website & Mobile App Only)
     { type: 'divider', dividerLabel: 'SERVICE MANAGEMENT', id: 'divider-service-mgmt', label: '', icon: null, path: '' },
-    { id: 'website', label: 'Website Development', icon: Globe, path: '/admin/services/website-development' },
-    { id: 'mobile-app', label: 'Mobile App Development', icon: Smartphone, path: '/admin/services/mobile-app-development' },
-    
+    {
+      id: 'website',
+      label: 'Website Development',
+      icon: Globe,
+      path: '/admin/services/website-development',
+      badge: stats?.websitePendingCount || undefined,
+      badgeColor: 'yellow'
+    },
+    {
+      id: 'mobile-app',
+      label: 'Mobile App Development',
+      icon: Smartphone,
+      path: '/admin/services/mobile-app-development',
+      badge: stats?.mobileAppPendingCount || undefined,
+      badgeColor: 'yellow'
+    },
+
     // User Management
     { type: 'divider', dividerLabel: 'USER MANAGEMENT', id: 'divider-users', label: '', icon: null, path: '' },
     { id: 'users', label: 'All Users', icon: Users, path: '/admin/users' },
     { id: 'user-invite', label: 'Invite Users', icon: UserPlus, path: '/admin/users/invite' },
-    
+
     // Company Management
     { type: 'divider', dividerLabel: 'COMPANY MANAGEMENT', id: 'divider-companies', label: '', icon: null, path: '' },
-    { id: 'companies', label: 'Companies', icon: Building2, path: '/admin/companies', badge: 2 },
-    
+    {
+      id: 'companies',
+      label: 'Companies',
+      icon: Building2,
+      path: '/admin/companies',
+      badge: stats?.newCompaniesCount || undefined,
+      badgeColor: 'blue'
+    },
+
     // Billing
     { type: 'divider', dividerLabel: 'BILLING', id: 'divider-billing', label: '', icon: null, path: '' },
-    { id: 'invoices', label: 'Invoices', icon: Receipt, path: '/admin/invoices' },
+    {
+      id: 'invoices',
+      label: 'Invoices',
+      icon: Receipt,
+      path: '/admin/invoices',
+      badge: stats?.unpaidInvoicesCount || undefined,
+      badgeColor: 'green'
+    },
     { id: 'revenue', label: 'Revenue Analytics', icon: DollarSign, path: '/admin/revenue' },
-    
+
     // Support
     { type: 'divider', dividerLabel: 'SUPPORT', id: 'divider-support', label: '', icon: null, path: '' },
-    { id: 'support', label: 'Support Tickets', icon: MessageCircle, path: '/admin/support-tickets', badge: 3 },
-    
+    {
+      id: 'support',
+      label: 'Support Tickets',
+      icon: MessageCircle,
+      path: '/admin/support-tickets',
+      badge: stats?.openTicketsCount || undefined,
+      badgeColor: stats?.urgentTicketsCount && stats.urgentTicketsCount > 0 ? 'red' : 'yellow'
+    },
+
     // Communication
     { type: 'divider', dividerLabel: 'COMMUNICATION', id: 'divider-communication', label: '', icon: null, path: '' },
-    { id: 'notifications', label: 'Notifications', icon: Bell, path: '/admin/notifications' },
-    
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      path: '/admin/notifications',
+      badge: stats?.unreadNotificationsCount || undefined,
+      badgeColor: 'red'
+    },
+
     // System
     { type: 'divider', dividerLabel: 'SYSTEM', id: 'divider-system', label: '', icon: null, path: '' },
     { id: 'settings', label: 'System Settings', icon: Settings, path: '/admin/settings' },
@@ -137,6 +224,24 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
               const Icon = item.icon;
               const active = isActive(item.path);
 
+              // Helper function to get badge color classes
+              const getBadgeColorClasses = (color?: 'red' | 'yellow' | 'blue' | 'green' | 'orange') => {
+                switch (color) {
+                  case 'red':
+                    return 'bg-red-500 text-white animate-pulse';
+                  case 'yellow':
+                    return 'bg-yellow-500 text-black';
+                  case 'blue':
+                    return 'bg-blue-500 text-white';
+                  case 'green':
+                    return 'bg-green-500 text-white';
+                  case 'orange':
+                    return 'bg-orange-500 text-white';
+                  default:
+                    return 'bg-red-500 text-white';
+                }
+              };
+
               return (
                 <li key={item.id}>
                   <button
@@ -150,7 +255,11 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
                     <Icon className="w-5 h-5 flex-shrink-0" />
                     <span className="font-medium truncate">{item.label}</span>
                     {item.badge && item.badge > 0 && (
-                      <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                      <span
+                        className={`ml-auto px-2 py-0.5 text-xs font-bold rounded-full transition-all ${getBadgeColorClasses(
+                          item.badgeColor
+                        )}`}
+                      >
                         {item.badge}
                       </span>
                     )}

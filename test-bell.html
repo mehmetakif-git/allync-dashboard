@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bell Animation Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes ring {
+            0% { transform: rotate(0deg); }
+            5% { transform: rotate(15deg); }
+            10% { transform: rotate(-12deg); }
+            15% { transform: rotate(15deg); }
+            20% { transform: rotate(-12deg); }
+            25% { transform: rotate(10deg); }
+            30% { transform: rotate(-8deg); }
+            35% { transform: rotate(6deg); }
+            40% { transform: rotate(-4deg); }
+            45% { transform: rotate(2deg); }
+            50%, 100% { transform: rotate(0deg); }
+        }
+
+        .animate-ring {
+            animation: ring 0.8s ease-in-out;
+            transform-origin: top center;
+        }
+
+        .bg-dark {
+            background: #2C2D2D;
+        }
+    </style>
+</head>
+<body class="bg-dark min-h-screen flex items-center justify-center">
+    <div class="text-center">
+        <h1 class="text-white text-2xl mb-8">Bell Animation Test</h1>
+
+        <div class="flex gap-8">
+            <!-- Bell Icon -->
+            <div class="text-center">
+                <button
+                    id="triggerBtn"
+                    class="relative p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all"
+                >
+                    <svg
+                        id="bellIcon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="48"
+                        height="48"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="text-blue-400"
+                        style="transform-origin: top center;"
+                    >
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                    </svg>
+                    <span class="absolute -top-1 -right-1 min-w-[24px] h-[24px] px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                        3
+                    </span>
+                </button>
+                <p class="text-gray-400 mt-4">Click to Ring!</p>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <p class="text-gray-500 text-sm">Animation: 0.8s ease-in-out</p>
+            <p class="text-gray-500 text-sm">Transform Origin: top center</p>
+        </div>
+    </div>
+
+    <script>
+        const bellIcon = document.getElementById('bellIcon');
+        const triggerBtn = document.getElementById('triggerBtn');
+
+        triggerBtn.addEventListener('click', () => {
+            console.log('🔔 Triggering bell animation...');
+
+            // Remove animation class if exists
+            bellIcon.classList.remove('animate-ring');
+
+            // Trigger reflow to restart animation
+            void bellIcon.offsetWidth;
+
+            // Add animation class
+            bellIcon.classList.add('animate-ring');
+
+            // Remove after animation completes
+            setTimeout(() => {
+                bellIcon.classList.remove('animate-ring');
+                console.log('✅ Animation completed');
+            }, 800);
+        });
+    </script>
+</body>
+</html>

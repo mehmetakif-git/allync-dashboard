@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MessageCircle, Instagram, TrendingUp, Building2, DollarSign, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle, Globe, Smartphone, Loader2 } from 'lucide-react';
+import { Search, MessageCircle, Instagram, TrendingUp, Building2, Settings, Calendar, Sheet, Mail, FileText, FolderOpen, Image, X, AlertTriangle, Globe, Smartphone, Loader2 } from 'lucide-react';
 import serviceTypesAPI from '../../lib/api/serviceTypes';
 
 // Icon mapping for services
@@ -30,6 +30,12 @@ interface ServiceWithStats {
   category: string;
   icon: string | null;
   color: string | null;
+  features: {
+    en?: string[];
+    tr?: string[];
+  } | null;
+  requirements_en: string[] | null;
+  requirements_tr: string[] | null;
   status: 'active' | 'maintenance' | 'inactive';
   pricing_standard: {
     price: number;
@@ -63,6 +69,9 @@ export default function ServicesCatalog() {
     try {
       setLoading(true);
       const data = await serviceTypesAPI.getAllServicesWithStats();
+      console.log('🔍 [ServicesCatalog] Loaded services:', data);
+      console.log('🔍 [ServicesCatalog] First service features:', data[0]?.features);
+      console.log('🔍 [ServicesCatalog] First service short_description_en:', data[0]?.short_description_en);
       setServices(data);
     } catch (error) {
       console.error('Error loading services:', error);
@@ -78,10 +87,8 @@ export default function ServicesCatalog() {
     (service.description_tr && service.description_tr.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const totalRevenue = services.reduce((sum, s) => sum + (s.total_revenue || 0), 0);
   const totalCompanies = services.reduce((sum, s) => sum + (s.companies_using || 0), 0);
   const activeServicesCount = services.filter(s => s.status === 'active').length;
-  const avgPrice = totalCompanies > 0 ? Math.round(totalRevenue / totalCompanies) : 0;
 
   const handleStatusChange = (service: ServiceWithStats, status: 'active' | 'maintenance' | 'inactive') => {
     setSelectedService(service);
@@ -224,7 +231,7 @@ export default function ServicesCatalog() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -249,32 +256,6 @@ export default function ServicesCatalog() {
               </div>
             </div>
             <p className="text-xs text-muted">Using services</p>
-          </div>
-
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-muted mb-1">Monthly Revenue</p>
-                <p className="text-3xl font-bold text-white">${totalRevenue.toFixed(0)}</p>
-              </div>
-              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-500" />
-              </div>
-            </div>
-            <p className="text-xs text-green-500">From active subscriptions</p>
-          </div>
-
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-muted mb-1">Avg. Package Price</p>
-                <p className="text-3xl font-bold text-white">${avgPrice}</p>
-              </div>
-              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-yellow-500" />
-              </div>
-            </div>
-            <p className="text-xs text-muted">Per company</p>
           </div>
         </div>
 
@@ -323,17 +304,29 @@ export default function ServicesCatalog() {
                   </div>
                 </div>
 
-                <p className="text-muted text-sm mb-6 leading-relaxed line-clamp-3">
-                  {service.description_en || service.short_description_en || 'No description available'}
+                <p className="text-muted text-sm mb-4 leading-relaxed line-clamp-2">
+                  {service.short_description_en || service.description_en || 'No description available'}
                 </p>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <p className="text-xs text-muted mb-1">Price</p>
-                    <p className="text-sm font-semibold text-white">
-                      ${service.pricing_standard?.price || 0}/month
-                    </p>
+                {/* Features List */}
+                {service.features && (service.features.en || service.features.tr) && (
+                  <div className="mb-4">
+                    <p className="text-xs text-muted mb-2 font-semibold">Key Features:</p>
+                    <ul className="space-y-1">
+                      {(service.features.en || service.features.tr)?.slice(0, 3).map((feature: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-2 text-xs text-secondary">
+                          <span className="text-blue-400 mt-0.5">✓</span>
+                          <span className="line-clamp-1">{feature}</span>
+                        </li>
+                      ))}
+                      {((service.features.en || service.features.tr)?.length ?? 0) > 3 && (
+                        <li className="text-xs text-muted italic">+{((service.features.en || service.features.tr)?.length ?? 0) - 3} more features</li>
+                      )}
+                    </ul>
                   </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-secondary">
                   <div>
                     <p className="text-xs text-muted mb-1">Companies Using</p>
                     <p className="text-sm font-semibold text-white">{service.companies_using}</p>
@@ -341,10 +334,6 @@ export default function ServicesCatalog() {
                   <div>
                     <p className="text-xs text-muted mb-1">Active Subscriptions</p>
                     <p className="text-sm font-semibold text-white">{service.active_subscriptions}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted mb-1">Total Revenue</p>
-                    <p className="text-sm font-semibold text-white">${service.total_revenue.toFixed(0)}</p>
                   </div>
                 </div>
 

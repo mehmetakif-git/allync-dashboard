@@ -4,13 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { OverallTab, CompaniesTab, ServiceContentTab } from '../../../components/admin/ServiceManagementTabs';
 import serviceTypesAPI from '../../../lib/api/serviceTypes';
 import { getAllCompaniesWithServicePricing, setCompanyServicePricing } from '../../../lib/api/companyServicePricing';
+import serviceRequestsAPI from '../../../lib/api/serviceRequests';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function MobileAppServiceManagement() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overall' | 'companies' | 'content'>('overall');
   const [loading, setLoading] = useState(true);
   const [serviceData, setServiceData] = useState<any>(null);
   const [companies, setCompanies] = useState<any[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
 
   const SERVICE_GRADIENT = 'from-blue-500 to-cyan-500';
 
@@ -35,7 +39,12 @@ export default function MobileAppServiceManagement() {
       const companiesData = await getAllCompaniesWithServicePricing(mobileService.id);
       setCompanies(companiesData);
 
+      // Fetch pending service requests for this service
+      const requestsData = await serviceRequestsAPI.getServiceRequestsByServiceType(mobileService.id, 'pending');
+      setPendingRequests(requestsData);
+
       console.log('📊 Loaded companies:', companiesData);
+      console.log('📋 Loaded pending requests:', requestsData);
     } catch (error) {
       console.error('Error loading service data:', error);
     } finally {
@@ -65,8 +74,60 @@ export default function MobileAppServiceManagement() {
     navigate(`/admin/companies/${companyId}`);
   };
 
-  const handleEditContent = () => {
-    alert('Content editing modal will be implemented');
+  const handleEditContent = async (updatedData: any) => {
+    if (!serviceData) return;
+
+    try {
+      console.log('💾 Updating service content:', updatedData);
+
+      await serviceTypesAPI.updateServiceContent(serviceData.id, updatedData);
+
+      console.log('✅ Service content updated successfully');
+
+      // Refresh data to show updated content
+      await loadServiceData();
+    } catch (error) {
+      console.error('❌ Error updating content:', error);
+      throw error; // Re-throw so modal can show error
+    }
+  };
+
+  const handleApproveRequest = async (requestId: string) => {
+    if (!user?.id) {
+      alert('User not authenticated');
+      return;
+    }
+
+    try {
+      console.log('✅ Approving service request:', requestId);
+      await serviceRequestsAPI.approveServiceRequest(requestId, user.id);
+      console.log('✅ Request approved successfully');
+
+      // Refresh data
+      await loadServiceData();
+    } catch (error) {
+      console.error('❌ Error approving request:', error);
+      throw error;
+    }
+  };
+
+  const handleRejectRequest = async (requestId: string, reason: string) => {
+    if (!user?.id) {
+      alert('User not authenticated');
+      return;
+    }
+
+    try {
+      console.log('❌ Rejecting service request:', requestId, 'Reason:', reason);
+      await serviceRequestsAPI.rejectServiceRequest(requestId, reason, user.id);
+      console.log('✅ Request rejected successfully');
+
+      // Refresh data
+      await loadServiceData();
+    } catch (error) {
+      console.error('❌ Error rejecting request:', error);
+      throw error;
+    }
   };
 
   // Calculate stats
@@ -191,9 +252,12 @@ export default function MobileAppServiceManagement() {
         {activeTab === 'companies' && (
           <CompaniesTab
             companies={companies}
+            pendingRequests={pendingRequests}
             serviceGradient={SERVICE_GRADIENT}
             onViewDetails={handleViewDetails}
             onSetPricing={handleSetPricing}
+            onApproveRequest={handleApproveRequest}
+            onRejectRequest={handleRejectRequest}
           />
         )}
 

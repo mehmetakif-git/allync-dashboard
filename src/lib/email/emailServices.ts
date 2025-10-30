@@ -14,31 +14,37 @@ export class EmailService {
     temporaryPassword?: string;
   }) {
     try {
-      const loginUrl = `${window.location.origin}/auth/login`;
-      
+      const loginUrl = `${window.location.origin}/login`;
+
       const htmlContent = emailTemplates.welcome({
         ...data,
         loginUrl,
       });
 
-      console.log('📧 Sending welcome email to:', data.userEmail);
+      console.log('📧 Sending welcome email via Edge Function to:', data.userEmail);
 
-      // Note: Supabase sends emails automatically for auth events
-      // This is for custom welcome emails beyond the default signup confirmation
-      
-      // For custom email sending, you would need to:
-      // 1. Set up Supabase Edge Function or
-      // 2. Use a third-party service like Resend
-      
-      // For now, log the email content (in production, this will send via configured SMTP)
-      console.log('✅ Welcome email prepared for:', data.userEmail);
-      
+      // Call Supabase Edge Function to send email
+      const { data: result, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: data.userEmail,
+          subject: `Welcome to ${EMAIL_CONFIG.companyName}! 🎊`,
+          html: htmlContent
+        }
+      })
+
+      if (error) {
+        console.error('❌ Edge Function error:', error);
+        throw error;
+      }
+
+      console.log('✅ Welcome email sent successfully:', result);
+
       return {
         success: true,
         message: 'Welcome email sent successfully',
-        html: htmlContent,
+        emailId: result.emailId
       };
-      
+
     } catch (error: any) {
       console.error('❌ Error sending welcome email:', error);
       throw new Error(`Failed to send welcome email: ${error.message}`);
@@ -57,24 +63,37 @@ export class EmailService {
     invitedBy?: string;
   }) {
     try {
-      const loginUrl = `${window.location.origin}/auth/login`;
-      
+      const loginUrl = `${window.location.origin}/login`;
+
       const htmlContent = emailTemplates.invitation({
         ...data,
         loginUrl,
       });
 
-      console.log('📧 Sending invitation email to:', data.userEmail);
+      console.log('📧 Sending invitation email via Edge Function to:', data.userEmail);
 
-      // This would integrate with your email service
-      // For Supabase Pro, configure SMTP in project settings
-      
+      // Call Supabase Edge Function to send email
+      const { data: result, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: data.userEmail,
+          subject: `You're Invited to ${EMAIL_CONFIG.companyName}! 🎊`,
+          html: htmlContent
+        }
+      })
+
+      if (error) {
+        console.error('❌ Edge Function error:', error);
+        throw error;
+      }
+
+      console.log('✅ Invitation email sent successfully:', result);
+
       return {
         success: true,
         message: 'Invitation email sent successfully',
-        html: htmlContent,
+        emailId: result.emailId
       };
-      
+
     } catch (error: any) {
       console.error('❌ Error sending invitation email:', error);
       throw new Error(`Failed to send invitation email: ${error.message}`);

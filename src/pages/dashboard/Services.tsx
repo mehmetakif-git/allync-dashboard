@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  AlertCircle, CheckCircle, Clock, Wrench,
+  AlertCircle, CheckCircle, Clock, Wrench, XCircle,
   MessageCircle, Instagram, Calendar, Sheet, Mail,
   FileText, FolderOpen, Image, Mic, Heart,
   Globe, Smartphone
@@ -16,6 +16,8 @@ export default function Services() {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [selectedRejectedRequest, setSelectedRejectedRequest] = useState<any>(null);
 
   const [services, setServices] = useState<any[]>([]);
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
@@ -68,34 +70,35 @@ export default function Services() {
   });
 
   const isServiceActive = (serviceId: string) => {
-    // Check if service is in service_requests (user requested and got approved)
-    const hasApprovedRequest = serviceRequests.some(
-      req => req.service_type_id === serviceId && req.status === 'approved'
-    );
-
-    // Check if service is directly in company_services (admin added directly)
+    // FIX: Only check company_services (not service_requests)
+    // Because service_requests is just the request history, not the actual active status
+    // company_services is the source of truth for active services
     const hasActiveService = companyServices.some(
       cs => cs.service_type_id === serviceId && cs.status === 'active'
     );
 
-    return hasApprovedRequest || hasActiveService;
+    return hasActiveService;
   };
 
   const getServiceStatus = (serviceId: string) => {
-    // First check service_requests (for user-requested services)
-    const request = serviceRequests.find(req => req.service_type_id === serviceId);
-    if (request) return request;
-
-    // Then check company_services (for admin-added services)
-    const companyService = companyServices.find(cs => cs.service_type_id === serviceId && cs.status === 'active');
-    if (companyService) {
-      // Return in same format as service_requests for consistency
+    // Check company_services first (source of truth for active status)
+    const companyService = companyServices.find(cs => cs.service_type_id === serviceId);
+    if (companyService && companyService.status === 'active') {
+      // Service is active - don't show pending/rejected badges
       return {
         service_type_id: companyService.service_type_id,
         package: companyService.package,
-        status: 'approved', // company_services are already active
+        status: 'approved', // Active = approved
         company_id: companyService.company_id
       };
+    }
+
+    // If not in company_services, check service_requests for pending/rejected
+    const request = serviceRequests.find(req => req.service_type_id === serviceId);
+    if (request) {
+      // Only show pending/rejected status if NOT in company_services
+      // This prevents showing "pending" when service is actually deleted
+      return request;
     }
 
     return null;
@@ -109,6 +112,17 @@ export default function Services() {
   const handleRequestService = (service: any) => {
     setSelectedService(service);
     setShowRequestModal(true);
+  };
+
+  const handleViewRejectionReason = (request: any) => {
+    setSelectedRejectedRequest(request);
+    setShowRejectionModal(true);
+  };
+
+  const handleReRequest = (service: any) => {
+    setShowRejectionModal(false);
+    setSelectedRejectedRequest(null);
+    handleRequestService(service);
   };
 
   const handleViewDetails = (serviceSlug: string) => {
@@ -274,19 +288,24 @@ export default function Services() {
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
-                <p className="text-muted text-sm mb-4">{service.description_en || service.short_description_en}</p>
+                <p className="text-muted text-sm mb-4 line-clamp-2">{service.short_description_en || service.description_en}</p>
 
-                <div className="mb-4">
-                  <p className="text-xs text-muted mb-2">Key Features:</p>
-                  <ul className="space-y-1">
-                    {(service.features?.en || service.features || []).slice(0, 3).map((feature: any, index: number) => (
-                      <li key={index} className="text-xs text-muted flex items-start">
-                        <span className="text-green-500 mr-2">✓</span>
-                        {typeof feature === 'string' ? feature : feature.name || feature.title || 'Feature'}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {service.features && (service.features.en || service.features.tr || service.features.length > 0) && (
+                  <div className="mb-4">
+                    <p className="text-xs text-muted mb-2 font-semibold">Key Features:</p>
+                    <ul className="space-y-1">
+                      {(service.features?.en || service.features?.tr || service.features || []).slice(0, 3).map((feature: any, index: number) => (
+                        <li key={index} className="flex items-start gap-2 text-xs text-secondary">
+                          <span className="text-blue-400 mt-0.5">✓</span>
+                          <span className="line-clamp-1">{typeof feature === 'string' ? feature : feature.name || feature.title || 'Feature'}</span>
+                        </li>
+                      ))}
+                      {((service.features?.en || service.features?.tr || service.features || []).length) > 3 && (
+                        <li className="text-xs text-muted italic">+{((service.features?.en || service.features?.tr || service.features || []).length) - 3} more features</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
 
                 {isInMaintenance ? (
                   <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
@@ -311,6 +330,21 @@ export default function Services() {
                   <div className="mb-4 flex items-center gap-2 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                     <Clock className="w-4 h-4 text-yellow-500" />
                     <span className="text-sm text-yellow-500 font-medium">Request Pending Approval</span>
+                  </div>
+                )}
+
+                {status && status.status === 'rejected' && (
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <XCircle className="w-4 h-4 text-red-500" />
+                      <span className="text-sm text-red-500 font-medium">Request Rejected</span>
+                    </div>
+                    <button
+                      onClick={() => handleViewRejectionReason(status)}
+                      className="w-full mt-2 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 hover:text-red-300 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      View Rejection Reason
+                    </button>
                   </div>
                 )}
 
@@ -369,6 +403,15 @@ export default function Services() {
                         </button>
                       )}
 
+                      {isCompanyAdmin && status && status.status === 'rejected' && (
+                        <button
+                          onClick={() => handleReRequest(service)}
+                          className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-lg font-medium transition-all"
+                        >
+                          Request Again
+                        </button>
+                      )}
+
                       {isRegularUser && (
                         <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg flex items-start gap-2">
                           <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
@@ -396,6 +439,74 @@ export default function Services() {
             }}
             onSubmit={handleSubmitRequest}
           />
+        )}
+
+        {/* Rejection Reason Modal */}
+        {showRejectionModal && selectedRejectedRequest && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-secondary rounded-2xl max-w-lg w-full border border-secondary shadow-2xl">
+              <div className="p-6 border-b border-secondary">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <XCircle className="w-6 h-6 text-red-500" />
+                      Service Request Rejected
+                    </h3>
+                    <p className="text-sm text-muted mt-1">
+                      {services.find(s => s.id === selectedRejectedRequest.service_type_id)?.name_en || 'Service'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowRejectionModal(false)}
+                    className="text-muted hover:text-white"
+                  >
+                    <AlertCircle className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-red-400 mb-2">
+                    ⚠️ Your service request has been rejected by the Super Admin.
+                  </p>
+                  <p className="text-xs text-red-300/70">
+                    Please review the reason below and make necessary adjustments before requesting again.
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <label className="text-sm text-muted block mb-2">Rejection Reason:</label>
+                  <div className="bg-primary border border-secondary rounded-lg p-4">
+                    <p className="text-white whitespace-pre-wrap">
+                      {selectedRejectedRequest.admin_notes || 'No reason provided'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-blue-400">
+                    💡 You can request this service again after addressing the concerns mentioned above.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-secondary flex gap-3">
+                <button
+                  onClick={() => setShowRejectionModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => handleReRequest(services.find(s => s.id === selectedRejectedRequest.service_type_id))}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all"
+                >
+                  Request Again
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

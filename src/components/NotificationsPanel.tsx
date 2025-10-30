@@ -14,14 +14,17 @@ import {
 
 interface NotificationsPanelProps {
   onClose: () => void;
+  onNotificationRead?: () => void;
+  onMarkAllRead?: () => void;
 }
 
-export default function NotificationsPanel({ onClose }: NotificationsPanelProps) {
+export default function NotificationsPanel({ onClose, onNotificationRead, onMarkAllRead }: NotificationsPanelProps) {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<NotificationWithReadStatus[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newNotificationIds, setNewNotificationIds] = useState<Set<string>>(new Set());
 
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -60,11 +63,28 @@ export default function NotificationsPanel({ onClose }: NotificationsPanelProps)
     const subscription = subscribeToUserNotifications(
       user.id,
       (newNotification) => {
-        console.log('🔔 New notification received:', newNotification);
-        
+        console.log('🔔🔔 [Panel] New notification received:', newNotification);
+
         // Add to beginning of list
-        setNotifications(prev => [newNotification, ...prev]);
+        setNotifications(prev => {
+          console.log('📝 [Panel] Adding notification to list, current count:', prev.length);
+          return [newNotification, ...prev];
+        });
         setUnreadCount(prev => prev + 1);
+
+        // Mark as new for animation (remove after 3 seconds)
+        if (newNotification.id) {
+          console.log('✨ [Panel] Adding animation for notification:', newNotification.id);
+          setNewNotificationIds(prev => new Set(prev).add(newNotification.id));
+          setTimeout(() => {
+            console.log('🔇 [Panel] Removing animation for notification:', newNotification.id);
+            setNewNotificationIds(prev => {
+              const updated = new Set(prev);
+              updated.delete(newNotification.id);
+              return updated;
+            });
+          }, 3000);
+        }
 
         // Optional: Show browser notification
         if ('Notification' in window && Notification.permission === 'granted') {
@@ -94,6 +114,9 @@ export default function NotificationsPanel({ onClose }: NotificationsPanelProps)
           : n
       ));
       setUnreadCount(prev => Math.max(0, prev - 1));
+
+      // Notify parent (Header) to update its badge
+      onNotificationRead?.();
     } catch (err) {
       console.error('❌ Error marking as read:', err);
     }
@@ -113,6 +136,9 @@ export default function NotificationsPanel({ onClose }: NotificationsPanelProps)
         read_at: new Date().toISOString(),
       })));
       setUnreadCount(0);
+
+      // Notify parent (Header) to update its badge
+      onMarkAllRead?.();
     } catch (err) {
       console.error('❌ Error marking all as read:', err);
     }
@@ -274,11 +300,16 @@ export default function NotificationsPanel({ onClose }: NotificationsPanelProps)
           <div className="divide-y divide-gray-800">
             {notifications.map((notification) => {
               const { Icon, color, bg, border } = getNotificationStyle(notification.type);
+              const isNew = newNotificationIds.has(notification.id);
+              const isUrgent = notification.type === 'warning' && !notification.is_read;
+
               return (
                 <div
                   key={notification.user_notification_id}
-                  className={`p-4 hover:bg-primary/30 transition-colors cursor-pointer ${
+                  className={`p-4 hover:bg-primary/30 transition-all cursor-pointer ${
                     !notification.is_read ? 'bg-blue-500/5' : ''
+                  } ${isNew ? 'animate-slide-in-right border-l-4 border-blue-500' : ''} ${
+                    isUrgent ? 'border-l-4 border-yellow-500' : ''
                   }`}
                   onClick={() => {
                     if (!notification.is_read && notification.user_notification_id) {
@@ -287,16 +318,25 @@ export default function NotificationsPanel({ onClose }: NotificationsPanelProps)
                   }}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 ${bg} border ${border} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                      <Icon className={`w-5 h-5 ${color}`} />
+                    <div
+                      className={`w-10 h-10 ${bg} border ${border} rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        isNew ? 'animate-bounce' : ''
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${color} ${isUrgent ? 'animate-pulse' : ''}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <h4 className="font-semibold text-white text-sm leading-tight">
                           {notification.title}
+                          {isNew && (
+                            <span className="ml-2 px-1.5 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded uppercase">
+                              New
+                            </span>
+                          )}
                         </h4>
                         {!notification.is_read && (
-                          <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1" />
+                          <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1 animate-pulse" />
                         )}
                       </div>
                       <p className="text-sm text-muted mb-2 line-clamp-2 leading-relaxed">

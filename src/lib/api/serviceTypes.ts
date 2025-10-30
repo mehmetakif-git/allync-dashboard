@@ -336,10 +336,10 @@ export async function updateServiceStatus(
   status: 'active' | 'maintenance' | 'inactive'
 ) {
   console.log('🔄 [updateServiceStatus] Starting...', { serviceId, status });
-  
+
   const { data, error } = await supabase
     .from('service_types')
-    .update({ 
+    .update({
       status,
       updated_at: new Date().toISOString()
     })
@@ -353,6 +353,51 @@ export async function updateServiceStatus(
   }
 
   console.log('✅ [updateServiceStatus] Success:', data);
+  return data as ServiceType;
+}
+
+// Update service content (SUPER ADMIN ONLY) - NEW!
+export async function updateServiceContent(
+  serviceId: string,
+  contentUpdates: {
+    name_en?: string;
+    name_tr?: string;
+    description_en?: string | null;
+    description_tr?: string | null;
+    short_description_en?: string | null;
+    short_description_tr?: string | null;
+    features?: any;
+    requirements_en?: string[] | null;
+    requirements_tr?: string[] | null;
+    icon?: string | null;
+    color?: string | null;
+    image_url?: string | null;
+    meta_title_en?: string | null;
+    meta_title_tr?: string | null;
+    meta_description_en?: string | null;
+    meta_description_tr?: string | null;
+    meta_keywords?: string[] | null;
+  }
+) {
+  console.log('✏️ [updateServiceContent] Starting...', { serviceId });
+  console.log('📝 [updateServiceContent] Updates:', contentUpdates);
+
+  const { data, error } = await supabase
+    .from('service_types')
+    .update({
+      ...contentUpdates,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', serviceId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('❌ [updateServiceContent] Error:', error);
+    throw error;
+  }
+
+  console.log('✅ [updateServiceContent] Success! Service updated:', data.name_en);
   return data as ServiceType;
 }
 
@@ -669,6 +714,7 @@ export default {
   
   // Status Management (NEW!)
   updateServiceStatus,
+  updateServiceContent,
   getServiceWithCompanyStats,
   getAllServicesWithStats,
   

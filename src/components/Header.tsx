@@ -1,8 +1,9 @@
 import { Menu, Bell, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import NotificationsPanel from './NotificationsPanel';
+import { getUnreadCount, subscribeToUserNotifications, unsubscribeFromNotifications } from '../lib/api/notifications';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -13,6 +14,87 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
+
+  // Fetch initial unread count
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await getUnreadCount(user.id);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error('❌ [Header] Failed to fetch unread count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+  }, [user?.id]);
+
+  // Set up real-time listener for new notifications
+  useEffect(() => {
+    if (!user?.id) return;
+
+    console.log('🔔 [Header] Setting up notification listener for user:', user.id);
+
+    const subscription = subscribeToUserNotifications(user.id, (newNotification) => {
+      console.log('🔔🔔🔔 [Header] New notification received!', newNotification);
+
+      // Update unread count
+      setUnreadCount((prev) => {
+        const newCount = prev + 1;
+        console.log('📊 [Header] Unread count updated:', prev, '->', newCount);
+        return newCount;
+      });
+
+      // Trigger bell animation
+      console.log('🔔 [Header] Triggering ring animation...');
+
+      // Force re-render by toggling state
+      setHasNewNotification(false); // First set to false
+      setTimeout(() => {
+        setHasNewNotification(true); // Then set to true (triggers animation)
+        setTimeout(() => {
+          setHasNewNotification(false); // Remove after animation completes
+          console.log('✅ [Header] Ring animation completed');
+        }, 800); // Animation duration is 0.8s
+      }, 10); // Small delay to ensure state update
+
+      // Show browser notification if permitted
+      if ('Notification' in window && Notification.permission === 'granted') {
+        console.log('💬 [Header] Showing browser notification');
+        new Notification(newNotification.title, {
+          body: newNotification.message,
+          icon: '/logo.png',
+          badge: '/logo.png',
+          tag: newNotification.id,
+        });
+      } else {
+        console.log('❌ [Header] Browser notifications not permitted:', Notification?.permission);
+      }
+    });
+
+    console.log('✅ [Header] Realtime subscription created');
+
+    return () => {
+      console.log('🔕 [Header] Cleaning up notification listener');
+      unsubscribeFromNotifications(subscription);
+    };
+  }, [user?.id]);
+
+  // Request browser notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      // Ask for permission after a short delay (better UX)
+      setTimeout(() => {
+        Notification.requestPermission().then((permission) => {
+          console.log('📢 Browser notification permission:', permission);
+        });
+      }, 2000);
+    }
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -67,14 +149,27 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="relative p-2 hover:bg-secondary rounded-lg transition-all"
             >
-              <Bell className="w-5 h-5 text-muted" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              <Bell
+                className={`w-5 h-5 transition-colors ${
+                  unreadCount > 0 ? 'text-blue-400' : 'text-muted'
+                } ${hasNewNotification ? 'animate-ring' : ''}`}
+                style={{ transformOrigin: 'top center' }}
+              />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {showNotifications && (
-              <NotificationsPanel onClose={() => setShowNotifications(false)} />
+              <NotificationsPanel
+                onClose={() => setShowNotifications(false)}
+                onNotificationRead={() => setUnreadCount((prev) => Math.max(0, prev - 1))}
+                onMarkAllRead={() => setUnreadCount(0)}
+              />
             )}
           </div>
 

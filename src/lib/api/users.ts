@@ -75,39 +75,33 @@ export async function createUser(userData: {
   role: 'company_admin' | 'user';
   language?: string;
 }) {
-  // Create auth user
-  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-    email: userData.email,
-    password: userData.password,
-    email_confirm: true,
-  });
+  console.log('👤 Creating user via Edge Function:', userData.email);
 
-  if (authError) {
-    console.error('Error creating auth user:', authError);
-    throw authError;
-  }
-
-  // Create profile
-  const { data: profileData, error: profileError } = await supabase
-    .from('profiles')
-    .insert([{
-      id: authData.user.id,
-      company_id: userData.company_id,
+  // Call create-user Edge Function (secure - uses Service Role key server-side)
+  const { data, error } = await supabase.functions.invoke('create-user', {
+    body: {
       email: userData.email,
+      password: userData.password,
       full_name: userData.full_name,
+      company_id: userData.company_id,
       role: userData.role,
       language: userData.language || 'en',
-      status: 'active',
-    }])
-    .select()
-    .single();
+    }
+  })
 
-  if (profileError) {
-    console.error('Error creating profile:', profileError);
-    throw profileError;
+  if (error) {
+    console.error('❌ Edge Function error:', error);
+    throw new Error(`Failed to create user: ${error.message}`);
   }
 
-  return profileData as User;
+  if (data.error) {
+    console.error('❌ Error from Edge Function:', data.error);
+    throw new Error(data.error);
+  }
+
+  console.log('✅ User created successfully:', data.user.id);
+
+  return data.user as User;
 }
 
 // Update user
