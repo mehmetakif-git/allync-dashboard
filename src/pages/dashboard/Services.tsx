@@ -143,7 +143,8 @@ export default function Services() {
       'google-photos-integration': 'photos',
       'google-photos': 'photos',
       'website-development': 'website',
-      'mobile-app-development': 'mobile-app'
+      'mobile-app-development': 'mobile-app',
+      'whatsapp-automation': 'whatsapp'
     };
 
     const path = slugMap[serviceSlug] || serviceSlug;
@@ -264,7 +265,8 @@ export default function Services() {
               'voice-cloning': Mic,
               'sentiment-analysis': Heart,
               'website-development': Globe,
-              'mobile-app-development': Smartphone
+              'mobile-app-development': Smartphone,
+              'whatsapp-automation': MessageCircle
             };
 
             // Get icon - use Package as fallback instead of AlertCircle

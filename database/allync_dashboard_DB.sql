@@ -31,6 +31,13 @@ CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
 
 
 
+CREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA "public";
+
+
+
+
+
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
 
 
@@ -3519,6 +3526,10 @@ CREATE TABLE IF NOT EXISTS "public"."whatsapp_sessions" (
 ALTER TABLE "public"."whatsapp_sessions" OWNER TO "postgres";
 
 
+COMMENT ON TABLE "public"."whatsapp_sessions" IS 'Duplicate trigger removed: whatsapp_sessions_updated_at';
+
+
+
 COMMENT ON COLUMN "public"."whatsapp_sessions"."last_message" IS 'Last message text for conversation preview';
 
 
@@ -3554,6 +3565,10 @@ CREATE TABLE IF NOT EXISTS "public"."whatsapp_user_profiles" (
 
 
 ALTER TABLE "public"."whatsapp_user_profiles" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."whatsapp_user_profiles" IS 'Duplicate trigger removed: whatsapp_users_updated_at';
+
 
 
 CREATE OR REPLACE VIEW "public"."whatsapp_analytics_detailed" AS
@@ -3702,6 +3717,10 @@ CREATE TABLE IF NOT EXISTS "public"."whatsapp_messages" (
 
 
 ALTER TABLE "public"."whatsapp_messages" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."whatsapp_messages" IS 'Duplicate trigger removed: whatsapp_messages_updated_at';
+
 
 
 ALTER TABLE ONLY "public"."activity_logs"
@@ -4275,6 +4294,21 @@ ALTER TABLE ONLY "public"."website_projects"
 
 ALTER TABLE ONLY "public"."whatsapp_instances"
     ADD CONSTRAINT "unique_company_whatsapp_phone" UNIQUE ("company_id", "phone_number");
+
+
+
+ALTER TABLE ONLY "public"."whatsapp_hourly_metrics"
+    ADD CONSTRAINT "unique_whatsapp_hourly_metrics_company_hour" UNIQUE ("company_id", "metric_hour");
+
+
+
+ALTER TABLE ONLY "public"."whatsapp_instances"
+    ADD CONSTRAINT "unique_whatsapp_instance_id" UNIQUE ("instance_id");
+
+
+
+ALTER TABLE ONLY "public"."whatsapp_metrics"
+    ADD CONSTRAINT "unique_whatsapp_metrics_company_date" UNIQUE ("company_id", "metric_date");
 
 
 
@@ -5460,6 +5494,22 @@ CREATE INDEX "idx_website_projects_status" ON "public"."website_projects" USING 
 
 
 
+CREATE INDEX "idx_whatsapp_errors_company" ON "public"."whatsapp_errors" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_whatsapp_errors_error_details" ON "public"."whatsapp_errors" USING "gin" ("error_details");
+
+
+
+CREATE INDEX "idx_whatsapp_errors_is_resolved" ON "public"."whatsapp_errors" USING "btree" ("is_resolved") WHERE ("is_resolved" = false);
+
+
+
+CREATE INDEX "idx_whatsapp_errors_severity" ON "public"."whatsapp_errors" USING "btree" ("severity");
+
+
+
 CREATE INDEX "idx_whatsapp_hourly_company" ON "public"."whatsapp_hourly_metrics" USING "btree" ("company_id");
 
 
@@ -5469,6 +5519,26 @@ CREATE INDEX "idx_whatsapp_hourly_company_hour" ON "public"."whatsapp_hourly_met
 
 
 CREATE INDEX "idx_whatsapp_hourly_hour" ON "public"."whatsapp_hourly_metrics" USING "btree" ("metric_hour" DESC);
+
+
+
+CREATE INDEX "idx_whatsapp_hourly_metrics_company_id" ON "public"."whatsapp_hourly_metrics" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_whatsapp_hourly_metrics_hour" ON "public"."whatsapp_hourly_metrics" USING "btree" ("metric_hour" DESC);
+
+
+
+CREATE INDEX "idx_whatsapp_hourly_metrics_intents" ON "public"."whatsapp_hourly_metrics" USING "gin" ("intents");
+
+
+
+CREATE INDEX "idx_whatsapp_hourly_metrics_metadata" ON "public"."whatsapp_hourly_metrics" USING "gin" ("metadata");
+
+
+
+CREATE INDEX "idx_whatsapp_instances_ai_settings" ON "public"."whatsapp_instances" USING "gin" ("ai_settings");
 
 
 
@@ -5488,7 +5558,15 @@ CREATE INDEX "idx_whatsapp_instances_instance_id" ON "public"."whatsapp_instance
 
 
 
+CREATE INDEX "idx_whatsapp_instances_settings" ON "public"."whatsapp_instances" USING "gin" ("settings");
+
+
+
 CREATE INDEX "idx_whatsapp_instances_status" ON "public"."whatsapp_instances" USING "btree" ("status");
+
+
+
+CREATE INDEX "idx_whatsapp_instances_type" ON "public"."whatsapp_instances" USING "btree" ("instance_type");
 
 
 
@@ -5505,6 +5583,18 @@ CREATE INDEX "idx_whatsapp_messages_company_id" ON "public"."whatsapp_messages" 
 
 
 CREATE INDEX "idx_whatsapp_messages_created" ON "public"."whatsapp_messages" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_whatsapp_messages_created_at" ON "public"."whatsapp_messages" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_whatsapp_messages_message_body_trgm" ON "public"."whatsapp_messages" USING "gin" ("message_body" "public"."gin_trgm_ops");
+
+
+
+CREATE INDEX "idx_whatsapp_messages_message_type" ON "public"."whatsapp_messages" USING "btree" ("message_type");
 
 
 
@@ -5532,6 +5622,10 @@ CREATE INDEX "idx_whatsapp_metrics_company" ON "public"."whatsapp_metrics" USING
 
 
 
+CREATE INDEX "idx_whatsapp_metrics_company_id" ON "public"."whatsapp_metrics" USING "btree" ("company_id");
+
+
+
 CREATE INDEX "idx_whatsapp_metrics_date" ON "public"."whatsapp_metrics" USING "btree" ("metric_date" DESC);
 
 
@@ -5552,7 +5646,19 @@ CREATE INDEX "idx_whatsapp_sessions_company_id" ON "public"."whatsapp_sessions" 
 
 
 
+CREATE INDEX "idx_whatsapp_sessions_context" ON "public"."whatsapp_sessions" USING "gin" ("context");
+
+
+
+CREATE INDEX "idx_whatsapp_sessions_last_message_time" ON "public"."whatsapp_sessions" USING "btree" ("last_message_time" DESC);
+
+
+
 CREATE INDEX "idx_whatsapp_sessions_start" ON "public"."whatsapp_sessions" USING "btree" ("session_start" DESC);
+
+
+
+CREATE INDEX "idx_whatsapp_sessions_status" ON "public"."whatsapp_sessions" USING "btree" ("status");
 
 
 
@@ -5568,7 +5674,31 @@ CREATE INDEX "idx_whatsapp_user_profiles_company_id" ON "public"."whatsapp_user_
 
 
 
+CREATE INDEX "idx_whatsapp_user_profiles_company_phone" ON "public"."whatsapp_user_profiles" USING "btree" ("company_id", "phone_number");
+
+
+
+CREATE INDEX "idx_whatsapp_user_profiles_last_seen" ON "public"."whatsapp_user_profiles" USING "btree" ("last_seen" DESC);
+
+
+
+CREATE INDEX "idx_whatsapp_user_profiles_name_trgm" ON "public"."whatsapp_user_profiles" USING "gin" ("name" "public"."gin_trgm_ops");
+
+
+
 CREATE INDEX "idx_whatsapp_user_profiles_phone" ON "public"."whatsapp_user_profiles" USING "btree" ("company_id", "phone_number");
+
+
+
+CREATE INDEX "idx_whatsapp_user_profiles_preferences" ON "public"."whatsapp_user_profiles" USING "gin" ("preferences");
+
+
+
+CREATE INDEX "idx_whatsapp_user_profiles_status" ON "public"."whatsapp_user_profiles" USING "btree" ("customer_status");
+
+
+
+CREATE INDEX "idx_whatsapp_user_profiles_tags" ON "public"."whatsapp_user_profiles" USING "gin" ("tags");
 
 
 
@@ -5773,18 +5903,6 @@ CREATE OR REPLACE TRIGGER "update_whatsapp_user_profiles_updated_at" BEFORE UPDA
 
 
 CREATE OR REPLACE TRIGGER "user_invites_updated_at" BEFORE UPDATE ON "public"."user_invites" FOR EACH ROW EXECUTE FUNCTION "public"."update_user_invites_updated_at"();
-
-
-
-CREATE OR REPLACE TRIGGER "whatsapp_messages_updated_at" BEFORE UPDATE ON "public"."whatsapp_messages" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
-
-
-
-CREATE OR REPLACE TRIGGER "whatsapp_sessions_updated_at" BEFORE UPDATE ON "public"."whatsapp_sessions" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
-
-
-
-CREATE OR REPLACE TRIGGER "whatsapp_users_updated_at" BEFORE UPDATE ON "public"."whatsapp_user_profiles" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 
 
 
@@ -7575,22 +7693,160 @@ CREATE POLICY "users_update_own_notifications" ON "public"."user_notifications" 
 ALTER TABLE "public"."whatsapp_errors" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "whatsapp_errors_insert" ON "public"."whatsapp_errors" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_errors"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_errors_select" ON "public"."whatsapp_errors" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_errors"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_errors_update" ON "public"."whatsapp_errors" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
 ALTER TABLE "public"."whatsapp_hourly_metrics" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "whatsapp_hourly_metrics_insert" ON "public"."whatsapp_hourly_metrics" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+CREATE POLICY "whatsapp_hourly_metrics_select" ON "public"."whatsapp_hourly_metrics" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_hourly_metrics"."company_id"))))));
+
 
 
 ALTER TABLE "public"."whatsapp_instances" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "whatsapp_instances_delete" ON "public"."whatsapp_instances" FOR DELETE USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+COMMENT ON POLICY "whatsapp_instances_delete" ON "public"."whatsapp_instances" IS 'Only super admins can delete WhatsApp instances';
+
+
+
+CREATE POLICY "whatsapp_instances_insert" ON "public"."whatsapp_instances" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+COMMENT ON POLICY "whatsapp_instances_insert" ON "public"."whatsapp_instances" IS 'Only super admins can create WhatsApp instances';
+
+
+
+CREATE POLICY "whatsapp_instances_select" ON "public"."whatsapp_instances" FOR SELECT USING (((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))) OR (EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."company_id" = "whatsapp_instances"."company_id") AND ("profiles"."role" = ANY (ARRAY['company_admin'::"text", 'company_user'::"text"])))))));
+
+
+
+COMMENT ON POLICY "whatsapp_instances_select" ON "public"."whatsapp_instances" IS 'Super admins see all, company users see their own';
+
+
+
+CREATE POLICY "whatsapp_instances_update" ON "public"."whatsapp_instances" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+COMMENT ON POLICY "whatsapp_instances_update" ON "public"."whatsapp_instances" IS 'Only super admins can update WhatsApp instances';
+
+
+
 ALTER TABLE "public"."whatsapp_messages" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "whatsapp_messages_insert" ON "public"."whatsapp_messages" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_messages"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_messages_select" ON "public"."whatsapp_messages" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_messages"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_messages_update" ON "public"."whatsapp_messages" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_messages"."company_id"))))));
+
 
 
 ALTER TABLE "public"."whatsapp_metrics" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "whatsapp_metrics_insert" ON "public"."whatsapp_metrics" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+CREATE POLICY "whatsapp_metrics_select" ON "public"."whatsapp_metrics" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_metrics"."company_id"))))));
+
+
+
 ALTER TABLE "public"."whatsapp_sessions" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "whatsapp_sessions_insert" ON "public"."whatsapp_sessions" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_sessions"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_sessions_select" ON "public"."whatsapp_sessions" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_sessions"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_sessions_update" ON "public"."whatsapp_sessions" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_sessions"."company_id"))))));
+
+
+
 ALTER TABLE "public"."whatsapp_user_profiles" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "whatsapp_user_profiles_insert" ON "public"."whatsapp_user_profiles" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_user_profiles"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_user_profiles_select" ON "public"."whatsapp_user_profiles" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_user_profiles"."company_id"))))));
+
+
+
+CREATE POLICY "whatsapp_user_profiles_update" ON "public"."whatsapp_user_profiles" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND (("profiles"."role" = 'super_admin'::"text") OR ("profiles"."company_id" = "whatsapp_user_profiles"."company_id"))))));
+
 
 
 
@@ -7630,6 +7886,20 @@ GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_in"("cstring") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_in"("cstring") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_in"("cstring") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_in"("cstring") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_out"("public"."gtrgm") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_out"("public"."gtrgm") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_out"("public"."gtrgm") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_out"("public"."gtrgm") TO "service_role";
 
 
 
@@ -7903,6 +8173,97 @@ GRANT ALL ON FUNCTION "public"."get_upcoming_maintenance"("limit_count" integer)
 
 
 
+GRANT ALL ON FUNCTION "public"."gin_extract_query_trgm"("text", "internal", smallint, "internal", "internal", "internal", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gin_extract_query_trgm"("text", "internal", smallint, "internal", "internal", "internal", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gin_extract_query_trgm"("text", "internal", smallint, "internal", "internal", "internal", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gin_extract_query_trgm"("text", "internal", smallint, "internal", "internal", "internal", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gin_extract_value_trgm"("text", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gin_extract_value_trgm"("text", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gin_extract_value_trgm"("text", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gin_extract_value_trgm"("text", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gin_trgm_consistent"("internal", smallint, "text", integer, "internal", "internal", "internal", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gin_trgm_consistent"("internal", smallint, "text", integer, "internal", "internal", "internal", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gin_trgm_consistent"("internal", smallint, "text", integer, "internal", "internal", "internal", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gin_trgm_consistent"("internal", smallint, "text", integer, "internal", "internal", "internal", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gin_trgm_triconsistent"("internal", smallint, "text", integer, "internal", "internal", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gin_trgm_triconsistent"("internal", smallint, "text", integer, "internal", "internal", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gin_trgm_triconsistent"("internal", smallint, "text", integer, "internal", "internal", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gin_trgm_triconsistent"("internal", smallint, "text", integer, "internal", "internal", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_compress"("internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_compress"("internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_compress"("internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_compress"("internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_consistent"("internal", "text", smallint, "oid", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_consistent"("internal", "text", smallint, "oid", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_consistent"("internal", "text", smallint, "oid", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_consistent"("internal", "text", smallint, "oid", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_decompress"("internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_decompress"("internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_decompress"("internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_decompress"("internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_distance"("internal", "text", smallint, "oid", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_distance"("internal", "text", smallint, "oid", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_distance"("internal", "text", smallint, "oid", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_distance"("internal", "text", smallint, "oid", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_options"("internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_options"("internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_options"("internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_options"("internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_penalty"("internal", "internal", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_penalty"("internal", "internal", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_penalty"("internal", "internal", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_penalty"("internal", "internal", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_picksplit"("internal", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_picksplit"("internal", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_picksplit"("internal", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_picksplit"("internal", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_same"("public"."gtrgm", "public"."gtrgm", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_same"("public"."gtrgm", "public"."gtrgm", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_same"("public"."gtrgm", "public"."gtrgm", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_same"("public"."gtrgm", "public"."gtrgm", "internal") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."gtrgm_union"("internal", "internal") TO "postgres";
+GRANT ALL ON FUNCTION "public"."gtrgm_union"("internal", "internal") TO "anon";
+GRANT ALL ON FUNCTION "public"."gtrgm_union"("internal", "internal") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."gtrgm_union"("internal", "internal") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
@@ -7927,9 +8288,86 @@ GRANT ALL ON FUNCTION "public"."set_invoice_payment_gateway"() TO "service_role"
 
 
 
+GRANT ALL ON FUNCTION "public"."set_limit"(real) TO "postgres";
+GRANT ALL ON FUNCTION "public"."set_limit"(real) TO "anon";
+GRANT ALL ON FUNCTION "public"."set_limit"(real) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."set_limit"(real) TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."set_payment_gateway_by_country"() TO "anon";
 GRANT ALL ON FUNCTION "public"."set_payment_gateway_by_country"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."set_payment_gateway_by_country"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."show_limit"() TO "postgres";
+GRANT ALL ON FUNCTION "public"."show_limit"() TO "anon";
+GRANT ALL ON FUNCTION "public"."show_limit"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."show_limit"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."show_trgm"("text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."show_trgm"("text") TO "anon";
+GRANT ALL ON FUNCTION "public"."show_trgm"("text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."show_trgm"("text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."similarity"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."similarity"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."similarity"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."similarity"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."similarity_dist"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."similarity_dist"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."similarity_dist"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."similarity_dist"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."similarity_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."similarity_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."similarity_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."similarity_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."strict_word_similarity"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_commutator_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_commutator_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_commutator_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_commutator_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_commutator_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_commutator_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_commutator_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_commutator_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_dist_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."strict_word_similarity_op"("text", "text") TO "service_role";
 
 
 
@@ -8032,6 +8470,41 @@ GRANT ALL ON FUNCTION "public"."update_user_invites_updated_at"() TO "service_ro
 GRANT ALL ON FUNCTION "public"."validate_usd_only"() TO "anon";
 GRANT ALL ON FUNCTION "public"."validate_usd_only"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."validate_usd_only"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."word_similarity"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."word_similarity"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."word_similarity"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."word_similarity"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."word_similarity_commutator_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."word_similarity_commutator_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."word_similarity_commutator_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."word_similarity_commutator_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_commutator_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_commutator_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_commutator_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_commutator_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."word_similarity_dist_op"("text", "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."word_similarity_op"("text", "text") TO "postgres";
+GRANT ALL ON FUNCTION "public"."word_similarity_op"("text", "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."word_similarity_op"("text", "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."word_similarity_op"("text", "text") TO "service_role";
 
 
 

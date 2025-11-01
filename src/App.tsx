@@ -28,6 +28,7 @@ import ActivityLogs from './pages/admin/ActivityLogs';
 // Service Management Pages (Super Admin Only)
 import WebsiteServiceManagement from './pages/admin/services/WebsiteServiceManagement';
 import MobileAppServiceManagement from './pages/admin/services/MobileAppServiceManagement';
+import WhatsAppServiceManagement from './pages/admin/services/WhatsAppServiceManagement';
 
 // Company/User Pages
 import CompanyAdminDashboard from './pages/dashboard/CompanyAdminDashboard';
@@ -39,6 +40,7 @@ import Settings from './pages/dashboard/Settings';
 // Service Pages (Company/User)
 import WebsiteDevelopment from './pages/dashboard/services/WebsiteDevelopment';
 import MobileAppDevelopment from './pages/dashboard/services/MobileAppDevelopment';
+import WhatsAppService from './pages/dashboard/services/WhatsAppService';
 
 export default function App() {
   return (
@@ -76,6 +78,7 @@ export default function App() {
               <Route path="services-catalog" element={<ServicesCatalog />} />
               <Route path="services/website-development" element={<WebsiteServiceManagement />} />
               <Route path="services/mobile-app-development" element={<MobileAppServiceManagement />} />
+              <Route path="services/whatsapp-automation" element={<WhatsAppServiceManagement />} />
               
               {/* Management */}
               <Route path="notifications" element={<NotificationsManagement />} />
@@ -108,6 +111,7 @@ export default function App() {
               {/* Service Pages - with serviceId parameter to support multiple instances */}
               <Route path="services/website/:serviceId" element={<WebsiteDevelopment />} />
               <Route path="services/mobile-app/:serviceId" element={<MobileAppDevelopment />} />
+              <Route path="services/whatsapp/:serviceId" element={<WhatsAppService />} />
             </Route>
 
             {/* Redirects */}

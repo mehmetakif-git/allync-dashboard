@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Zap, MessageCircle, Globe, Smartphone, Building2, Users, UserPlus, Receipt, DollarSign, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
+import { Home, Zap, MessageCircle, MessageSquare, Globe, Smartphone, Building2, Users, UserPlus, Receipt, DollarSign, Bell, Settings, Activity, AlertTriangle, LogOut, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -79,7 +79,7 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
       badgeColor: 'orange'
     },
 
-    // Service Management (Website & Mobile App Only)
+    // Service Management (Website, Mobile App & WhatsApp)
     { type: 'divider', dividerLabel: 'SERVICE MANAGEMENT', id: 'divider-service-mgmt', label: '', icon: null, path: '' },
     {
       id: 'website',
@@ -96,6 +96,14 @@ export default function SuperAdminSidebar({ isOpen, onClose }: SuperAdminSidebar
       path: '/admin/services/mobile-app-development',
       badge: stats?.mobileAppPendingCount || undefined,
       badgeColor: 'yellow'
+    },
+    {
+      id: 'whatsapp',
+      label: 'WhatsApp Automation',
+      icon: MessageSquare,
+      path: '/admin/services/whatsapp-automation',
+      badge: undefined,
+      badgeColor: 'green'
     },
 
     // User Management

@@ -337,8 +337,8 @@ export default function ServicesCatalog() {
                   </div>
                 </div>
 
-                {/* Only show Manage button for Website and Mobile App */}
-                {(service.slug === 'website-development' || service.slug === 'mobile-app-development') ? (
+                {/* Only show Manage button for Website, Mobile App, and WhatsApp */}
+                {(service.slug === 'website-development' || service.slug === 'mobile-app-development' || service.slug === 'whatsapp-automation') ? (
                   <button
                     onClick={() => navigateToManagement(service.slug)}
                     className={`w-full px-6 py-3 bg-gradient-to-r ${colorGradient} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 mb-4`}
