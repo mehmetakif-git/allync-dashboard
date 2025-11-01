@@ -106,14 +106,16 @@ export async function getAllWhatsappInstancesWithStats(): Promise<WhatsAppInstan
         .eq('company_id', instance.company_id)
         .eq('is_active', true);
 
-      // Get today's messages count
-      const today = new Date().toISOString().split('T')[0];
-      const { data: metricsData } = await supabase
-        .from('whatsapp_metrics')
-        .select('total_messages')
+      // Get today's messages count from whatsapp_messages
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayISO = today.toISOString();
+
+      const { count: todayMessages } = await supabase
+        .from('whatsapp_messages')
+        .select('*', { count: 'exact', head: true })
         .eq('company_id', instance.company_id)
-        .eq('metric_date', today)
-        .maybeSingle();
+        .gte('created_at', todayISO);
 
       // Get total users count
       const { count: totalUsers } = await supabase
@@ -132,7 +134,7 @@ export async function getAllWhatsappInstancesWithStats(): Promise<WhatsAppInstan
         ...instance,
         stats: {
           active_sessions: activeSessions || 0,
-          today_messages: metricsData?.total_messages || 0,
+          today_messages: todayMessages || 0,
           total_users: totalUsers || 0,
           error_count: errorCount || 0,
         },

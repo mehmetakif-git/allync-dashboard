@@ -13,8 +13,6 @@ import { getCompanyServiceRequests, approveServiceRequest, rejectServiceRequest 
 import { getCompanyServices, deleteCompanyService } from '../../lib/api/companyServices';
 import { useAuth } from '../../contexts/AuthContext';
 import WhatsAppSettingsModal from '../../components/modals/WhatsAppSettingsModal';
-import InstagramSettingsModal from '../../components/modals/InstagramSettingsModal';
-import GoogleServiceSettingsModal from '../../components/modals/GoogleServiceSettingsModal';
 import WebsiteSettingsModal from '../../components/modals/WebsiteSettingsModal';
 import MobileAppSettingsModal from '../../components/modals/MobileAppSettingsModal';
 import EditCompanyModal from '../../components/modals/EditCompanyModal';

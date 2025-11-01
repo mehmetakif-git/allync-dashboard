@@ -12,20 +12,31 @@ import {
   Clock,
   Phone,
   RefreshCw,
+  AlertTriangle,
+  Calendar,
+  FileSpreadsheet,
+  Link as LinkIcon,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import { getWhatsappInstanceByCompanyService } from '../../../lib/api/whatsappInstances';
 import { getSessionsByCompany } from '../../../lib/api/whatsappSessions';
 import { getUserProfiles, type WhatsAppUserProfile } from '../../../lib/api/whatsappUserProfiles';
+import { getErrors, type WhatsAppError } from '../../../lib/api/whatsappErrors';
+import { getCalendarInstances, type CalendarInstance } from '../../../lib/api/calendarInstances';
+import { getSheetsWithWhatsAppIntegration, type SheetsInstance } from '../../../lib/api/sheetsInstances';
+import { getCompanyServices } from '../../../lib/api/companyServices';
 import type { WhatsAppInstance, WhatsAppSession } from '../../../types/whatsapp';
 import ConversationDetail from '../../../components/whatsapp/ConversationDetail';
 import AnalyticsDashboard from '../../../components/whatsapp/AnalyticsDashboard';
 import { formatPhoneNumber, formatMessageTime } from '../../../lib/utils/whatsappFormatters';
 import * as XLSX from 'xlsx';
+import { Wrench } from 'lucide-react';
 
-type TabType = 'conversations' | 'analytics' | 'users' | 'settings';
+type TabType = 'conversations' | 'analytics' | 'users' | 'integrations' | 'errors' | 'settings';
 type ConversationFilter = 'all' | 'active' | 'closed';
+type ErrorFilter = 'all' | 'unresolved' | 'critical';
 
 export default function WhatsAppService() {
   const { user } = useAuth();
@@ -38,6 +49,7 @@ export default function WhatsAppService() {
   const [instance, setInstance] = useState<WhatsAppInstance | null>(null);
   const [sessions, setSessions] = useState<WhatsAppSession[]>([]);
   const [userProfiles, setUserProfiles] = useState<WhatsAppUserProfile[]>([]);
+  const [companyServices, setCompanyServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,9 +62,22 @@ export default function WhatsAppService() {
   const [userSearch, setUserSearch] = useState('');
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // Errors state
+  const [errors, setErrors] = useState<WhatsAppError[]>([]);
+  const [errorFilter, setErrorFilter] = useState<ErrorFilter>('unresolved');
+  const [errorSearch, setErrorSearch] = useState('');
+  const [loadingErrors, setLoadingErrors] = useState(false);
+
+  // Integrations state
+  const [calendarInstances, setCalendarInstances] = useState<CalendarInstance[]>([]);
+  const [sheetsInstances, setSheetsInstances] = useState<SheetsInstance[]>([]);
+  const [loadingIntegrations, setLoadingIntegrations] = useState(false);
+
   // Refresh states
   const [refreshingConversations, setRefreshingConversations] = useState(false);
   const [refreshingUsers, setRefreshingUsers] = useState(false);
+  const [refreshingErrors, setRefreshingErrors] = useState(false);
+  const [refreshingIntegrations, setRefreshingIntegrations] = useState(false);
 
   // Fetch conversations
   const fetchConversations = async () => {
@@ -84,6 +109,49 @@ export default function WhatsAppService() {
     }
   };
 
+  // Fetch errors
+  const fetchErrors = async () => {
+    if (!user?.company_id) return;
+    try {
+      setRefreshingErrors(true);
+      const filters: any = {};
+
+      if (errorFilter === 'unresolved') {
+        filters.isResolved = false;
+      } else if (errorFilter === 'critical') {
+        filters.isResolved = false;
+        filters.severity = ['high', 'critical'];
+      }
+
+      const errorsData = await getErrors(user.company_id, filters);
+      setErrors(errorsData);
+      console.log('✅ Errors refreshed');
+    } catch (err) {
+      console.error('❌ Error refreshing errors:', err);
+    } finally {
+      setRefreshingErrors(false);
+    }
+  };
+
+  // Fetch integrations
+  const fetchIntegrations = async () => {
+    if (!user?.company_id) return;
+    try {
+      setRefreshingIntegrations(true);
+      const [calendars, sheets] = await Promise.all([
+        getCalendarInstances(user.company_id),
+        getSheetsWithWhatsAppIntegration(user.company_id),
+      ]);
+      setCalendarInstances(calendars);
+      setSheetsInstances(sheets);
+      console.log('✅ Integrations refreshed');
+    } catch (err) {
+      console.error('❌ Error refreshing integrations:', err);
+    } finally {
+      setRefreshingIntegrations(false);
+    }
+  };
+
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
@@ -96,6 +164,10 @@ export default function WhatsAppService() {
       try {
         setLoading(true);
         console.log('📡 Fetching WhatsApp data for service:', serviceId);
+
+        // Get company services to check maintenance status
+        const servicesData = await getCompanyServices(user.company_id);
+        setCompanyServices(servicesData || []);
 
         // Get WhatsApp instance
         const instanceData = await getWhatsappInstanceByCompanyService(serviceId);
@@ -120,13 +192,13 @@ export default function WhatsAppService() {
 
   // Real-time subscription for conversations
   useEffect(() => {
-    if (!user?.company_id) return;
+    if (!user?.company_id || !instance) return;
 
-    console.log('🔔 Setting up real-time subscription for sessions');
+    console.log('🔔 Setting up real-time subscription for sessions and messages');
 
     // Subscribe to sessions table changes
-    const sessionsSubscription = supabase
-      .channel(`sessions-${user.company_id}`)
+    const sessionsChannel = supabase
+      .channel(`whatsapp-sessions-${user.company_id}`)
       .on(
         'postgres_changes',
         {
@@ -141,11 +213,13 @@ export default function WhatsAppService() {
           fetchConversations();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Sessions subscription status:', status);
+      });
 
     // Subscribe to messages table changes (to update unread counts)
-    const messagesSubscription = supabase
-      .channel(`messages-${user.company_id}`)
+    const messagesChannel = supabase
+      .channel(`whatsapp-messages-${user.company_id}`)
       .on(
         'postgres_changes',
         {
@@ -159,21 +233,39 @@ export default function WhatsAppService() {
           fetchConversations();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Messages subscription status:', status);
+      });
 
     // Cleanup subscriptions on unmount
     return () => {
       console.log('🔕 Cleaning up real-time subscriptions');
-      sessionsSubscription.unsubscribe();
-      messagesSubscription.unsubscribe();
+      supabase.removeChannel(sessionsChannel);
+      supabase.removeChannel(messagesChannel);
     };
-  }, [user?.company_id]);
+  }, [user?.company_id, instance]);
 
   // Fetch user profiles when users tab is active
   useEffect(() => {
     if (activeTab === 'users' && user?.company_id && userProfiles.length === 0) {
       setLoadingUsers(true);
       fetchUserProfiles().finally(() => setLoadingUsers(false));
+    }
+  }, [activeTab, user?.company_id]);
+
+  // Fetch errors when errors tab is active
+  useEffect(() => {
+    if (activeTab === 'errors' && user?.company_id) {
+      setLoadingErrors(true);
+      fetchErrors().finally(() => setLoadingErrors(false));
+    }
+  }, [activeTab, user?.company_id, errorFilter]);
+
+  // Fetch integrations when integrations tab is active
+  useEffect(() => {
+    if (activeTab === 'integrations' && user?.company_id) {
+      setLoadingIntegrations(true);
+      fetchIntegrations().finally(() => setLoadingIntegrations(false));
     }
   }, [activeTab, user?.company_id]);
 
@@ -202,6 +294,18 @@ export default function WhatsAppService() {
     const phoneMatch = user.phone_number.includes(searchLower);
     return nameMatch || phoneMatch;
   });
+
+  // Filter errors
+  const filteredErrors = errors.filter((error) => {
+    if (!errorSearch) return true;
+    const searchLower = errorSearch.toLowerCase();
+    const typeMatch = error.error_type?.toLowerCase().includes(searchLower);
+    const messageMatch = error.error_message?.toLowerCase().includes(searchLower);
+    return typeMatch || messageMatch;
+  });
+
+  const unresolvedErrors = errors.filter((e) => !e.is_resolved).length;
+  const criticalErrors = errors.filter((e) => !e.is_resolved && (e.severity === 'high' || e.severity === 'critical')).length;
 
   // Export conversations to Excel
   const exportConversationsToExcel = () => {
@@ -245,6 +349,25 @@ export default function WhatsAppService() {
     XLSX.writeFile(workbook, `whatsapp-users-${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
+  // Export errors to Excel
+  const exportErrorsToExcel = () => {
+    const data = filteredErrors.map((error) => ({
+      'Error Type': error.error_type,
+      'Message': error.error_message,
+      'Severity': error.severity.toUpperCase(),
+      'Status': error.is_resolved ? 'Resolved' : 'Unresolved',
+      'Created At': new Date(error.created_at).toLocaleString(),
+      'Resolved At': error.resolved_at
+        ? new Date(error.resolved_at).toLocaleString()
+        : 'N/A',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Errors');
+    XLSX.writeFile(workbook, `whatsapp-errors-${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -272,6 +395,55 @@ export default function WhatsAppService() {
             >
               Retry
             </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check maintenance mode
+  const currentServiceInstance = companyServices.find(
+    (cs: any) => cs.id === serviceId
+  );
+
+  const isGloballyInMaintenance = currentServiceInstance?.service_type?.status === 'maintenance';
+  const isInstanceInMaintenance = currentServiceInstance?.status === 'maintenance';
+  const isInMaintenance = isGloballyInMaintenance || isInstanceInMaintenance;
+  const maintenanceReason = currentServiceInstance?.metadata?.maintenance_reason ||
+    (isGloballyInMaintenance ? 'This service is temporarily unavailable for all users.' : undefined);
+
+  // Super admin can always access the service
+  const isSuperAdmin = user?.role === 'super_admin';
+
+  // Maintenance mode - Show ONLY for company_admin (NOT for super_admin)
+  if (isInMaintenance && !isSuperAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-8">
+        <div className="max-w-2xl mx-auto mt-12">
+          <div className="bg-orange-500/10 border-2 border-orange-500/50 rounded-xl p-8 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-24 h-24 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <Wrench className="w-12 h-12 text-orange-400" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-orange-400 mb-3">🔧 Service Under Maintenance</h2>
+                <p className="text-orange-300/80 text-lg mb-4">
+                  WhatsApp service is temporarily unavailable
+                </p>
+                {maintenanceReason && (
+                  <div className="bg-orange-500/5 border border-orange-500/20 rounded-lg p-4 mb-4">
+                    <p className="text-orange-200/90 text-sm font-medium mb-1">Maintenance Reason:</p>
+                    <p className="text-orange-300/70 text-sm">{maintenanceReason}</p>
+                  </div>
+                )}
+                <p className="text-orange-200/60 text-sm">
+                  We're working on improvements. Please check back shortly.
+                </p>
+                <p className="text-orange-200/50 text-xs mt-3">
+                  Your conversation data is safe and will be available once maintenance is complete.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -395,6 +567,35 @@ export default function WhatsAppService() {
             Users
             {activeTab === 'users' && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('integrations')}
+            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
+              activeTab === 'integrations' ? 'text-blue-400' : 'text-muted hover:text-white'
+            }`}
+          >
+            <LinkIcon className="w-4 h-4" />
+            Integrations
+            {activeTab === 'integrations' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('errors')}
+            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
+              activeTab === 'errors' ? 'text-red-400' : 'text-muted hover:text-white'
+            }`}
+          >
+            <AlertTriangle className="w-4 h-4" />
+            Errors
+            {unresolvedErrors > 0 && (
+              <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                {unresolvedErrors}
+              </span>
+            )}
+            {activeTab === 'errors' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-400" />
             )}
           </button>
           <button
@@ -781,6 +982,442 @@ export default function WhatsAppService() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ========== ERRORS TAB ========== */}
+        {activeTab === 'errors' && (
+          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-secondary/50">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">WhatsApp Errors</h3>
+                  <p className="text-sm text-muted">
+                    {filteredErrors.length} error{filteredErrors.length !== 1 ? 's' : ''} found
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={fetchErrors}
+                    disabled={refreshingErrors}
+                    className="p-2 hover:bg-white/5 rounded-lg transition-colors group disabled:opacity-50"
+                    title="Refresh errors"
+                  >
+                    <RefreshCw className={`w-4 h-4 text-muted group-hover:text-red-400 ${refreshingErrors ? 'animate-spin' : ''}`} />
+                  </button>
+                  <button
+                    onClick={exportErrorsToExcel}
+                    disabled={filteredErrors.length === 0}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Download className="w-4 h-4" />
+                    Export to Excel
+                  </button>
+                </div>
+              </div>
+
+              {/* Search */}
+              <div className="relative mb-3">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+                <input
+                  type="text"
+                  placeholder="Search errors..."
+                  value={errorSearch}
+                  onChange={(e) => setErrorSearch(e.target.value)}
+                  className="w-full bg-secondary/50 border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                />
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setErrorFilter('unresolved')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    errorFilter === 'unresolved'
+                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30 shadow-lg shadow-orange-500/10'
+                      : 'bg-secondary/30 text-muted hover:bg-secondary/50 hover:text-white border border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-1.5">
+                    <div className={`w-2 h-2 rounded-full ${errorFilter === 'unresolved' ? 'bg-orange-400 animate-pulse' : 'bg-muted'}`} />
+                    <span>Unresolved</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                      errorFilter === 'unresolved' ? 'bg-orange-500/30' : 'bg-white/10'
+                    }`}>
+                      {unresolvedErrors}
+                    </span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setErrorFilter('critical')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    errorFilter === 'critical'
+                      ? 'bg-red-500/20 text-red-400 border border-red-500/30 shadow-lg shadow-red-500/10'
+                      : 'bg-secondary/30 text-muted hover:bg-secondary/50 hover:text-white border border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-1.5">
+                    <AlertTriangle className={`w-3 h-3 ${errorFilter === 'critical' ? 'text-red-400' : 'text-muted'}`} />
+                    <span>Critical</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                      errorFilter === 'critical' ? 'bg-red-500/30' : 'bg-white/10'
+                    }`}>
+                      {criticalErrors}
+                    </span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setErrorFilter('all')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    errorFilter === 'all'
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/10'
+                      : 'bg-secondary/30 text-muted hover:bg-secondary/50 hover:text-white border border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-1.5">
+                    <div className={`w-2 h-2 rounded-full ${errorFilter === 'all' ? 'bg-blue-400' : 'bg-muted'}`} />
+                    <span>All</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                      errorFilter === 'all' ? 'bg-blue-500/30' : 'bg-white/10'
+                    }`}>
+                      {errors.length}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Errors List */}
+            <div className="p-6 overflow-y-auto max-h-[calc(100vh-360px)]">
+              {loadingErrors ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
+                </div>
+              ) : filteredErrors.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${
+                    errorFilter === 'critical' ? 'bg-red-500/10' :
+                    errorFilter === 'unresolved' ? 'bg-orange-500/10' :
+                    'bg-blue-500/10'
+                  }`}>
+                    <AlertTriangle className={`w-8 h-8 ${
+                      errorFilter === 'critical' ? 'text-red-400' :
+                      errorFilter === 'unresolved' ? 'text-orange-400' :
+                      'text-blue-400'
+                    }`} />
+                  </div>
+                  <p className="text-white font-medium mb-2">
+                    {errorSearch ? 'No errors found' :
+                     errorFilter === 'critical' ? 'No critical errors' :
+                     errorFilter === 'unresolved' ? 'No unresolved errors' :
+                     'No errors logged'}
+                  </p>
+                  <p className="text-muted text-sm max-w-xs mx-auto">
+                    {errorSearch
+                      ? 'Try a different search term or filter'
+                      : errorFilter === 'critical'
+                      ? 'All critical errors have been resolved'
+                      : errorFilter === 'unresolved'
+                      ? 'All errors have been resolved'
+                      : 'No errors have been logged for this WhatsApp instance'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-3">
+                  {filteredErrors.map((error) => (
+                    <div
+                      key={error.id}
+                      className={`bg-secondary/30 border rounded-lg p-4 hover:bg-secondary/50 transition-colors ${
+                        error.severity === 'critical' ? 'border-red-500/30' :
+                        error.severity === 'high' ? 'border-orange-500/30' :
+                        error.severity === 'medium' ? 'border-yellow-500/30' :
+                        'border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start gap-3 flex-1">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            error.severity === 'critical' ? 'bg-red-500/20' :
+                            error.severity === 'high' ? 'bg-orange-500/20' :
+                            error.severity === 'medium' ? 'bg-yellow-500/20' :
+                            'bg-blue-500/20'
+                          }`}>
+                            <AlertTriangle className={`w-5 h-5 ${
+                              error.severity === 'critical' ? 'text-red-400' :
+                              error.severity === 'high' ? 'text-orange-400' :
+                              error.severity === 'medium' ? 'text-yellow-400' :
+                              'text-blue-400'
+                            }`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="text-white font-semibold text-sm">{error.error_type}</h4>
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase ${
+                                error.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
+                                error.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                                error.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                'bg-blue-500/20 text-blue-400'
+                              }`}>
+                                {error.severity}
+                              </span>
+                            </div>
+                            <p className="text-sm text-white/70 mb-2">{error.error_message}</p>
+                            <div className="flex items-center gap-3 text-xs text-muted">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatMessageTime(error.created_at)}
+                              </div>
+                              {error.is_resolved && (
+                                <span className="text-green-400">✓ Resolved</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          error.is_resolved
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-red-500/20 text-red-400'
+                        }`}>
+                          {error.is_resolved ? 'Resolved' : 'Open'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ========== INTEGRATIONS TAB ========== */}
+        {activeTab === 'integrations' && (
+          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-secondary/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1">External Integrations</h3>
+                  <p className="text-sm text-muted">
+                    Google Calendar and Sheets integrations connected to this WhatsApp instance
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setRefreshingIntegrations(true);
+                    fetchIntegrations().finally(() => setRefreshingIntegrations(false));
+                  }}
+                  disabled={refreshingIntegrations}
+                  className="p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors disabled:opacity-50"
+                  title="Refresh Integrations"
+                >
+                  <RefreshCw
+                    className={`w-5 h-5 ${refreshingIntegrations ? 'animate-spin' : ''}`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {loadingIntegrations ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Google Calendar Section */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Calendar className="w-5 h-5 text-blue-400" />
+                      <h4 className="text-white font-semibold">Google Calendar Instances</h4>
+                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-medium rounded-full">
+                        {calendarInstances.length}
+                      </span>
+                    </div>
+
+                    {calendarInstances.length === 0 ? (
+                      <div className="bg-secondary/30 border border-white/5 rounded-lg p-6 text-center">
+                        <Calendar className="w-12 h-12 text-muted mx-auto mb-3 opacity-50" />
+                        <p className="text-sm text-muted">No calendar integrations found</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {calendarInstances.map((calendar) => (
+                          <div
+                            key={calendar.id}
+                            className="bg-secondary/30 border border-white/5 rounded-lg p-4 hover:border-blue-500/30 transition-colors"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h5 className="text-white font-medium">
+                                    {calendar.instance_name || calendar.calendar_name || 'Unnamed Calendar'}
+                                  </h5>
+                                  <span
+                                    className={`px-2 py-0.5 text-xs font-medium rounded-md ${
+                                      calendar.status === 'active'
+                                        ? 'bg-green-500/20 text-green-400'
+                                        : 'bg-gray-500/20 text-gray-400'
+                                    }`}
+                                  >
+                                    {calendar.status}
+                                  </span>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted">
+                                  {calendar.calendar_name && (
+                                    <p>
+                                      <span className="font-medium">Calendar:</span> {calendar.calendar_name}
+                                    </p>
+                                  )}
+                                  <p>
+                                    <span className="font-medium">Timezone:</span> {calendar.timezone}
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">Auto Approve:</span>{' '}
+                                    {calendar.auto_approve_appointments ? (
+                                      <span className="text-green-400">Enabled</span>
+                                    ) : (
+                                      <span className="text-gray-400">Disabled</span>
+                                    )}
+                                  </p>
+                                  {calendar.n8n_workflow_id && (
+                                    <p>
+                                      <span className="font-medium">Workflow ID:</span>{' '}
+                                      <span className="font-mono text-xs">{calendar.n8n_workflow_id}</span>
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              {calendar.google_calendar_id && (
+                                <a
+                                  href={`https://calendar.google.com/calendar/u/0/r?cid=${calendar.google_calendar_id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors"
+                                  title="Open in Google Calendar"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Google Sheets Section */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <FileSpreadsheet className="w-5 h-5 text-green-400" />
+                      <h4 className="text-white font-semibold">Google Sheets Instances</h4>
+                      <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
+                        {sheetsInstances.length}
+                      </span>
+                    </div>
+
+                    {sheetsInstances.length === 0 ? (
+                      <div className="bg-secondary/30 border border-white/5 rounded-lg p-6 text-center">
+                        <FileSpreadsheet className="w-12 h-12 text-muted mx-auto mb-3 opacity-50" />
+                        <p className="text-sm text-muted">No sheets integrations with WhatsApp enabled</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {sheetsInstances.map((sheet) => (
+                          <div
+                            key={sheet.id}
+                            className="bg-secondary/30 border border-white/5 rounded-lg p-4 hover:border-green-500/30 transition-colors"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h5 className="text-white font-medium">
+                                    {sheet.google_sheet_name || 'Unnamed Sheet'}
+                                  </h5>
+                                  <span
+                                    className={`px-2 py-0.5 text-xs font-medium rounded-md ${
+                                      sheet.status === 'active'
+                                        ? 'bg-green-500/20 text-green-400'
+                                        : 'bg-gray-500/20 text-gray-400'
+                                    }`}
+                                  >
+                                    {sheet.status}
+                                  </span>
+                                  {sheet.whatsapp_integration_enabled && (
+                                    <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-medium rounded-md">
+                                      WhatsApp Enabled
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="space-y-1 text-sm text-muted">
+                                  <p>
+                                    <span className="font-medium">Sheet ID:</span>{' '}
+                                    <span className="font-mono text-xs">{sheet.google_sheet_id}</span>
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">Auto Sync:</span>{' '}
+                                    {sheet.auto_sync_enabled ? (
+                                      <span className="text-green-400">
+                                        Every {sheet.sync_interval_minutes} min
+                                      </span>
+                                    ) : (
+                                      <span className="text-gray-400">Disabled</span>
+                                    )}
+                                  </p>
+                                  {sheet.last_sync_at && (
+                                    <p>
+                                      <span className="font-medium">Last Sync:</span>{' '}
+                                      {new Date(sheet.last_sync_at).toLocaleString()}
+                                    </p>
+                                  )}
+                                  {sheet.n8n_workflow_id && (
+                                    <p>
+                                      <span className="font-medium">Workflow ID:</span>{' '}
+                                      <span className="font-mono text-xs">{sheet.n8n_workflow_id}</span>
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              {sheet.google_sheet_url && (
+                                <a
+                                  href={sheet.google_sheet_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
+                                  title="Open Google Sheet"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info notice */}
+                  {(calendarInstances.length > 0 || sheetsInstances.length > 0) && (
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm text-blue-300 font-medium mb-1">
+                            Integration Information
+                          </p>
+                          <p className="text-sm text-muted">
+                            These integrations are automatically synced with your WhatsApp instance.
+                            Calendar appointments and sheet data can trigger automated WhatsApp messages
+                            based on your configured workflows.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

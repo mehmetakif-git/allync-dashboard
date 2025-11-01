@@ -256,3 +256,27 @@ export async function deleteOldResolvedErrors(daysOld: number = 30): Promise<num
   if (error) throw error;
   return data?.length || 0;
 }
+
+/**
+ * Get all errors for Super Admin with company details
+ */
+export async function getAllErrorsWithDetails(limit: number = 100): Promise<any[]> {
+  console.log('📡 Fetching all errors with details for Super Admin');
+
+  const { data, error } = await supabase
+    .from('whatsapp_errors')
+    .select(`
+      *,
+      company:companies(id, name)
+    `)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('❌ Error fetching all errors:', error);
+    throw error;
+  }
+
+  console.log('✅ Fetched', data?.length || 0, 'errors with details');
+  return data || [];
+}

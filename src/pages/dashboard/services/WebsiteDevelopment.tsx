@@ -282,8 +282,11 @@ const WebsiteDevelopment = () => {
     );
   }
 
-  // ✅ MAINTENANCE MODE - Show ONLY maintenance panel, hide all content
-  if (isInMaintenance) {
+  // ✅ MAINTENANCE MODE - Show ONLY for company_admin (NOT for super_admin)
+  // Super admin can always access the service to manage it
+  const isSuperAdmin = user?.role === 'super_admin';
+
+  if (isInMaintenance && !isSuperAdmin) {
     return (
       <div className="p-8">
         <div className="bg-orange-500/10 border-2 border-orange-500/50 rounded-xl p-8 text-center max-w-2xl mx-auto mt-12">

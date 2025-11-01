@@ -160,7 +160,7 @@ export async function getMessagesByCustomer(customerId: string): Promise<WhatsAp
     .from('whatsapp_messages')
     .select('*')
     .eq('user_id', customerId)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false})
     .limit(100);
 
   if (error) {
@@ -168,5 +168,31 @@ export async function getMessagesByCustomer(customerId: string): Promise<WhatsAp
     throw error;
   }
 
+  return data || [];
+}
+
+/**
+ * Get all messages for Super Admin with company and instance details
+ */
+export async function getAllMessagesWithDetails(limit: number = 100): Promise<any[]> {
+  console.log('📡 Fetching all messages with details for Super Admin');
+
+  const { data, error } = await supabase
+    .from('whatsapp_messages')
+    .select(`
+      *,
+      company:companies(id, name),
+      user_profile:whatsapp_user_profiles(id, name, phone_number),
+      session:whatsapp_sessions(id, customer_name, customer_phone, status)
+    `)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('❌ Error fetching all messages:', error);
+    throw error;
+  }
+
+  console.log('✅ Fetched', data?.length || 0, 'messages with details');
   return data || [];
 }

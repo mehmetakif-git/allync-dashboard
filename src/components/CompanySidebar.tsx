@@ -38,10 +38,12 @@ export default function CompanySidebar({ isOpen, onClose }: CompanySidebarProps)
 
       try {
         const services = await getCompanyServices(user.company_id);
-        // Filter only active services for sidebar display
-        const activeServices = services.filter((s: any) => s.status === 'active');
-        setCompanyServices(activeServices);
-        console.log('🔍 [CompanySidebar] Company Services:', activeServices);
+        // Show active AND maintenance services in sidebar (but not inactive/deleted)
+        const visibleServices = services.filter((s: any) =>
+          s.status === 'active' || s.status === 'maintenance'
+        );
+        setCompanyServices(visibleServices);
+        console.log('🔍 [CompanySidebar] Company Services:', visibleServices);
       } catch (err) {
         console.error('❌ [CompanySidebar] Error fetching services:', err);
       }

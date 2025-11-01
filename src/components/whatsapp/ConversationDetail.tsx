@@ -8,7 +8,9 @@ import {
   Clock,
   Check,
   CheckCheck,
-  User
+  User,
+  AlertCircle,
+  ChevronDown
 } from 'lucide-react';
 import { WhatsAppMessage, SessionWithMessages, IntegrationType, IntegrationAction } from '../../types/whatsapp';
 import { getSessionById } from '../../lib/api/whatsappSessions';
@@ -23,6 +25,7 @@ interface ConversationDetailProps {
 export default function ConversationDetail({ sessionId, onClose }: ConversationDetailProps) {
   const [session, setSession] = useState<SessionWithMessages | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showWarning, setShowWarning] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -325,14 +328,58 @@ export default function ConversationDetail({ sessionId, onClose }: ConversationD
         )}
       </div>
 
-      {/* Read-Only Notice */}
-      <div className="p-4 border-t border-white/10 bg-secondary/50 backdrop-blur-sm">
-        <div className="flex items-center justify-center gap-2 py-2">
-          <Clock className="w-4 h-4 text-muted" />
-          <p className="text-sm text-muted">
-            This is a read-only view. You cannot send messages from here.
-          </p>
-        </div>
+      {/* Compact Warning Banner */}
+      <div className="border-t border-white/10 bg-gradient-to-r from-red-500/10 via-orange-500/10 to-yellow-500/10 backdrop-blur-sm">
+        {/* Compact View */}
+        <button
+          onClick={() => setShowWarning(!showWarning)}
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-4 h-4 text-red-400" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-bold text-white flex items-center gap-2">
+                ⚠️ WhatsApp Automation Active - Important Warning
+              </p>
+              <p className="text-xs text-red-300">
+                DO NOT send manual messages • Read-only view • Click for details
+              </p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-muted transition-transform ${showWarning ? 'rotate-180' : ''}`} />
+        </button>
+
+        {/* Expanded Details */}
+        {showWarning && (
+          <div className="border-t border-white/10 bg-black/20 px-4 py-4 animate-in slide-in-from-top">
+            <div className="space-y-3 text-xs text-white/90">
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
+                <p className="font-bold text-orange-300 mb-2">
+                  🚫 CRITICAL: Never Send Manual WhatsApp Messages
+                </p>
+                <ul className="space-y-1 text-white/80 ml-4 list-disc">
+                  <li>✅ You CAN: <span className="text-green-400">View & Login</span> to WhatsApp</li>
+                  <li>❌ You CANNOT: <span className="text-red-400">Send manual messages</span></li>
+                  <li>⚠️ Manual messages = <span className="text-red-400">System timeout & failure</span></li>
+                </ul>
+              </div>
+
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2">
+                <p className="text-red-300 font-semibold text-center">
+                  ⚡ Errors from manual messaging NOT covered by Allync AI
+                </p>
+              </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2 text-center">
+                <p className="text-blue-300">
+                  🕐 This dashboard is read-only
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

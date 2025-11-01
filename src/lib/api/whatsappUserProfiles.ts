@@ -247,3 +247,27 @@ export async function getRecentlyActiveUsers(
   if (error) throw error;
   return data || [];
 }
+
+/**
+ * Get all user profiles for Super Admin with company details
+ */
+export async function getAllUserProfilesWithDetails(limit: number = 100): Promise<any[]> {
+  console.log('📡 Fetching all user profiles with details for Super Admin');
+
+  const { data, error } = await supabase
+    .from('whatsapp_user_profiles')
+    .select(`
+      *,
+      company:companies(id, name)
+    `)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('❌ Error fetching all user profiles:', error);
+    throw error;
+  }
+
+  console.log('✅ Fetched', data?.length || 0, 'user profiles with details');
+  return data || [];
+}
