@@ -1442,12 +1442,17 @@ CREATE TABLE IF NOT EXISTS "public"."profiles" (
     "email" "text",
     "status" "text" DEFAULT 'active'::"text",
     "last_login" timestamp with time zone,
+    "must_change_password" boolean DEFAULT false,
     CONSTRAINT "profiles_language_check" CHECK (("language" = ANY (ARRAY['tr'::"text", 'en'::"text"]))),
     CONSTRAINT "profiles_role_check" CHECK (("role" = ANY (ARRAY['super_admin'::"text", 'company_admin'::"text", 'user'::"text"])))
 );
 
 
 ALTER TABLE "public"."profiles" OWNER TO "postgres";
+
+
+COMMENT ON COLUMN "public"."profiles"."must_change_password" IS 'Flag indicating user must change password on next login (for temporary passwords)';
+
 
 
 CREATE TABLE IF NOT EXISTS "public"."support_tickets" (
@@ -3581,6 +3586,32 @@ CREATE OR REPLACE VIEW "public"."whatsapp_analytics_detailed" AS
 ALTER VIEW "public"."whatsapp_analytics_detailed" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."whatsapp_errors" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "instance_id" "text",
+    "error_type" "text" NOT NULL,
+    "error_message" "text" NOT NULL,
+    "error_details" "jsonb" DEFAULT '{}'::"jsonb",
+    "node_name" "text",
+    "workflow_id" "text",
+    "execution_id" "text",
+    "user_id" "uuid",
+    "session_id" "uuid",
+    "phone_number" "text",
+    "http_status_code" integer,
+    "severity" "text" DEFAULT 'error'::"text",
+    "is_resolved" boolean DEFAULT false,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "whatsapp_errors_error_type_check" CHECK (("error_type" = ANY (ARRAY['webhook_error'::"text", 'gemini_api_error'::"text", 'evolution_api_error'::"text", 'database_error'::"text", 'session_error'::"text", 'validation_error'::"text", 'timeout_error'::"text", 'network_error'::"text", 'unknown_error'::"text"]))),
+    CONSTRAINT "whatsapp_errors_severity_check" CHECK (("severity" = ANY (ARRAY['warning'::"text", 'error'::"text", 'critical'::"text"])))
+);
+
+
+ALTER TABLE "public"."whatsapp_errors" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."whatsapp_hourly_metrics" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "company_id" "uuid" NOT NULL,
@@ -3619,7 +3650,14 @@ CREATE TABLE IF NOT EXISTS "public"."whatsapp_instances" (
     "api_key" "text",
     "settings" "jsonb",
     "created_at" timestamp without time zone DEFAULT "now"(),
-    "updated_at" timestamp without time zone DEFAULT "now"()
+    "updated_at" timestamp without time zone DEFAULT "now"(),
+    "evolution_api_url" "text",
+    "evolution_api_key" "text",
+    "gemini_api_key" "text",
+    "instance_type" "text",
+    "ai_system_prompt" "text",
+    "ai_settings" "jsonb" DEFAULT '{}'::"jsonb",
+    CONSTRAINT "whatsapp_instances_instance_type_check" CHECK (("instance_type" = ANY (ARRAY['sales'::"text", 'support'::"text", 'general'::"text", 'info'::"text", 'marketing'::"text"])))
 );
 
 
@@ -4270,6 +4308,11 @@ ALTER TABLE ONLY "public"."website_projects"
 
 
 
+ALTER TABLE ONLY "public"."whatsapp_errors"
+    ADD CONSTRAINT "whatsapp_errors_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."whatsapp_hourly_metrics"
     ADD CONSTRAINT "whatsapp_hourly_metrics_company_id_metric_hour_key" UNIQUE ("company_id", "metric_hour");
 
@@ -4312,6 +4355,11 @@ ALTER TABLE ONLY "public"."whatsapp_sessions"
 
 ALTER TABLE ONLY "public"."whatsapp_user_profiles"
     ADD CONSTRAINT "whatsapp_user_profiles_company_id_phone_number_key" UNIQUE ("company_id", "phone_number");
+
+
+
+ALTER TABLE ONLY "public"."whatsapp_user_profiles"
+    ADD CONSTRAINT "whatsapp_user_profiles_company_phone_unique" UNIQUE ("company_id", "phone_number");
 
 
 
@@ -4561,6 +4609,18 @@ CREATE INDEX "idx_drive_instances_company" ON "public"."drive_instances" USING "
 
 
 CREATE INDEX "idx_drive_requests_company" ON "public"."drive_requests" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_errors_company" ON "public"."whatsapp_errors" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_errors_created" ON "public"."whatsapp_errors" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_errors_instance" ON "public"."whatsapp_errors" USING "btree" ("instance_id");
 
 
 
@@ -4961,6 +5021,10 @@ CREATE INDEX "idx_profiles_company_id" ON "public"."profiles" USING "btree" ("co
 
 
 CREATE INDEX "idx_profiles_last_login" ON "public"."profiles" USING "btree" ("last_login" DESC NULLS LAST);
+
+
+
+CREATE INDEX "idx_profiles_must_change_password" ON "public"."profiles" USING "btree" ("must_change_password") WHERE ("must_change_password" = true);
 
 
 
@@ -5420,11 +5484,19 @@ CREATE INDEX "idx_whatsapp_instances_instance" ON "public"."whatsapp_instances" 
 
 
 
+CREATE INDEX "idx_whatsapp_instances_instance_id" ON "public"."whatsapp_instances" USING "btree" ("instance_id");
+
+
+
 CREATE INDEX "idx_whatsapp_instances_status" ON "public"."whatsapp_instances" USING "btree" ("status");
 
 
 
 CREATE INDEX "idx_whatsapp_messages_company" ON "public"."whatsapp_messages" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_whatsapp_messages_company_date" ON "public"."whatsapp_messages" USING "btree" ("company_id", "created_at" DESC);
 
 
 
@@ -5501,6 +5573,10 @@ CREATE INDEX "idx_whatsapp_user_profiles_phone" ON "public"."whatsapp_user_profi
 
 
 CREATE INDEX "idx_whatsapp_users_company" ON "public"."whatsapp_user_profiles" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_whatsapp_users_company_phone" ON "public"."whatsapp_user_profiles" USING "btree" ("company_id", "phone_number");
 
 
 
@@ -6430,6 +6506,21 @@ ALTER TABLE ONLY "public"."website_projects"
 
 
 
+ALTER TABLE ONLY "public"."whatsapp_errors"
+    ADD CONSTRAINT "whatsapp_errors_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id");
+
+
+
+ALTER TABLE ONLY "public"."whatsapp_errors"
+    ADD CONSTRAINT "whatsapp_errors_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "public"."whatsapp_sessions"("id");
+
+
+
+ALTER TABLE ONLY "public"."whatsapp_errors"
+    ADD CONSTRAINT "whatsapp_errors_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."whatsapp_user_profiles"("id");
+
+
+
 ALTER TABLE ONLY "public"."whatsapp_hourly_metrics"
     ADD CONSTRAINT "whatsapp_hourly_metrics_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
 
@@ -6547,6 +6638,36 @@ CREATE POLICY "Companies can only access their own WhatsApp user profiles" ON "p
 
 
 
+CREATE POLICY "Companies can only see their own errors" ON "public"."whatsapp_errors" USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Companies can only see their own instances" ON "public"."whatsapp_instances" USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Companies can only see their own messages" ON "public"."whatsapp_messages" USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Companies can only see their own sessions" ON "public"."whatsapp_sessions" USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Companies can only see their own users" ON "public"."whatsapp_user_profiles" USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
 CREATE POLICY "Company admins can insert customers" ON "public"."whatsapp_user_profiles" FOR INSERT TO "authenticated" WITH CHECK (("company_id" IN ( SELECT "profiles"."company_id"
    FROM "public"."profiles"
   WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = ANY (ARRAY['company_admin'::"text", 'super_admin'::"text"]))))));
@@ -6606,6 +6727,26 @@ CREATE POLICY "Company users can create tickets for their company" ON "public"."
 CREATE POLICY "Company users can view their company tickets" ON "public"."support_tickets" FOR SELECT TO "authenticated" USING (("company_id" IN ( SELECT "profiles"."company_id"
    FROM "public"."profiles"
   WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Service role bypass" ON "public"."whatsapp_errors" TO "service_role" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Service role bypass" ON "public"."whatsapp_instances" TO "service_role" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Service role bypass" ON "public"."whatsapp_messages" TO "service_role" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Service role bypass" ON "public"."whatsapp_sessions" TO "service_role" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Service role bypass" ON "public"."whatsapp_user_profiles" TO "service_role" USING (true) WITH CHECK (true);
 
 
 
@@ -7429,6 +7570,9 @@ CREATE POLICY "users_read_own_notifications" ON "public"."user_notifications" FO
 
 CREATE POLICY "users_update_own_notifications" ON "public"."user_notifications" FOR UPDATE TO "authenticated" USING (("user_id" = "auth"."uid"())) WITH CHECK (("user_id" = "auth"."uid"()));
 
+
+
+ALTER TABLE "public"."whatsapp_errors" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."whatsapp_hourly_metrics" ENABLE ROW LEVEL SECURITY;
@@ -8473,6 +8617,12 @@ GRANT ALL ON TABLE "public"."whatsapp_user_profiles" TO "service_role";
 GRANT ALL ON TABLE "public"."whatsapp_analytics_detailed" TO "anon";
 GRANT ALL ON TABLE "public"."whatsapp_analytics_detailed" TO "authenticated";
 GRANT ALL ON TABLE "public"."whatsapp_analytics_detailed" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."whatsapp_errors" TO "anon";
+GRANT ALL ON TABLE "public"."whatsapp_errors" TO "authenticated";
+GRANT ALL ON TABLE "public"."whatsapp_errors" TO "service_role";
 
 
 
