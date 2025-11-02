@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Smartphone, ArrowLeft, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
+import { Smartphone, ArrowLeft, Loader2, Upload, Image as ImageIcon, Trash2, X, Calendar, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { OverallTab, CompaniesTab, ServiceContentTab } from '../../../components/admin/ServiceManagementTabs';
 import serviceTypesAPI from '../../../lib/api/serviceTypes';
@@ -7,7 +7,7 @@ import { getAllCompaniesWithServicePricing, setCompanyServicePricing } from '../
 import serviceRequestsAPI from '../../../lib/api/serviceRequests';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getAllMobileAppProjects } from '../../../lib/api/mobileAppProjects';
-import { getProjectMedia, getMediaPublicUrl } from '../../../lib/api/projectMedia';
+import { getProjectMedia, getMediaPublicUrl, deleteMedia } from '../../../lib/api/projectMedia';
 import ProjectMediaUploadModal from '../../../components/modals/ProjectMediaUploadModal';
 
 export default function MobileAppServiceManagement() {
@@ -24,6 +24,9 @@ export default function MobileAppServiceManagement() {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [projectMedia, setProjectMedia] = useState<Record<string, any[]>>({});
+  const [selectedMedia, setSelectedMedia] = useState<any>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingMedia, setDeletingMedia] = useState<any>(null);
 
   const SERVICE_GRADIENT = 'from-blue-500 to-cyan-500';
 
@@ -93,6 +96,32 @@ export default function MobileAppServiceManagement() {
     if (selectedProject) {
       await loadProjectMedia(selectedProject.id);
       await loadServiceData(); // Reload to get fresh data
+    }
+  };
+
+  const handleDeleteMedia = async (media: any) => {
+    setDeletingMedia(media);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingMedia || !selectedProject) return;
+
+    try {
+      console.log('🗑️ Deleting media:', deletingMedia.file_name);
+      await deleteMedia(deletingMedia.id, deletingMedia.file_path);
+
+      // Reload media for this project
+      await loadProjectMedia(selectedProject.id);
+
+      setShowDeleteConfirm(false);
+      setDeletingMedia(null);
+      setSelectedMedia(null);
+
+      console.log('✅ Media deleted successfully');
+    } catch (error) {
+      console.error('❌ Error deleting media:', error);
+      alert('Failed to delete media. Please try again.');
     }
   };
 
@@ -394,35 +423,64 @@ export default function MobileAppServiceManagement() {
                         <h4 className="text-sm font-semibold text-muted mb-2">
                           Media Gallery ({projectMedia[project.id].length} items)
                         </h4>
-                        <div className="grid grid-cols-6 gap-2">
-                          {projectMedia[project.id].slice(0, 6).map((media: any) => (
+                        <div className="grid grid-cols-3 gap-3">
+                          {projectMedia[project.id].map((media: any) => (
                             <div
                               key={media.id}
-                              className="aspect-square rounded-lg overflow-hidden bg-secondary border border-secondary hover:border-blue-500/50 transition-all"
+                              className="bg-secondary/50 border border-secondary rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all group cursor-pointer"
+                              onClick={() => setSelectedMedia(media)}
                             >
-                              {media.file_type === 'image' ? (
-                                <img
-                                  src={media.signedUrl}
-                                  alt={media.title || media.file_name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    console.error('Failed to load image:', media.file_path);
-                                    e.currentTarget.style.display = 'none';
+                              {/* Media Preview */}
+                              <div className="aspect-video bg-primary relative overflow-hidden">
+                                {media.file_type === 'image' ? (
+                                  <img
+                                    src={media.signedUrl}
+                                    alt={media.title || media.file_name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    onError={(e) => {
+                                      console.error('Failed to load image:', media.file_path);
+                                      e.currentTarget.style.display = 'none';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-cyan-500/10">
+                                    <ImageIcon className="w-6 h-6 text-cyan-400" />
+                                  </div>
+                                )}
+
+                                {/* Delete Button */}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteMedia(media);
+                                    setSelectedProject(project);
                                   }}
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-purple-500/10">
-                                  <ImageIcon className="w-6 h-6 text-purple-400" />
+                                  className="absolute top-2 right-2 w-8 h-8 bg-red-500/90 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Delete media"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+
+                              {/* Media Info */}
+                              <div className="p-3">
+                                <p className="text-sm font-medium text-white truncate mb-1">
+                                  {media.title || media.file_name}
+                                </p>
+                                {media.milestone_name && (
+                                  <div className="flex items-center gap-1 text-xs text-cyan-400 mb-1">
+                                    <FileText className="w-3 h-3" />
+                                    <span className="truncate">{media.milestone_name}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center justify-between text-xs text-muted">
+                                  <span>{(media.file_size / 1024 / 1024).toFixed(2)} MB</span>
+                                  <span>{new Date(media.uploaded_at).toLocaleDateString()}</span>
                                 </div>
-                              )}
+                              </div>
                             </div>
                           ))}
                         </div>
-                        {projectMedia[project.id].length > 6 && (
-                          <p className="text-xs text-muted mt-2">
-                            +{projectMedia[project.id].length - 6} more items
-                          </p>
-                        )}
                       </div>
                     ) : (
                       <button
@@ -455,6 +513,157 @@ export default function MobileAppServiceManagement() {
           milestones={selectedProject.milestones || []}
           onUploadSuccess={handleUploadSuccess}
         />
+      )}
+
+      {/* Media Detail Modal */}
+      {selectedMedia && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedMedia(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] bg-card rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedMedia(null)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex flex-col md:flex-row h-full max-h-[90vh]">
+              {/* Media Display */}
+              <div className="flex-1 bg-black flex items-center justify-center p-4">
+                {selectedMedia.file_type === 'image' ? (
+                  <img
+                    src={selectedMedia.signedUrl}
+                    alt={selectedMedia.title || selectedMedia.file_name}
+                    className="max-w-full max-h-[70vh] object-contain"
+                  />
+                ) : (
+                  <video
+                    src={selectedMedia.signedUrl}
+                    controls
+                    className="max-w-full max-h-[70vh]"
+                  />
+                )}
+              </div>
+
+              {/* Media Info Sidebar */}
+              <div className="w-full md:w-80 bg-secondary/50 p-6 overflow-y-auto">
+                <h3 className="text-xl font-bold text-white mb-4">
+                  {selectedMedia.title || 'Media Details'}
+                </h3>
+
+                {selectedMedia.description && (
+                  <div className="mb-4">
+                    <p className="text-xs text-muted mb-1">Description</p>
+                    <p className="text-sm text-white">{selectedMedia.description}</p>
+                  </div>
+                )}
+
+                <div className="space-y-3 mb-6">
+                  {selectedMedia.milestone_name && (
+                    <div>
+                      <p className="text-xs text-muted mb-1">Milestone</p>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-cyan-400" />
+                        <p className="text-sm text-white">{selectedMedia.milestone_name}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-xs text-muted mb-1">File Name</p>
+                    <p className="text-sm text-white break-all">{selectedMedia.file_name}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-muted mb-1">File Type</p>
+                    <p className="text-sm text-white uppercase">{selectedMedia.file_type}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-muted mb-1">File Size</p>
+                    <p className="text-sm text-white">
+                      {(selectedMedia.file_size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-muted mb-1">Uploaded</p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-muted" />
+                      <p className="text-sm text-white">
+                        {new Date(selectedMedia.uploaded_at).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => {
+                    handleDeleteMedia(selectedMedia);
+                  }}
+                  className="w-full px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/50 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Media
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && deletingMedia && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => {
+            setShowDeleteConfirm(false);
+            setDeletingMedia(null);
+          }}
+        >
+          <div
+            className="bg-card rounded-2xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-6 h-6 text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Delete Media?</h3>
+                <p className="text-sm text-muted">
+                  Are you sure you want to delete "{deletingMedia.title || deletingMedia.file_name}"?
+                  This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeletingMedia(null);
+                }}
+                className="flex-1 px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-white rounded-lg font-medium transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

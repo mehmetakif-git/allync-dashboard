@@ -266,7 +266,7 @@ async function sendSuspensionNotification(data: {
   // Example with Resend API:
   /*
   await resend.emails.send({
-    from: 'noreply@allyncai.com',
+    from: 'info@allyncai.com',
     to: data.companyEmail,
     subject: `Service Suspended: ${data.serviceName}`,
     html: `
@@ -298,7 +298,7 @@ async function sendReactivationNotification(data: {
   // Example with Resend API:
   /*
   await resend.emails.send({
-    from: 'noreply@allyncai.com',
+    from: 'info@allyncai.com',
     to: data.companyEmail,
     subject: `Service Reactivated: ${data.serviceName}`,
     html: `

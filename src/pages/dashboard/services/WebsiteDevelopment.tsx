@@ -21,6 +21,34 @@ const WebsiteDevelopment = () => {
   const [loadingMedia, setLoadingMedia] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
 
+  // Download media file
+  const handleDownload = async (media: any) => {
+    try {
+      console.log('⬇️ Downloading media:', media.file_name);
+
+      // Fetch the file from signed URL
+      const response = await fetch(media.signedUrl);
+      const blob = await response.blob();
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = media.file_name;
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      console.log('✅ Download completed');
+    } catch (error) {
+      console.error('❌ Download error:', error);
+      alert('Failed to download file. Please try again.');
+    }
+  };
+
   // Fetch project by company_service_id
   useEffect(() => {
     const fetchData = async () => {
@@ -831,14 +859,13 @@ const WebsiteDevelopment = () => {
                   </div>
                 </div>
 
-                <a
-                  href={selectedMedia.signedUrl}
-                  download={selectedMedia.file_name}
+                <button
+                  onClick={() => handleDownload(selectedMedia)}
                   className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" />
                   Download
-                </a>
+                </button>
               </div>
             </div>
           </div>

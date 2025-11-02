@@ -1464,6 +1464,11 @@ CREATE TABLE IF NOT EXISTS "public"."invoices" (
     "notes" "text",
     "internal_notes" "text",
     "metadata" "jsonb" DEFAULT '{}'::"jsonb",
+    "auto_suspend_on_overdue" boolean DEFAULT true,
+    "is_manual" boolean DEFAULT false,
+    "suspended_at" timestamp with time zone,
+    "pdf_generated_at" timestamp with time zone,
+    "pdf_size" bigint,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     CONSTRAINT "invoices_currency_check" CHECK (("currency" = 'USD'::"text")),
@@ -5057,6 +5062,10 @@ CREATE INDEX "idx_invoices_paid_at" ON "public"."invoices" USING "btree" ("paid_
 
 
 CREATE INDEX "idx_invoices_status" ON "public"."invoices" USING "btree" ("status");
+
+
+
+CREATE INDEX "idx_invoices_overdue_suspension" ON "public"."invoices" USING "btree" ("status", "due_date", "auto_suspend_on_overdue") WHERE (("auto_suspend_on_overdue" = true) AND ("status" <> 'paid'::"text"));
 
 
 
@@ -9495,6 +9504,81 @@ CREATE POLICY "Allow super_admin update in project-media"
 ON storage.objects FOR UPDATE TO authenticated
 USING (
   bucket_id = 'project-media'
+  AND EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE profiles.id = auth.uid()
+    AND profiles.role = 'super_admin'
+  )
+);
+
+
+--
+-- Invoice PDF Storage Configuration
+--
+
+-- Create storage bucket for invoice PDFs
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'invoice-pdfs',
+  'invoice-pdfs',
+  false,
+  10485760, -- 10MB limit
+  ARRAY['application/pdf']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Invoice PDF Storage RLS Policies
+
+-- Super admin can see all invoice PDFs
+CREATE POLICY "super_admin_all_invoice_pdfs"
+ON storage.objects FOR SELECT TO authenticated
+USING (
+  bucket_id = 'invoice-pdfs'
+  AND EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE profiles.id = auth.uid()
+    AND profiles.role = 'super_admin'
+  )
+);
+
+-- Company admin/users can see only their company's invoice PDFs
+CREATE POLICY "company_own_invoice_pdfs"
+ON storage.objects FOR SELECT TO authenticated
+USING (
+  bucket_id = 'invoice-pdfs'
+  AND (
+    (storage.foldername(name))[1] IN (
+      SELECT company_id::text
+      FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role IN ('company_admin', 'user')
+    )
+    OR
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'super_admin'
+    )
+  )
+);
+
+-- Only super admin can upload invoice PDFs
+CREATE POLICY "super_admin_upload_invoice_pdfs"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (
+  bucket_id = 'invoice-pdfs'
+  AND EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE profiles.id = auth.uid()
+    AND profiles.role = 'super_admin'
+  )
+);
+
+-- Only super admin can delete invoice PDFs
+CREATE POLICY "super_admin_delete_invoice_pdfs"
+ON storage.objects FOR DELETE TO authenticated
+USING (
+  bucket_id = 'invoice-pdfs'
   AND EXISTS (
     SELECT 1 FROM public.profiles
     WHERE profiles.id = auth.uid()

@@ -9,7 +9,8 @@ import { supabase } from '../../lib/supabase';
 
 interface Milestone {
   id: string;
-  name: string;
+  name?: string;
+  title?: string;
   status: string;
 }
 
@@ -125,9 +126,11 @@ export default function ProjectMediaUploadModal({
       console.log('✅ File uploaded:', uploadData);
       setUploadProgress(60);
 
-      // Get milestone name
+      // Get milestone name (try title first, then name)
       const milestone = milestones.find(m => m.id === selectedMilestone);
-      const milestoneName = milestone?.name || '';
+      const milestoneName = milestone?.title || milestone?.name || '';
+
+      console.log('🏷️ Milestone info:', { milestone, milestoneName });
 
       // Determine file type
       const fileType = selectedFile.type.startsWith('image/') ? 'image' : 'video';
