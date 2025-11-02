@@ -960,6 +960,19 @@ $$;
 ALTER FUNCTION "public"."update_user_invites_updated_at"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."update_user_service_consents_updated_at"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."update_user_service_consents_updated_at"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."validate_usd_only"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     AS $$
@@ -3433,6 +3446,60 @@ CREATE TABLE IF NOT EXISTS "public"."user_notifications" (
 ALTER TABLE "public"."user_notifications" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."user_service_consents" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "service_type" "text" NOT NULL,
+    "consent_given" boolean DEFAULT false NOT NULL,
+    "consent_date" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "consent_version" "text" DEFAULT '1.0'::"text" NOT NULL,
+    "ip_address" "text",
+    "notes" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."user_service_consents" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."user_service_consents" IS 'Tracks user consent for data processing per service (KVKK/GDPR compliance)';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."user_id" IS 'User who gave or revoked consent';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."company_id" IS 'Company context for the consent';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."service_type" IS 'Service type (e.g., whatsapp-automation)';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."consent_given" IS 'True if user gave consent, false if revoked/deleted';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."consent_date" IS 'When consent was given or revoked';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."consent_version" IS 'Version of privacy policy/terms';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."ip_address" IS 'IP address when consent was recorded (optional for audit)';
+
+
+
+COMMENT ON COLUMN "public"."user_service_consents"."notes" IS 'Additional context (e.g., "User requested data deletion")';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."website_milestones" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
     "project_id" "uuid",
@@ -4329,6 +4396,11 @@ ALTER TABLE ONLY "public"."user_notifications"
 
 ALTER TABLE ONLY "public"."user_notifications"
     ADD CONSTRAINT "user_notifications_user_id_notification_id_key" UNIQUE ("user_id", "notification_id");
+
+
+
+ALTER TABLE ONLY "public"."user_service_consents"
+    ADD CONSTRAINT "user_service_consents_pkey" PRIMARY KEY ("id");
 
 
 
@@ -5466,6 +5538,22 @@ CREATE INDEX "idx_user_profiles_last_seen" ON "public"."whatsapp_user_profiles" 
 
 
 
+CREATE INDEX "idx_user_service_consents_company_id" ON "public"."user_service_consents" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_user_service_consents_service_type" ON "public"."user_service_consents" USING "btree" ("service_type");
+
+
+
+CREATE INDEX "idx_user_service_consents_user_id" ON "public"."user_service_consents" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "idx_user_service_consents_user_service" ON "public"."user_service_consents" USING "btree" ("user_id", "service_type");
+
+
+
 CREATE INDEX "idx_website_milestones_project" ON "public"."website_milestones" USING "btree" ("project_id");
 
 
@@ -5875,6 +5963,10 @@ CREATE OR REPLACE TRIGGER "update_ticket_resolution_time_trigger" BEFORE UPDATE 
 
 
 CREATE OR REPLACE TRIGGER "update_user_message_count" AFTER INSERT ON "public"."whatsapp_messages" FOR EACH ROW EXECUTE FUNCTION "public"."update_message_count"();
+
+
+
+CREATE OR REPLACE TRIGGER "update_user_service_consents_updated_at_trigger" BEFORE UPDATE ON "public"."user_service_consents" FOR EACH ROW EXECUTE FUNCTION "public"."update_user_service_consents_updated_at"();
 
 
 
@@ -6609,6 +6701,16 @@ ALTER TABLE ONLY "public"."user_notifications"
 
 
 
+ALTER TABLE ONLY "public"."user_service_consents"
+    ADD CONSTRAINT "user_service_consents_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."user_service_consents"
+    ADD CONSTRAINT "user_service_consents_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."website_milestones"
     ADD CONSTRAINT "website_milestones_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "public"."website_projects"("id") ON DELETE CASCADE;
 
@@ -7148,6 +7250,12 @@ CREATE POLICY "Super admins can view all activity logs" ON "public"."activity_lo
 
 
 
+CREATE POLICY "Super admins can view all consents" ON "public"."user_service_consents" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "auth"."users"
+  WHERE (("users"."id" = "auth"."uid"()) AND (("users"."raw_user_meta_data" ->> 'role'::"text") = 'super_admin'::"text")))));
+
+
+
 CREATE POLICY "Super admins can view all customers" ON "public"."whatsapp_user_profiles" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
    FROM "public"."profiles"
   WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
@@ -7258,7 +7366,15 @@ CREATE POLICY "Users can create messages in own tickets" ON "public"."support_me
 
 
 
+CREATE POLICY "Users can insert own consents" ON "public"."user_service_consents" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
 CREATE POLICY "Users can insert their own logs" ON "public"."activity_logs" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "Users can update own consents" ON "public"."user_service_consents" FOR UPDATE USING (("auth"."uid"() = "user_id"));
 
 
 
@@ -7315,6 +7431,10 @@ CREATE POLICY "Users can view own company services" ON "public"."company_service
 CREATE POLICY "Users can view own company sessions" ON "public"."whatsapp_sessions" FOR SELECT TO "authenticated" USING (("company_id" IN ( SELECT "profiles"."company_id"
    FROM "public"."profiles"
   WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Users can view own consents" ON "public"."user_service_consents" FOR SELECT USING (("auth"."uid"() = "user_id"));
 
 
 
@@ -7668,6 +7788,9 @@ ALTER TABLE "public"."transactions" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."user_notifications" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."user_service_consents" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "users_read_accessible_system_notifications" ON "public"."system_notifications" FOR SELECT TO "authenticated" USING ((("is_active" = true) AND ("deleted_at" IS NULL) AND (("expires_at" IS NULL) OR ("expires_at" > "now"())) AND ((("target_audience")::"text" = 'all'::"text") OR ((("target_audience")::"text" = 'super_admins'::"text") AND (EXISTS ( SELECT 1
@@ -8467,6 +8590,12 @@ GRANT ALL ON FUNCTION "public"."update_user_invites_updated_at"() TO "service_ro
 
 
 
+GRANT ALL ON FUNCTION "public"."update_user_service_consents_updated_at"() TO "anon";
+GRANT ALL ON FUNCTION "public"."update_user_service_consents_updated_at"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."update_user_service_consents_updated_at"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."validate_usd_only"() TO "anon";
 GRANT ALL ON FUNCTION "public"."validate_usd_only"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."validate_usd_only"() TO "service_role";
@@ -9054,6 +9183,12 @@ GRANT ALL ON TABLE "public"."user_invites" TO "service_role";
 GRANT ALL ON TABLE "public"."user_notifications" TO "anon";
 GRANT ALL ON TABLE "public"."user_notifications" TO "authenticated";
 GRANT ALL ON TABLE "public"."user_notifications" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."user_service_consents" TO "anon";
+GRANT ALL ON TABLE "public"."user_service_consents" TO "authenticated";
+GRANT ALL ON TABLE "public"."user_service_consents" TO "service_role";
 
 
 

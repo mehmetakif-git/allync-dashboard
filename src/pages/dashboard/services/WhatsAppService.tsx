@@ -79,6 +79,11 @@ export default function WhatsAppService() {
   const [refreshingErrors, setRefreshingErrors] = useState(false);
   const [refreshingIntegrations, setRefreshingIntegrations] = useState(false);
 
+  // KVKK / Privacy consent states
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [hasUserConsent, setHasUserConsent] = useState(false);
+  const [checkingConsent, setCheckingConsent] = useState(true);
+
   // Fetch conversations
   const fetchConversations = async () => {
     if (!user?.company_id) return;
@@ -151,6 +156,81 @@ export default function WhatsAppService() {
       setRefreshingIntegrations(false);
     }
   };
+
+  // Check if user has given KVKK consent for WhatsApp service
+  const checkUserConsent = async () => {
+    if (!user?.id || !serviceId) return;
+
+    try {
+      setCheckingConsent(true);
+
+      // Check user_service_consents table
+      const { data, error } = await supabase
+        .from('user_service_consents')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('service_type', 'whatsapp-automation')
+        .eq('consent_given', true)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows
+        console.error('Error checking consent:', error);
+      }
+
+      if (data) {
+        setHasUserConsent(true);
+        setShowConsentModal(false);
+      } else {
+        // First time accessing - show consent modal
+        setHasUserConsent(false);
+        setShowConsentModal(true);
+      }
+    } catch (err) {
+      console.error('Error checking consent:', err);
+    } finally {
+      setCheckingConsent(false);
+    }
+  };
+
+  // Handle user consent acceptance
+  const handleAcceptConsent = async () => {
+    if (!user?.id || !user?.company_id) return;
+
+    try {
+      // Save consent to database
+      const { error } = await supabase
+        .from('user_service_consents')
+        .insert({
+          user_id: user.id,
+          company_id: user.company_id,
+          service_type: 'whatsapp-automation',
+          consent_given: true,
+          consent_date: new Date().toISOString(),
+          consent_version: '1.0',
+          ip_address: null, // Could be tracked if needed
+        });
+
+      if (error) {
+        console.error('Error saving consent:', error);
+        alert('Onay kaydedilemedi. Lütfen tekrar deneyin.');
+        return;
+      }
+
+      setHasUserConsent(true);
+      setShowConsentModal(false);
+      console.log('✅ User consent recorded');
+    } catch (err) {
+      console.error('Error saving consent:', err);
+      alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+    }
+  };
+
+  // Check user consent on mount (KVKK compliance)
+  useEffect(() => {
+    if (user?.id && serviceId) {
+      checkUserConsent();
+    }
+  }, [user?.id, serviceId]);
 
   // Fetch initial data
   useEffect(() => {
@@ -1514,6 +1594,146 @@ export default function WhatsAppService() {
               </div>
             </div>
 
+            {/* KVKK Data Deletion Section */}
+            <div className="bg-red-500/10 border-2 border-red-500/50 rounded-xl p-6 mb-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                    🗑️ Verilerimi Sil (KVKK Hakkı)
+                  </h4>
+                  <p className="text-sm text-red-300/80 mb-3">
+                    6698 sayılı KVKK kapsamında, WhatsApp servisi ile ilgili tüm kişisel verilerinizi kalıcı olarak silme hakkına sahipsiniz.
+                  </p>
+                  <div className="bg-black/30 border border-red-500/20 rounded-lg p-4 mb-4">
+                    <p className="text-xs text-red-200/90 font-medium mb-2">⚠️ Silinecek Veriler:</p>
+                    <ul className="text-xs text-red-300/70 space-y-1 list-disc list-inside ml-2">
+                      <li>Tüm WhatsApp mesaj geçmişiniz</li>
+                      <li>Müşteri profil bilgileriniz</li>
+                      <li>Oturum (session) kayıtlarınız</li>
+                      <li>Hata logları ve sistem kayıtları</li>
+                      <li>İstatistik ve analiz verileri</li>
+                    </ul>
+                  </div>
+                  <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-orange-300">
+                      <strong>DİKKAT:</strong> Bu işlem geri alınamaz! Verileriniz kalıcı olarak silinecek ve
+                      kurtarılamayacaktır. WhatsApp instance ayarlarınız ve bağlantınız korunacaktır, sadece
+                      mesaj geçmişi ve kullanıcı verileri silinecektir.
+                    </p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const confirmed = window.confirm(
+                        '⚠️ TÜM VERİLERİNİZİ SİLMEK ÜZERE OLDUĞUNUZDAN EMİN MİSİNİZ?\n\n' +
+                        'Bu işlem:\n' +
+                        '• Tüm WhatsApp mesajlarınızı silecek\n' +
+                        '• Müşteri profil bilgilerinizi silecek\n' +
+                        '• Oturum kayıtlarınızı silecek\n' +
+                        '• GERİ ALINAMAZ!\n\n' +
+                        'Devam etmek istiyor musunuz?'
+                      );
+
+                      if (!confirmed) return;
+
+                      const doubleConfirm = window.confirm(
+                        '⚠️ SON ONAY!\n\n' +
+                        'Bu işlem GERİ ALINAMAZ.\n' +
+                        'Verileriniz KALICI olarak silinecek.\n\n' +
+                        'EVET, VERİLERİMİ SİL'
+                      );
+
+                      if (!doubleConfirm) return;
+
+                      try {
+                        if (!user?.company_id) {
+                          alert('Şirket bilgisi bulunamadı');
+                          return;
+                        }
+
+                        console.log('🗑️ Starting KVKK data deletion for company:', user.company_id);
+
+                        // First, get all session IDs for this company
+                        const { data: sessions, error: getSessionsError } = await supabase
+                          .from('whatsapp_sessions')
+                          .select('id')
+                          .eq('company_id', user.company_id);
+
+                        if (getSessionsError) throw getSessionsError;
+
+                        const sessionIds = sessions?.map(s => s.id) || [];
+
+                        // Delete messages for these sessions
+                        if (sessionIds.length > 0) {
+                          const { error: messagesError } = await supabase
+                            .from('whatsapp_messages')
+                            .delete()
+                            .in('session_id', sessionIds);
+
+                          if (messagesError) throw messagesError;
+                          console.log('✅ Messages deleted');
+                        }
+
+                        // Delete sessions
+                        const { error: sessionsError } = await supabase
+                          .from('whatsapp_sessions')
+                          .delete()
+                          .eq('company_id', user.company_id);
+
+                        if (sessionsError) throw sessionsError;
+                        console.log('✅ Sessions deleted');
+
+                        // Delete user profiles
+                        const { error: profilesError } = await supabase
+                          .from('whatsapp_user_profiles')
+                          .delete()
+                          .eq('company_id', user.company_id);
+
+                        if (profilesError) throw profilesError;
+                        console.log('✅ User profiles deleted');
+
+                        // Delete errors
+                        const { error: errorsError } = await supabase
+                          .from('whatsapp_errors')
+                          .delete()
+                          .eq('company_id', user.company_id);
+
+                        if (errorsError) throw errorsError;
+                        console.log('✅ Errors deleted');
+
+                        // Log the deletion for compliance (audit trail)
+                        await supabase
+                          .from('user_service_consents')
+                          .insert({
+                            user_id: user.id,
+                            company_id: user.company_id,
+                            service_type: 'whatsapp-automation',
+                            consent_given: false,
+                            consent_date: new Date().toISOString(),
+                            consent_version: '1.0',
+                            ip_address: null,
+                            notes: 'User requested data deletion (KVKK right)',
+                          });
+
+                        console.log('✅ Deletion logged for compliance');
+                        alert('✅ Tüm verileriniz başarıyla silindi.\n\nSayfa yenilenecek.');
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('❌ Error deleting data:', error);
+                        alert('❌ Veri silinirken bir hata oluştu. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.');
+                      }
+                    }}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <AlertTriangle className="w-5 h-5" />
+                    TÜM VERİLERİMİ KALICI OLARAK SİL
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Read-only notice */}
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
               <div className="flex items-start gap-3">
@@ -1532,6 +1752,129 @@ export default function WhatsAppService() {
           </div>
         )}
       </div>
+
+      {/* KVKK / Privacy Consent Modal */}
+      {showConsentModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="bg-gradient-to-br from-card via-primary to-card border-2 border-blue-500/50 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <MessageCircle className="w-8 h-8 text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-1">WhatsApp Hizmeti Aydınlatma Metni</h2>
+                  <p className="text-sm text-blue-300">KVKK ve Gizlilik Politikası</p>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="bg-black/30 border border-secondary rounded-xl p-6 mb-6 max-h-96 overflow-y-auto custom-scrollbar">
+                <div className="space-y-4 text-sm text-gray-300">
+                  <section>
+                    <h3 className="text-lg font-semibold text-white mb-2">📋 Veri Sorumlusu</h3>
+                    <p>
+                      Bu WhatsApp servisi kapsamında toplanan kişisel verilerinizin veri sorumlusu <strong className="text-white">Allync</strong> olup,
+                      verileriniz 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında işlenmektedir.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-lg font-semibold text-white mb-2">🔍 Toplanan Veriler</h3>
+                    <p className="mb-2">WhatsApp servisi kapsamında aşağıdaki veriler toplanmaktadır:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>WhatsApp telefon numaranız</li>
+                      <li>Adınız ve profil bilgileriniz</li>
+                      <li>Gönderdiğiniz ve aldığınız mesajlar</li>
+                      <li>Mesaj gönderim zamanları ve oturum bilgileri</li>
+                      <li>Bot ile yaptığınız etkileşimler ve sorgu geçmişi</li>
+                      <li>Hata kayıtları ve sistem logları</li>
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 className="text-lg font-semibold text-white mb-2">🎯 Veri İşleme Amaçları</h3>
+                    <p className="mb-2">Kişisel verileriniz aşağıdaki amaçlarla işlenmektedir:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>WhatsApp botunun size hizmet sunabilmesi</li>
+                      <li>Mesajlarınızın kaydedilmesi ve analiz edilmesi</li>
+                      <li>Müşteri destek taleplerinin yönetilmesi</li>
+                      <li>Hizmet kalitesinin iyileştirilmesi</li>
+                      <li>İstatistiksel analizler ve raporlama</li>
+                      <li>Yasal yükümlülüklerin yerine getirilmesi</li>
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 className="text-lg font-semibold text-white mb-2">🔒 Veri Güvenliği</h3>
+                    <p>
+                      Kişisel verileriniz, KVKK ve ilgili mevzuat kapsamında uygun güvenlik önlemleriyle korunmaktadır.
+                      Verileriniz şifrelenmiş olarak saklanır ve yetkisiz erişime karşı korunur.
+                    </p>
+                  </section>
+
+                  <section>
+                    <h3 className="text-lg font-semibold text-white mb-2">⚖️ Haklarınız</h3>
+                    <p className="mb-2">KVKK kapsamında aşağıdaki haklara sahipsiniz:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
+                      <li>İşlenmişse bilgi talep etme</li>
+                      <li>İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme</li>
+                      <li>Yurt içinde veya yurt dışında aktarıldığı 3. kişileri bilme</li>
+                      <li>Verilerin eksik veya yanlış işlenmişse düzeltilmesini isteme</li>
+                      <li><strong className="text-red-400">Verilerin silinmesini veya yok edilmesini talep etme</strong></li>
+                      <li>İşlenen verilerin münhasıran otomatik sistemler ile analiz edilmesi nedeniyle aleyhinize
+                          bir sonucun ortaya çıkması durumunda buna itiraz etme</li>
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 className="text-lg font-semibold text-white mb-2">🗑️ Veri Silme Hakkı</h3>
+                    <p>
+                      Dilediğiniz zaman <strong className="text-white">Settings (Ayarlar)</strong> sekmesinden
+                      <strong className="text-red-400"> "Verilerimi Sil"</strong> butonuna tıklayarak tüm WhatsApp
+                      mesaj geçmişinizi ve kişisel verilerinizi kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz.
+                    </p>
+                  </section>
+
+                  <section className="border-t border-gray-700 pt-4 mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">📧 İletişim</h3>
+                    <p>
+                      KVKK kapsamındaki haklarınızı kullanmak veya sorularınız için:
+                      <a href="mailto:privacy@allync.com" className="text-blue-400 hover:text-blue-300 ml-1">
+                        privacy@allync.com
+                      </a>
+                    </p>
+                  </section>
+
+                  <section className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4 mt-4">
+                    <p className="text-orange-300 text-xs">
+                      ⚠️ <strong>Önemli:</strong> Bu servisi kullanmaya devam ederek yukarıdaki aydınlatma metnini
+                      okuduğunuzu ve kişisel verilerinizin belirtilen amaçlarla işlenmesine açık rıza gösterdiğinizi
+                      kabul etmiş olursunuz.
+                    </p>
+                  </section>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-4">
+                <button
+                  onClick={handleAcceptConsent}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+                >
+                  ✓ Okudum, Anladım ve Kabul Ediyorum
+                </button>
+              </div>
+
+              <p className="text-xs text-gray-500 text-center mt-4">
+                Bu metni kabul etmeden servisi kullanamazsınız. Onay vermek istemiyorsanız lütfen sayfayı kapatın.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
