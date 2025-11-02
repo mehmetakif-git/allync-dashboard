@@ -7859,9 +7859,9 @@ CREATE POLICY "super_admin_all_user_notifications" ON "public"."user_notificatio
 
 
 
-CREATE POLICY "super_admin_delete_media" ON "public"."project_media" FOR DELETE TO "authenticated" USING ((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
-   FROM "auth"."users"
-  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text"));
+CREATE POLICY "super_admin_delete_media" ON "public"."project_media" FOR DELETE TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
 
 
 
@@ -7871,9 +7871,9 @@ CREATE POLICY "super_admin_insert" ON "public"."support_ticket_messages" FOR INS
 
 
 
-CREATE POLICY "super_admin_insert_media" ON "public"."project_media" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
-   FROM "auth"."users"
-  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text"));
+CREATE POLICY "super_admin_insert_media" ON "public"."project_media" FOR INSERT TO "authenticated" WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
 
 
 
@@ -7883,9 +7883,9 @@ CREATE POLICY "super_admin_select_all" ON "public"."support_ticket_messages" FOR
 
 
 
-CREATE POLICY "super_admin_update_media" ON "public"."project_media" FOR UPDATE TO "authenticated" USING ((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
-   FROM "auth"."users"
-  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text"));
+CREATE POLICY "super_admin_update_media" ON "public"."project_media" FOR UPDATE TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
 
 
 
@@ -7950,11 +7950,11 @@ CREATE POLICY "users_read_own_notifications" ON "public"."user_notifications" FO
 
 
 
-CREATE POLICY "users_select_media" ON "public"."project_media" FOR SELECT TO "authenticated" USING (((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
-   FROM "auth"."users"
-  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text") OR (("company_id")::"text" = ( SELECT ("users"."raw_user_meta_data" ->> 'company_id'::"text")
-   FROM "auth"."users"
-  WHERE ("users"."id" = "auth"."uid"())))));
+CREATE POLICY "users_select_media" ON "public"."project_media" FOR SELECT TO "authenticated" USING (((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))) OR ("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"())))));
 
 
 
@@ -9449,6 +9449,58 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "service_role";
+
+
+--
+-- Storage Configuration for Project Media
+--
+
+-- Create storage bucket for project media
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'project-media',
+  'project-media',
+  false,
+  52428800, -- 50MB in bytes
+  ARRAY['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage RLS Policies for project-media bucket
+
+-- Allow authenticated users to upload files to project-media bucket
+CREATE POLICY "Allow authenticated uploads to project-media"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'project-media');
+
+-- Allow authenticated users to read files from project-media bucket
+CREATE POLICY "Allow authenticated reads from project-media"
+ON storage.objects FOR SELECT TO authenticated
+USING (bucket_id = 'project-media');
+
+-- Allow super admins to delete files from project-media bucket
+CREATE POLICY "Allow super_admin delete from project-media"
+ON storage.objects FOR DELETE TO authenticated
+USING (
+  bucket_id = 'project-media'
+  AND EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE profiles.id = auth.uid()
+    AND profiles.role = 'super_admin'
+  )
+);
+
+-- Allow super admins to update files in project-media bucket
+CREATE POLICY "Allow super_admin update in project-media"
+ON storage.objects FOR UPDATE TO authenticated
+USING (
+  bucket_id = 'project-media'
+  AND EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE profiles.id = auth.uid()
+    AND profiles.role = 'super_admin'
+  )
+);
 
 
 

@@ -85,14 +85,20 @@ export async function getCompanyMedia(companyId: string, projectType?: 'website'
 }
 
 /**
- * Get public URL for media file
+ * Get signed URL for media file (for private bucket)
+ * Returns a temporary URL that expires in 1 hour
  */
-export function getMediaPublicUrl(filePath: string): string {
-  const { data } = supabase.storage
+export async function getMediaPublicUrl(filePath: string): Promise<string> {
+  const { data, error } = await supabase.storage
     .from('project-media')
-    .getPublicUrl(filePath);
+    .createSignedUrl(filePath, 3600); // 1 hour expiry
 
-  return data.publicUrl;
+  if (error) {
+    console.error('❌ Error creating signed URL:', error);
+    throw error;
+  }
+
+  return data.signedUrl;
 }
 
 /**

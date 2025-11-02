@@ -99,7 +99,16 @@ const MobileAppDevelopment = () => {
         setLoadingMedia(true);
         try {
           const media = await getProjectMedia(project.id, 'mobile-app');
-          setProjectMedia(media);
+
+          // Generate signed URLs for each media item
+          const mediaWithUrls = await Promise.all(
+            media.map(async (item) => ({
+              ...item,
+              signedUrl: await getMediaPublicUrl(item.file_path)
+            }))
+          );
+
+          setProjectMedia(mediaWithUrls);
         } catch (err) {
           console.error('❌ Error loading media:', err);
         } finally {
@@ -772,9 +781,13 @@ const MobileAppDevelopment = () => {
                     <div className="aspect-video bg-primary relative overflow-hidden">
                       {media.file_type === 'image' ? (
                         <img
-                          src={getMediaPublicUrl(media.file_path)}
+                          src={media.signedUrl}
                           alt={media.title || media.file_name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            console.error('Failed to load image:', media.file_path);
+                            e.currentTarget.style.display = 'none';
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
@@ -839,13 +852,13 @@ const MobileAppDevelopment = () => {
               <div className="flex-1 bg-black flex items-center justify-center p-4">
                 {selectedMedia.file_type === 'image' ? (
                   <img
-                    src={getMediaPublicUrl(selectedMedia.file_path)}
+                    src={selectedMedia.signedUrl}
                     alt={selectedMedia.title || selectedMedia.file_name}
                     className="max-w-full max-h-[70vh] object-contain"
                   />
                 ) : (
                   <video
-                    src={getMediaPublicUrl(selectedMedia.file_path)}
+                    src={selectedMedia.signedUrl}
                     controls
                     className="max-w-full max-h-[70vh]"
                   />
@@ -892,7 +905,7 @@ const MobileAppDevelopment = () => {
                 </div>
 
                 <a
-                  href={getMediaPublicUrl(selectedMedia.file_path)}
+                  href={selectedMedia.signedUrl}
                   download={selectedMedia.file_name}
                   className="w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
                 >

@@ -7,7 +7,7 @@ import { getAllCompaniesWithServicePricing, setCompanyServicePricing } from '../
 import serviceRequestsAPI from '../../../lib/api/serviceRequests';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getAllWebsiteProjects } from '../../../lib/api/websiteProjects';
-import { getProjectMedia } from '../../../lib/api/projectMedia';
+import { getProjectMedia, getMediaPublicUrl } from '../../../lib/api/projectMedia';
 import ProjectMediaUploadModal from '../../../components/modals/ProjectMediaUploadModal';
 
 export default function WebsiteServiceManagement() {
@@ -69,7 +69,16 @@ export default function WebsiteServiceManagement() {
   const loadProjectMedia = async (projectId: string) => {
     try {
       const media = await getProjectMedia(projectId, 'website');
-      setProjectMedia(prev => ({ ...prev, [projectId]: media }));
+
+      // Generate signed URLs for each media item
+      const mediaWithUrls = await Promise.all(
+        media.map(async (item) => ({
+          ...item,
+          signedUrl: await getMediaPublicUrl(item.file_path)
+        }))
+      );
+
+      setProjectMedia(prev => ({ ...prev, [projectId]: mediaWithUrls }));
     } catch (error) {
       console.error('Error loading project media:', error);
     }
@@ -393,9 +402,13 @@ export default function WebsiteServiceManagement() {
                             >
                               {media.file_type === 'image' ? (
                                 <img
-                                  src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/project-media/${media.file_path}`}
+                                  src={media.signedUrl}
                                   alt={media.title || media.file_name}
                                   className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    console.error('Failed to load image:', media.file_path);
+                                    e.currentTarget.style.display = 'none';
+                                  }}
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-purple-500/10">
