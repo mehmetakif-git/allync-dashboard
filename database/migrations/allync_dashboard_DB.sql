@@ -555,6 +555,18 @@ $$;
 ALTER FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."get_project_media_url"("file_path" "text") RETURNS "text"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  RETURN 'https://your-supabase-project.supabase.co/storage/v1/object/public/project-media/' || file_path;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_project_media_url"("file_path" "text") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."get_top_active_users"("p_company_id" "uuid" DEFAULT NULL::"uuid", "p_limit" integer DEFAULT 10, "p_days" integer DEFAULT 7) RETURNS TABLE("user_id" "uuid", "user_name" "text", "user_email" "text", "user_role" "text", "activity_count" bigint, "last_activity" "text")
     LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
@@ -786,6 +798,19 @@ $$;
 
 
 ALTER FUNCTION "public"."update_message_count"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."update_project_media_updated_at"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."update_project_media_updated_at"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."update_service_types_updated_at"() RETURNS "trigger"
@@ -2602,6 +2627,62 @@ CREATE TABLE IF NOT EXISTS "public"."photos_metrics" (
 ALTER TABLE "public"."photos_metrics" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."project_media" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "project_id" "uuid" NOT NULL,
+    "project_type" "text" NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "milestone_id" "uuid",
+    "milestone_name" "text",
+    "file_path" "text" NOT NULL,
+    "file_name" "text" NOT NULL,
+    "file_type" "text" NOT NULL,
+    "mime_type" "text" NOT NULL,
+    "file_size" bigint NOT NULL,
+    "title" "text",
+    "description" "text",
+    "display_order" integer DEFAULT 0,
+    "is_featured" boolean DEFAULT false,
+    "uploaded_by" "uuid" NOT NULL,
+    "uploaded_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "project_media_file_type_check" CHECK (("file_type" = ANY (ARRAY['image'::"text", 'video'::"text"]))),
+    CONSTRAINT "project_media_project_type_check" CHECK (("project_type" = ANY (ARRAY['website'::"text", 'mobile-app'::"text"])))
+);
+
+
+ALTER TABLE "public"."project_media" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."project_media" IS 'Stores media (images/videos) for website and mobile app projects';
+
+
+
+COMMENT ON COLUMN "public"."project_media"."project_id" IS 'Reference to website_projects or mobile_app_projects';
+
+
+
+COMMENT ON COLUMN "public"."project_media"."project_type" IS 'Type of project: website or mobile-app';
+
+
+
+COMMENT ON COLUMN "public"."project_media"."milestone_id" IS 'Optional reference to specific milestone';
+
+
+
+COMMENT ON COLUMN "public"."project_media"."file_path" IS 'Path in Supabase storage bucket';
+
+
+
+COMMENT ON COLUMN "public"."project_media"."display_order" IS 'Order for displaying in gallery (lower = first)';
+
+
+
+COMMENT ON COLUMN "public"."project_media"."is_featured" IS 'Mark as featured/highlight image';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."revenue_metrics" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "metric_date" "date" NOT NULL,
@@ -4139,6 +4220,11 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
+ALTER TABLE ONLY "public"."project_media"
+    ADD CONSTRAINT "project_media_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."revenue_metrics"
     ADD CONSTRAINT "revenue_metrics_metric_date_key" UNIQUE ("metric_date");
 
@@ -5138,6 +5224,26 @@ CREATE INDEX "idx_profiles_role" ON "public"."profiles" USING "btree" ("role");
 
 
 
+CREATE INDEX "idx_project_media_company" ON "public"."project_media" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_project_media_milestone" ON "public"."project_media" USING "btree" ("milestone_id");
+
+
+
+CREATE INDEX "idx_project_media_order" ON "public"."project_media" USING "btree" ("display_order");
+
+
+
+CREATE INDEX "idx_project_media_project" ON "public"."project_media" USING "btree" ("project_id", "project_type");
+
+
+
+CREATE INDEX "idx_project_media_type" ON "public"."project_media" USING "btree" ("file_type");
+
+
+
 CREATE INDEX "idx_revenue_metrics_date" ON "public"."revenue_metrics" USING "btree" ("metric_date" DESC);
 
 
@@ -5954,6 +6060,10 @@ CREATE OR REPLACE TRIGGER "update_mobile_app_projects_updated_at" BEFORE UPDATE 
 
 
 
+CREATE OR REPLACE TRIGGER "update_project_media_updated_at_trigger" BEFORE UPDATE ON "public"."project_media" FOR EACH ROW EXECUTE FUNCTION "public"."update_project_media_updated_at"();
+
+
+
 CREATE OR REPLACE TRIGGER "update_ticket_first_response_trigger" AFTER INSERT ON "public"."support_messages" FOR EACH ROW EXECUTE FUNCTION "public"."update_ticket_first_response"();
 
 
@@ -6503,6 +6613,16 @@ ALTER TABLE ONLY "public"."profiles"
 
 ALTER TABLE ONLY "public"."profiles"
     ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."project_media"
+    ADD CONSTRAINT "project_media_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."project_media"
+    ADD CONSTRAINT "project_media_uploaded_by_fkey" FOREIGN KEY ("uploaded_by") REFERENCES "auth"."users"("id");
 
 
 
@@ -7688,6 +7808,9 @@ ALTER TABLE "public"."photos_instances" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."photos_metrics" ENABLE ROW LEVEL SECURITY;
 
 
+ALTER TABLE "public"."project_media" ENABLE ROW LEVEL SECURITY;
+
+
 ALTER TABLE "public"."revenue_metrics" ENABLE ROW LEVEL SECURITY;
 
 
@@ -7736,15 +7859,33 @@ CREATE POLICY "super_admin_all_user_notifications" ON "public"."user_notificatio
 
 
 
+CREATE POLICY "super_admin_delete_media" ON "public"."project_media" FOR DELETE TO "authenticated" USING ((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
+   FROM "auth"."users"
+  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text"));
+
+
+
 CREATE POLICY "super_admin_insert" ON "public"."support_ticket_messages" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."profiles"
   WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
 
 
 
+CREATE POLICY "super_admin_insert_media" ON "public"."project_media" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
+   FROM "auth"."users"
+  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text"));
+
+
+
 CREATE POLICY "super_admin_select_all" ON "public"."support_ticket_messages" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."profiles"
   WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+CREATE POLICY "super_admin_update_media" ON "public"."project_media" FOR UPDATE TO "authenticated" USING ((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
+   FROM "auth"."users"
+  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text"));
 
 
 
@@ -7806,6 +7947,14 @@ CREATE POLICY "users_read_accessible_system_notifications" ON "public"."system_n
 
 
 CREATE POLICY "users_read_own_notifications" ON "public"."user_notifications" FOR SELECT TO "authenticated" USING (("user_id" = "auth"."uid"()));
+
+
+
+CREATE POLICY "users_select_media" ON "public"."project_media" FOR SELECT TO "authenticated" USING (((( SELECT ("users"."raw_user_meta_data" ->> 'role'::"text")
+   FROM "auth"."users"
+  WHERE ("users"."id" = "auth"."uid"())) = 'super_admin'::"text") OR (("company_id")::"text" = ( SELECT ("users"."raw_user_meta_data" ->> 'company_id'::"text")
+   FROM "auth"."users"
+  WHERE ("users"."id" = "auth"."uid"())))));
 
 
 
@@ -8284,6 +8433,12 @@ GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target
 
 
 
+GRANT ALL ON FUNCTION "public"."get_project_media_url"("file_path" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_project_media_url"("file_path" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_project_media_url"("file_path" "text") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."get_top_active_users"("p_company_id" "uuid", "p_limit" integer, "p_days" integer) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_top_active_users"("p_company_id" "uuid", "p_limit" integer, "p_days" integer) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_top_active_users"("p_company_id" "uuid", "p_limit" integer, "p_days" integer) TO "service_role";
@@ -8521,6 +8676,12 @@ GRANT ALL ON FUNCTION "public"."update_maintenance_windows_updated_at"() TO "ser
 GRANT ALL ON FUNCTION "public"."update_message_count"() TO "anon";
 GRANT ALL ON FUNCTION "public"."update_message_count"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."update_message_count"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."update_project_media_updated_at"() TO "anon";
+GRANT ALL ON FUNCTION "public"."update_project_media_updated_at"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."update_project_media_updated_at"() TO "service_role";
 
 
 
@@ -8997,6 +9158,12 @@ GRANT ALL ON TABLE "public"."photos_instances" TO "service_role";
 GRANT ALL ON TABLE "public"."photos_metrics" TO "anon";
 GRANT ALL ON TABLE "public"."photos_metrics" TO "authenticated";
 GRANT ALL ON TABLE "public"."photos_metrics" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."project_media" TO "anon";
+GRANT ALL ON TABLE "public"."project_media" TO "authenticated";
+GRANT ALL ON TABLE "public"."project_media" TO "service_role";
 
 
 

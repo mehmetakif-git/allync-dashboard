@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle, Info, Wrench, ChevronDown } from 'lucide-react';
+import { Globe, Calendar, Mail, Clock, CheckCircle2, Circle, XCircle, Info, Wrench, ChevronDown, Image as ImageIcon, Video, Download } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getWebsiteProjectByCompanyService } from '../../../lib/api/websiteProjects';
 import { getCompanyServices } from '../../../lib/api/companyServices';
+import { getProjectMedia, getMediaPublicUrl } from '../../../lib/api/projectMedia';
 
 const WebsiteDevelopment = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { serviceId } = useParams<{ serviceId: string }>(); // Get company_service_id from URL
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'details' | 'support' | 'gallery'>('dashboard');
   const [project, setProject] = useState<any>(null);
   const [companyServices, setCompanyServices] = useState<any[]>([]);
   const [availableProjects, setAvailableProjects] = useState<any[]>([]); // All website projects for this company
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [projectMedia, setProjectMedia] = useState<any[]>([]);
+  const [loadingMedia, setLoadingMedia] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<any>(null);
 
   // Fetch project by company_service_id
   useEffect(() => {
@@ -87,6 +91,24 @@ const WebsiteDevelopment = () => {
 
     fetchData();
   }, [serviceId, user?.company_id, navigate]);
+
+  // Load media when gallery tab is opened
+  useEffect(() => {
+    const loadMedia = async () => {
+      if (activeTab === 'gallery' && project?.id) {
+        setLoadingMedia(true);
+        try {
+          const media = await getProjectMedia(project.id, 'website');
+          setProjectMedia(media);
+        } catch (err) {
+          console.error('❌ Error loading media:', err);
+        } finally {
+          setLoadingMedia(false);
+        }
+      }
+    };
+    loadMedia();
+  }, [activeTab, project?.id]);
 
   // Helper objects
   const projectTypeLabels: any = {
@@ -439,6 +461,17 @@ const WebsiteDevelopment = () => {
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
           )}
         </button>
+        <button
+          onClick={() => setActiveTab('gallery')}
+          className={`pb-3 px-4 font-medium transition-colors relative ${
+            activeTab === 'gallery' ? 'text-blue-400' : 'text-muted hover:text-secondary'
+          }`}
+        >
+          Media Gallery
+          {activeTab === 'gallery' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
+          )}
+        </button>
       </div>
 
       {activeTab === 'dashboard' && (
@@ -623,6 +656,179 @@ const WebsiteDevelopment = () => {
           <button className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg transition-all">
             Contact Support
           </button>
+        </div>
+      )}
+
+      {activeTab === 'gallery' && (
+        <div className="space-y-6">
+          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-1">Project Media Gallery</h3>
+                <p className="text-muted text-sm">View images and videos uploaded by your project manager</p>
+              </div>
+              {projectMedia.length > 0 && (
+                <div className="text-sm text-muted">
+                  {projectMedia.length} {projectMedia.length === 1 ? 'item' : 'items'}
+                </div>
+              )}
+            </div>
+
+            {loadingMedia ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4" />
+                <p className="text-muted">Loading media...</p>
+              </div>
+            ) : projectMedia.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <ImageIcon className="w-16 h-16 text-muted mb-4" />
+                <h4 className="text-lg font-semibold text-white mb-2">No Media Yet</h4>
+                <p className="text-muted text-center max-w-md">
+                  Your project manager will upload images and videos as your website development progresses.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projectMedia.map((media) => (
+                  <div
+                    key={media.id}
+                    className="bg-secondary/50 border border-secondary rounded-xl overflow-hidden hover:border-blue-500/50 transition-all group cursor-pointer"
+                    onClick={() => setSelectedMedia(media)}
+                  >
+                    {/* Media Preview */}
+                    <div className="aspect-video bg-primary relative overflow-hidden">
+                      {media.file_type === 'image' ? (
+                        <img
+                          src={getMediaPublicUrl(media.file_path)}
+                          alt={media.title || media.file_name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+                          <Video className="w-12 h-12 text-purple-400" />
+                        </div>
+                      )}
+                      {media.is_featured && (
+                        <div className="absolute top-2 right-2 px-2 py-1 bg-yellow-500/90 text-yellow-900 text-xs font-semibold rounded">
+                          Featured
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Media Info */}
+                    <div className="p-4">
+                      <h4 className="text-white font-semibold mb-1 truncate">
+                        {media.title || media.file_name}
+                      </h4>
+                      {media.milestone_name && (
+                        <p className="text-xs text-blue-400 mb-2">📍 {media.milestone_name}</p>
+                      )}
+                      {media.description && (
+                        <p className="text-muted text-sm line-clamp-2 mb-3">{media.description}</p>
+                      )}
+                      <div className="flex items-center justify-between text-xs text-muted">
+                        <span className="flex items-center gap-1">
+                          {media.file_type === 'image' ? <ImageIcon className="w-3 h-3" /> : <Video className="w-3 h-3" />}
+                          {media.file_type.toUpperCase()}
+                        </span>
+                        <span>{(media.file_size / 1024 / 1024).toFixed(2)} MB</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Media Viewer Modal */}
+      {selectedMedia && (
+        <div
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedMedia(null)}
+        >
+          <div
+            className="relative max-w-6xl w-full max-h-[90vh] bg-card rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedMedia(null)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors"
+            >
+              ✕
+            </button>
+
+            {/* Media Content */}
+            <div className="flex flex-col md:flex-row h-full">
+              {/* Media Display */}
+              <div className="flex-1 bg-black flex items-center justify-center p-4">
+                {selectedMedia.file_type === 'image' ? (
+                  <img
+                    src={getMediaPublicUrl(selectedMedia.file_path)}
+                    alt={selectedMedia.title || selectedMedia.file_name}
+                    className="max-w-full max-h-[70vh] object-contain"
+                  />
+                ) : (
+                  <video
+                    src={getMediaPublicUrl(selectedMedia.file_path)}
+                    controls
+                    className="max-w-full max-h-[70vh]"
+                  />
+                )}
+              </div>
+
+              {/* Media Details */}
+              <div className="w-full md:w-80 bg-card p-6 overflow-y-auto">
+                <h3 className="text-xl font-bold text-white mb-4">
+                  {selectedMedia.title || selectedMedia.file_name}
+                </h3>
+
+                {selectedMedia.milestone_name && (
+                  <div className="mb-4">
+                    <p className="text-xs text-muted mb-1">Milestone</p>
+                    <p className="text-sm text-blue-400">{selectedMedia.milestone_name}</p>
+                  </div>
+                )}
+
+                {selectedMedia.description && (
+                  <div className="mb-4">
+                    <p className="text-xs text-muted mb-1">Description</p>
+                    <p className="text-sm text-white">{selectedMedia.description}</p>
+                  </div>
+                )}
+
+                <div className="space-y-3 mb-6">
+                  <div>
+                    <p className="text-xs text-muted mb-1">File Type</p>
+                    <p className="text-sm text-white uppercase">{selectedMedia.file_type}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted mb-1">File Size</p>
+                    <p className="text-sm text-white">
+                      {(selectedMedia.file_size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted mb-1">Uploaded</p>
+                    <p className="text-sm text-white">
+                      {new Date(selectedMedia.uploaded_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href={getMediaPublicUrl(selectedMedia.file_path)}
+                  download={selectedMedia.file_name}
+                  className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

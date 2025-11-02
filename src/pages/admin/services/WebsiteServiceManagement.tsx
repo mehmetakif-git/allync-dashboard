@@ -1,20 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Globe, ArrowLeft, Loader2 } from 'lucide-react';
+import { Globe, ArrowLeft, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { OverallTab, CompaniesTab, ServiceContentTab } from '../../../components/admin/ServiceManagementTabs';
 import serviceTypesAPI from '../../../lib/api/serviceTypes';
 import { getAllCompaniesWithServicePricing, setCompanyServicePricing } from '../../../lib/api/companyServicePricing';
 import serviceRequestsAPI from '../../../lib/api/serviceRequests';
 import { useAuth } from '../../../contexts/AuthContext';
+import { getAllWebsiteProjects } from '../../../lib/api/websiteProjects';
+import { getProjectMedia } from '../../../lib/api/projectMedia';
+import ProjectMediaUploadModal from '../../../components/modals/ProjectMediaUploadModal';
 
 export default function WebsiteServiceManagement() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overall' | 'companies' | 'content'>('overall');
+  const [activeTab, setActiveTab] = useState<'overall' | 'companies' | 'content' | 'projects'>('overall');
   const [loading, setLoading] = useState(true);
   const [serviceData, setServiceData] = useState<any>(null);
   const [companies, setCompanies] = useState<any[]>([]);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+
+  // Projects tab state
+  const [projects, setProjects] = useState<any[]>([]);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [projectMedia, setProjectMedia] = useState<Record<string, any[]>>({});
 
   const SERVICE_GRADIENT = 'from-purple-500 to-blue-500';
 
@@ -43,12 +52,38 @@ export default function WebsiteServiceManagement() {
       const requestsData = await serviceRequestsAPI.getServiceRequestsByServiceType(websiteService.id, 'pending');
       setPendingRequests(requestsData);
 
+      // Fetch all website projects
+      const projectsData = await getAllWebsiteProjects();
+      setProjects(projectsData);
+
       console.log('📊 Loaded companies:', companiesData);
       console.log('📋 Loaded pending requests:', requestsData);
+      console.log('📱 Loaded projects:', projectsData);
     } catch (error) {
       console.error('Error loading service data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadProjectMedia = async (projectId: string) => {
+    try {
+      const media = await getProjectMedia(projectId, 'website');
+      setProjectMedia(prev => ({ ...prev, [projectId]: media }));
+    } catch (error) {
+      console.error('Error loading project media:', error);
+    }
+  };
+
+  const handleOpenUploadModal = (project: any) => {
+    setSelectedProject(project);
+    setShowUploadModal(true);
+  };
+
+  const handleUploadSuccess = async () => {
+    if (selectedProject) {
+      await loadProjectMedia(selectedProject.id);
+      await loadServiceData(); // Reload to get fresh data
     }
   };
 
@@ -172,6 +207,7 @@ export default function WebsiteServiceManagement() {
   const tabs = [
     { id: 'overall', label: 'Overall' },
     { id: 'companies', label: 'Companies', badge: totalCompanies },
+    { id: 'projects', label: 'Projects', badge: projects.length },
     { id: 'content', label: 'Service Content' },
   ];
 
@@ -269,7 +305,144 @@ export default function WebsiteServiceManagement() {
             showPricing={false} // Website development is one-time, hide pricing
           />
         )}
+
+        {activeTab === 'projects' && (
+          <div className="space-y-6">
+            {projects.length === 0 ? (
+              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-12 text-center">
+                <ImageIcon className="w-16 h-16 text-muted mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">No Projects Yet</h3>
+                <p className="text-muted">Website projects will appear here once created.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-blue-500/50 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-bold text-white">
+                            {project.project_name || 'Unnamed Project'}
+                          </h3>
+                          <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${
+                            project.status === 'active'
+                              ? 'bg-green-500/20 text-green-400'
+                              : project.status === 'completed'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : project.status === 'paused'
+                              ? 'bg-yellow-500/20 text-yellow-400'
+                              : 'bg-red-500/20 text-red-400'
+                          }`}>
+                            {project.status?.toUpperCase() || 'UNKNOWN'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted">
+                          <span>🏢 {project.company?.name || 'Unknown Company'}</span>
+                          <span>📊 {project.overall_progress || 0}% Complete</span>
+                          {project.domain && <span>🌐 {project.domain}</span>}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleOpenUploadModal(project)}
+                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Upload Media
+                      </button>
+                    </div>
+
+                    {/* Milestones */}
+                    {project.milestones && project.milestones.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-semibold text-muted mb-2">Milestones:</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {project.milestones.map((milestone: any) => (
+                            <div
+                              key={milestone.id}
+                              className={`px-3 py-1 rounded-lg text-xs font-medium ${
+                                milestone.status === 'completed'
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : milestone.status === 'in-progress'
+                                  ? 'bg-blue-500/20 text-blue-400'
+                                  : milestone.status === 'blocked'
+                                  ? 'bg-red-500/20 text-red-400'
+                                  : 'bg-gray-500/20 text-gray-400'
+                              }`}
+                            >
+                              {milestone.title} ({milestone.progress || 0}%)
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Media Gallery Preview */}
+                    {projectMedia[project.id] && projectMedia[project.id].length > 0 ? (
+                      <div>
+                        <h4 className="text-sm font-semibold text-muted mb-2">
+                          Media Gallery ({projectMedia[project.id].length} items)
+                        </h4>
+                        <div className="grid grid-cols-6 gap-2">
+                          {projectMedia[project.id].slice(0, 6).map((media: any) => (
+                            <div
+                              key={media.id}
+                              className="aspect-square rounded-lg overflow-hidden bg-secondary border border-secondary hover:border-blue-500/50 transition-all"
+                            >
+                              {media.file_type === 'image' ? (
+                                <img
+                                  src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/project-media/${media.file_path}`}
+                                  alt={media.title || media.file_name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-purple-500/10">
+                                  <ImageIcon className="w-6 h-6 text-purple-400" />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        {projectMedia[project.id].length > 6 && (
+                          <p className="text-xs text-muted mt-2">
+                            +{projectMedia[project.id].length - 6} more items
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => loadProjectMedia(project.id)}
+                        className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        Load media gallery
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Upload Modal */}
+      {selectedProject && (
+        <ProjectMediaUploadModal
+          isOpen={showUploadModal}
+          onClose={() => {
+            setShowUploadModal(false);
+            setSelectedProject(null);
+          }}
+          projectId={selectedProject.id}
+          projectType="website"
+          companyId={selectedProject.company_id}
+          companyName={selectedProject.company?.name || 'Unknown Company'}
+          milestones={selectedProject.milestones || []}
+          onUploadSuccess={handleUploadSuccess}
+        />
+      )}
     </div>
   );
 }

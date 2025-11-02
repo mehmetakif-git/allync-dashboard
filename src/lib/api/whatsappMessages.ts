@@ -80,12 +80,38 @@ export async function getMessageStatistics(
   by_type: Record<string, number>;
   by_sentiment: Record<string, number>;
 }> {
-  console.log('📡 Fetching message statistics for company:', companyId);
+  console.log('📡 Fetching message statistics for company:', companyId, dateRange);
 
+  // First, get all session IDs for this company
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('whatsapp_sessions')
+    .select('id')
+    .eq('company_id', companyId);
+
+  if (sessionsError) {
+    console.error('❌ Error fetching sessions:', sessionsError);
+    throw sessionsError;
+  }
+
+  const sessionIds = sessions?.map(s => s.id) || [];
+
+  if (sessionIds.length === 0) {
+    console.log('ℹ️ No sessions found for company, returning empty stats');
+    return {
+      total: 0,
+      customer: 0,
+      bot: 0,
+      agent: 0,
+      by_type: {},
+      by_sentiment: {},
+    };
+  }
+
+  // Now get messages for these sessions
   const { data, error } = await supabase
     .from('whatsapp_messages')
     .select('sender, message_type, sentiment')
-    .eq('company_id', companyId)
+    .in('session_id', sessionIds)
     .gte('created_at', dateRange.start)
     .lte('created_at', dateRange.end);
 
@@ -120,7 +146,7 @@ export async function getMessageStatistics(
     }
   });
 
-  console.log('✅ Message statistics calculated');
+  console.log('✅ Message statistics calculated:', stats);
   return stats;
 }
 
