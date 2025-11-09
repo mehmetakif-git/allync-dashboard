@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Shield, Building2, AlertCircle, CheckCircle, KeyRound } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -9,12 +9,13 @@ import activityLogger from '../../lib/services/activityLogger'; // ✅ ACTIVITY 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   // Login States
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   
   // Modal States
   const [showContactModal, setShowContactModal] = useState(false);
@@ -26,6 +27,15 @@ export default function Login() {
   const [resetMessage, setResetMessage] = useState('');
 
   const isDevelopment = import.meta.env.DEV;
+
+  // Load saved email on component mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('allync_remember_email');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,6 +54,13 @@ export default function Login() {
 
       // ✅ TRACK SUCCESSFUL LOGIN
       await activityLogger.logLogin(user.id, user.company_id || null);
+
+      // Save email if "Remember Me" is checked
+      if (rememberMe) {
+        localStorage.setItem('allync_remember_email', email);
+      } else {
+        localStorage.removeItem('allync_remember_email');
+      }
 
       // Navigate based on role
       if (user.role === 'super_admin') {
@@ -195,11 +212,11 @@ export default function Login() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-mobile p-4">
       <div className={`w-full ${isDevelopment ? 'max-w-6xl' : 'max-w-md'}`}>
         <div className={`grid grid-cols-1 ${isDevelopment ? 'lg:grid-cols-2' : ''} gap-6`}>
           {/* Login Form */}
-          <div className="bg-primary/80 backdrop-blur-xl border border-primary rounded-2xl shadow-2xl shadow-black/70 p-8">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] shadow-2xl p-8">
             {/* Logo & Title */}
             <div className="text-center mb-8">
               {/* Logo with Glow */}
@@ -227,7 +244,7 @@ export default function Login() {
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-red-400 text-sm font-medium">Login Failed</p>
@@ -248,7 +265,7 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="your@email.com"
                     required
                     disabled={isLoading}
@@ -275,7 +292,7 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="Enter your password"
                     required
                     disabled={isLoading}
@@ -283,10 +300,28 @@ export default function Login() {
                 </div>
               </div>
 
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-white/20 bg-white/10 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="rememberMe"
+                  className="text-sm text-gray-300 cursor-pointer select-none"
+                >
+                  Remember my email
+                </label>
+              </div>
+
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
+                className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/50"
               >
                 {isLoading ? (
                   <>
@@ -311,9 +346,9 @@ export default function Login() {
 
             {/* Demo Info (Production) */}
             {!isDevelopment && (
-              <div className="mt-8 pt-6 border-t border-primary">
+              <div className="mt-8 pt-6 border-t border-white/10">
                 <p className="text-center text-xs text-muted mb-3">Demo Credentials:</p>
-                <div className="space-y-2 text-xs text-muted bg-card rounded-lg p-4">
+                <div className="space-y-2 text-xs text-muted bg-white/5 rounded-xl p-4 border border-white/10">
                   <p>📧 <span className="text-red-400">Super Admin:</span> info@allyncai.com</p>
                   <p>📧 <span className="text-blue-400">Company Admin:</span> sarah.smith@techcorp.com</p>
                   <p>🔑 <span className="text-muted">Password:</span> Demo123!</p>
@@ -325,7 +360,7 @@ export default function Login() {
           {/* Demo Quick Login (Development Only) */}
           {isDevelopment && (
             <div className="space-y-4">
-              <div className="bg-primary/80 backdrop-blur-xl border border-primary rounded-2xl shadow-2xl shadow-black/70 p-6">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] shadow-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white">🚀 Quick Demo Access</h2>
                   <span className="px-3 py-1 bg-orange-500/20 text-orange-400 text-xs font-bold rounded-full border border-orange-500/30">
@@ -368,14 +403,14 @@ export default function Login() {
                   })}
                 </div>
 
-                <div className="mt-4 p-3 bg-card rounded-lg border border-secondary">
+                <div className="mt-4 p-3 bg-white/5 rounded-xl border border-white/10">
                   <p className="text-xs text-muted text-center">
                     🔑 All demo passwords: <span className="text-blue-400 font-mono font-bold">Demo123!</span>
                   </p>
                 </div>
               </div>
 
-              <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-[20px] p-4">
                 <p className="text-xs text-orange-300">
                   <strong>⚠️ Development Mode:</strong> Quick login buttons are hidden in production.
                 </p>
@@ -394,7 +429,7 @@ export default function Login() {
       {/* Forgot Password Modal */}
       {showForgotPassword && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-secondary border border-secondary rounded-xl max-w-md w-full p-6 shadow-2xl">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] max-w-md w-full p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <KeyRound className="w-6 h-6 text-blue-400" />
@@ -407,7 +442,7 @@ export default function Login() {
 
             {/* Success Message */}
             {resetStatus === 'success' && (
-              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-3">
+              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-green-400 text-sm font-medium">Email Sent!</p>
@@ -418,7 +453,7 @@ export default function Login() {
 
             {/* Error Message */}
             {resetStatus === 'error' && (
-              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
+              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-red-400 text-sm font-medium">Error</p>
@@ -438,7 +473,7 @@ export default function Login() {
                     type="email"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="your@email.com"
                     required
                     disabled={resetStatus === 'loading' || resetStatus === 'success'}
@@ -446,7 +481,7 @@ export default function Login() {
                 </div>
               </div>
 
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
                 <p className="text-xs text-blue-400">
                   🔒 A password reset link will be sent to your email. The link expires in 1 hour.
                 </p>
@@ -462,14 +497,14 @@ export default function Login() {
                     setResetMessage('');
                   }}
                   disabled={resetStatus === 'loading'}
-                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-hover text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={resetStatus === 'loading' || resetStatus === 'success'}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-xl font-semibold transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {resetStatus === 'loading' ? (
                     <>
