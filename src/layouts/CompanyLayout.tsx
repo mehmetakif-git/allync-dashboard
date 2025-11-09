@@ -20,7 +20,7 @@ export default function CompanyLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary flex">
+    <div className="min-h-screen bg-gradient-mobile flex">
       <CompanySidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}

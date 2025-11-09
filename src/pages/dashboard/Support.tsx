@@ -132,7 +132,17 @@ export default function Support() {
 
   const handleCreateTicket = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      console.error('❌ No user found');
+      alert('User not authenticated');
+      return;
+    }
+
+    if (!user.company_id) {
+      console.error('❌ No company_id found for user');
+      alert('User has no company assigned');
+      return;
+    }
 
     const formData = new FormData(e.currentTarget);
     const subject = formData.get('subject') as string;
@@ -140,10 +150,28 @@ export default function Support() {
     const category = formData.get('category') as string;
     const priority = formData.get('priority') as string;
 
+    console.log('📝 RAW Form Data:', {
+      subject,
+      description,
+      category,
+      priority,
+    });
+
+    console.log('📝 Categories from API:', categories);
+
+    console.log('📝 Creating ticket with data:', {
+      company_id: user.company_id,
+      created_by: user.id,
+      subject,
+      description,
+      category,
+      priority,
+    });
+
     try {
       setCreatingTicket(true);
 
-      await createTicket({
+      const result = await createTicket({
         company_id: user.company_id!,
         created_by: user.id,
         subject,
@@ -152,12 +180,31 @@ export default function Support() {
         priority: priority as any,
       });
 
+      console.log('✅ Ticket created successfully:', result);
+
       await loadTickets();
       setShowNewTicketModal(false);
       alert('✅ Ticket created successfully!');
-    } catch (error) {
-      console.error('Error creating ticket:', error);
-      alert('Failed to create ticket. Please try again.');
+    } catch (error: any) {
+      console.error('❌ Error creating ticket:', error);
+      console.error('❌ Error type:', typeof error);
+      console.error('❌ Error stringified:', JSON.stringify(error, null, 2));
+      console.error('❌ Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        status: error.status,
+        statusCode: error.statusCode,
+      });
+      console.error('❌ Full error object keys:', Object.keys(error));
+
+      let errorMessage = 'Unknown error';
+      if (error.message) errorMessage = error.message;
+      else if (error.details) errorMessage = error.details;
+      else if (error.hint) errorMessage = error.hint;
+
+      alert(`Failed to create ticket: ${errorMessage}. Check browser console for full details.`);
     } finally {
       setCreatingTicket(false);
     }
@@ -240,7 +287,7 @@ export default function Support() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search tickets..."
-              className="w-full pl-9 pr-4 py-2 bg-card border border-secondary rounded-lg text-white text-sm placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors"
             />
           </div>
 
@@ -249,10 +296,10 @@ export default function Support() {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 ${
                   filterStatus === status
                     ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/20'
-                    : 'bg-card text-muted hover:bg-hover/50'
+                    : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
                 }`}
               >
                 {status === 'all' ? 'All' : status.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
@@ -385,7 +432,7 @@ export default function Support() {
                     placeholder="Type your message..."
                     rows={3}
                     disabled={sendingMessage}
-                    className="flex-1 px-4 py-3 bg-card border border-secondary rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none resize-none transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none resize-none transition-colors disabled:opacity-50"
                   />
                   <button
                     onClick={handleSendMessage}
@@ -467,7 +514,7 @@ export default function Support() {
                   name="subject"
                   required
                   placeholder="Brief description of your issue"
-                  className="w-full px-4 py-3 bg-card border border-secondary rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                 />
               </div>
 
@@ -481,23 +528,13 @@ export default function Support() {
                   <select
                     name="category"
                     required
-                    className="w-full px-4 py-3 bg-card border border-secondary rounded-xl text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all appearance-none cursor-pointer"
                   >
-                    {categories.length > 0 ? (
-                      categories.map(cat => (
-                        <option key={cat.id} value={cat.name}>
-                          {cat.icon} {cat.name}
-                        </option>
-                      ))
-                    ) : (
-                      <>
-                        <option value="technical">🔧 Technical Support</option>
-                        <option value="billing">💳 Billing & Payment</option>
-                        <option value="general">💬 General Question</option>
-                        <option value="feature_request">✨ Feature Request</option>
-                        <option value="bug">🐛 Bug Report</option>
-                      </>
-                    )}
+                    <option value="technical">🔧 Technical Support</option>
+                    <option value="billing">💳 Billing & Payment</option>
+                    <option value="general">💬 General Question</option>
+                    <option value="feature_request">✨ Feature Request</option>
+                    <option value="bug">🐛 Bug Report</option>
                   </select>
                 </div>
 
@@ -509,7 +546,7 @@ export default function Support() {
                   <select
                     name="priority"
                     required
-                    className="w-full px-4 py-3 bg-card border border-secondary rounded-xl text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all appearance-none cursor-pointer"
                   >
                     <option value="low">🟢 Low - General inquiry</option>
                     <option value="medium">🟡 Medium - Need assistance</option>

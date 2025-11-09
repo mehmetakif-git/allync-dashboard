@@ -232,9 +232,9 @@ export default function NotificationsPanel({ onClose, onNotificationRead, onMark
   };
 
   return (
-    <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] max-h-[600px] bg-card border border-secondary rounded-xl shadow-2xl z-50 flex flex-col">
+    <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] max-h-[600px] bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] shadow-2xl z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-secondary">
+      <div className="flex items-center justify-between p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           <h3 className="text-lg font-bold text-white">Notifications</h3>
           {unreadCount > 0 && (
@@ -245,7 +245,7 @@ export default function NotificationsPanel({ onClose, onNotificationRead, onMark
         </div>
         <button
           onClick={onClose}
-          className="p-1 hover:bg-secondary rounded-lg transition-colors"
+          className="p-1 hover:bg-white/10 rounded-lg transition-colors"
         >
           <X className="w-5 h-5 text-muted" />
         </button>
@@ -253,7 +253,7 @@ export default function NotificationsPanel({ onClose, onNotificationRead, onMark
 
       {/* Actions */}
       {notifications.length > 0 && (
-        <div className="flex items-center gap-2 p-3 border-b border-secondary bg-primary/30">
+        <div className="flex items-center gap-2 p-3 border-b border-white/10 bg-white/5">
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
@@ -290,8 +290,8 @@ export default function NotificationsPanel({ onClose, onNotificationRead, onMark
           </div>
         ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 px-4">
-            <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
-              <Bell className="w-8 h-8 text-gray-600" />
+            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4">
+              <Bell className="w-8 h-8 text-gray-400" />
             </div>
             <p className="text-muted text-center">No notifications</p>
             <p className="text-muted text-sm text-center mt-1">You're all caught up!</p>
@@ -306,8 +306,8 @@ export default function NotificationsPanel({ onClose, onNotificationRead, onMark
               return (
                 <div
                   key={notification.user_notification_id}
-                  className={`p-4 hover:bg-primary/30 transition-all cursor-pointer ${
-                    !notification.is_read ? 'bg-blue-500/5' : ''
+                  className={`p-4 hover:bg-white/10 transition-all cursor-pointer ${
+                    !notification.is_read ? 'bg-blue-500/10' : ''
                   } ${isNew ? 'animate-slide-in-right border-l-4 border-blue-500' : ''} ${
                     isUrgent ? 'border-l-4 border-yellow-500' : ''
                   }`}
@@ -356,7 +356,7 @@ export default function NotificationsPanel({ onClose, onNotificationRead, onMark
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-secondary bg-primary/30">
+      <div className="p-3 border-t border-white/10 bg-white/5">
         <p className="text-xs text-muted text-center">
           System-wide announcements from Allync AI
         </p>

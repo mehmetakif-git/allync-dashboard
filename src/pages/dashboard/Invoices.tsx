@@ -273,42 +273,51 @@ export default function Invoices() {
         </div>
       )}
 
-      {/* ===== STATS CARDS ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-card border border-primary rounded-xl p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-accent-green/20 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-accent-green" />
+      {/* ===== STATS CARDS - Mobile UI Design ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-green-500/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-green-400" />
             </div>
-            <p className="text-sm text-muted">Total Paid</p>
+            <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-white">${totalPaid.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-white mb-1">${totalPaid.toLocaleString()}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">Total Paid</p>
         </div>
 
-        <div className="bg-card border border-primary rounded-xl p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-accent-yellow/20 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-accent-yellow" />
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-yellow-500/30 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-yellow-400" />
             </div>
-            <p className="text-sm text-muted">Pending</p>
+            <div className="w-6 h-6 bg-yellow-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-white">${totalPending.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-white mb-1">${totalPending.toLocaleString()}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">Pending</p>
         </div>
 
-        <div className="bg-card border border-primary rounded-xl p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-accent-blue/20 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-accent-blue" />
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-blue-400" />
             </div>
-            <p className="text-sm text-muted">Total Invoices</p>
+            <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-white">{invoices.length}</p>
+          <p className="text-3xl font-bold text-white mb-1">{invoices.length}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">Total Invoices</p>
         </div>
       </div>
 
-      {/* ===== FILTERS ===== */}
+      {/* ===== FILTERS - Mobile UI Design ===== */}
       <div className="flex items-center gap-3 flex-wrap">
-        <Filter className="w-5 h-5 text-muted" />
+        <Filter className="w-5 h-5 text-gray-400" />
         {['all', 'paid', 'pending', 'overdue'].map((status) => (
           <button
             key={status}
@@ -316,10 +325,10 @@ export default function Invoices() {
               console.log('🔽 [Invoices] Filter changed:', status);
               setFilterStatus(status as any);
             }}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors capitalize ${
+            className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all capitalize ${
               filterStatus === status
-                ? 'bg-accent-blue text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             {status}
@@ -327,8 +336,8 @@ export default function Invoices() {
         ))}
       </div>
 
-      {/* ===== INVOICES TABLE ===== */}
-      <div className="bg-card border border-primary rounded-xl overflow-hidden">
+      {/* ===== INVOICES TABLE - Mobile UI Design ===== */}
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
         {filteredInvoices.length > 0 ? (
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full">

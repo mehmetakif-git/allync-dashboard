@@ -199,20 +199,31 @@ export async function createTicket(ticketData: {
   service_type_id?: string;
   tags?: string[];
 }) {
+  console.log('🔵 [API] Creating ticket with data:', ticketData);
+
+  const insertData = {
+    ...ticketData,
+    status: 'open',
+  };
+
+  console.log('🔵 [API] Insert data:', insertData);
+
   const { data, error } = await supabase
     .from('support_tickets')
-    .insert([{
-      ...ticketData,
-      status: 'open',
-    }])
+    .insert([insertData])
     .select()
     .single();
 
   if (error) {
-    console.error('Error creating ticket:', error);
+    console.error('🔴 [API] Supabase error creating ticket:', error);
+    console.error('🔴 [API] Error code:', error.code);
+    console.error('🔴 [API] Error message:', error.message);
+    console.error('🔴 [API] Error details:', error.details);
+    console.error('🔴 [API] Error hint:', error.hint);
     throw error;
   }
 
+  console.log('🟢 [API] Ticket created successfully:', data);
   return data as SupportTicket;
 }
 

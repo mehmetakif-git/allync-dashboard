@@ -535,7 +535,7 @@ export default function WhatsAppService() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-8">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-card backdrop-blur-sm border border-secondary rounded-xl p-8 text-center">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-8 text-center">
             <MessageCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">No WhatsApp Instance</h3>
             <p className="text-muted mb-4">
@@ -584,11 +584,11 @@ export default function WhatsAppService() {
 
             {/* Quick Stats */}
             <div className="flex gap-4">
-              <div className="bg-card/50 backdrop-blur-sm border border-secondary rounded-lg px-4 py-2">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] px-4 py-2">
                 <p className="text-xs text-muted">Active Chats</p>
                 <p className="text-xl font-bold text-green-400">{activeSessions}</p>
               </div>
-              <div className="bg-card/50 backdrop-blur-sm border border-secondary rounded-lg px-4 py-2">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] px-4 py-2">
                 <p className="text-xs text-muted">Total Users</p>
                 <p className="text-xl font-bold text-blue-400">{userProfiles.length}</p>
               </div>
@@ -611,84 +611,78 @@ export default function WhatsAppService() {
           )}
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-secondary/50">
+        {/* Tabs - Mobile UI Design */}
+        <div className="flex gap-3 mb-6 flex-wrap">
           <button
             onClick={() => setActiveTab('conversations')}
-            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
-              activeTab === 'conversations' ? 'text-green-400' : 'text-muted hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'conversations'
+                ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             <MessageCircle className="w-4 h-4" />
             Conversations
-            {activeTab === 'conversations' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400" />
-            )}
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
-              activeTab === 'analytics' ? 'text-green-400' : 'text-muted hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'analytics'
+                ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             <BarChart3 className="w-4 h-4" />
             Analytics
-            {activeTab === 'analytics' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400" />
-            )}
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
-              activeTab === 'users' ? 'text-green-400' : 'text-muted hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'users'
+                ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             <Users className="w-4 h-4" />
             Users
-            {activeTab === 'users' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400" />
-            )}
           </button>
           <button
             onClick={() => setActiveTab('integrations')}
-            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
-              activeTab === 'integrations' ? 'text-blue-400' : 'text-muted hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'integrations'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             <LinkIcon className="w-4 h-4" />
             Integrations
-            {activeTab === 'integrations' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
-            )}
           </button>
           <button
             onClick={() => setActiveTab('errors')}
-            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
-              activeTab === 'errors' ? 'text-red-400' : 'text-muted hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'errors'
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
             Errors
             {unresolvedErrors > 0 && (
-              <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+              <span className="px-1.5 py-0.5 bg-red-300 text-red-900 text-xs font-bold rounded-full">
                 {unresolvedErrors}
               </span>
-            )}
-            {activeTab === 'errors' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-400" />
             )}
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`pb-3 px-4 font-medium transition-colors relative flex items-center gap-2 ${
-              activeTab === 'settings' ? 'text-green-400' : 'text-muted hover:text-white'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'settings'
+                ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             <Settings className="w-4 h-4" />
             Settings
-            {activeTab === 'settings' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-400" />
-            )}
           </button>
         </div>
 
@@ -697,7 +691,7 @@ export default function WhatsAppService() {
         {activeTab === 'conversations' && (
           <div className="grid grid-cols-12 gap-4 h-[calc(100vh-280px)]">
             {/* Session List - Fixed Height with Scroll */}
-            <div className="col-span-4 bg-card/50 backdrop-blur-xl border border-secondary rounded-xl flex flex-col overflow-hidden">
+            <div className="col-span-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] flex flex-col overflow-hidden">
               {/* Header */}
               <div className="p-4 border-b border-secondary/50">
                 <div className="flex items-center justify-between mb-3">
@@ -900,7 +894,7 @@ export default function WhatsAppService() {
             </div>
 
             {/* Conversation Detail - Fixed Height with Scroll */}
-            <div className="col-span-8 bg-card/50 backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+            <div className="col-span-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
               {selectedSessionId ? (
                 <ConversationDetail
                   sessionId={selectedSessionId}
@@ -923,14 +917,14 @@ export default function WhatsAppService() {
 
         {/* ========== ANALYTICS TAB ========== */}
         {activeTab === 'analytics' && user?.company_id && (
-          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <AnalyticsDashboard companyId={user.company_id} />
           </div>
         )}
 
         {/* ========== USERS TAB ========== */}
         {activeTab === 'users' && (
-          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
             {/* Header */}
             <div className="p-6 border-b border-secondary/50">
               <div className="flex items-center justify-between mb-4">
@@ -994,7 +988,7 @@ export default function WhatsAppService() {
                   {filteredUsers.map((user) => (
                     <div
                       key={user.id}
-                      className="bg-secondary/30 border border-white/5 rounded-lg p-4 hover:bg-secondary/50 transition-colors"
+                      className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-secondary/50 transition-colors"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-start gap-3 flex-1">
@@ -1070,7 +1064,7 @@ export default function WhatsAppService() {
 
         {/* ========== ERRORS TAB ========== */}
         {activeTab === 'errors' && (
-          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
             {/* Header */}
             <div className="p-6 border-b border-secondary/50">
               <div className="flex items-center justify-between mb-4">
@@ -1275,7 +1269,7 @@ export default function WhatsAppService() {
 
         {/* ========== INTEGRATIONS TAB ========== */}
         {activeTab === 'integrations' && (
-          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
             {/* Header */}
             <div className="p-6 border-b border-secondary/50">
               <div className="flex items-center justify-between">
@@ -1320,7 +1314,7 @@ export default function WhatsAppService() {
                     </div>
 
                     {calendarInstances.length === 0 ? (
-                      <div className="bg-secondary/30 border border-white/5 rounded-lg p-6 text-center">
+                      <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
                         <Calendar className="w-12 h-12 text-muted mx-auto mb-3 opacity-50" />
                         <p className="text-sm text-muted">No calendar integrations found</p>
                       </div>
@@ -1329,7 +1323,7 @@ export default function WhatsAppService() {
                         {calendarInstances.map((calendar) => (
                           <div
                             key={calendar.id}
-                            className="bg-secondary/30 border border-white/5 rounded-lg p-4 hover:border-blue-500/30 transition-colors"
+                            className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-blue-500/30 transition-colors"
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
@@ -1401,7 +1395,7 @@ export default function WhatsAppService() {
                     </div>
 
                     {sheetsInstances.length === 0 ? (
-                      <div className="bg-secondary/30 border border-white/5 rounded-lg p-6 text-center">
+                      <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
                         <FileSpreadsheet className="w-12 h-12 text-muted mx-auto mb-3 opacity-50" />
                         <p className="text-sm text-muted">No sheets integrations with WhatsApp enabled</p>
                       </div>
@@ -1410,7 +1404,7 @@ export default function WhatsAppService() {
                         {sheetsInstances.map((sheet) => (
                           <div
                             key={sheet.id}
-                            className="bg-secondary/30 border border-white/5 rounded-lg p-4 hover:border-green-500/30 transition-colors"
+                            className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-green-500/30 transition-colors"
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
@@ -1506,7 +1500,7 @@ export default function WhatsAppService() {
 
         {/* ========== SETTINGS TAB ========== */}
         {activeTab === 'settings' && (
-          <div className="bg-card/50 backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h3 className="text-lg font-semibold text-white mb-6">Instance Configuration</h3>
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
@@ -1552,7 +1546,7 @@ export default function WhatsAppService() {
             </div>
 
             {/* Auto Reply Settings */}
-            <div className="bg-secondary/30 border border-white/5 rounded-lg p-6 mb-6">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
               <h4 className="text-white font-medium mb-4">Bot Configuration</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

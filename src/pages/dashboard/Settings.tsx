@@ -117,27 +117,27 @@ export default function Settings() {
         </div>
 
         {/* Read-Only Notice */}
-        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+        <div className="mb-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-[20px]">
           <p className="text-blue-400 text-sm">
             <strong>Note:</strong> Company information is managed by Super Admin. Contact support to update account details, change password, or modify company information.
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto">
+        {/* Tabs - Mobile UI Design */}
+        <div className="flex gap-3 mb-6 overflow-x-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-secondary text-muted hover:bg-hover'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+                    : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
                 {tab.label}
               </button>
             );
@@ -146,32 +146,32 @@ export default function Settings() {
 
         {/* Account Overview Tab */}
         {activeTab === 'account' && (
-          <div className="space-y-6">
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="space-y-4">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-white">Profile Information</h2>
-                <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-medium text-blue-500">
+                <span className="px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 rounded-full text-xs font-semibold text-blue-400">
                   Read-Only
                 </span>
               </div>
 
               {/* Profile Header */}
-              <div className="flex items-center gap-4 pb-6 border-b border-secondary mb-6">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+              <div className="flex items-center gap-4 pb-6 border-b border-white/10 mb-6">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg">
                   <span className="text-2xl font-bold text-white">
                     {user?.full_name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">{user?.full_name}</h3>
-                  <p className="text-muted">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
-                  <p className="text-sm text-muted mt-1">{companyData?.name}</p>
+                  <p className="text-gray-400">{user?.role === 'company_admin' ? 'Company Admin' : 'User'}</p>
+                  <p className="text-sm text-gray-400 mt-1">{companyData?.name}</p>
                 </div>
               </div>
 
               {/* Profile Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-primary/50 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
                     <Mail className="w-4 h-4 text-muted" />
                     <span className="text-sm text-muted">Email</span>
@@ -179,41 +179,41 @@ export default function Settings() {
                   <p className="text-white font-medium">{user?.email}</p>
                 </div>
 
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <Phone className="w-4 h-4 text-muted" />
-                    <span className="text-sm text-muted">Phone</span>
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Phone</span>
                   </div>
                   <p className="text-white font-medium">{'Not set'}</p>
                 </div>
 
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="w-4 h-4 text-muted" />
-                    <span className="text-sm text-muted">Company</span>
+                    <Building2 className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Company</span>
                   </div>
                   <p className="text-white font-medium">{companyData?.name || 'N/A'}</p>
                 </div>
 
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-muted">Account Status</span>
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-gray-400">Account Status</span>
                   </div>
-                  <p className="text-green-500 font-medium capitalize">Active</p>
+                  <p className="text-green-400 font-semibold capitalize">Active</p>
                 </div>
 
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="w-4 h-4 text-muted" />
-                    <span className="text-sm text-muted">Member Since</span>
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-400">Member Since</span>
                   </div>
                   <p className="text-white font-medium">
                     {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                   </p>
                 </div>
 
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
                     <Globe className="w-4 h-4 text-muted" />
                     <span className="text-sm text-muted">Language</span>
@@ -227,8 +227,8 @@ export default function Settings() {
 
         {/* Company Information Tab */}
         {activeTab === 'company' && (
-          <div className="space-y-6">
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="space-y-4">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-white">Company Details</h2>
                 <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs font-medium text-blue-500">
@@ -237,7 +237,7 @@ export default function Settings() {
               </div>
 
               {/* Company Header */}
-              <div className="p-6 bg-primary/50 rounded-lg mb-6">
+              <div className="p-6 bg-white/5 border border-white/10 rounded-xl mb-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                     {companyData?.logo_url ? (
@@ -257,7 +257,7 @@ export default function Settings() {
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-white mb-4">Contact Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <Mail className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Email</span>
@@ -265,7 +265,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.email || 'N/A'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <Mail className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Billing Email</span>
@@ -273,7 +273,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.billing_email || companyData?.email || 'N/A'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <Phone className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Phone</span>
@@ -281,7 +281,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.phone || 'N/A'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <ExternalLink className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Website</span>
@@ -301,7 +301,7 @@ export default function Settings() {
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-white mb-4">Address</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <MapPin className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Address</span>
@@ -309,7 +309,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.address || 'Not set'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <MapPin className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">City</span>
@@ -317,7 +317,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.city || 'Not set'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <Hash className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Postal Code</span>
@@ -325,7 +325,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.postal_code || 'Not set'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <Globe className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Country</span>
@@ -339,7 +339,7 @@ export default function Settings() {
               <div>
                 <h3 className="text-lg font-bold text-white mb-4">Tax & Legal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <FileText className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Tax ID</span>
@@ -347,7 +347,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.tax_id || 'Not set'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <FileText className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Registration Number</span>
@@ -355,7 +355,7 @@ export default function Settings() {
                     <p className="text-white font-medium">{companyData?.registration_number || 'Not set'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       <span className="text-sm text-muted">Company Status</span>
@@ -363,7 +363,7 @@ export default function Settings() {
                     <p className="text-green-500 font-medium capitalize">{companyData?.status || 'Active'}</p>
                   </div>
 
-                  <div className="p-4 bg-primary/50 rounded-lg">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                     <div className="flex items-center gap-2 mb-2">
                       <Calendar className="w-4 h-4 text-muted" />
                       <span className="text-sm text-muted">Registered Since</span>
@@ -381,10 +381,10 @@ export default function Settings() {
         {/* Security Tab */}
         {activeTab === 'security' && (
           <div className="space-y-6">
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <h2 className="text-xl font-bold text-white mb-4">Security Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted">Password</span>
                     <CheckCircle className="w-4 h-4 text-green-500" />
@@ -393,7 +393,7 @@ export default function Settings() {
                   <p className="text-xs text-muted mt-1">Contact Super Admin to change password</p>
                 </div>
 
-                <div className="p-4 bg-primary/50 rounded-lg">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted">Last Login</span>
                     <Clock className="w-4 h-4 text-blue-500" />
@@ -406,7 +406,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <h2 className="text-xl font-bold text-white mb-4">Login History</h2>
               {loginHistory.length === 0 ? (
                 <div className="p-8 text-center text-muted">
@@ -418,7 +418,7 @@ export default function Settings() {
                   {loginHistory.map((login) => (
                     <div
                       key={login.id}
-                      className="p-4 bg-primary/50 border border-secondary rounded-lg"
+                      className="p-4 bg-white/5 border border-white/10 rounded-xl"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-3">
@@ -457,7 +457,7 @@ export default function Settings() {
         {/* Preferences Tab */}
         {activeTab === 'preferences' && (
           <div className="space-y-6">
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <h2 className="text-xl font-bold text-white mb-4">Language Preference</h2>
               <p className="text-muted text-sm mb-6">
                 Select your preferred language for the interface
@@ -466,10 +466,10 @@ export default function Settings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                   onClick={() => setLanguage('en')}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
                     language === 'en'
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-secondary bg-primary/50 hover:border-secondary'
+                      ? 'border-blue-500 bg-blue-500/20'
+                      : 'border-white/20 bg-white/5 hover:border-white/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -481,10 +481,10 @@ export default function Settings() {
 
                 <button
                   onClick={() => setLanguage('tr')}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
                     language === 'tr'
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-secondary bg-primary/50 hover:border-secondary'
+                      ? 'border-blue-500 bg-blue-500/20'
+                      : 'border-white/20 bg-white/5 hover:border-white/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -496,7 +496,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-[20px]">
               <p className="text-blue-400 text-sm">
                 <strong>Note:</strong> More preferences (timezone, date format, notifications) will be added in future updates.
               </p>

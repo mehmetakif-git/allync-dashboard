@@ -63,10 +63,16 @@ export default function CompanyAdminDashboard() {
         });
 
         // ✅ FIXED: Map company_services to active services
+        console.log('🔍 [CompanyAdminDashboard] All company services:', companyServicesData);
+        console.log('🔍 [CompanyAdminDashboard] Active services filter:', companyServicesData.filter((cs: any) => cs.status === 'active'));
+
         const activeServicesData = companyServicesData
-          .filter((cs: any) => cs.status === 'active')
+          .filter((cs: any) => {
+            console.log('🔍 Service status check:', { id: cs.id, status: cs.status, service_type: cs.service_type });
+            return cs.status === 'active';
+          })
           .map((cs: any) => {
-            return {
+            const mapped = {
               id: cs.id, // company_services.id
               companyServiceId: cs.id, // ✅ IMPORTANT: Store for navigation
               name_en: cs.service_type?.name_en || 'Unknown Service',
@@ -76,6 +82,8 @@ export default function CompanyAdminDashboard() {
               instanceName: cs.instance_name || cs.service_type?.name_en || 'Service',
               approved_at: cs.created_at,
             };
+            console.log('🔍 Mapped service:', mapped);
+            return mapped;
           });
 
         console.log('✅ [CompanyAdminDashboard] Active services:', activeServicesData);
@@ -193,47 +201,62 @@ export default function CompanyAdminDashboard() {
         <p className="text-muted mt-1">Welcome back! Here's your services overview</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-6 text-white">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-              <Zap className="w-6 h-6" />
+      {/* Stats Cards - Mobile UI Design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Active Services */}
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center">
+              <Zap className="w-5 h-5 text-blue-400" />
             </div>
-            <TrendingUp className="w-5 h-5 text-blue-200" />
+            <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            </div>
           </div>
-          <p className="text-blue-200 text-sm mb-1">Active Services</p>
-          <p className="text-3xl font-bold">{activeServices.length}</p>
+          <p className="text-3xl font-bold text-white mb-1">{activeServices.length}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">Active Services</p>
         </div>
 
-        <div className="bg-gradient-to-br from-yellow-600 to-orange-600 rounded-xl p-6 text-white">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6" />
+        {/* Service Instances */}
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-yellow-500/30 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-yellow-400" />
+            </div>
+            <div className="w-6 h-6 bg-yellow-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
             </div>
           </div>
-          <p className="text-yellow-200 text-sm mb-1">Service Instances</p>
-          <p className="text-3xl font-bold">{activeServices.length}</p>
+          <p className="text-3xl font-bold text-white mb-1">{activeServices.length}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">Service Instances</p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-6 text-white">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6" />
+        {/* All Services */}
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-green-500/30 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+            </div>
+            <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
             </div>
           </div>
-          <p className="text-green-200 text-sm mb-1">All Services</p>
-          <p className="text-3xl font-bold">{activeServices.length}</p>
+          <p className="text-3xl font-bold text-white mb-1">{activeServices.length}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">All Services</p>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-6 text-white">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6" />
+        {/* Pending Invoices */}
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:bg-white/15 transition-all">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-10 h-10 bg-purple-500/30 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-purple-400" />
+            </div>
+            <div className="w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
             </div>
           </div>
-          <p className="text-purple-200 text-sm mb-1">Pending Invoices</p>
-          <p className="text-3xl font-bold">${monthlyCost.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-white mb-1">${monthlyCost.toLocaleString()}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-400">Pending Invoices</p>
         </div>
       </div>
 
@@ -266,7 +289,7 @@ export default function CompanyAdminDashboard() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {activeServices.map((service) => {
               const Icon = getServiceIcon(service.slug);
               const gradient = getServiceGradient(service.slug);
@@ -274,31 +297,31 @@ export default function CompanyAdminDashboard() {
               return (
                 <div
                   key={service.id}
-                  className="bg-primary/50 border border-primary rounded-xl p-6 hover:bg-card transition-all hover:scale-105 cursor-pointer"
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:scale-[1.02] hover:bg-white/15 transition-all cursor-pointer group"
                   onClick={() => handleViewService(service.slug, service.companyServiceId)}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center`}>
+                    <div className={`w-[60px] h-[60px] bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center shadow-lg`}>
                       <Icon className="w-7 h-7 text-white" />
                     </div>
-                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium border-l-4 border-l-green-500">
-                      Active
+                    <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold border border-green-500/30">
+                      ACTIVE
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white mb-1">{service.instanceName}</h3>
-                  <p className="text-sm text-blue-400 mb-1">{service.name_en}</p>
-                  <p className="text-sm text-muted mb-4">Plan: {service.package.toUpperCase()}</p>
+                  <h3 className="text-xl font-bold text-white mb-1 line-clamp-1">{service.instanceName}</h3>
+                  <p className="text-sm text-blue-400 mb-1 line-clamp-1">{service.name_en}</p>
+                  <p className="text-sm text-gray-400 mb-4">Plan: <span className="font-semibold text-white">{service.package.toUpperCase()}</span></p>
 
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleViewService(service.slug, service.companyServiceId);
                     }}
-                    className="w-full mt-4 px-4 py-2 bg-secondary hover:bg-hover text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-blue-500/50"
                   >
                     View Details
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
               );
@@ -308,42 +331,42 @@ export default function CompanyAdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Invoices Summary */}
-        <div className="bg-primary/50 border border-primary rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-primary flex items-center justify-between">
-            <h3 className="font-bold text-white">Recent Invoices</h3>
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
+          <div className="p-5 border-b border-white/10 flex items-center justify-between">
+            <h3 className="font-bold text-white text-lg">Recent Invoices</h3>
             <button
               onClick={() => navigate('/dashboard/invoices')}
-              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
             >
               View All
             </button>
           </div>
-          <div className="p-4">
+          <div className="p-5">
             {invoices.length === 0 ? (
-              <p className="text-muted text-center py-4">No invoices yet</p>
+              <p className="text-gray-400 text-center py-8">No invoices yet</p>
             ) : (
               <div className="space-y-3">
                 {invoices.slice(0, 3).map((invoice) => (
-                  <div key={invoice.id} className="flex items-start gap-3 p-3 bg-card rounded-lg">
-                    <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <CreditCard className="w-4 h-4 text-green-400" />
+                  <div key={invoice.id} className="flex items-start gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all border border-white/10">
+                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CreditCard className="w-5 h-5 text-green-400" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-base font-bold text-white">
                           ${invoice.total_amount ? invoice.total_amount.toLocaleString() : '0'}
                         </p>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          invoice.status === 'paid' ? 'bg-green-500/20 text-green-400' :
-                          invoice.status === 'unpaid' ? 'bg-red-500/20 text-red-400' :
-                          'bg-yellow-500/20 text-yellow-400'
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                          invoice.status === 'paid' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                          invoice.status === 'unpaid' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                          'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
                         }`}>
                           {invoice.status.toUpperCase()}
                         </span>
                       </div>
-                      <p className="text-xs text-muted mt-1">
+                      <p className="text-xs text-gray-400 mt-1">
                         Due: {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'N/A'}
                       </p>
                     </div>
@@ -355,39 +378,57 @@ export default function CompanyAdminDashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Quick Actions - Mobile UI Design */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <button
           onClick={() => navigate('/dashboard/services')}
-          className="p-6 bg-blue-600 hover:bg-blue-700 rounded-xl text-white transition-all hover:scale-105 flex items-center justify-between"
+          className="group relative overflow-hidden"
         >
-          <div className="text-left">
-            <p className="font-bold text-lg mb-1">Browse Services</p>
-            <p className="text-sm text-blue-200">Discover new features</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-700 rounded-[20px]"></div>
+          <div className="relative p-5 flex items-center justify-between hover:scale-[1.02] transition-transform">
+            <div className="text-left flex-1">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <Package className="w-6 h-6 text-white" />
+              </div>
+              <p className="font-bold text-lg mb-1 text-white">Browse Services</p>
+              <p className="text-sm text-blue-100">Discover new features</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
           </div>
-          <ArrowRight className="w-6 h-6" />
         </button>
 
         <button
           onClick={() => navigate('/dashboard/invoices')}
-          className="p-6 bg-green-600 hover:bg-green-700 rounded-xl text-white transition-all hover:scale-105 flex items-center justify-between"
+          className="group relative overflow-hidden"
         >
-          <div className="text-left">
-            <p className="font-bold text-lg mb-1">View Invoices</p>
-            <p className="text-sm text-green-200">Manage billing</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-700 rounded-[20px]"></div>
+          <div className="relative p-5 flex items-center justify-between hover:scale-[1.02] transition-transform">
+            <div className="text-left flex-1">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <CreditCard className="w-6 h-6 text-white" />
+              </div>
+              <p className="font-bold text-lg mb-1 text-white">View Invoices</p>
+              <p className="text-sm text-green-100">Manage billing</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
           </div>
-          <ArrowRight className="w-6 h-6" />
         </button>
 
         <button
           onClick={() => navigate('/dashboard/support')}
-          className="p-6 bg-purple-600 hover:bg-purple-700 rounded-xl text-white transition-all hover:scale-105 flex items-center justify-between"
+          className="group relative overflow-hidden"
         >
-          <div className="text-left">
-            <p className="font-bold text-lg mb-1">Get Support</p>
-            <p className="text-sm text-purple-200">Contact our team</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-700 rounded-[20px]"></div>
+          <div className="relative p-5 flex items-center justify-between hover:scale-[1.02] transition-transform">
+            <div className="text-left flex-1">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <MessageCircle className="w-6 h-6 text-white" />
+              </div>
+              <p className="font-bold text-lg mb-1 text-white">Get Support</p>
+              <p className="text-sm text-purple-100">Contact our team</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
           </div>
-          <ArrowRight className="w-6 h-6" />
         </button>
       </div>
     </div>

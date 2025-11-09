@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   AlertCircle, CheckCircle, Clock, Wrench, XCircle,
   MessageCircle, Instagram, Calendar, Sheet, Mail,
   FileText, FolderOpen, Image, Mic, Heart,
-  Globe, Smartphone
+  Globe, Smartphone, Plus
 } from 'lucide-react';
 import RequestServiceModal from '../../components/RequestServiceModal';
 import { getActiveServices } from '../../lib/api/serviceTypes';
@@ -13,6 +14,7 @@ import { getCompanyServices } from '../../lib/api/companyServices';
 
 export default function Services() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'ai' | 'digital'>('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -125,7 +127,15 @@ export default function Services() {
     handleRequestService(service);
   };
 
-  const handleViewDetails = (serviceSlug: string) => {
+  const handleViewDetails = (serviceSlug: string, serviceTypeId: string) => {
+    // Find the company_service ID for this service type
+    const companyService = companyServices.find(cs => cs.service_type_id === serviceTypeId && cs.status === 'active');
+
+    if (!companyService) {
+      alert('Service not found. Please refresh the page and try again.');
+      return;
+    }
+
     // Map service slugs to dashboard routes
     const slugMap: Record<string, string> = {
       'whatsapp-automation': 'whatsapp',
@@ -144,11 +154,10 @@ export default function Services() {
       'google-photos': 'photos',
       'website-development': 'website',
       'mobile-app-development': 'mobile-app',
-      'whatsapp-automation': 'whatsapp'
     };
 
     const path = slugMap[serviceSlug] || serviceSlug;
-    window.location.href = `/dashboard/services/${path}`;
+    navigate(`/dashboard/services/${path}/${companyService.id}`);
   };
 
   const handleSubmitRequest = async (packageType: 'basic' | 'standard' | 'premium', notes: string) => {
@@ -205,40 +214,40 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-3 mb-8">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+            className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
               selectedCategory === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             All Services ({services.length})
           </button>
           <button
             onClick={() => setSelectedCategory('ai')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+            className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
               selectedCategory === 'ai'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             AI Services ({services.filter(s => s.category === 'ai').length})
           </button>
           <button
             onClick={() => setSelectedCategory('digital')}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+            className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
               selectedCategory === 'digital'
-                ? 'bg-blue-600 text-white'
-                : 'bg-secondary text-muted hover:bg-hover'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
             }`}
           >
             Digital Services ({services.filter(s => s.category === 'digital').length})
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredServices.map((service) => {
             const isActive = isServiceActive(service.id);
             const status = getServiceStatus(service.id);
@@ -283,10 +292,10 @@ export default function Services() {
             return (
               <div
                 key={service.id}
-                className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-secondary transition-all"
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-5 hover:scale-[1.02] hover:bg-white/15 transition-all"
               >
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${service.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center mb-4`}>
-                  <FinalIcon className="w-8 h-8 text-white" />
+                <div className={`w-[60px] h-[60px] rounded-xl bg-gradient-to-br ${service.color || 'from-blue-500 to-cyan-500'} flex items-center justify-center mb-4 shadow-lg`}>
+                  <FinalIcon className="w-7 h-7 text-white" />
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-2">{service.name_en}</h3>
@@ -310,40 +319,40 @@ export default function Services() {
                 )}
 
                 {isInMaintenance ? (
-                  <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                    <p className="text-sm text-orange-500 font-medium text-center">🔧 Service Under Maintenance</p>
-                    <p className="text-xs text-orange-400/70 text-center mt-1">Temporarily unavailable - Please check back later</p>
+                  <div className="mb-4 p-3 bg-orange-500/20 border border-orange-500/30 rounded-xl">
+                    <p className="text-sm text-orange-400 font-semibold text-center">🔧 Service Under Maintenance</p>
+                    <p className="text-xs text-orange-300/70 text-center mt-1">Temporarily unavailable - Please check back later</p>
                   </div>
                 ) : (
-                  <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                  <div className="mb-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-xl">
                     <p className="text-sm font-semibold text-blue-400 text-center">💬 Contact for pricing</p>
                     <p className="text-xs text-blue-300/70 text-center mt-1">Custom pricing tailored for your business</p>
                   </div>
                 )}
 
                 {isActive && (
-                  <div className="mb-4 flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-green-500 font-medium">Active - {status?.package?.toUpperCase()} Plan</span>
+                  <div className="mb-4 flex items-center gap-2 p-2.5 bg-green-500/20 border border-green-500/30 rounded-xl">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-green-400 font-semibold">Active - {status?.package?.toUpperCase()} Plan</span>
                   </div>
                 )}
 
                 {status && status.status === 'pending' && (
-                  <div className="mb-4 flex items-center gap-2 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                    <Clock className="w-4 h-4 text-yellow-500" />
-                    <span className="text-sm text-yellow-500 font-medium">Request Pending Approval</span>
+                  <div className="mb-4 flex items-center gap-2 p-2.5 bg-yellow-500/20 border border-yellow-500/30 rounded-xl">
+                    <Clock className="w-4 h-4 text-yellow-400" />
+                    <span className="text-sm text-yellow-400 font-semibold">Request Pending Approval</span>
                   </div>
                 )}
 
                 {status && status.status === 'rejected' && (
                   <div className="mb-4">
-                    <div className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
-                      <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-sm text-red-500 font-medium">Request Rejected</span>
+                    <div className="flex items-center gap-2 p-2.5 bg-red-500/20 border border-red-500/30 rounded-xl">
+                      <XCircle className="w-4 h-4 text-red-400" />
+                      <span className="text-sm text-red-400 font-semibold">Request Rejected</span>
                     </div>
                     <button
                       onClick={() => handleViewRejectionReason(status)}
-                      className="w-full mt-2 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 hover:text-red-300 rounded-lg text-sm font-medium transition-colors"
+                      className="w-full mt-2 px-3 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 hover:text-red-300 rounded-xl text-sm font-semibold transition-colors"
                     >
                       View Rejection Reason
                     </button>
@@ -351,80 +360,91 @@ export default function Services() {
                 )}
 
                 {isInMaintenance && (
-                  <div className="mb-4 flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                    <Wrench className="w-4 h-4 text-orange-500" />
-                    <span className="text-sm text-orange-500 font-medium">Under Maintenance</span>
+                  <div className="mb-4 flex items-center gap-2 p-2.5 bg-orange-500/20 border border-orange-500/30 rounded-xl">
+                    <Wrench className="w-4 h-4 text-orange-400" />
+                    <span className="text-sm text-orange-400 font-semibold">Under Maintenance</span>
                   </div>
                 )}
 
-                <div className="mt-4">
-                  {isActive && !isInMaintenance ? (
-                    <button
-                      onClick={() => handleViewDetails(service.slug)}
-                      className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-lg font-medium transition-all"
-                    >
-                      View Dashboard
-                    </button>
-                  ) : isActive && isInMaintenance ? (
-                    <div>
-                      <button
-                        onClick={() => handleViewDetails(service.slug)}
-                        className="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-all mb-2"
-                      >
-                        View Service (Maintenance Mode)
-                      </button>
-                      <p className="text-xs text-center text-orange-400">⚠️ Service temporarily unavailable</p>
-                    </div>
-                  ) : isInMaintenance ? (
-                    <div>
-                      <button
-                        disabled
-                        className="w-full px-4 py-3 bg-gray-700 text-muted rounded-lg font-medium cursor-not-allowed mb-2"
-                      >
-                        Service Under Maintenance
-                      </button>
-                      <p className="text-xs text-center text-muted">This service is temporarily unavailable</p>
-                    </div>
-                  ) : (
-                    <>
-                      {isCompanyAdmin && !status && !isInMaintenance && (
+                  <div className="mt-4 space-y-2">
+                    {isActive && !isInMaintenance ? (
+                      <>
                         <button
-                          onClick={() => handleRequestService(service)}
-                          className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all"
+                          onClick={() => handleViewDetails(service.slug, service.id)}
+                          className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/50"
                         >
-                          Request Service
+                          View Dashboard
                         </button>
-                      )}
-
-                      {isCompanyAdmin && status && status.status === 'pending' && (
+                        {isCompanyAdmin && (
+                          <button
+                            onClick={() => handleRequestService(service)}
+                            className="w-full px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Request Another Instance
+                          </button>
+                        )}
+                      </>
+                    ) : isActive && isInMaintenance ? (
+                      <div>
+                        <button
+                          onClick={() => handleViewDetails(service.slug, service.id)}
+                          className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-xl font-semibold transition-all mb-2"
+                        >
+                          View Service (Maintenance Mode)
+                        </button>
+                        <p className="text-xs text-center text-orange-400">⚠️ Service temporarily unavailable</p>
+                      </div>
+                    ) : isInMaintenance ? (
+                      <div>
                         <button
                           disabled
-                          className="w-full px-4 py-3 bg-gray-700 text-muted rounded-lg font-medium cursor-not-allowed"
+                          className="w-full px-4 py-3 bg-gray-700/50 text-gray-500 rounded-xl font-semibold cursor-not-allowed mb-2"
                         >
-                          Request Pending
+                          Service Under Maintenance
                         </button>
-                      )}
+                        <p className="text-xs text-center text-gray-500">This service is temporarily unavailable</p>
+                      </div>
+                    ) : (
+                      <>
+                        {isCompanyAdmin && !status && !isInMaintenance && (
+                          <button
+                            onClick={() => handleRequestService(service)}
+                            className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold transition-all shadow-lg shadow-green-500/50"
+                          >
+                            Request Service
+                          </button>
+                        )}
 
-                      {isCompanyAdmin && status && status.status === 'rejected' && (
-                        <button
-                          onClick={() => handleReRequest(service)}
-                          className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-lg font-medium transition-all"
-                        >
-                          Request Again
-                        </button>
-                      )}
+                        {isCompanyAdmin && status && status.status === 'pending' && (
+                          <button
+                            disabled
+                            className="w-full px-4 py-3 bg-gray-700/50 text-gray-500 rounded-xl font-semibold cursor-not-allowed"
+                          >
+                            Request Pending
+                          </button>
+                        )}
 
-                      {isRegularUser && (
-                        <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg flex items-start gap-2">
-                          <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm text-orange-500">Contact Company Admin to request this service</p>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                        {isCompanyAdmin && status && status.status === 'rejected' && (
+                          <button
+                            onClick={() => handleReRequest(service)}
+                            className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/50"
+                          >
+                            Request Again
+                          </button>
+                        )}
 
-                <p className="text-xs text-muted mt-3 text-center">
+                        {isRegularUser && (
+                          <div className="p-3 bg-orange-500/20 border border-orange-500/30 rounded-xl flex items-start gap-2">
+                            <AlertCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-orange-400 font-medium">Contact Company Admin to request this service</p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                <p className="text-xs text-gray-400 mt-3 text-center">
                   Delivery: {service.metadata?.delivery_time || '1-2 weeks'}
                 </p>
               </div>

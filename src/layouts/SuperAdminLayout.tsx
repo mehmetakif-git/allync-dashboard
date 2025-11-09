@@ -19,7 +19,7 @@ export default function SuperAdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#131A29] flex">
+    <div className="min-h-screen bg-gradient-mobile flex">
       <SuperAdminSidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}

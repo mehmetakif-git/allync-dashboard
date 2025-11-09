@@ -33,10 +33,13 @@ export default {
         },
       },
       backgroundColor: {
-        primary: '#2C2D2D',
-        secondary: '#2E2F2F',
+        primary: '#0F172A', // Deep slate (from mobile)
+        secondary: '#1E293B', // Dark slate (from mobile)
         card: '#323333',
         hover: '#3A3B3B',
+      },
+      backgroundImage: {
+        'gradient-mobile': 'linear-gradient(to bottom right, #0F172A 0%, #1E293B 25%, #312E81 50%, #1E1B4B 75%, #0F172A 100%)',
       },
       borderColor: {
         primary: '#3A3B3B',

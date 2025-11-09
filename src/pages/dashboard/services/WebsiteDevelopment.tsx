@@ -302,7 +302,7 @@ const WebsiteDevelopment = () => {
   if (!project) {
     return (
       <div className="p-8">
-        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-8 text-center max-w-2xl mx-auto">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-8 text-center max-w-2xl mx-auto">
           <Globe className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-secondary mb-2">No Active Project</h3>
           <p className="text-muted mb-4">
@@ -419,7 +419,7 @@ const WebsiteDevelopment = () => {
               </button>
 
               {showProjectDropdown && (
-                <div className="absolute right-0 mt-2 w-72 bg-card border border-secondary rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto">
+                <div className="absolute right-0 mt-2 w-72 bg-white/10 border border-white/20 rounded-[20px] shadow-xl z-50 max-h-80 overflow-y-auto">
                   {availableProjects.map((proj: any) => (
                     <button
                       key={proj.id}
@@ -464,57 +464,54 @@ const WebsiteDevelopment = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 mb-6 border-b border-secondary">
+      {/* Tabs - Mobile UI Design */}
+      <div className="flex gap-3 mb-6 flex-wrap">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'dashboard' ? 'text-blue-400' : 'text-muted hover:text-secondary'
+          className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+            activeTab === 'dashboard'
+              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+              : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
           }`}
         >
           Dashboard
-          {activeTab === 'dashboard' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
-          )}
         </button>
         <button
           onClick={() => setActiveTab('details')}
-          className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'details' ? 'text-blue-400' : 'text-muted hover:text-secondary'
+          className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+            activeTab === 'details'
+              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+              : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
           }`}
         >
           Project Details
-          {activeTab === 'details' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
-          )}
         </button>
         <button
           onClick={() => setActiveTab('support')}
-          className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'support' ? 'text-blue-400' : 'text-muted hover:text-secondary'
+          className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+            activeTab === 'support'
+              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+              : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
           }`}
         >
           Support
-          {activeTab === 'support' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
-          )}
         </button>
         <button
           onClick={() => setActiveTab('gallery')}
-          className={`pb-3 px-4 font-medium transition-colors relative ${
-            activeTab === 'gallery' ? 'text-blue-400' : 'text-muted hover:text-secondary'
+          className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+            activeTab === 'gallery'
+              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/50'
+              : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
           }`}
         >
           Media Gallery
-          {activeTab === 'gallery' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400" />
-          )}
         </button>
       </div>
 
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Globe className="w-5 h-5 text-purple-400" />
                 <span className="text-muted text-sm">Project Type</span>
@@ -524,7 +521,7 @@ const WebsiteDevelopment = () => {
               </p>
             </div>
 
-            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="w-5 h-5 text-blue-400" />
                 <span className="text-muted text-sm">Estimated Completion</span>
@@ -534,7 +531,7 @@ const WebsiteDevelopment = () => {
               </p>
             </div>
 
-            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <div className="flex items-center gap-3 mb-2">
                 <Clock className="w-5 h-5 text-green-400" />
                 <span className="text-muted text-sm">Last Update</span>
@@ -545,7 +542,7 @@ const WebsiteDevelopment = () => {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Overall Progress</h3>
               <span className="text-2xl font-bold text-blue-400">{project.overall_progress || 0}%</span>
@@ -559,7 +556,7 @@ const WebsiteDevelopment = () => {
           </div>
 
           {project.milestones && project.milestones.length > 0 && (
-            <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Project Milestones</h3>
               <div className="space-y-4">
                 {project.milestones.map((milestone: any) => {
@@ -611,7 +608,7 @@ const WebsiteDevelopment = () => {
 
       {activeTab === 'details' && (
         <div className="space-y-6">
-          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h3 className="text-lg font-semibold text-white mb-6">Project Information</h3>
 
             <div className="space-y-4">
@@ -685,7 +682,7 @@ const WebsiteDevelopment = () => {
       )}
 
       {activeTab === 'support' && (
-        <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Need Help?</h3>
           <p className="text-muted mb-6">
             For questions about your website development project, please contact our support team.
@@ -698,7 +695,7 @@ const WebsiteDevelopment = () => {
 
       {activeTab === 'gallery' && (
         <div className="space-y-6">
-          <div className="bg-card backdrop-blur-sm border border-secondary rounded-lg p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-xl font-semibold text-white mb-1">Project Media Gallery</h3>
@@ -790,7 +787,7 @@ const WebsiteDevelopment = () => {
           onClick={() => setSelectedMedia(null)}
         >
           <div
-            className="relative max-w-6xl w-full max-h-[90vh] bg-card rounded-2xl overflow-hidden"
+            className="relative max-w-6xl w-full max-h-[90vh] bg-white/10 rounded-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -821,7 +818,7 @@ const WebsiteDevelopment = () => {
               </div>
 
               {/* Media Details */}
-              <div className="w-full md:w-80 bg-card p-6 overflow-y-auto">
+              <div className="w-full md:w-80 bg-white/10 p-6 overflow-y-auto">
                 <h3 className="text-xl font-bold text-white mb-4">
                   {selectedMedia.title || selectedMedia.file_name}
                 </h3>
