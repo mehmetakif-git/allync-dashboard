@@ -1,6 +1,7 @@
 import { supabase } from '../supabase';
 import logger from '../services/consoleLogger';
 import inputValidator from '../utils/inputValidator';
+import pushNotificationService from '../services/pushNotificationService';
 
 // =====================================================
 // INTERFACES
@@ -102,7 +103,76 @@ export async function createNotification(data: {
   logger.success('Notification created', { id: notification.id });
   logger.info('Trigger will auto-create user_notifications');
 
+  // Send push notifications to mobile devices
+  // This runs in background to not block the API response
+  sendPushNotifications(notification as SystemNotification, cleanData).catch(err => {
+    logger.error('Failed to send push notifications:', err);
+    // Don't throw error - push failure shouldn't block notification creation
+  });
+
   return notification as SystemNotification;
+}
+
+// Helper function to send push notifications
+async function sendPushNotifications(
+  notification: SystemNotification,
+  data: { title: string; message: string; target_audience?: string; action_url?: string }
+): Promise<void> {
+  try {
+    logger.info('📱 Starting push notification sending process', {
+      notificationId: notification.id,
+      audience: data.target_audience || 'all',
+    });
+
+    const audience = (data.target_audience || 'all') as 'all' | 'super_admins' | 'company_admins' | 'users';
+
+    // Prepare push notification data
+    const pushData: Record<string, any> = {
+      type: notification.type,
+      notificationId: notification.id,
+    };
+
+    // Add action URL if present
+    if (data.action_url) {
+      pushData.action_url = data.action_url;
+    }
+
+    // Add screen routing data based on notification type
+    if (notification.type === 'service') {
+      pushData.screen = '/services';
+    } else if (notification.type === 'maintenance') {
+      pushData.screen = '/settings';
+    }
+
+    // Send push notifications based on audience
+    const result = await pushNotificationService.sendPushToAudience(
+      audience,
+      data.title,
+      data.message,
+      pushData
+    );
+
+    logger.success(`✅ Push notifications sent: ${result.successful}/${result.total} successful`, {
+      notificationId: notification.id,
+      successful: result.successful,
+      failed: result.failed,
+    });
+
+    // Log any failures
+    if (result.failed > 0) {
+      const failedUsers = result.results
+        .filter(r => !r.success)
+        .map(r => ({ userId: r.userId, error: r.error }));
+
+      logger.warn(`⚠️ Some push notifications failed:`, {
+        count: result.failed,
+        failures: failedUsers.slice(0, 5), // Log first 5 failures
+      });
+    }
+  } catch (error: any) {
+    logger.error('❌ Error in push notification process:', error);
+    throw error;
+  }
 }
 
 // Get all system notifications (Super Admin)
