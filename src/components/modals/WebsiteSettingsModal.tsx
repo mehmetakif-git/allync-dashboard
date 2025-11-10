@@ -212,9 +212,9 @@ export default function WebsiteSettingsModal({
               onChange={(e) => setProjectType(e.target.value as any)}
               className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <option value="e-commerce">E-commerce Website</option>
-              <option value="corporate">Corporate Website</option>
-              <option value="personal">Personal Website</option>
+              <option value="e-commerce" className="bg-slate-800 text-white">E-commerce Website</option>
+              <option value="corporate" className="bg-slate-800 text-white">Corporate Website</option>
+              <option value="personal" className="bg-slate-800 text-white">Personal Website</option>
             </select>
           </div>
 
@@ -299,10 +299,10 @@ export default function WebsiteSettingsModal({
                             onChange={(e) => handleMilestoneChange(index, 'status', e.target.value)}
                             className="bg-card border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                           >
-                            <option value="pending">Pending</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="completed">Completed</option>
-                            <option value="blocked">Blocked</option>
+                            <option value="pending" className="bg-slate-800 text-white">Pending</option>
+                            <option value="in-progress" className="bg-slate-800 text-white">In Progress</option>
+                            <option value="completed" className="bg-slate-800 text-white">Completed</option>
+                            <option value="blocked" className="bg-slate-800 text-white">Blocked</option>
                           </select>
 
                           <div className="flex items-center gap-2">

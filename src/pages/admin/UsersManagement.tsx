@@ -441,10 +441,10 @@ export default function UsersManagement() {
                   onChange={(e) => setRoleFilter(e.target.value)}
                   className="pl-10 pr-8 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value="all">All Roles</option>
-                  <option value="super_admin">Super Admin</option>
-                  <option value="company_admin">Company Admin</option>
-                  <option value="user">User</option>
+                  <option value="all" className="bg-slate-800 text-white">All Roles</option>
+                  <option value="super_admin" className="bg-slate-800 text-white">Super Admin</option>
+                  <option value="company_admin" className="bg-slate-800 text-white">Company Admin</option>
+                  <option value="user" className="bg-slate-800 text-white">User</option>
                 </select>
               </div>
               <select
@@ -452,19 +452,19 @@ export default function UsersManagement() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-                <option value="blocked">Blocked</option>
+                <option value="all" className="bg-slate-800 text-white">All Status</option>
+                <option value="active" className="bg-slate-800 text-white">Active</option>
+                <option value="suspended" className="bg-slate-800 text-white">Suspended</option>
+                <option value="blocked" className="bg-slate-800 text-white">Blocked</option>
               </select>
               <select
                 value={companyFilter}
                 onChange={(e) => setCompanyFilter(e.target.value)}
                 className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="all">All Companies</option>
+                <option value="all" className="bg-slate-800 text-white">All Companies</option>
                 {companies.map(company => (
-                  <option key={company} value={company}>{company}</option>
+                  <option key={company} value={company} className="bg-slate-800 text-white">{company}</option>
                 ))}
               </select>
             </div>

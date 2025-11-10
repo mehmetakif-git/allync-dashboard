@@ -140,9 +140,9 @@ export default function EditUserModal({
               className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               disabled={isLoading}
             >
-              {showRoleSuperAdmin && <option value="super_admin">Super Admin</option>}
-              <option value="company_admin">Company Admin</option>
-              <option value="user">User</option>
+              {showRoleSuperAdmin && <option value="super_admin" className="bg-slate-800 text-white">Super Admin</option>}
+              <option value="company_admin" className="bg-slate-800 text-white">Company Admin</option>
+              <option value="user" className="bg-slate-800 text-white">User</option>
             </select>
           </div>
 

@@ -252,7 +252,7 @@ export default function TicketDetailModal({
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] max-w-5xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]">
         {/* ===== HEADER (STICKY) ===== */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-white/20 bg-white/15 backdrop-blur-xl sticky top-0 z-10 rounded-t-xl">
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-white/20 bg-slate-900/95 backdrop-blur-xl sticky top-0 z-10 rounded-t-xl">
           <div>
             <h2 className="text-2xl font-bold text-white mb-1">{ticket.subject}</h2>
             <div className="flex items-center gap-3">
@@ -348,11 +348,11 @@ export default function TicketDetailModal({
               disabled={isSaving}
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="waiting_customer">Waiting Customer</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
+              <option value="open" className="bg-slate-800 text-white">Open</option>
+              <option value="in_progress" className="bg-slate-800 text-white">In Progress</option>
+              <option value="waiting_customer" className="bg-slate-800 text-white">Waiting Customer</option>
+              <option value="resolved" className="bg-slate-800 text-white">Resolved</option>
+              <option value="closed" className="bg-slate-800 text-white">Closed</option>
             </select>
           </div>
 
@@ -369,10 +369,10 @@ export default function TicketDetailModal({
               disabled={isSaving}
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
+              <option value="low" className="bg-slate-800 text-white">Low</option>
+              <option value="medium" className="bg-slate-800 text-white">Medium</option>
+              <option value="high" className="bg-slate-800 text-white">High</option>
+              <option value="urgent" className="bg-slate-800 text-white">Urgent</option>
             </select>
           </div>
 
@@ -389,9 +389,9 @@ export default function TicketDetailModal({
               disabled={isSaving}
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="">Unassigned</option>
+              <option value="" className="bg-slate-800 text-white">Unassigned</option>
               {availableAssignees.map((assignee) => (
-                <option key={assignee.id} value={assignee.id}>
+                <option key={assignee.id} value={assignee.id} className="bg-slate-800 text-white">
                   {assignee.full_name}
                 </option>
               ))}

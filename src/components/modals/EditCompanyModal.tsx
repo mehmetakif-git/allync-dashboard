@@ -250,9 +250,9 @@ export default function EditCompanyModal({
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-                <option value="inactive">Inactive</option>
+                <option value="active" className="bg-slate-800 text-white">Active</option>
+                <option value="suspended" className="bg-slate-800 text-white">Suspended</option>
+                <option value="inactive" className="bg-slate-800 text-white">Inactive</option>
               </select>
             </div>
           </div>

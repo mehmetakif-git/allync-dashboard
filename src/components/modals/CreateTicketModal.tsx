@@ -175,10 +175,10 @@ export default function CreateTicketModal({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-white/10 backdrop-blur-md rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 bg-white/15 backdrop-blur-xl border-b border-white/20 p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/20 p-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
               <MessageSquare className="w-6 h-6 text-white" />
@@ -233,9 +233,9 @@ export default function CreateTicketModal({
                         errors.companyId ? 'border-red-500' : 'border-secondary'
                       }`}
                     >
-                      <option value="">Select a company...</option>
+                      <option value="" className="bg-slate-800 text-white">Select a company...</option>
                       {companies.map((company) => (
-                        <option key={company.id} value={company.id}>
+                        <option key={company.id} value={company.id} className="bg-slate-800 text-white">
                           {company.name} ({company.email})
                         </option>
                       ))}
@@ -317,7 +317,7 @@ export default function CreateTicketModal({
                     }`}
                   >
                     {categoryOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
+                      <option key={option.value} value={option.value} className="bg-slate-800 text-white">
                         {option.label}
                       </option>
                     ))}
@@ -341,7 +341,7 @@ export default function CreateTicketModal({
                     }`}
                   >
                     {priorityOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
+                      <option key={option.value} value={option.value} className="bg-slate-800 text-white">
                         {option.label}
                       </option>
                     ))}
@@ -367,9 +367,9 @@ export default function CreateTicketModal({
                       disabled={isLoading}
                       className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="">No service</option>
+                      <option value="" className="bg-slate-800 text-white">No service</option>
                       {serviceTypes.map((service: any) => (
-                        <option key={service.id} value={service.id}>
+                        <option key={service.id} value={service.id} className="bg-slate-800 text-white">
                           {service.name_en}
                         </option>
                       ))}
@@ -390,9 +390,9 @@ export default function CreateTicketModal({
                       disabled={isLoading}
                       className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="">Unassigned</option>
+                      <option value="" className="bg-slate-800 text-white">Unassigned</option>
                       {availableAssignees.map((assignee: any) => (
-                        <option key={assignee.id} value={assignee.id}>
+                        <option key={assignee.id} value={assignee.id} className="bg-slate-800 text-white">
                           {assignee.full_name}
                         </option>
                       ))}
@@ -454,7 +454,7 @@ export default function CreateTicketModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white/15 backdrop-blur-xl border-t border-white/20 p-6 flex gap-3">
+        <div className="sticky bottom-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/20 p-6 flex gap-3">
           <button
             onClick={onClose}
             disabled={isLoading}

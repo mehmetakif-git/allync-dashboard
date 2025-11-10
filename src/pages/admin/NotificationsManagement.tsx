@@ -376,11 +376,11 @@ export default function NotificationsManagement() {
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     required
                   >
-                    <option value="info">Info</option>
-                    <option value="success">Success</option>
-                    <option value="warning">Warning</option>
-                    <option value="maintenance">Maintenance</option>
-                    <option value="service">Service Update</option>
+                    <option value="info" className="bg-slate-800 text-white">Info</option>
+                    <option value="success" className="bg-slate-800 text-white">Success</option>
+                    <option value="warning" className="bg-slate-800 text-white">Warning</option>
+                    <option value="maintenance" className="bg-slate-800 text-white">Maintenance</option>
+                    <option value="service" className="bg-slate-800 text-white">Service Update</option>
                   </select>
                 </div>
 
@@ -395,10 +395,10 @@ export default function NotificationsManagement() {
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     required
                   >
-                    <option value="all">All Users</option>
-                    <option value="super_admins">Super Admins Only</option>
-                    <option value="company_admins">Company Admins Only</option>
-                    <option value="users">Regular Users Only</option>
+                    <option value="all" className="bg-slate-800 text-white">All Users</option>
+                    <option value="super_admins" className="bg-slate-800 text-white">Super Admins Only</option>
+                    <option value="company_admins" className="bg-slate-800 text-white">Company Admins Only</option>
+                    <option value="users" className="bg-slate-800 text-white">Regular Users Only</option>
                   </select>
                 </div>
               </div>

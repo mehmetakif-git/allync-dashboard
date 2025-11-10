@@ -335,11 +335,11 @@ export default function SystemSettings() {
                       }}
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="Europe/Istanbul">Europe/Istanbul</option>
-                      <option value="America/New_York">America/New_York</option>
-                      <option value="Europe/London">Europe/London</option>
-                      <option value="Asia/Dubai">Asia/Dubai</option>
-                      <option value="Asia/Tokyo">Asia/Tokyo</option>
+                      <option value="Europe/Istanbul" className="bg-slate-800 text-white">Europe/Istanbul</option>
+                      <option value="America/New_York" className="bg-slate-800 text-white">America/New_York</option>
+                      <option value="Europe/London" className="bg-slate-800 text-white">Europe/London</option>
+                      <option value="Asia/Dubai" className="bg-slate-800 text-white">Asia/Dubai</option>
+                      <option value="Asia/Tokyo" className="bg-slate-800 text-white">Asia/Tokyo</option>
                     </select>
                   </div>
                   <div>
@@ -352,10 +352,10 @@ export default function SystemSettings() {
                       }}
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="USD">USD - US Dollar</option>
-                      <option value="EUR">EUR - Euro</option>
-                      <option value="TRY">TRY - Turkish Lira</option>
-                      <option value="GBP">GBP - British Pound</option>
+                      <option value="USD" className="bg-slate-800 text-white">USD - US Dollar</option>
+                      <option value="EUR" className="bg-slate-800 text-white">EUR - Euro</option>
+                      <option value="TRY" className="bg-slate-800 text-white">TRY - Turkish Lira</option>
+                      <option value="GBP" className="bg-slate-800 text-white">GBP - British Pound</option>
                     </select>
                   </div>
                   <div>
@@ -368,9 +368,9 @@ export default function SystemSettings() {
                       }}
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                      <option value="DD/MM/YYYY" className="bg-slate-800 text-white">DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY" className="bg-slate-800 text-white">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD" className="bg-slate-800 text-white">YYYY-MM-DD</option>
                     </select>
                   </div>
                 </div>
@@ -395,8 +395,8 @@ export default function SystemSettings() {
                     }}
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                   >
-                    <option value="resend">Resend.com</option>
-                    <option value="smtp">SMTP</option>
+                    <option value="resend" className="bg-slate-800 text-white">Resend.com</option>
+                    <option value="smtp" className="bg-slate-800 text-white">SMTP</option>
                   </select>
                 </div>
 
@@ -628,10 +628,10 @@ export default function SystemSettings() {
                       }}
                       className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                      <option value="TRY">TRY</option>
-                      <option value="GBP">GBP</option>
+                      <option value="USD" className="bg-slate-800 text-white">USD</option>
+                      <option value="EUR" className="bg-slate-800 text-white">EUR</option>
+                      <option value="TRY" className="bg-slate-800 text-white">TRY</option>
+                      <option value="GBP" className="bg-slate-800 text-white">GBP</option>
                     </select>
                   </div>
                   <div>
@@ -829,9 +829,9 @@ export default function SystemSettings() {
                         }}
                         className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       >
-                        <option value="hourly">Hourly</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
+                        <option value="hourly" className="bg-slate-800 text-white">Hourly</option>
+                        <option value="daily" className="bg-slate-800 text-white">Daily</option>
+                        <option value="weekly" className="bg-slate-800 text-white">Weekly</option>
                       </select>
                     </div>
                     <div>

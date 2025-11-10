@@ -303,8 +303,8 @@ export default function SheetsInstanceModal({
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
                 className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active" className="bg-slate-800 text-white">Active</option>
+                <option value="inactive" className="bg-slate-800 text-white">Inactive</option>
               </select>
             </div>
 

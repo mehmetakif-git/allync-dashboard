@@ -239,9 +239,9 @@ export default function MobileAppSettingsModal({
               onChange={(e) => setPlatform(e.target.value as any)}
               className="w-full bg-secondary border border-secondary rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
-              <option value="android">Android</option>
-              <option value="ios">iOS</option>
-              <option value="both">Android & iOS</option>
+              <option value="android" className="bg-slate-800 text-white">Android</option>
+              <option value="ios" className="bg-slate-800 text-white">iOS</option>
+              <option value="both" className="bg-slate-800 text-white">Android & iOS</option>
             </select>
           </div>
 
@@ -317,12 +317,12 @@ export default function MobileAppSettingsModal({
                       onChange={(e) => setPlayStoreStatus(e.target.value as any)}
                       className="w-full bg-gray-700 border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     >
-                      <option value="pending">Pending</option>
-                      <option value="submitted">Submitted</option>
-                      <option value="in-review">In Review</option>
-                      <option value="approved">Approved</option>
-                      <option value="published">Published</option>
-                      <option value="rejected">Rejected</option>
+                      <option value="pending" className="bg-slate-800 text-white">Pending</option>
+                      <option value="submitted" className="bg-slate-800 text-white">Submitted</option>
+                      <option value="in-review" className="bg-slate-800 text-white">In Review</option>
+                      <option value="approved" className="bg-slate-800 text-white">Approved</option>
+                      <option value="published" className="bg-slate-800 text-white">Published</option>
+                      <option value="rejected" className="bg-slate-800 text-white">Rejected</option>
                     </select>
                   </div>
                   {playStoreStatus === 'published' && (
@@ -352,12 +352,12 @@ export default function MobileAppSettingsModal({
                       onChange={(e) => setAppStoreStatus(e.target.value as any)}
                       className="w-full bg-gray-700 border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     >
-                      <option value="pending">Pending</option>
-                      <option value="submitted">Submitted</option>
-                      <option value="in-review">In Review</option>
-                      <option value="approved">Approved</option>
-                      <option value="published">Published</option>
-                      <option value="rejected">Rejected</option>
+                      <option value="pending" className="bg-slate-800 text-white">Pending</option>
+                      <option value="submitted" className="bg-slate-800 text-white">Submitted</option>
+                      <option value="in-review" className="bg-slate-800 text-white">In Review</option>
+                      <option value="approved" className="bg-slate-800 text-white">Approved</option>
+                      <option value="published" className="bg-slate-800 text-white">Published</option>
+                      <option value="rejected" className="bg-slate-800 text-white">Rejected</option>
                     </select>
                   </div>
                   {appStoreStatus === 'published' && (
@@ -417,10 +417,10 @@ export default function MobileAppSettingsModal({
                             onChange={(e) => handleMilestoneChange(index, 'status', e.target.value)}
                             className="bg-card border border-secondary rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                           >
-                            <option value="pending">Pending</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="completed">Completed</option>
-                            <option value="blocked">Blocked</option>
+                            <option value="pending" className="bg-slate-800 text-white">Pending</option>
+                            <option value="in-progress" className="bg-slate-800 text-white">In Progress</option>
+                            <option value="completed" className="bg-slate-800 text-white">Completed</option>
+                            <option value="blocked" className="bg-slate-800 text-white">Blocked</option>
                           </select>
 
                           <div className="flex items-center gap-2">

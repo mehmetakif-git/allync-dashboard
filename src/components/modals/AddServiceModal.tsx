@@ -274,9 +274,9 @@ export default function AddServiceModal({
                             errors.companyId ? 'border-red-500' : 'border-secondary'
                           }`}
                         >
-                          <option value="">Select a company...</option>
+                          <option value="" className="bg-slate-800 text-white">Select a company...</option>
                           {companies.map((company) => (
-                            <option key={company.id} value={company.id}>
+                            <option key={company.id} value={company.id} className="bg-slate-800 text-white">
                               {company.name}
                             </option>
                           ))}
@@ -302,9 +302,9 @@ export default function AddServiceModal({
                             errors.serviceTypeId ? 'border-red-500' : 'border-secondary'
                           }`}
                         >
-                          <option value="">Select a service type...</option>
+                          <option value="" className="bg-slate-800 text-white">Select a service type...</option>
                           {serviceTypes.map((service) => (
-                            <option key={service.id} value={service.id}>
+                            <option key={service.id} value={service.id} className="bg-slate-800 text-white">
                               {service.name_en} ({service.category})
                             </option>
                           ))}
@@ -410,10 +410,10 @@ export default function AddServiceModal({
                             disabled={isLoading}
                             className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                           >
-                            <option value="">Select billing cycle...</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
-                            <option value="one-time">One-time</option>
+                            <option value="" className="bg-slate-800 text-white">Select billing cycle...</option>
+                            <option value="monthly" className="bg-slate-800 text-white">Monthly</option>
+                            <option value="yearly" className="bg-slate-800 text-white">Yearly</option>
+                            <option value="one-time" className="bg-slate-800 text-white">One-time</option>
                           </select>
                         </div>
                       </div>

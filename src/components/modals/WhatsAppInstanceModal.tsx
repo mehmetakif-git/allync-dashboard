@@ -290,11 +290,11 @@ export default function WhatsAppInstanceModal({
                   onChange={(e) => setFormData({ ...formData, instance_type: e.target.value as InstanceType })}
                   className="w-full bg-secondary/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                 >
-                  <option value="support">Support</option>
-                  <option value="sales">Sales</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="general">General</option>
-                  <option value="info">Info</option>
+                  <option value="support" className="bg-slate-800 text-white">Support</option>
+                  <option value="sales" className="bg-slate-800 text-white">Sales</option>
+                  <option value="marketing" className="bg-slate-800 text-white">Marketing</option>
+                  <option value="general" className="bg-slate-800 text-white">General</option>
+                  <option value="info" className="bg-slate-800 text-white">Info</option>
                 </select>
               </div>
             </div>

@@ -411,12 +411,12 @@ export default function SupportTicketsManagement() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
             >
-              <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="waiting_customer">Waiting Customer</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
+              <option value="all" className="bg-slate-800 text-white">All Status</option>
+              <option value="open" className="bg-slate-800 text-white">Open</option>
+              <option value="in_progress" className="bg-slate-800 text-white">In Progress</option>
+              <option value="waiting_customer" className="bg-slate-800 text-white">Waiting Customer</option>
+              <option value="resolved" className="bg-slate-800 text-white">Resolved</option>
+              <option value="closed" className="bg-slate-800 text-white">Closed</option>
             </select>
 
             <select
@@ -424,11 +424,11 @@ export default function SupportTicketsManagement() {
               onChange={(e) => setPriorityFilter(e.target.value)}
               className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
             >
-              <option value="all">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
+              <option value="all" className="bg-slate-800 text-white">All Priorities</option>
+              <option value="low" className="bg-slate-800 text-white">Low</option>
+              <option value="medium" className="bg-slate-800 text-white">Medium</option>
+              <option value="high" className="bg-slate-800 text-white">High</option>
+              <option value="urgent" className="bg-slate-800 text-white">Urgent</option>
             </select>
           </div>
 

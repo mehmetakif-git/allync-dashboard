@@ -213,9 +213,9 @@ export default function CreateInvoiceModal({
                     errors.companyId ? 'border-red-500' : 'border-secondary'
                   }`}
                 >
-                  <option value="">Select a company...</option>
+                  <option value="" className="bg-slate-800 text-white">Select a company...</option>
                   {companies.map((company) => (
-                    <option key={company.id} value={company.id}>
+                    <option key={company.id} value={company.id} className="bg-slate-800 text-white">
                       {company.name} ({company.email})
                     </option>
                   ))}
@@ -312,9 +312,9 @@ export default function CreateInvoiceModal({
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">No service</option>
+                <option value="" className="bg-slate-800 text-white">No service</option>
                 {selectedCompanyServices.map((service: any) => (
-                  <option key={service.id} value={service.id}>
+                  <option key={service.id} value={service.id} className="bg-slate-800 text-white">
                     {service.service_types?.name_en || 'Unknown Service'} - {service.package?.toUpperCase()}
                   </option>
                 ))}

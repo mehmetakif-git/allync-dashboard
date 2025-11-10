@@ -473,9 +473,9 @@ export default function RevenueAnalytics() {
               onChange={(e) => setTimeRange(e.target.value as any)}
               className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
             >
-              <option value="3">Last 3 Months</option>
-              <option value="6">Last 6 Months</option>
-              <option value="12">Last 12 Months</option>
+              <option value="3" className="bg-slate-800 text-white">Last 3 Months</option>
+              <option value="6" className="bg-slate-800 text-white">Last 6 Months</option>
+              <option value="12" className="bg-slate-800 text-white">Last 12 Months</option>
             </select>
 
             {/* Refresh */}

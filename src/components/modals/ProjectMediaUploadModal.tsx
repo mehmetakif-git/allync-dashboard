@@ -306,14 +306,14 @@ export default function ProjectMediaUploadModal({
                 color: 'white'
               }}
             >
-              <option value="" style={{ backgroundColor: 'rgb(30, 41, 59)', color: 'white' }}>
+              <option value="" className="bg-slate-800 text-white">
                 -- Select Milestone --
               </option>
               {milestones.map((milestone) => (
                 <option
                   key={milestone.id}
                   value={milestone.id}
-                  style={{ backgroundColor: 'rgb(30, 41, 59)', color: 'white' }}
+                  className="bg-slate-800 text-white"
                 >
                   {milestone.title || milestone.name} - {milestone.status}
                 </option>

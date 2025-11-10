@@ -357,9 +357,9 @@ export default function UserInvite() {
                   disabled={isSubmitting}
                   required
                 >
-                  <option value="">Select a company</option>
+                  <option value="" className="bg-slate-800 text-white">Select a company</option>
                   {companies.map((company) => (
-                    <option key={company.id} value={company.id}>
+                    <option key={company.id} value={company.id} className="bg-slate-800 text-white">
                       {company.name}
                     </option>
                   ))}
@@ -378,8 +378,8 @@ export default function UserInvite() {
                   disabled={isSubmitting}
                   required
                 >
-                  <option value="user">User</option>
-                  <option value="company_admin">Company Admin</option>
+                  <option value="user" className="bg-slate-800 text-white">User</option>
+                  <option value="company_admin" className="bg-slate-800 text-white">Company Admin</option>
                 </select>
               </div>
 

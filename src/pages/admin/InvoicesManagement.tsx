@@ -536,11 +536,11 @@ export default function InvoicesManagement() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="pl-10 pr-8 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-accent-blue"
                 >
-                  <option value="all">All Status</option>
-                  <option value="paid">Paid</option>
-                  <option value="pending">Pending</option>
-                  <option value="overdue">Overdue</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="all" className="bg-slate-800 text-white">All Status</option>
+                  <option value="paid" className="bg-slate-800 text-white">Paid</option>
+                  <option value="pending" className="bg-slate-800 text-white">Pending</option>
+                  <option value="overdue" className="bg-slate-800 text-white">Overdue</option>
+                  <option value="cancelled" className="bg-slate-800 text-white">Cancelled</option>
                 </select>
               </div>
               <select
@@ -548,11 +548,11 @@ export default function InvoicesManagement() {
                 onChange={(e) => setGatewayFilter(e.target.value)}
                 className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-accent-blue"
               >
-                <option value="all">All Gateways</option>
-                <option value="paytr">PayTR</option>
-                <option value="stripe">Stripe</option>
-                <option value="qpay">QPay</option>
-                <option value="tappay">Tappay</option>
+                <option value="all" className="bg-slate-800 text-white">All Gateways</option>
+                <option value="paytr" className="bg-slate-800 text-white">PayTR</option>
+                <option value="stripe" className="bg-slate-800 text-white">Stripe</option>
+                <option value="qpay" className="bg-slate-800 text-white">QPay</option>
+                <option value="tappay" className="bg-slate-800 text-white">Tappay</option>
               </select>
             </div>
           </div>

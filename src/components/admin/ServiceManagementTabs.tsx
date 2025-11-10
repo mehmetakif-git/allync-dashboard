@@ -467,9 +467,9 @@ export function CompaniesTab({
                       onChange={(e) => setBasicPeriod(e.target.value)}
                       className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="month">Monthly</option>
-                      <option value="year">Yearly</option>
-                      <option value="one-time">One-time</option>
+                      <option value="month" className="bg-slate-800 text-white">Monthly</option>
+                      <option value="year" className="bg-slate-800 text-white">Yearly</option>
+                      <option value="one-time" className="bg-slate-800 text-white">One-time</option>
                     </select>
                   </div>
                 </div>
@@ -496,9 +496,9 @@ export function CompaniesTab({
                       onChange={(e) => setStandardPeriod(e.target.value)}
                       className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="month">Monthly</option>
-                      <option value="year">Yearly</option>
-                      <option value="one-time">One-time</option>
+                      <option value="month" className="bg-slate-800 text-white">Monthly</option>
+                      <option value="year" className="bg-slate-800 text-white">Yearly</option>
+                      <option value="one-time" className="bg-slate-800 text-white">One-time</option>
                     </select>
                   </div>
                 </div>
@@ -525,9 +525,9 @@ export function CompaniesTab({
                       onChange={(e) => setPremiumPeriod(e.target.value)}
                       className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
                     >
-                      <option value="month">Monthly</option>
-                      <option value="year">Yearly</option>
-                      <option value="one-time">One-time</option>
+                      <option value="month" className="bg-slate-800 text-white">Monthly</option>
+                      <option value="year" className="bg-slate-800 text-white">Yearly</option>
+                      <option value="one-time" className="bg-slate-800 text-white">One-time</option>
                     </select>
                   </div>
                 </div>

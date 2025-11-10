@@ -227,16 +227,16 @@ export default function CalendarInstanceModal({
                 onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
                 className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="America/New_York">America/New_York (EST/EDT)</option>
-                <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
-                <option value="America/Chicago">America/Chicago (CST/CDT)</option>
-                <option value="America/Denver">America/Denver (MST/MDT)</option>
-                <option value="Europe/London">Europe/London (GMT/BST)</option>
-                <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
-                <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
-                <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
-                <option value="Asia/Dubai">Asia/Dubai (GST)</option>
-                <option value="Australia/Sydney">Australia/Sydney (AEST/AEDT)</option>
+                <option value="America/New_York" className="bg-slate-800 text-white">America/New_York (EST/EDT)</option>
+                <option value="America/Los_Angeles" className="bg-slate-800 text-white">America/Los_Angeles (PST/PDT)</option>
+                <option value="America/Chicago" className="bg-slate-800 text-white">America/Chicago (CST/CDT)</option>
+                <option value="America/Denver" className="bg-slate-800 text-white">America/Denver (MST/MDT)</option>
+                <option value="Europe/London" className="bg-slate-800 text-white">Europe/London (GMT/BST)</option>
+                <option value="Europe/Paris" className="bg-slate-800 text-white">Europe/Paris (CET/CEST)</option>
+                <option value="Asia/Tokyo" className="bg-slate-800 text-white">Asia/Tokyo (JST)</option>
+                <option value="Asia/Shanghai" className="bg-slate-800 text-white">Asia/Shanghai (CST)</option>
+                <option value="Asia/Dubai" className="bg-slate-800 text-white">Asia/Dubai (GST)</option>
+                <option value="Australia/Sydney" className="bg-slate-800 text-white">Australia/Sydney (AEST/AEDT)</option>
               </select>
               {errors.timezone && (
                 <p className="text-red-400 text-xs mt-1">{errors.timezone}</p>
@@ -267,8 +267,8 @@ export default function CalendarInstanceModal({
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
                 className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active" className="bg-slate-800 text-white">Active</option>
+                <option value="inactive" className="bg-slate-800 text-white">Inactive</option>
               </select>
             </div>
 
