@@ -176,9 +176,9 @@ export default function CreateTicketModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-secondary rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-secondary shadow-2xl">
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/20 shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 bg-secondary/95 backdrop-blur-sm border-b border-secondary p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white/15 backdrop-blur-xl border-b border-white/20 p-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
               <MessageSquare className="w-6 h-6 text-white" />
@@ -191,7 +191,7 @@ export default function CreateTicketModal({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="p-2 hover:bg-hover rounded-lg transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
           >
             <X className="w-6 h-6 text-muted" />
           </button>
@@ -229,7 +229,7 @@ export default function CreateTicketModal({
                       value={formData.companyId}
                       onChange={(e) => handleInputChange('companyId', e.target.value)}
                       disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-2 bg-primary border rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      className={`w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
                         errors.companyId ? 'border-red-500' : 'border-secondary'
                       }`}
                     >
@@ -253,7 +253,7 @@ export default function CreateTicketModal({
               )}
 
               {initialCompanyId && selectedCompany && (
-                <div className="p-4 bg-primary/50 rounded-lg border border-secondary">
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                   <p className="text-sm text-muted mb-1">Creating ticket for:</p>
                   <p className="text-white font-semibold">{selectedCompany.name}</p>
                   <p className="text-sm text-muted">{selectedCompany.email}</p>
@@ -271,7 +271,7 @@ export default function CreateTicketModal({
                   onChange={(e) => handleInputChange('subject', e.target.value)}
                   disabled={isLoading}
                   placeholder="Brief description of the issue..."
-                  className={`w-full px-4 py-2 bg-primary border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
                     errors.subject ? 'border-red-500' : 'border-secondary'
                   }`}
                 />
@@ -291,7 +291,7 @@ export default function CreateTicketModal({
                   disabled={isLoading}
                   rows={5}
                   placeholder="Detailed description of the issue or request..."
-                  className={`w-full px-4 py-2 bg-primary border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed ${
                     errors.description ? 'border-red-500' : 'border-secondary'
                   }`}
                 />
@@ -312,7 +312,7 @@ export default function CreateTicketModal({
                     value={formData.category}
                     onChange={(e) => handleInputChange('category', e.target.value)}
                     disabled={isLoading}
-                    className={`w-full px-4 py-2 bg-primary border rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.category ? 'border-red-500' : 'border-secondary'
                     }`}
                   >
@@ -336,7 +336,7 @@ export default function CreateTicketModal({
                     value={formData.priority}
                     onChange={(e) => handleInputChange('priority', e.target.value)}
                     disabled={isLoading}
-                    className={`w-full px-4 py-2 bg-primary border rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.priority ? 'border-red-500' : 'border-secondary'
                     }`}
                   >
@@ -365,7 +365,7 @@ export default function CreateTicketModal({
                       value={formData.serviceTypeId || ''}
                       onChange={(e) => handleInputChange('serviceTypeId', e.target.value)}
                       disabled={isLoading}
-                      className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="">No service</option>
                       {serviceTypes.map((service: any) => (
@@ -388,7 +388,7 @@ export default function CreateTicketModal({
                       value={formData.assignedTo || ''}
                       onChange={(e) => handleInputChange('assignedTo', e.target.value)}
                       disabled={isLoading}
-                      className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="">Unassigned</option>
                       {availableAssignees.map((assignee: any) => (
@@ -416,14 +416,14 @@ export default function CreateTicketModal({
                       onKeyPress={handleKeyPress}
                       disabled={isLoading}
                       placeholder="Add tag and press Enter..."
-                      className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                      className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={handleAddTag}
                     disabled={isLoading || !tagInput.trim()}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add
                   </button>
@@ -454,18 +454,18 @@ export default function CreateTicketModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-secondary/95 backdrop-blur-sm border-t border-secondary p-6 flex gap-3">
+        <div className="sticky bottom-0 bg-white/15 backdrop-blur-xl border-t border-white/20 p-6 flex gap-3">
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-white/10 border border-white/20 hover:bg-white/15 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading || loadingData}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

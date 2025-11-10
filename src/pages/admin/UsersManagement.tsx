@@ -336,7 +336,7 @@ export default function UsersManagement() {
   // ===== RENDER =====
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -381,7 +381,7 @@ export default function UsersManagement() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Total Users</p>
@@ -390,7 +390,7 @@ export default function UsersManagement() {
               <Users className="w-12 h-12 text-blue-500" />
             </div>
           </div>
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Super Admins</p>
@@ -399,7 +399,7 @@ export default function UsersManagement() {
               <Shield className="w-12 h-12 text-red-500" />
             </div>
           </div>
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Company Admins</p>
@@ -408,7 +408,7 @@ export default function UsersManagement() {
               <Building2 className="w-12 h-12 text-purple-500" />
             </div>
           </div>
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Active Users</p>
@@ -420,7 +420,7 @@ export default function UsersManagement() {
         </div>
 
         {/* Filters & Users Table */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           {/* Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
@@ -430,7 +430,7 @@ export default function UsersManagement() {
                 placeholder="Search users by name, email, or company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
               />
             </div>
             <div className="flex gap-2">
@@ -439,7 +439,7 @@ export default function UsersManagement() {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="pl-10 pr-8 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="pl-10 pr-8 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Roles</option>
                   <option value="super_admin">Super Admin</option>
@@ -450,7 +450,7 @@ export default function UsersManagement() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -460,7 +460,7 @@ export default function UsersManagement() {
               <select
                 value={companyFilter}
                 onChange={(e) => setCompanyFilter(e.target.value)}
-                className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Companies</option>
                 {companies.map(company => (
@@ -509,7 +509,7 @@ export default function UsersManagement() {
                       .slice(0, 2);
 
                     return (
-                      <tr key={user.id} className="border-b border-secondary hover:bg-primary/30 transition-colors">
+                      <tr key={user.id} className="border-b border-secondary hover:bg-white/10 transition-colors">
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">

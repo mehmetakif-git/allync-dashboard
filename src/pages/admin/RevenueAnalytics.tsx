@@ -375,7 +375,7 @@ export default function RevenueAnalytics() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="text-muted mt-4">Loading revenue analytics...</p>
@@ -387,14 +387,14 @@ export default function RevenueAnalytics() {
   // Error state
   if (error || !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-8 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Failed to Load Analytics</h2>
             <p className="text-muted mb-6">{error || 'Unknown error occurred'}</p>
             <button
               onClick={fetchData}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/50"
             >
               Try Again
             </button>
@@ -405,7 +405,7 @@ export default function RevenueAnalytics() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -419,7 +419,7 @@ export default function RevenueAnalytics() {
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
                 disabled={isExporting}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold flex items-center gap-2 transition-colors disabled:opacity-50 shadow-lg shadow-green-500/50"
               >
                 {isExporting ? (
                   <>
@@ -440,24 +440,24 @@ export default function RevenueAnalytics() {
                     className="fixed inset-0 z-40" 
                     onClick={() => setShowExportMenu(false)}
                   />
-                  <div className="absolute right-0 mt-2 w-56 bg-secondary border border-secondary rounded-lg shadow-xl py-1 z-50">
+                  <div className="absolute right-0 mt-2 w-56 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl py-1 z-50">
                     <button
                       onClick={exportToExcel}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-hover transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-green-400" />
                       <span>Export as Excel (.xlsx)</span>
                     </button>
                     <button
                       onClick={exportToCSV}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-hover transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
                     >
                       <Table2 className="w-4 h-4 text-blue-400" />
                       <span>Export as CSV</span>
                     </button>
                     <button
                       onClick={exportToJSON}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-hover transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
                     >
                       <FileText className="w-4 h-4 text-purple-400" />
                       <span>Export as JSON</span>
@@ -471,7 +471,7 @@ export default function RevenueAnalytics() {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as any)}
-              className="px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
             >
               <option value="3">Last 3 Months</option>
               <option value="6">Last 6 Months</option>
@@ -481,7 +481,7 @@ export default function RevenueAnalytics() {
             {/* Refresh */}
             <button
               onClick={fetchData}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="p-2 hover:bg-white/10 rounded-xl transition-colors"
               title="Refresh"
             >
               <RefreshCw className="w-5 h-5 text-muted" />
@@ -491,7 +491,7 @@ export default function RevenueAnalytics() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Total Revenue</p>
@@ -513,7 +513,7 @@ export default function RevenueAnalytics() {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Total Profit</p>
@@ -531,7 +531,7 @@ export default function RevenueAnalytics() {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Avg Monthly</p>
@@ -549,7 +549,7 @@ export default function RevenueAnalytics() {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Active Companies</p>
@@ -567,7 +567,7 @@ export default function RevenueAnalytics() {
         </div>
 
         {/* Revenue Trend Chart */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-white">Revenue Trend</h2>
             <p className="text-muted text-sm mt-1">Monthly revenue, expenses, and profit over time</p>
@@ -602,7 +602,7 @@ export default function RevenueAnalytics() {
         {/* Revenue by Service & Top Companies */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Revenue by Service */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-white">Revenue by Service</h2>
               <p className="text-muted text-sm mt-1">Top performing services</p>
@@ -639,7 +639,7 @@ export default function RevenueAnalytics() {
           </div>
 
           {/* Top Companies */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-white">Top Performing Companies</h2>
               <p className="text-muted text-sm mt-1">Highest revenue contributors</p>
@@ -647,7 +647,7 @@ export default function RevenueAnalytics() {
             {topCompanies.length > 0 ? (
               <div className="space-y-3 max-h-[350px] overflow-y-auto">
                 {topCompanies.map((company, index) => (
-                  <div key={company.id} className="bg-primary/50 border border-secondary rounded-lg p-4 hover:bg-primary/70 transition-colors">
+                  <div key={company.id} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-primary/70 transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 font-bold text-sm flex-shrink-0">
@@ -688,7 +688,7 @@ export default function RevenueAnalytics() {
         {/* Revenue Sources, Retention, Growth */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Revenue Sources */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h3 className="text-white font-medium mb-4">Revenue Sources</h3>
             {revenueSources ? (
               <div className="space-y-3">
@@ -735,7 +735,7 @@ export default function RevenueAnalytics() {
           </div>
 
           {/* Customer Retention */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h3 className="text-white font-medium mb-4">Customer Retention</h3>
             {retentionMetrics ? (
               <div className="space-y-3">
@@ -762,7 +762,7 @@ export default function RevenueAnalytics() {
           </div>
 
           {/* Growth Metrics */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h3 className="text-white font-medium mb-4">Growth Metrics</h3>
             {growthMetrics ? (
               <div className="space-y-3">

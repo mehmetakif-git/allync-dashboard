@@ -250,9 +250,9 @@ export default function TicketDetailModal({
   // ===== RENDER =====
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-secondary border border-secondary rounded-xl max-w-5xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]">
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] max-w-5xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]">
         {/* ===== HEADER (STICKY) ===== */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-secondary bg-secondary sticky top-0 z-10 rounded-t-xl">
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-white/20 bg-white/15 backdrop-blur-xl sticky top-0 z-10 rounded-t-xl">
           <div>
             <h2 className="text-2xl font-bold text-white mb-1">{ticket.subject}</h2>
             <div className="flex items-center gap-3">
@@ -268,7 +268,7 @@ export default function TicketDetailModal({
           <button
             onClick={handleClose}
             disabled={isLoading || isSaving}
-            className="p-2 hover:bg-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <X className="w-6 h-6 text-muted" />
           </button>
@@ -290,7 +290,7 @@ export default function TicketDetailModal({
           )}
 
         {/* ===== TICKET INFO GRID ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-primary/50 border border-secondary rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white/5 border border-white/10 rounded-xl">
           <div>
             <p className="text-sm text-muted mb-1 flex items-center gap-2">
               <Building2 className="w-4 h-4" />
@@ -327,14 +327,14 @@ export default function TicketDetailModal({
 
         {/* ===== DESCRIPTION ===== */}
         {ticket.description && (
-          <div className="mb-6 p-4 bg-primary/50 border border-secondary rounded-lg">
+          <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-xl">
             <h3 className="text-sm font-semibold text-secondary mb-2">Description</h3>
             <p className="text-secondary whitespace-pre-wrap">{ticket.description}</p>
           </div>
         )}
 
         {/* ===== EDIT FIELDS ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-primary/50 border border-secondary rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-white/5 border border-white/10 rounded-xl">
           <div>
             <label className="block text-sm font-medium text-secondary mb-2">
               Status
@@ -346,7 +346,7 @@ export default function TicketDetailModal({
                 handleFieldChange();
               }}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="open">Open</option>
               <option value="in_progress">In Progress</option>
@@ -367,7 +367,7 @@ export default function TicketDetailModal({
                 handleFieldChange();
               }}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -387,7 +387,7 @@ export default function TicketDetailModal({
                 handleFieldChange();
               }}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Unassigned</option>
               {availableAssignees.map((assignee) => (
@@ -419,7 +419,7 @@ export default function TicketDetailModal({
             }}
             disabled={isSaving}
             placeholder="Add resolution notes (visible to customer)..."
-            className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
             rows={3}
           />
         </div>
@@ -444,7 +444,7 @@ export default function TicketDetailModal({
             <MessageSquare className="w-5 h-5" />
             Conversation
           </h3>
-          <div className="space-y-4 max-h-96 overflow-y-auto mb-4 p-4 bg-primary/50 border border-secondary rounded-lg custom-scrollbar">
+          <div className="space-y-4 max-h-96 overflow-y-auto mb-4 p-4 bg-white/5 border border-white/10 rounded-xl custom-scrollbar">
             {loadingMessages ? (
               <div className="text-center py-8">
                 <LoadingSpinner />
@@ -490,7 +490,7 @@ export default function TicketDetailModal({
             onChange={(e) => setNewMessage(e.target.value)}
             disabled={isSendingReply}
             placeholder="Type your response..."
-            className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
             rows={4}
           />
           <button
@@ -504,7 +504,7 @@ export default function TicketDetailModal({
 
         {/* ===== TIMESTAMPS INFO ===== */}
         {(ticket.resolved_at || ticket.closed_at || ticket.first_response_at) && (
-          <div className="mt-6 p-4 bg-primary/30 border border-secondary rounded-lg">
+          <div className="mt-6 p-4 bg-white/5 border border-white/10 rounded-xl">
             <h4 className="text-sm font-semibold text-muted mb-2">Timeline</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
               {ticket.first_response_at && (

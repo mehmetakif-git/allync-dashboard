@@ -23,7 +23,7 @@ function StatCard({ title, value, icon: Icon, gradient, change, onClick, isLoadi
   return (
     <div
       onClick={onClick}
-      className={`bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 ${onClick ? 'cursor-pointer hover:border-secondary transition-all' : ''}`}
+      className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6 ${onClick ? 'cursor-pointer hover:bg-white/15 transition-all' : ''}`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center`}>
@@ -38,7 +38,7 @@ function StatCard({ title, value, icon: Icon, gradient, change, onClick, isLoadi
       </div>
       <p className="text-muted text-sm mb-1">{title}</p>
       {isLoading ? (
-        <div className="h-9 bg-secondary/20 rounded animate-pulse" />
+        <div className="h-9 bg-white/10 rounded animate-pulse" />
       ) : (
         <p className="text-3xl font-bold text-white">{value}</p>
       )}
@@ -141,7 +141,7 @@ export default function SuperAdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Super Admin Dashboard</h1>
@@ -220,11 +220,11 @@ export default function SuperAdminDashboard() {
         {/* Service Requests & Tickets Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Service Requests Chart */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h2 className="text-xl font-bold text-white mb-6">Service Requests Overview</h2>
             {loading ? (
               <div className="flex items-center justify-center h-64">
-                <div className="w-48 h-48 rounded-full bg-secondary/20 animate-pulse" />
+                <div className="w-48 h-48 rounded-full bg-white/10 animate-pulse" />
               </div>
             ) : (
               <>
@@ -276,7 +276,7 @@ export default function SuperAdminDashboard() {
           </div>
 
           {/* Latest Support Tickets */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Latest Support Tickets</h2>
               <button
@@ -289,9 +289,9 @@ export default function SuperAdminDashboard() {
             <div className="space-y-3">
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="p-4 bg-primary/50 border border-secondary rounded-lg">
-                    <div className="h-4 bg-secondary/20 rounded animate-pulse mb-2" />
-                    <div className="h-3 bg-secondary/20 rounded animate-pulse w-2/3" />
+                  <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                    <div className="h-4 bg-white/10 rounded animate-pulse mb-2" />
+                    <div className="h-3 bg-white/10 rounded animate-pulse w-2/3" />
                   </div>
                 ))
               ) : recentTickets.length > 0 ? (
@@ -299,7 +299,7 @@ export default function SuperAdminDashboard() {
                   <div
                     key={ticket.id}
                     onClick={() => handleNavigate('support-tickets')}
-                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
+                    className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 cursor-pointer transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-white text-sm truncate">{ticket.subject}</span>
@@ -335,7 +335,7 @@ export default function SuperAdminDashboard() {
         {/* Pending Requests & Recent Companies */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Pending Service Requests */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Pending Service Requests</h2>
               <button
@@ -348,9 +348,9 @@ export default function SuperAdminDashboard() {
             <div className="space-y-3">
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="p-4 bg-primary/50 border border-secondary rounded-lg">
-                    <div className="h-4 bg-secondary/20 rounded animate-pulse mb-2" />
-                    <div className="h-3 bg-secondary/20 rounded animate-pulse w-2/3" />
+                  <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                    <div className="h-4 bg-white/10 rounded animate-pulse mb-2" />
+                    <div className="h-3 bg-white/10 rounded animate-pulse w-2/3" />
                   </div>
                 ))
               ) : recentRequests.length > 0 ? (
@@ -358,7 +358,7 @@ export default function SuperAdminDashboard() {
                   <div
                     key={request.id}
                     onClick={() => handleNavigate('services-catalog')}
-                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
+                    className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 cursor-pointer transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-white truncate">{request.service_type?.name_en || 'Unknown Service'}</span>
@@ -381,7 +381,7 @@ export default function SuperAdminDashboard() {
           </div>
 
           {/* Recent Companies */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Recent Companies</h2>
               <button
@@ -394,10 +394,10 @@ export default function SuperAdminDashboard() {
             <div className="space-y-3">
               {loading ? (
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="p-4 bg-primary/50 border border-secondary rounded-lg">
-                    <div className="h-10 bg-secondary/20 rounded animate-pulse mb-3" />
-                    <div className="h-4 bg-secondary/20 rounded animate-pulse mb-2" />
-                    <div className="h-3 bg-secondary/20 rounded animate-pulse" />
+                  <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                    <div className="h-10 bg-white/10 rounded animate-pulse mb-3" />
+                    <div className="h-4 bg-white/10 rounded animate-pulse mb-2" />
+                    <div className="h-3 bg-white/10 rounded animate-pulse" />
                   </div>
                 ))
               ) : recentCompanies.length > 0 ? (
@@ -405,7 +405,7 @@ export default function SuperAdminDashboard() {
                   <div
                     key={company.id}
                     onClick={() => handleNavigate('companies')}
-                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
+                    className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 cursor-pointer transition-all"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -436,7 +436,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-white">Recent Activity</h2>
             <button
@@ -449,11 +449,11 @@ export default function SuperAdminDashboard() {
           <div className="space-y-4">
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-start gap-4 p-4 bg-primary/50 border border-secondary rounded-lg">
-                  <div className="w-10 h-10 rounded-lg bg-secondary/20 animate-pulse flex-shrink-0" />
+                <div key={i} className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-xl">
+                  <div className="w-10 h-10 rounded-lg bg-white/10 animate-pulse flex-shrink-0" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-secondary/20 rounded animate-pulse" />
-                    <div className="h-3 bg-secondary/20 rounded animate-pulse w-3/4" />
+                    <div className="h-4 bg-white/10 rounded animate-pulse" />
+                    <div className="h-3 bg-white/10 rounded animate-pulse w-3/4" />
                   </div>
                 </div>
               ))
@@ -462,7 +462,7 @@ export default function SuperAdminDashboard() {
                 <div
                   key={log.id}
                   onClick={() => handleNavigate('logs')}
-                  className="flex items-start gap-4 p-4 bg-primary/50 border border-secondary rounded-lg hover:border-secondary cursor-pointer transition-all"
+                  className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 cursor-pointer transition-all"
                 >
                   <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                     <Activity className="w-5 h-5 text-blue-500" />

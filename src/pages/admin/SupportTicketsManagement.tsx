@@ -316,7 +316,7 @@ export default function SupportTicketsManagement() {
 
   // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* ===== HEADER ===== */}
         <div className="mb-8 flex items-center justify-between">
@@ -351,7 +351,7 @@ export default function SupportTicketsManagement() {
 
         {/* ===== STATS CARDS ===== */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Total Tickets</span>
               <MessageSquare className="w-5 h-5 text-blue-500" />
@@ -359,7 +359,7 @@ export default function SupportTicketsManagement() {
             <p className="text-3xl font-bold text-white">{stats.total}</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Open</span>
               <AlertCircle className="w-5 h-5 text-blue-500" />
@@ -367,7 +367,7 @@ export default function SupportTicketsManagement() {
             <p className="text-3xl font-bold text-white">{stats.open}</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">In Progress</span>
               <Clock className="w-5 h-5 text-yellow-500" />
@@ -375,7 +375,7 @@ export default function SupportTicketsManagement() {
             <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Resolved</span>
               <CheckCircle className="w-5 h-5 text-green-500" />
@@ -383,7 +383,7 @@ export default function SupportTicketsManagement() {
             <p className="text-3xl font-bold text-white">{stats.resolved}</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Urgent</span>
               <AlertCircle className="w-5 h-5 text-red-500" />
@@ -393,7 +393,7 @@ export default function SupportTicketsManagement() {
         </div>
 
         {/* ===== FILTERS ===== */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
@@ -402,14 +402,14 @@ export default function SupportTicketsManagement() {
                 placeholder="Search tickets, company, or user..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">All Status</option>
               <option value="open">Open</option>
@@ -422,7 +422,7 @@ export default function SupportTicketsManagement() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">All Priorities</option>
               <option value="low">Low</option>
@@ -439,7 +439,7 @@ export default function SupportTicketsManagement() {
         </div>
 
         {/* ===== TICKETS TABLE ===== */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
           {filteredTickets.length > 0 ? (
             <div className="overflow-x-auto custom-scrollbar" style={{ maxHeight: 'calc(100vh - 300px)' }}>
               <table className="w-full relative">

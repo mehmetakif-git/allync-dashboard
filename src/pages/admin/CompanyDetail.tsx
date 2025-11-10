@@ -1064,7 +1064,7 @@ export default function CompanyDetail() {
 
   // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <button
@@ -1102,7 +1102,7 @@ export default function CompanyDetail() {
         )}
 
         {/* Company Header */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6 mb-6">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
@@ -1209,7 +1209,7 @@ export default function CompanyDetail() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Company Information */}
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <h2 className="text-xl font-bold text-white mb-4">Company Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -1258,7 +1258,7 @@ export default function CompanyDetail() {
             </div>
 
             {/* Tax & Billing Information */}
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <h2 className="text-xl font-bold text-white mb-4">Tax & Billing Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
@@ -1280,7 +1280,7 @@ export default function CompanyDetail() {
 
         {activeTab === 'users' && (
           <div className="space-y-6">
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
               <div className="p-6 border-b border-secondary flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white">Company Users</h2>
@@ -1322,9 +1322,9 @@ export default function CompanyDetail() {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-700">
+                    <tbody className="divide-y divide-white/5">
                       {companyUsers.map((user) => (
-                        <tr key={user.id} className="hover:bg-primary/30 transition-colors">
+                        <tr key={user.id} className="hover:bg-white/10 transition-colors">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -1402,7 +1402,7 @@ export default function CompanyDetail() {
 
         {activeTab === 'services' && (
           <div className="space-y-6">
-            <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white">Active Services</h2>
@@ -1460,7 +1460,7 @@ export default function CompanyDetail() {
                       };
 
                       return (
-                        <div key={companyService.id} className="bg-primary/50 border border-secondary rounded-xl p-5 hover:border-blue-500/30 transition-all relative group">
+                        <div key={companyService.id} className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-blue-500/30 transition-all relative group">
                           {/* Delete Button - Top Right */}
                           <button
                             onClick={() => handleDeleteServiceClick(companyService, service)}
@@ -1536,14 +1536,14 @@ export default function CompanyDetail() {
             </div>
 
             {pendingRequests.length > 0 && (
-              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white">Pending Service Requests</h2>
                   <span className="text-sm text-muted">{pendingRequests.length} pending</span>
                 </div>
                 <div className="space-y-3">
                   {pendingRequests.map((request: any) => (
-                    <div key={request.id} className="p-4 bg-primary/50 border border-secondary rounded-lg">
+                    <div key={request.id} className="p-4 bg-white/5 border border-white/10 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-1">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center">
@@ -1585,7 +1585,7 @@ export default function CompanyDetail() {
         )}
 
         {activeTab === 'tickets' && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Support Tickets</h2>
               <div className="flex items-center gap-2">
@@ -1611,7 +1611,7 @@ export default function CompanyDetail() {
                 {supportTickets.map((ticket: any) => (
                   <div 
                     key={ticket.id} 
-                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:bg-primary/70 transition-colors cursor-pointer"
+                    className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-primary/70 transition-colors cursor-pointer"
                     onClick={() => navigate('/admin/support-tickets')}
                   >
                     <div className="flex items-start justify-between mb-3">
@@ -1653,7 +1653,7 @@ export default function CompanyDetail() {
         )}
 
         {activeTab === 'invoices' && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Invoices</h2>
               <div className="flex items-center gap-2">
@@ -1679,7 +1679,7 @@ export default function CompanyDetail() {
                 {companyInvoices.map((invoice: any) => (
                   <div 
                     key={invoice.id} 
-                    className="p-4 bg-primary/50 border border-secondary rounded-lg hover:bg-primary/70 transition-colors cursor-pointer"
+                    className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-primary/70 transition-colors cursor-pointer"
                     onClick={() => navigate('/admin/invoices')}
                   >
                     <div className="flex items-center justify-between">
@@ -1815,7 +1815,7 @@ export default function CompanyDetail() {
                   onChange={(e) => setRejectionReason(e.target.value)}
                   placeholder="Enter rejection reason..."
                   rows={4}
-                  className="w-full px-4 py-3 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500 resize-none"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 resize-none"
                 />
               </div>
 

@@ -137,7 +137,7 @@ export default function SystemSettings() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="text-muted mt-4">Loading system settings...</p>
@@ -147,7 +147,7 @@ export default function SystemSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ export default function SystemSettings() {
         )}
 
         {/* Tabs and Content */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px]">
           {/* Tab Navigation */}
           <div className="border-b border-secondary overflow-x-auto">
             <div className="flex">
@@ -295,7 +295,7 @@ export default function SystemSettings() {
                         setGeneralSettings({ ...generalSettings, site_name: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="Allync AI"
                     />
                   </div>
@@ -308,7 +308,7 @@ export default function SystemSettings() {
                         setGeneralSettings({ ...generalSettings, site_url: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="https://allyncai.com"
                     />
                   </div>
@@ -321,7 +321,7 @@ export default function SystemSettings() {
                         setGeneralSettings({ ...generalSettings, support_email: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="support@allyncai.com"
                     />
                   </div>
@@ -333,7 +333,7 @@ export default function SystemSettings() {
                         setGeneralSettings({ ...generalSettings, timezone: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
                       <option value="Europe/Istanbul">Europe/Istanbul</option>
                       <option value="America/New_York">America/New_York</option>
@@ -350,7 +350,7 @@ export default function SystemSettings() {
                         setGeneralSettings({ ...generalSettings, currency: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
                       <option value="USD">USD - US Dollar</option>
                       <option value="EUR">EUR - Euro</option>
@@ -366,7 +366,7 @@ export default function SystemSettings() {
                         setGeneralSettings({ ...generalSettings, date_format: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
                       <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                       <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -393,7 +393,7 @@ export default function SystemSettings() {
                       setEmailSettings({ ...emailSettings, provider: e.target.value });
                       setHasChanges(true);
                     }}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="resend">Resend.com</option>
                     <option value="smtp">SMTP</option>
@@ -410,7 +410,7 @@ export default function SystemSettings() {
                         setEmailSettings({ ...emailSettings, from_email: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="info@allyncai.com"
                     />
                   </div>
@@ -423,7 +423,7 @@ export default function SystemSettings() {
                         setEmailSettings({ ...emailSettings, from_name: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="Allync"
                     />
                   </div>
@@ -439,7 +439,7 @@ export default function SystemSettings() {
                         setEmailSettings({ ...emailSettings, resend_api_key: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="re_••••••••••••••••"
                     />
                   </div>
@@ -456,7 +456,7 @@ export default function SystemSettings() {
                           setEmailSettings({ ...emailSettings, smtp_host: e.target.value });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                         placeholder="smtp.example.com"
                       />
                     </div>
@@ -469,7 +469,7 @@ export default function SystemSettings() {
                           setEmailSettings({ ...emailSettings, smtp_port: e.target.value });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div>
@@ -481,7 +481,7 @@ export default function SystemSettings() {
                           setEmailSettings({ ...emailSettings, smtp_user: e.target.value });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div>
@@ -493,7 +493,7 @@ export default function SystemSettings() {
                           setEmailSettings({ ...emailSettings, smtp_password: e.target.value });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -543,7 +543,7 @@ export default function SystemSettings() {
                             setPaymentSettings({ ...paymentSettings, stripe_public_key: e.target.value });
                             setHasChanges(true);
                           }}
-                          className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                           placeholder="pk_test_••••••••••••••••"
                         />
                       </div>
@@ -556,7 +556,7 @@ export default function SystemSettings() {
                             setPaymentSettings({ ...paymentSettings, stripe_secret_key: e.target.value });
                             setHasChanges(true);
                           }}
-                          className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                           placeholder="sk_test_••••••••••••••••"
                         />
                       </div>
@@ -598,7 +598,7 @@ export default function SystemSettings() {
                             setPaymentSettings({ ...paymentSettings, paytr_merchant_id: e.target.value });
                             setHasChanges(true);
                           }}
-                          className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                         />
                       </div>
                       <div>
@@ -610,7 +610,7 @@ export default function SystemSettings() {
                             setPaymentSettings({ ...paymentSettings, paytr_secret_key: e.target.value });
                             setHasChanges(true);
                           }}
-                          className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                          className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -626,7 +626,7 @@ export default function SystemSettings() {
                         setPaymentSettings({ ...paymentSettings, default_currency: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     >
                       <option value="USD">USD</option>
                       <option value="EUR">EUR</option>
@@ -645,7 +645,7 @@ export default function SystemSettings() {
                         setPaymentSettings({ ...paymentSettings, tax_rate: parseFloat(e.target.value) });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -672,7 +672,7 @@ export default function SystemSettings() {
                         setSecuritySettings({ ...securitySettings, password_min_length: parseInt(e.target.value) });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
@@ -728,7 +728,7 @@ export default function SystemSettings() {
                           setSecuritySettings({ ...securitySettings, session_timeout: parseInt(e.target.value) });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div>
@@ -742,7 +742,7 @@ export default function SystemSettings() {
                           setSecuritySettings({ ...securitySettings, max_login_attempts: parseInt(e.target.value) });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -827,7 +827,7 @@ export default function SystemSettings() {
                           setDatabaseSettings({ ...databaseSettings, backup_frequency: e.target.value });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       >
                         <option value="hourly">Hourly</option>
                         <option value="daily">Daily</option>
@@ -845,7 +845,7 @@ export default function SystemSettings() {
                           setDatabaseSettings({ ...databaseSettings, backup_retention_days: parseInt(e.target.value) });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -875,7 +875,7 @@ export default function SystemSettings() {
                         setApiSettings({ ...apiSettings, master_api_key: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
                       placeholder="sk_live_••••••••••••••••••••••••"
                     />
                   </div>
@@ -893,7 +893,7 @@ export default function SystemSettings() {
                         setApiSettings({ ...apiSettings, public_api_key: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500 font-mono text-sm"
                       placeholder="pk_live_••••••••••••••••••••••••"
                     />
                   </div>
@@ -910,7 +910,7 @@ export default function SystemSettings() {
                           setApiSettings({ ...apiSettings, rate_limit_requests: parseInt(e.target.value) });
                           setHasChanges(true);
                         }}
-                        className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div className="flex items-center justify-between p-4 bg-primary/50 border border-secondary rounded-lg">
@@ -973,7 +973,7 @@ export default function SystemSettings() {
                         setMaintenanceSettings({ ...maintenanceSettings, mode_message: e.target.value });
                         setHasChanges(true);
                       }}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                       placeholder="We are currently performing maintenance. Please check back soon."
                     />
                   </div>

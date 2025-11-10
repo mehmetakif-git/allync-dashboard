@@ -222,7 +222,7 @@ export default function MaintenanceMode() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="text-muted mt-4">Loading maintenance data...</p>
@@ -232,7 +232,7 @@ export default function MaintenanceMode() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -333,7 +333,7 @@ export default function MaintenanceMode() {
                       type="datetime-local"
                       value={formData.startTime}
                       onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -342,7 +342,7 @@ export default function MaintenanceMode() {
                       type="datetime-local"
                       value={formData.endTime}
                       onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                      className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export default function MaintenanceMode() {
                     rows={3}
                     value={formData.messageTr}
                     onChange={(e) => setFormData({ ...formData, messageTr: e.target.value })}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     placeholder="Sistem bakımı mesajı..."
                   />
                 </div>
@@ -372,7 +372,7 @@ export default function MaintenanceMode() {
                     rows={3}
                     value={formData.messageEn}
                     onChange={(e) => setFormData({ ...formData, messageEn: e.target.value })}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     placeholder="Maintenance message..."
                   />
                 </div>
@@ -428,7 +428,7 @@ export default function MaintenanceMode() {
 
         {/* Upcoming Maintenance */}
         {upcomingWindows.length > 0 && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h2 className="text-xl font-bold text-white mb-4">Upcoming Maintenance</h2>
             <div className="space-y-3">
               {upcomingWindows.map(window => (
@@ -478,7 +478,7 @@ export default function MaintenanceMode() {
 
         {/* History */}
         {historyWindows.length > 0 && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h2 className="text-xl font-bold text-white mb-4">Maintenance History</h2>
             <div className="space-y-3">
               {historyWindows.map(window => (
@@ -511,7 +511,7 @@ export default function MaintenanceMode() {
 
         {/* Empty State */}
         {!activeWindow && upcomingWindows.length === 0 && historyWindows.length === 0 && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-12 text-center">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-12 text-center">
             <Calendar className="w-16 h-16 text-muted mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">No Maintenance Windows</h3>
             <p className="text-muted mb-6">Schedule your first maintenance window to get started</p>

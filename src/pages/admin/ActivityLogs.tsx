@@ -327,7 +327,7 @@ export default function ActivityLogs() {
   // =====================================================
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -338,7 +338,7 @@ export default function ActivityLogs() {
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode(viewMode === 'list' ? 'analytics' : 'list')}
-              className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors"
+              className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white/15 flex items-center gap-2 transition-colors"
             >
               {viewMode === 'list' ? (
                 <>
@@ -355,7 +355,7 @@ export default function ActivityLogs() {
             <button
               onClick={loadData}
               disabled={loading}
-              className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white/15 flex items-center gap-2 transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
               Refresh
@@ -363,27 +363,27 @@ export default function ActivityLogs() {
             <div className="relative group">
               <button
                 disabled={exporting}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center gap-2 transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/50 font-semibold"
               >
                 <Download className="w-5 h-5" />
                 Export
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-secondary rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                 <button
                   onClick={() => handleExport('csv')}
-                  className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 rounded-t-lg transition-colors"
+                  className="w-full px-4 py-2 text-left text-white hover:bg-white/15 rounded-t-lg transition-colors"
                 >
                   Export as CSV
                 </button>
                 <button
                   onClick={() => handleExport('excel')}
-                  className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition-colors"
+                  className="w-full px-4 py-2 text-left text-white hover:bg-white/15 transition-colors"
                 >
                   Export as Excel
                 </button>
                 <button
                   onClick={() => handleExport('json')}
-                  className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 rounded-b-lg transition-colors"
+                  className="w-full px-4 py-2 text-left text-white hover:bg-white/15 rounded-b-lg transition-colors"
                 >
                   Export as JSON
                 </button>
@@ -395,7 +395,7 @@ export default function ActivityLogs() {
         {/* Statistics Cards */}
         {statistics && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted text-sm">Total Activities</p>
@@ -414,7 +414,7 @@ export default function ActivityLogs() {
               </div>
             </div>
 
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted text-sm">Active Users</p>
@@ -430,7 +430,7 @@ export default function ActivityLogs() {
               </div>
             </div>
 
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted text-sm">Critical Events</p>
@@ -451,7 +451,7 @@ export default function ActivityLogs() {
               </div>
             </div>
 
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted text-sm">Avg Response</p>
@@ -474,7 +474,7 @@ export default function ActivityLogs() {
           /* Analytics View */
           <div className="space-y-6">
             {/* Timeline Chart */}
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Activity Timeline (24h)</h2>
               <div className="space-y-2">
                 {timeline.map((item, index) => (
@@ -503,13 +503,13 @@ export default function ActivityLogs() {
             </div>
 
             {/* Top Users */}
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Top Active Users (7 days)</h2>
               <div className="space-y-3">
                 {topUsers.map((user, index) => (
                   <div
                     key={user.user_id}
-                    className={`flex items-center justify-between bg-gray-700 rounded-lg p-4 border-l-4 ${
+                    className={`flex items-center justify-between bg-white/10 border border-white/20 rounded-xl p-4 border-l-4 ${
                       index === 0
                         ? 'border-yellow-500'
                         : index === 1
@@ -551,7 +551,7 @@ export default function ActivityLogs() {
             </div>
 
             {/* Critical Logs */}
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <AlertCircle className="w-6 h-6 text-red-500" />
                 Recent Critical Events
@@ -560,7 +560,7 @@ export default function ActivityLogs() {
                 {criticalLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="bg-gray-700 rounded-lg p-4 border-l-4 border-red-500"
+                    className="bg-white/10 border border-white/20 rounded-xl p-4 border-l-4 border-red-500"
                   >
                     <div className="flex items-start justify-between">
                       <div>
@@ -585,7 +585,7 @@ export default function ActivityLogs() {
           /* List View */
           <>
             {/* Filters */}
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Search */}
                 <div className="relative">
@@ -595,7 +595,7 @@ export default function ActivityLogs() {
                     placeholder="Search activities..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -603,7 +603,7 @@ export default function ActivityLogs() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Categories</option>
                   <option value="auth">Authentication</option>
@@ -620,7 +620,7 @@ export default function ActivityLogs() {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Status</option>
                   <option value="success">Success</option>
@@ -633,7 +633,7 @@ export default function ActivityLogs() {
                 <select
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
@@ -646,7 +646,7 @@ export default function ActivityLogs() {
                 <select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Severity</option>
                   <option value="info">Info</option>
@@ -659,7 +659,7 @@ export default function ActivityLogs() {
                 <select
                   value={selectedDevice}
                   onChange={(e) => setSelectedDevice(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Devices</option>
                   <option value="desktop">Desktop</option>
@@ -674,13 +674,13 @@ export default function ActivityLogs() {
                       type="date"
                       value={customStartDate}
                       onChange={(e) => setCustomStartDate(e.target.value)}
-                      className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     />
                     <input
                       type="date"
                       value={customEndDate}
                       onChange={(e) => setCustomEndDate(e.target.value)}
-                      className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                      className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     />
                   </>
                 )}
@@ -688,7 +688,7 @@ export default function ActivityLogs() {
             </div>
 
             {/* Activity Logs List */}
-            <div className="bg-secondary rounded-lg p-6">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">
                   Activity Logs ({totalRecords.toLocaleString()})
@@ -710,7 +710,7 @@ export default function ActivityLogs() {
                     {logs.map((log) => (
                       <div
                         key={log.id}
-                        className={`bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition-colors border-l-4 ${
+                        className={`bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-gray-650 transition-colors border-l-4 ${
                           log.user?.role === 'super_admin'
                             ? 'border-red-500'
                             : log.user?.role === 'company_admin'
@@ -857,7 +857,7 @@ export default function ActivityLogs() {
                         <button
                           onClick={() => setCurrentPage(currentPage - 1)}
                           disabled={currentPage === 1}
-                          className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           Previous
                         </button>
@@ -867,7 +867,7 @@ export default function ActivityLogs() {
                         <button
                           onClick={() => setCurrentPage(currentPage + 1)}
                           disabled={currentPage === totalPages}
-                          className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           Next
                         </button>

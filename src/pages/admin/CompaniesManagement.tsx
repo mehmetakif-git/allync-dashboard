@@ -185,7 +185,7 @@ export default function CompaniesManagement() {
   // ===== RENDER =====
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -195,7 +195,7 @@ export default function CompaniesManagement() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg shadow-green-500/50"
           >
             <Plus className="w-5 h-5" />
             Add New Company
@@ -230,7 +230,7 @@ export default function CompaniesManagement() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Total Companies</span>
               <Building2 className="w-5 h-5 text-blue-500" />
@@ -238,7 +238,7 @@ export default function CompaniesManagement() {
             <p className="text-3xl font-bold text-white">{stats.total}</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Active</span>
               <CheckCircle className="w-5 h-5 text-green-500" />
@@ -246,7 +246,7 @@ export default function CompaniesManagement() {
             <p className="text-3xl font-bold text-white">{stats.active}</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-muted">Suspended</span>
               <XCircle className="w-5 h-5 text-red-500" />
@@ -256,7 +256,7 @@ export default function CompaniesManagement() {
         </div>
 
         {/* Filters */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 mb-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
@@ -265,14 +265,14 @@ export default function CompaniesManagement() {
                 placeholder="Search companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -283,7 +283,7 @@ export default function CompaniesManagement() {
         </div>
 
         {/* Companies Table */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
           {filteredCompanies.length === 0 ? (
             <div className="p-12 text-center">
               <Building2 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -298,7 +298,7 @@ export default function CompaniesManagement() {
               {!searchTerm && statusFilter === 'all' && (
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+                  className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all inline-flex items-center gap-2 shadow-lg shadow-green-500/50"
                 >
                   <Plus className="w-5 h-5" />
                   Add First Company
@@ -308,7 +308,7 @@ export default function CompaniesManagement() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-primary/50 border-b border-secondary">
+                <thead className="bg-white/5 border-b border-white/10">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Company</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Contact</th>
@@ -318,9 +318,9 @@ export default function CompaniesManagement() {
                     <th className="px-6 py-4 text-left text-sm font-semibold text-secondary">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-white/5">
                   {filteredCompanies.map((company) => (
-                    <tr key={company.id} className="hover:bg-primary/30 transition-colors">
+                    <tr key={company.id} className="hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">

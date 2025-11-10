@@ -543,7 +543,7 @@ export default function WhatsAppServiceManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-green-500 animate-spin" />
           <p className="text-white text-xl">Loading WhatsApp service data...</p>
@@ -554,7 +554,7 @@ export default function WhatsAppServiceManagement() {
 
   if (!serviceData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-8 text-center">
             <MessageCircle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
@@ -578,7 +578,7 @@ export default function WhatsAppServiceManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -603,7 +603,7 @@ export default function WhatsAppServiceManagement() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Active Companies</p>
@@ -613,7 +613,7 @@ export default function WhatsAppServiceManagement() {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Total Instances</p>
@@ -626,7 +626,7 @@ export default function WhatsAppServiceManagement() {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Messages Today</p>
@@ -636,7 +636,7 @@ export default function WhatsAppServiceManagement() {
             </div>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Active Sessions</p>
@@ -769,7 +769,7 @@ export default function WhatsAppServiceManagement() {
 
             <div className="flex gap-4 h-[calc(100vh-460px)]">
             {/* Left Sidebar - Companies */}
-            <div className="w-80 bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden flex flex-col">
+            <div className="w-80 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden flex flex-col">
               <div className="p-4 border-b border-secondary/50">
                 <h3 className="text-lg font-semibold text-white">Companies</h3>
                 <p className="text-xs text-muted mt-1">Select a company to view conversations</p>
@@ -813,7 +813,7 @@ export default function WhatsAppServiceManagement() {
             </div>
 
             {/* Middle - Sessions List */}
-            <div className="w-96 bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden flex flex-col">
+            <div className="w-96 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden flex flex-col">
               <div className="p-4 border-b border-secondary/50">
                 <h3 className="text-lg font-semibold text-white">Sessions</h3>
                 <p className="text-xs text-muted mt-1">
@@ -867,7 +867,7 @@ export default function WhatsAppServiceManagement() {
             </div>
 
             {/* Right - Chat Messages */}
-            <div className="flex-1 bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden flex flex-col">
+            <div className="flex-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden flex flex-col">
               <div className="p-4 border-b border-secondary/50">
                 <h3 className="text-lg font-semibold text-white">
                   {selectedSession ? selectedSession.customer_name || 'Conversation' : 'Messages'}
@@ -947,7 +947,7 @@ export default function WhatsAppServiceManagement() {
 
         {/* ========== USERS TAB ========== */}
         {activeTab === 'users' && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
             <div className="p-6 border-b border-secondary/50">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -968,7 +968,7 @@ export default function WhatsAppServiceManagement() {
                 <select
                   value={selectedCompanyFilter}
                   onChange={(e) => setSelectedCompanyFilter(e.target.value)}
-                  className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Companies ({allUsers.length})</option>
                   {availableCompanies.map(company => {
@@ -1067,7 +1067,7 @@ export default function WhatsAppServiceManagement() {
 
         {/* ========== ERRORS TAB ========== */}
         {activeTab === 'errors' && (
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
             <div className="p-6 border-b border-secondary/50">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -1088,7 +1088,7 @@ export default function WhatsAppServiceManagement() {
                 <select
                   value={selectedCompanyFilter}
                   onChange={(e) => setSelectedCompanyFilter(e.target.value)}
-                  className="px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
                   <option value="all">All Companies ({allErrors.length})</option>
                   {availableCompanies.map(company => {

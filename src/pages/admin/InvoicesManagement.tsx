@@ -368,7 +368,7 @@ export default function InvoicesManagement() {
 
   // ===== RENDER =====
   return (
-    <div className="min-h-screen bg-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* ===== HEADER ===== */}
         <div className="flex items-center justify-between">
@@ -400,43 +400,43 @@ export default function InvoicesManagement() {
               </button>
 
             {showExportMenu && (
-              <div className="absolute right-0 mt-2 w-56 bg-card border border-primary rounded-xl shadow-xl z-50">
+              <div className="absolute right-0 mt-2 w-56 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] shadow-xl z-50">
                 <div className="p-2">
                   <button
                     onClick={handleExportAll}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                    className="w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded-xl transition-colors"
                   >
                     Export All Invoices
                   </button>
                   <button
                     onClick={handleExportFiltered}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                    className="w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded-xl transition-colors"
                   >
                     Export Filtered Results
                   </button>
                   <div className="border-t border-primary my-2"></div>
                   <button
                     onClick={() => handleExportByStatus('paid')}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                    className="w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded-xl transition-colors"
                   >
                     Export Paid Only
                   </button>
                   <button
                     onClick={() => handleExportByStatus('pending')}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                    className="w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded-xl transition-colors"
                   >
                     Export Pending Only
                   </button>
                   <button
                     onClick={() => handleExportByStatus('overdue')}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                    className="w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded-xl transition-colors"
                   >
                     Export Overdue Only
                   </button>
                   <div className="border-t border-primary my-2"></div>
                   <button
                     onClick={handleExportByCompany}
-                    className="w-full text-left px-4 py-2 text-white hover:bg-hover rounded-lg transition-colors"
+                    className="w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded-xl transition-colors"
                   >
                     Export by Company...
                   </button>
@@ -465,7 +465,7 @@ export default function InvoicesManagement() {
 
         {/* ===== STATS CARDS ===== */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-card border border-primary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Total Revenue</p>
@@ -475,7 +475,7 @@ export default function InvoicesManagement() {
             </div>
           </div>
 
-          <div className="bg-card border border-primary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Paid Invoices</p>
@@ -488,7 +488,7 @@ export default function InvoicesManagement() {
             </div>
           </div>
 
-          <div className="bg-card border border-primary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Pending Invoices</p>
@@ -501,7 +501,7 @@ export default function InvoicesManagement() {
             </div>
           </div>
 
-          <div className="bg-card border border-primary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Overdue Invoices</p>
@@ -516,7 +516,7 @@ export default function InvoicesManagement() {
         </div>
 
         {/* ===== FILTERS ===== */}
-        <div className="bg-card border border-primary rounded-xl p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
@@ -525,7 +525,7 @@ export default function InvoicesManagement() {
                 placeholder="Search by company, invoice number, or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-secondary border border-secondary rounded-lg text-white placeholder-muted focus:outline-none focus:border-accent-blue"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-muted focus:outline-none focus:border-accent-blue"
               />
             </div>
             <div className="flex gap-2">
@@ -534,7 +534,7 @@ export default function InvoicesManagement() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="pl-10 pr-8 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-accent-blue"
+                  className="pl-10 pr-8 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-accent-blue"
                 >
                   <option value="all">All Status</option>
                   <option value="paid">Paid</option>
@@ -546,7 +546,7 @@ export default function InvoicesManagement() {
               <select
                 value={gatewayFilter}
                 onChange={(e) => setGatewayFilter(e.target.value)}
-                className="px-4 py-2 bg-secondary border border-secondary rounded-lg text-white focus:outline-none focus:border-accent-blue"
+                className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-accent-blue"
               >
                 <option value="all">All Gateways</option>
                 <option value="paytr">PayTR</option>
@@ -562,7 +562,7 @@ export default function InvoicesManagement() {
         </div>
 
         {/* ===== INVOICES TABLE ===== */}
-        <div className="bg-card border border-primary rounded-xl overflow-hidden">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
           {filteredInvoices.length > 0 ? (
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full">

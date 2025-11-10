@@ -253,7 +253,7 @@ export default function UserInvite() {
   // ===== RENDER =====
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>
@@ -289,7 +289,7 @@ export default function UserInvite() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Invite Form */}
-          <div className="lg:col-span-2 bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="lg:col-span-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center gap-3 mb-6">
               <UserPlus className="w-6 h-6 text-blue-500" />
               <h2 className="text-xl font-bold text-white">New Invitation</h2>
@@ -306,7 +306,7 @@ export default function UserInvite() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     placeholder="Enter first name"
                     disabled={isSubmitting}
                     required
@@ -321,7 +321,7 @@ export default function UserInvite() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     placeholder="Enter last name"
                     disabled={isSubmitting}
                     required
@@ -338,7 +338,7 @@ export default function UserInvite() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   placeholder="user@example.com"
                   disabled={isSubmitting}
                   required
@@ -353,7 +353,7 @@ export default function UserInvite() {
                   name="company"
                   value={formData.company}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                   disabled={isSubmitting}
                   required
                 >
@@ -374,7 +374,7 @@ export default function UserInvite() {
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                   disabled={isSubmitting}
                   required
                 >
@@ -393,14 +393,14 @@ export default function UserInvite() {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="Enter temporary password"
-                  className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   disabled={isSubmitting}
                   required
                 />
                 <p className="text-xs text-muted mt-1">User will be required to change this password on first login</p>
               </div>
 
-              <div className="bg-secondary/50 border border-secondary rounded-lg p-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -443,7 +443,7 @@ export default function UserInvite() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-medium flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed shadow-lg shadow-blue-500/50"
                 >
                   {isSubmitting ? (
                     <>
@@ -460,7 +460,7 @@ export default function UserInvite() {
                 <button
                   type="button"
                   onClick={() => setShowPreview(!showPreview)}
-                  className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-hover font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white/15 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isSubmitting}
                 >
                   {showPreview ? 'Hide Preview' : 'Preview Email'}
@@ -468,7 +468,7 @@ export default function UserInvite() {
               </div>
 
               {showPreview && (
-                <div className="bg-secondary/50 border border-secondary rounded-lg p-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                   <h3 className="text-white font-medium mb-3 flex items-center gap-2">
                     <Mail className="w-5 h-5 text-blue-400" />
                     Email Preview (HTML)
@@ -486,10 +486,10 @@ export default function UserInvite() {
           </div>
 
           {/* Statistics */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h2 className="text-xl font-bold text-white mb-4">Invitation Stats</h2>
             <div className="space-y-4">
-              <div className="bg-primary/50 border border-secondary rounded-lg p-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-muted text-sm">Total Sent</p>
@@ -498,7 +498,7 @@ export default function UserInvite() {
                   <Send className="w-8 h-8 text-blue-500" />
                 </div>
               </div>
-              <div className="bg-primary/50 border border-secondary rounded-lg p-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-muted text-sm">Accepted</p>
@@ -507,7 +507,7 @@ export default function UserInvite() {
                   <CheckCircle2 className="w-8 h-8 text-green-500" />
                 </div>
               </div>
-              <div className="bg-primary/50 border border-secondary rounded-lg p-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-muted text-sm">Pending</p>
@@ -516,7 +516,7 @@ export default function UserInvite() {
                   <Clock className="w-8 h-8 text-yellow-500" />
                 </div>
               </div>
-              <div className="bg-primary/50 border border-secondary rounded-lg p-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-muted text-sm">Expired</p>
@@ -530,7 +530,7 @@ export default function UserInvite() {
         </div>
 
         {/* Recent Invitations */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           <h2 className="text-xl font-bold text-white mb-4">Recent Invitations</h2>
           {invites.length === 0 ? (
             <div className="text-center py-12">
@@ -542,7 +542,7 @@ export default function UserInvite() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-secondary">
+                  <tr className="border-b border-white/10">
                     <th className="text-left py-3 px-4 text-muted font-medium">User</th>
                     <th className="text-left py-3 px-4 text-muted font-medium">Email</th>
                     <th className="text-left py-3 px-4 text-muted font-medium">Company</th>
@@ -553,7 +553,7 @@ export default function UserInvite() {
                 </thead>
                 <tbody>
                   {invites.map((invite) => (
-                    <tr key={invite.id} className="border-b border-secondary hover:bg-primary/30 transition-colors">
+                    <tr key={invite.id} className="border-b border-white/5 hover:bg-white/10 transition-colors">
                       <td className="py-4 px-4">
                         <p className="text-white font-medium">
                           {invite.first_name} {invite.last_name}

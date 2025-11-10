@@ -274,14 +274,14 @@ export default function NotificationsManagement() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -316,7 +316,7 @@ export default function NotificationsManagement() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Total Sent</p>
@@ -325,7 +325,7 @@ export default function NotificationsManagement() {
               <Send className="w-12 h-12 text-blue-500" />
             </div>
           </div>
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Active</p>
@@ -334,7 +334,7 @@ export default function NotificationsManagement() {
               <Bell className="w-12 h-12 text-green-500" />
             </div>
           </div>
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">This Week</p>
@@ -343,7 +343,7 @@ export default function NotificationsManagement() {
               <Clock className="w-12 h-12 text-purple-500" />
             </div>
           </div>
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted text-sm">Recipients</p>
@@ -357,7 +357,7 @@ export default function NotificationsManagement() {
         {/* Create & Preview */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Create Form */}
-          <div className="lg:col-span-2 bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="lg:col-span-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center gap-3 mb-6">
               <Bell className="w-6 h-6 text-blue-500" />
               <h2 className="text-xl font-bold text-white">Create Notification</h2>
@@ -373,7 +373,7 @@ export default function NotificationsManagement() {
                     name="type"
                     value={formData.type}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     required
                   >
                     <option value="info">Info</option>
@@ -392,7 +392,7 @@ export default function NotificationsManagement() {
                     name="target_audience"
                     value={formData.target_audience}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-500"
                     required
                   >
                     <option value="all">All Users</option>
@@ -412,7 +412,7 @@ export default function NotificationsManagement() {
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                   placeholder="Enter notification title"
                   required
                   maxLength={255}
@@ -428,7 +428,7 @@ export default function NotificationsManagement() {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={6}
-                  className="w-full px-4 py-2 bg-primary border border-secondary rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
                   placeholder="Enter notification message"
                   required
                 />
@@ -480,7 +480,7 @@ export default function NotificationsManagement() {
           </div>
 
           {/* Preview */}
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <h2 className="text-xl font-bold text-white mb-4">Preview</h2>
 
             {(() => {
@@ -533,7 +533,7 @@ export default function NotificationsManagement() {
         </div>
 
         {/* Notification History */}
-        <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
           <h2 className="text-xl font-bold text-white mb-4">Notification History</h2>
 
           {notifications.length === 0 ? (
@@ -544,7 +544,7 @@ export default function NotificationsManagement() {
           ) : (
             <div className="space-y-3">
               {notifications.map((notification) => (
-                <div key={notification.id} className="bg-primary/50 border border-secondary rounded-lg p-4 hover:bg-primary/70 transition-colors">
+                <div key={notification.id} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-primary/70 transition-colors">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       <span className={`px-3 py-1 rounded-full text-sm flex items-center gap-2 ${getTypeBadgeColor(notification.type)} flex-shrink-0`}>

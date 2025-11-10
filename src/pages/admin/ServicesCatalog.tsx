@@ -198,7 +198,7 @@ export default function ServicesCatalog() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
           <p className="text-white text-xl">Loading services...</p>
@@ -208,7 +208,7 @@ export default function ServicesCatalog() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Services Catalog</h1>
@@ -232,7 +232,7 @@ export default function ServicesCatalog() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-muted mb-1">Active Services</p>
@@ -245,7 +245,7 @@ export default function ServicesCatalog() {
             <p className="text-xs text-green-500">All services operational</p>
           </div>
 
-          <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-muted mb-1">Total Companies</p>
@@ -268,7 +268,7 @@ export default function ServicesCatalog() {
               placeholder="Search services..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-secondary border border-secondary rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
           </div>
         </div>
@@ -287,7 +287,7 @@ export default function ServicesCatalog() {
             return (
               <div
                 key={service.id}
-                className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-blue-500/50 transition-all"
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6 hover:border-blue-500/50 transition-all"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-4">
@@ -326,7 +326,7 @@ export default function ServicesCatalog() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-secondary">
+                <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-white/10">
                   <div>
                     <p className="text-xs text-muted mb-1">Companies Using</p>
                     <p className="text-sm font-semibold text-white">{service.companies_using}</p>
@@ -341,29 +341,29 @@ export default function ServicesCatalog() {
                 {(service.slug === 'website-development' || service.slug === 'mobile-app-development' || service.slug === 'whatsapp-automation') ? (
                   <button
                     onClick={() => navigateToManagement(service.slug)}
-                    className={`w-full px-6 py-3 bg-gradient-to-r ${colorGradient} hover:opacity-90 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2 mb-4`}
+                    className={`w-full px-6 py-3 bg-gradient-to-r ${colorGradient} hover:opacity-90 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2 mb-4 shadow-lg`}
                   >
                     <Settings className="w-5 h-5" />
                     Manage Service
                   </button>
                 ) : (
-                  <div className="w-full px-6 py-3 bg-gray-700/50 border border-secondary text-muted rounded-lg font-medium text-center mb-4">
+                  <div className="w-full px-6 py-3 bg-white/5 border border-white/10 text-muted rounded-xl font-medium text-center mb-4">
                     <p className="text-sm">Management Dashboard Coming Soon</p>
                     <p className="text-xs text-muted mt-1">Status controls available below</p>
                   </div>
                 )}
 
                 {/* Status Control Buttons */}
-                <div className="border-t border-secondary pt-4">
+                <div className="border-t border-white/10 pt-4">
                   <p className="text-xs text-muted mb-3 font-semibold uppercase tracking-wider">Change Service Status</p>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => handleStatusChange(service, 'active')}
                       disabled={updating}
-                      className={`px-4 py-3 rounded-lg text-sm font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
                         service.status === 'active'
                           ? 'bg-green-500 text-white shadow-lg shadow-green-500/50 ring-2 ring-green-400'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/15'
                       }`}
                     >
                       ✓ Active
@@ -371,10 +371,10 @@ export default function ServicesCatalog() {
                     <button
                       onClick={() => handleStatusChange(service, 'maintenance')}
                       disabled={updating}
-                      className={`px-4 py-3 rounded-lg text-sm font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
                         service.status === 'maintenance'
                           ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/50 ring-2 ring-orange-400'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/15'
                       }`}
                     >
                       🔧 Maintenance
@@ -382,10 +382,10 @@ export default function ServicesCatalog() {
                     <button
                       onClick={() => handleStatusChange(service, 'inactive')}
                       disabled={updating}
-                      className={`px-4 py-3 rounded-lg text-sm font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
                         service.status === 'inactive'
                           ? 'bg-red-500 text-white shadow-lg shadow-red-500/50 ring-2 ring-red-400'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/15'
                       }`}
                     >
                       ✕ Inactive
@@ -408,8 +408,8 @@ export default function ServicesCatalog() {
       {/* Confirmation Modal */}
       {showStatusModal && selectedService && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-secondary rounded-2xl max-w-md w-full border border-secondary shadow-2xl">
-            <div className="p-6 border-b border-secondary">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl max-w-md w-full border border-white/20 shadow-2xl">
+            <div className="p-6 border-b border-white/10">
               <div className="flex items-center justify-between mb-2">
                 <AlertTriangle className="w-6 h-6 text-orange-500" />
                 <button 
@@ -438,18 +438,18 @@ export default function ServicesCatalog() {
               </p>
             </div>
 
-            <div className="p-6 border-t border-secondary flex gap-3">
+            <div className="p-6 border-t border-white/10 flex gap-3">
               <button
                 onClick={() => setShowStatusModal(false)}
                 disabled={updating}
-                className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-6 py-3 bg-white/10 border border-white/20 hover:bg-white/15 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmStatusChange}
                 disabled={updating}
-                className={`flex-1 px-6 py-3 ${getStatusInfo(selectedStatus).color} hover:opacity-90 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+                className={`flex-1 px-6 py-3 ${getStatusInfo(selectedStatus).color} hover:opacity-90 text-white rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg`}
               >
                 {updating ? (
                   <>

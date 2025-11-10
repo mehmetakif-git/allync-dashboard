@@ -215,7 +215,7 @@ export default function MobileAppServiceManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
           <p className="text-white text-xl">Loading service data...</p>
@@ -226,7 +226,7 @@ export default function MobileAppServiceManagement() {
 
   if (!serviceData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+      <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6 text-center">
             <p className="text-red-400">Service not found</p>
@@ -250,7 +250,7 @@ export default function MobileAppServiceManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <button
@@ -347,7 +347,7 @@ export default function MobileAppServiceManagement() {
         {activeTab === 'projects' && (
           <div className="space-y-6">
             {projects.length === 0 ? (
-              <div className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-12 text-center">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-12 text-center">
                 <ImageIcon className="w-16 h-16 text-muted mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">No Projects Yet</h3>
                 <p className="text-muted">Mobile app projects will appear here once created.</p>
@@ -357,7 +357,7 @@ export default function MobileAppServiceManagement() {
                 {projects.map((project) => (
                   <div
                     key={project.id}
-                    className="bg-card backdrop-blur-xl border border-secondary rounded-xl p-6 hover:border-blue-500/50 transition-all"
+                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] p-6 hover:border-blue-500/50 transition-all"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
