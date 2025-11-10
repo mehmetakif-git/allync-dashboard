@@ -1,7 +1,16 @@
 import { supabase } from '../supabase';
 import logger from '../services/consoleLogger';
 import inputValidator from '../utils/inputValidator';
-import pushNotificationService from '../services/pushNotificationService';
+
+// Dynamic import for server-side only (expo-server-sdk doesn't work in browser)
+const getPushService = async () => {
+  // Only import on server-side (not in browser)
+  if (typeof window === 'undefined') {
+    const { default: pushNotificationService } = await import('../services/pushNotificationService');
+    return pushNotificationService;
+  }
+  return null;
+};
 
 // =====================================================
 // INTERFACES
@@ -119,6 +128,15 @@ async function sendPushNotifications(
   data: { title: string; message: string; target_audience?: string; action_url?: string }
 ): Promise<void> {
   try {
+    // Get push service (only works server-side)
+    const pushNotificationService = await getPushService();
+
+    // If running in browser, skip push notifications
+    if (!pushNotificationService) {
+      logger.warn('⚠️ Push notifications skipped (running in browser)');
+      return;
+    }
+
     logger.info('📱 Starting push notification sending process', {
       notificationId: notification.id,
       audience: data.target_audience || 'all',

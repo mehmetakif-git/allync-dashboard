@@ -274,8 +274,7 @@ export default function Services() {
               'voice-cloning': Mic,
               'sentiment-analysis': Heart,
               'website-development': Globe,
-              'mobile-app-development': Smartphone,
-              'whatsapp-automation': MessageCircle
+              'mobile-app-development': Smartphone
             };
 
             // Get icon - use Package as fallback instead of AlertCircle
