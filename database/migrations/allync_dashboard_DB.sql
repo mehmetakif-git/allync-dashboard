@@ -139,6 +139,21 @@ $$;
 ALTER FUNCTION "public"."auto_create_company_service"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."auto_populate_ai_settings"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  IF NEW.ai_settings IS NULL OR NEW.ai_settings = '{}'::jsonb THEN
+    NEW.ai_settings = get_default_ai_settings();
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."auto_populate_ai_settings"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."calculate_invoice_totals"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     AS $$
@@ -202,6 +217,38 @@ $$;
 ALTER FUNCTION "public"."calculate_usage_percentage"("p_company_id" "uuid", "p_service_type_id" "uuid", "p_current_usage" integer) OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") RETURNS TABLE("is_privileged" boolean, "privilege_level" "text", "greeting_name" "text", "allowed_features" "jsonb")
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    true as is_privileged,
+    pc.privilege_level,
+    pc.greeting_name,
+    pc.allowed_features
+  FROM privileged_contacts pc
+  WHERE pc.company_id = p_company_id
+    AND pc.contact_phone = p_phone_number
+    AND pc.is_active = true
+  LIMIT 1;
+  
+  -- Eğer sonuç bulunamadıysa, normal user döndür
+  IF NOT FOUND THEN
+    RETURN QUERY
+    SELECT 
+      false as is_privileged,
+      'customer'::text as privilege_level,
+      null::text as greeting_name,
+      '{}'::jsonb as allowed_features;
+  END IF;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."check_sla_violations"() RETURNS "void"
     LANGUAGE "plpgsql"
     AS $$
@@ -240,6 +287,28 @@ $$;
 
 
 ALTER FUNCTION "public"."check_sla_violations"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."cleanup_expired_sheets_cache"() RETURNS integer
+    LANGUAGE "plpgsql"
+    AS $$
+DECLARE
+  deleted_count integer;
+BEGIN
+  DELETE FROM sheets_data_cache
+  WHERE expires_at < NOW() OR is_valid = false;
+  
+  GET DIAGNOSTICS deleted_count = ROW_COUNT;
+  RETURN deleted_count;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."cleanup_expired_sheets_cache"() OWNER TO "postgres";
+
+
+COMMENT ON FUNCTION "public"."cleanup_expired_sheets_cache"() IS 'Süresi dolmuş cache kayıtlarını temizler';
+
 
 
 CREATE OR REPLACE FUNCTION "public"."create_user_notifications_for_new_system_notification"() RETURNS "trigger"
@@ -522,6 +591,101 @@ COMMENT ON FUNCTION "public"."get_company_service_pricing"("p_company_id" "uuid"
 
 
 
+CREATE OR REPLACE FUNCTION "public"."get_conversation_history"("p_session_id" "uuid", "p_limit" integer DEFAULT 10) RETURNS TABLE("sender" "text", "message" "text", "created_at" timestamp with time zone)
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    CASE 
+      WHEN wm.message_owner = 'user' THEN 'Kullanıcı'
+      ELSE 'AI'
+    END as sender,
+    wm.message_body as message,
+    wm.created_at
+  FROM whatsapp_messages wm
+  WHERE wm.session_id = p_session_id
+    AND wm.message_body IS NOT NULL
+  ORDER BY wm.created_at DESC
+  LIMIT p_limit;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_conversation_history"("p_session_id" "uuid", "p_limit" integer) OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_default_ai_settings"() RETURNS "jsonb"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  RETURN '{
+    "company_identity": {
+      "name": "",
+      "greeting": "Merhaba! Size nasıl yardımcı olabilirim?",
+      "farewell": "İyi günler dilerim!",
+      "personality": "friendly"
+    },
+    "allowed_features": {
+      "general_chat": true,
+      "price_query": true,
+      "appointment": true,
+      "product_info": true,
+      "stock_check": false,
+      "document_request": false,
+      "complaint_handling": true
+    },
+    "response_style": {
+      "tone": "friendly",
+      "max_length": 300,
+      "use_emojis": true,
+      "formality_level": "casual"
+    },
+    "language_detection": {
+      "enabled": true,
+      "supported": ["tr", "en", "ar"],
+      "default": "tr",
+      "auto_translate": false,
+      "respond_in_detected_language": true
+    },
+    "intent_handling": {
+      "confidence_threshold": 0.7,
+      "fallback_to_human": false,
+      "max_retries": 2
+    },
+    "sheets_integration": {
+      "enabled": true,
+      "default_sheet_id": null,
+      "max_results": 5,
+      "include_images": false
+    },
+    "calendar_integration": {
+      "enabled": true,
+      "default_calendar_id": null,
+      "require_confirmation": true,
+      "send_reminder": true
+    },
+    "restrictions": {
+      "stay_on_topic": false,
+      "block_offensive_words": true,
+      "allowed_topics": [],
+      "blocked_topics": [],
+      "max_messages_per_minute": 5,
+      "cooldown_seconds": 2
+    },
+    "escalation": {
+      "enabled": true,
+      "keywords": ["insan", "yetkili", "şikayet", "complaint", "human"],
+      "auto_escalate_after_minutes": 30
+    }
+  }'::jsonb;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_default_ai_settings"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text" DEFAULT 'TRY'::"text") RETURNS "jsonb"
     LANGUAGE "plpgsql"
     AS $$
@@ -553,6 +717,64 @@ $$;
 
 
 ALTER FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text" DEFAULT 'general'::"text") RETURNS TABLE("calendar_id" "uuid", "calendar_name" "text", "google_calendar_id" "text", "auto_approve" boolean)
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    ci.id,
+    ci.instance_name,
+    ci.google_calendar_id,
+    ci.auto_approve_appointments
+  FROM calendar_instances ci
+  WHERE ci.company_id = p_company_id
+    AND ci.status = 'active'
+    AND (
+      p_appointment_type = ANY(ci.appointment_types)
+      OR ci.purpose = 'general'
+    )
+  ORDER BY 
+    ci.is_primary DESC
+  LIMIT 1;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text") OWNER TO "postgres";
+
+
+COMMENT ON FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text") IS 'Bir randevu tipi için kullanılacak calendar''ı döner';
+
+
+
+CREATE OR REPLACE FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") RETURNS TABLE("sheet_id" "uuid", "sheet_name" "text", "google_sheet_id" "text", "priority" integer, "worksheet_name" "text")
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    si.id,
+    si.instance_name,
+    si.google_sheet_id,
+    si.search_priority,
+    si.default_worksheet_name
+  FROM sheets_instances si
+  WHERE si.company_id = p_company_id
+    AND si.status = 'active'
+    AND si.whatsapp_integration_enabled = true
+    AND p_intent = ANY(si.supported_intents)
+  ORDER BY 
+    si.is_primary DESC,
+    si.search_priority ASC
+  LIMIT 1;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."get_project_media_url"("file_path" "text") RETURNS "text"
@@ -1270,6 +1492,38 @@ CREATE TABLE IF NOT EXISTS "public"."activity_logs" (
 ALTER TABLE "public"."activity_logs" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."ai_intent_log" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "session_id" "uuid",
+    "message_id" "uuid",
+    "whatsapp_instance_id" "uuid",
+    "customer_phone" "text" NOT NULL,
+    "customer_name" "text",
+    "user_message" "text" NOT NULL,
+    "detected_intent" "text" NOT NULL,
+    "intent_confidence" numeric(3,2),
+    "detected_language" "text" DEFAULT 'tr'::"text",
+    "action_taken" "text",
+    "selected_sheet_id" "uuid",
+    "selected_calendar_id" "uuid",
+    "action_success" boolean DEFAULT true,
+    "response_sent" "text",
+    "intent_metadata" "jsonb" DEFAULT '{}'::"jsonb",
+    "gemini_response_raw" "jsonb",
+    "processing_time_ms" integer,
+    "n8n_execution_id" "text",
+    "created_at" timestamp with time zone DEFAULT "now"()
+);
+
+
+ALTER TABLE "public"."ai_intent_log" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."ai_intent_log" IS 'AI intent detection kayıtları - analytics ve debugging için';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."appointment_actions_log" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
     "appointment_id" "uuid",
@@ -1428,11 +1682,27 @@ CREATE TABLE IF NOT EXISTS "public"."calendar_instances" (
     "updated_at" timestamp with time zone DEFAULT "now"(),
     "created_by" "text",
     "updated_by" "text",
-    "instance_name" character varying(255) DEFAULT 'Main Calendar'::character varying
+    "instance_name" character varying(255) DEFAULT 'Main Calendar'::character varying,
+    "purpose" "text" DEFAULT 'general'::"text",
+    "appointment_types" "text"[] DEFAULT ARRAY[]::"text"[],
+    "is_primary" boolean DEFAULT false,
+    "approval_rules" "jsonb" DEFAULT '{"buffer_time_minutes": 15, "max_daily_auto_approvals": 10, "vip_customers_auto_approve": true, "auto_approve_business_hours": true, "require_manual_for_new_customers": false}'::"jsonb"
 );
 
 
 ALTER TABLE "public"."calendar_instances" OWNER TO "postgres";
+
+
+COMMENT ON COLUMN "public"."calendar_instances"."purpose" IS 'Calendar kullanım amacı: sales, support, demo, general';
+
+
+
+COMMENT ON COLUMN "public"."calendar_instances"."appointment_types" IS 'Bu calendar hangi randevu tipleri için?';
+
+
+
+COMMENT ON COLUMN "public"."calendar_instances"."approval_rules" IS 'Hibrit onay sistemi kuralları';
+
 
 
 CREATE TABLE IF NOT EXISTS "public"."calendar_staff" (
@@ -1454,6 +1724,144 @@ CREATE TABLE IF NOT EXISTS "public"."calendar_staff" (
 
 
 ALTER TABLE "public"."calendar_staff" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."sheets_instances" (
+    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "google_sheet_id" "text" NOT NULL,
+    "google_sheet_name" "text",
+    "google_sheet_url" "text",
+    "active_worksheets" "jsonb",
+    "data_mapping" "jsonb",
+    "auto_sync_enabled" boolean DEFAULT true,
+    "sync_interval_minutes" integer DEFAULT 15,
+    "last_sync_at" timestamp with time zone,
+    "next_sync_at" timestamp with time zone,
+    "whatsapp_integration_enabled" boolean DEFAULT true,
+    "n8n_workflow_id" "text",
+    "n8n_webhook_url" "text",
+    "status" "text" DEFAULT 'active'::"text",
+    "error_message" "text",
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    "created_by" "text",
+    "updated_by" "text",
+    "instance_name" character varying(255) DEFAULT 'Main Sheets'::character varying,
+    "purpose" "text" DEFAULT 'general'::"text",
+    "supported_intents" "text"[] DEFAULT ARRAY[]::"text"[],
+    "is_primary" boolean DEFAULT false,
+    "search_priority" integer DEFAULT 1,
+    "default_language" "text" DEFAULT 'tr'::"text",
+    "worksheet_index" integer DEFAULT 0,
+    "worksheet_gid" "text" DEFAULT '0'::"text"
+);
+
+
+ALTER TABLE "public"."sheets_instances" OWNER TO "postgres";
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."purpose" IS 'Sheet kullanım amacı: price_list, product_catalog, stock_tracking, general';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."supported_intents" IS 'Bu sheet hangi intent''ler için kullanılacak';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."is_primary" IS 'Bu intent için birincil sheet mi?';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."search_priority" IS 'Aynı intent için öncelik sırası (1=en yüksek)';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."worksheet_index" IS 'Worksheet sırası (0=ilk sheet, 1=ikinci sheet)';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."worksheet_gid" IS 'Google Sheets worksheet GID';
+
+
+
+CREATE TABLE IF NOT EXISTS "public"."whatsapp_instances" (
+    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
+    "company_id" "uuid",
+    "instance_id" character varying NOT NULL,
+    "instance_name" character varying,
+    "phone_number" character varying,
+    "status" character varying DEFAULT 'active'::character varying,
+    "qr_code" "text",
+    "is_connected" boolean DEFAULT false,
+    "last_connected_at" timestamp without time zone,
+    "webhook_url" "text",
+    "api_key" "text",
+    "settings" "jsonb",
+    "created_at" timestamp without time zone DEFAULT "now"(),
+    "updated_at" timestamp without time zone DEFAULT "now"(),
+    "evolution_api_url" "text",
+    "evolution_api_key" "text",
+    "gemini_api_key" "text",
+    "instance_type" "text",
+    "ai_system_prompt" "text",
+    "ai_settings" "jsonb" DEFAULT '{}'::"jsonb",
+    CONSTRAINT "whatsapp_instances_instance_type_check" CHECK (("instance_type" = ANY (ARRAY['sales'::"text", 'support'::"text", 'general'::"text", 'info'::"text", 'marketing'::"text"])))
+);
+
+
+ALTER TABLE "public"."whatsapp_instances" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."whatsapp_instances" IS 'WhatsApp instance information for each company';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_instances"."company_id" IS 'Reference to companies table - one instance per company';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_instances"."instance_id" IS 'Unique instance ID from n8n/WhatsApp provider';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_instances"."settings" IS 'JSON settings: bot_name, greeting_message, auto_reply, etc.';
+
+
+
+CREATE OR REPLACE VIEW "public"."company_ai_config" AS
+ SELECT "c"."id" AS "company_id",
+    "c"."name" AS "company_name",
+    "c"."status" AS "company_status",
+    "wi"."id" AS "whatsapp_instance_id",
+    "wi"."instance_name",
+    "wi"."phone_number",
+    "wi"."is_connected",
+    ("wi"."ai_system_prompt" IS NOT NULL) AS "has_custom_prompt",
+    (("wi"."ai_settings" -> 'allowed_features'::"text") ->> 'general_chat'::"text") AS "allows_chat",
+    (("wi"."ai_settings" -> 'allowed_features'::"text") ->> 'price_query'::"text") AS "allows_price_query",
+    (("wi"."ai_settings" -> 'allowed_features'::"text") ->> 'appointment'::"text") AS "allows_appointment",
+    (("wi"."ai_settings" -> 'allowed_features'::"text") ->> 'product_info'::"text") AS "allows_product_info",
+    (("wi"."ai_settings" -> 'language_detection'::"text") ->> 'enabled'::"text") AS "language_detection_enabled",
+    (("wi"."ai_settings" -> 'language_detection'::"text") -> 'supported'::"text") AS "supported_languages",
+    ( SELECT "count"(*) AS "count"
+           FROM "public"."sheets_instances"
+          WHERE (("sheets_instances"."company_id" = "c"."id") AND ("sheets_instances"."status" = 'active'::"text"))) AS "active_sheets_count",
+    ( SELECT "count"(*) AS "count"
+           FROM "public"."calendar_instances"
+          WHERE (("calendar_instances"."company_id" = "c"."id") AND ("calendar_instances"."status" = 'active'::"text"))) AS "active_calendars_count",
+    "wi"."created_at",
+    "wi"."updated_at"
+   FROM ("public"."companies" "c"
+     LEFT JOIN "public"."whatsapp_instances" "wi" ON (("wi"."company_id" = "c"."id")))
+  WHERE ("c"."status" = 'active'::"text");
+
+
+ALTER VIEW "public"."company_ai_config" OWNER TO "postgres";
+
+
+COMMENT ON VIEW "public"."company_ai_config" IS 'Her şirketin AI konfigürasyon özeti';
+
 
 
 CREATE TABLE IF NOT EXISTS "public"."invoices" (
@@ -2384,6 +2792,36 @@ COMMENT ON TABLE "public"."instagram_user_profiles" IS 'Instagram user profiles 
 
 
 
+CREATE OR REPLACE VIEW "public"."intent_analytics" AS
+ SELECT "company_id",
+    "detected_intent",
+    "detected_language",
+    "count"(*) AS "total_count",
+    "avg"("intent_confidence") AS "avg_confidence",
+    "avg"("processing_time_ms") AS "avg_processing_time",
+    "sum"(
+        CASE
+            WHEN "action_success" THEN 1
+            ELSE 0
+        END) AS "success_count",
+    "sum"(
+        CASE
+            WHEN (NOT "action_success") THEN 1
+            ELSE 0
+        END) AS "failure_count",
+    "date_trunc"('day'::"text", "created_at") AS "date"
+   FROM "public"."ai_intent_log"
+  GROUP BY "company_id", "detected_intent", "detected_language", ("date_trunc"('day'::"text", "created_at"))
+  ORDER BY ("date_trunc"('day'::"text", "created_at")) DESC, ("count"(*)) DESC;
+
+
+ALTER VIEW "public"."intent_analytics" OWNER TO "postgres";
+
+
+COMMENT ON VIEW "public"."intent_analytics" IS 'Intent detection analytics - hangi intent ne kadar kullanılıyor';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."invoice_items" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "invoice_id" "uuid" NOT NULL,
@@ -2669,6 +3107,29 @@ CREATE TABLE IF NOT EXISTS "public"."photos_metrics" (
 
 
 ALTER TABLE "public"."photos_metrics" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."privileged_contacts" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "contact_phone" "text" NOT NULL,
+    "contact_name" "text" NOT NULL,
+    "privilege_level" "text" NOT NULL,
+    "allowed_features" "jsonb" DEFAULT '{"view_stock": false, "export_data": false, "view_reports": false, "modify_appointments": false, "access_customer_data": false, "view_all_appointments": false}'::"jsonb",
+    "greeting_name" "text",
+    "response_style" "text" DEFAULT 'formal'::"text",
+    "is_active" boolean DEFAULT true,
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "privileged_contacts_privilege_level_check" CHECK (("privilege_level" = ANY (ARRAY['owner'::"text", 'manager'::"text", 'employee'::"text", 'vip_customer'::"text"])))
+);
+
+
+ALTER TABLE "public"."privileged_contacts" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."privileged_contacts" IS 'Firma sahibi ve yetkili kişiler için özel izinler';
+
 
 
 CREATE TABLE IF NOT EXISTS "public"."project_media" (
@@ -2969,18 +3430,19 @@ ALTER TABLE "public"."sheets_columns_mapping" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."sheets_data_cache" (
-    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "company_id" "uuid" NOT NULL,
-    "sheets_instance_id" "uuid",
+    "sheets_instance_id" "uuid" NOT NULL,
     "worksheet_name" "text" NOT NULL,
-    "row_number" integer,
-    "data_json" "jsonb" NOT NULL,
-    "data_text" "text",
-    "sheet_row_id" "text",
-    "data_hash" "text",
-    "search_vector" "tsvector",
-    "synced_at" timestamp with time zone DEFAULT "now"(),
-    "is_deleted" boolean DEFAULT false,
+    "cached_data" "jsonb" NOT NULL,
+    "row_count" integer,
+    "column_count" integer,
+    "cache_key" "text" NOT NULL,
+    "last_fetched_at" timestamp with time zone DEFAULT "now"(),
+    "expires_at" timestamp with time zone,
+    "is_valid" boolean DEFAULT true,
+    "fetch_duration_ms" integer,
+    "data_size_kb" numeric,
     "created_at" timestamp with time zone DEFAULT "now"(),
     "updated_at" timestamp with time zone DEFAULT "now"()
 );
@@ -2989,34 +3451,8 @@ CREATE TABLE IF NOT EXISTS "public"."sheets_data_cache" (
 ALTER TABLE "public"."sheets_data_cache" OWNER TO "postgres";
 
 
-CREATE TABLE IF NOT EXISTS "public"."sheets_instances" (
-    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
-    "company_id" "uuid" NOT NULL,
-    "google_sheet_id" "text" NOT NULL,
-    "google_sheet_name" "text",
-    "google_sheet_url" "text",
-    "google_service_account_email" "text",
-    "google_credentials_encrypted" "text",
-    "active_worksheets" "jsonb",
-    "data_mapping" "jsonb",
-    "auto_sync_enabled" boolean DEFAULT true,
-    "sync_interval_minutes" integer DEFAULT 15,
-    "last_sync_at" timestamp with time zone,
-    "next_sync_at" timestamp with time zone,
-    "whatsapp_integration_enabled" boolean DEFAULT true,
-    "n8n_workflow_id" "text",
-    "n8n_webhook_url" "text",
-    "status" "text" DEFAULT 'active'::"text",
-    "error_message" "text",
-    "created_at" timestamp with time zone DEFAULT "now"(),
-    "updated_at" timestamp with time zone DEFAULT "now"(),
-    "created_by" "text",
-    "updated_by" "text",
-    "instance_name" character varying(255) DEFAULT 'Main Sheets'::character varying
-);
+COMMENT ON TABLE "public"."sheets_data_cache" IS 'Google Sheets verilerini cache''ler - API call tasarrufu';
 
-
-ALTER TABLE "public"."sheets_instances" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."sheets_metrics" (
@@ -3747,6 +4183,14 @@ CREATE TABLE IF NOT EXISTS "public"."whatsapp_sessions" (
     "customer_name" character varying,
     "customer_phone" character varying,
     "status" character varying(20) DEFAULT 'active'::character varying,
+    "conversation_state" "text" DEFAULT 'idle'::"text",
+    "awaiting_data" "jsonb" DEFAULT '{}'::"jsonb",
+    "last_intent" "text",
+    "state_data" "jsonb" DEFAULT '{}'::"jsonb",
+    "collected_data" "jsonb" DEFAULT '{}'::"jsonb",
+    "is_privileged_user" boolean DEFAULT false,
+    "privilege_level" "text",
+    "greeting_name" "text",
     CONSTRAINT "whatsapp_sessions_status_check" CHECK ((("status")::"text" = ANY ((ARRAY['active'::character varying, 'closed'::character varying, 'archived'::character varying])::"text"[])))
 );
 
@@ -3771,6 +4215,22 @@ COMMENT ON COLUMN "public"."whatsapp_sessions"."message_count" IS 'Total message
 
 
 COMMENT ON COLUMN "public"."whatsapp_sessions"."status" IS 'Session status: active, closed, archived';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_sessions"."conversation_state" IS 'Conversation states: idle, awaiting_product_name, awaiting_appointment_confirmation, collecting_appointment_details, awaiting_stock_check, etc.';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_sessions"."awaiting_data" IS 'Toplanmakta olan veriler (name, phone, reason, etc.)';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_sessions"."state_data" IS 'Geçici state verileri';
+
+
+
+COMMENT ON COLUMN "public"."whatsapp_sessions"."collected_data" IS 'Toplanmış kullanıcı verileri (isim, tarih, sebep, etc.)';
 
 
 
@@ -3879,50 +4339,6 @@ CREATE TABLE IF NOT EXISTS "public"."whatsapp_hourly_metrics" (
 ALTER TABLE "public"."whatsapp_hourly_metrics" OWNER TO "postgres";
 
 
-CREATE TABLE IF NOT EXISTS "public"."whatsapp_instances" (
-    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
-    "company_id" "uuid",
-    "instance_id" character varying NOT NULL,
-    "instance_name" character varying,
-    "phone_number" character varying,
-    "status" character varying DEFAULT 'active'::character varying,
-    "qr_code" "text",
-    "is_connected" boolean DEFAULT false,
-    "last_connected_at" timestamp without time zone,
-    "webhook_url" "text",
-    "api_key" "text",
-    "settings" "jsonb",
-    "created_at" timestamp without time zone DEFAULT "now"(),
-    "updated_at" timestamp without time zone DEFAULT "now"(),
-    "evolution_api_url" "text",
-    "evolution_api_key" "text",
-    "gemini_api_key" "text",
-    "instance_type" "text",
-    "ai_system_prompt" "text",
-    "ai_settings" "jsonb" DEFAULT '{}'::"jsonb",
-    CONSTRAINT "whatsapp_instances_instance_type_check" CHECK (("instance_type" = ANY (ARRAY['sales'::"text", 'support'::"text", 'general'::"text", 'info'::"text", 'marketing'::"text"])))
-);
-
-
-ALTER TABLE "public"."whatsapp_instances" OWNER TO "postgres";
-
-
-COMMENT ON TABLE "public"."whatsapp_instances" IS 'WhatsApp instance information for each company';
-
-
-
-COMMENT ON COLUMN "public"."whatsapp_instances"."company_id" IS 'Reference to companies table - one instance per company';
-
-
-
-COMMENT ON COLUMN "public"."whatsapp_instances"."instance_id" IS 'Unique instance ID from n8n/WhatsApp provider';
-
-
-
-COMMENT ON COLUMN "public"."whatsapp_instances"."settings" IS 'JSON settings: bot_name, greeting_message, auto_reply, etc.';
-
-
-
 CREATE TABLE IF NOT EXISTS "public"."whatsapp_messages" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "company_id" "uuid" NOT NULL,
@@ -3953,6 +4369,11 @@ COMMENT ON TABLE "public"."whatsapp_messages" IS 'Duplicate trigger removed: wha
 
 ALTER TABLE ONLY "public"."activity_logs"
     ADD CONSTRAINT "activity_logs_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."ai_intent_log"
+    ADD CONSTRAINT "ai_intent_log_pkey" PRIMARY KEY ("id");
 
 
 
@@ -4292,6 +4713,16 @@ ALTER TABLE ONLY "public"."photos_metrics"
 
 ALTER TABLE ONLY "public"."photos"
     ADD CONSTRAINT "photos_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."privileged_contacts"
+    ADD CONSTRAINT "privileged_contacts_company_id_contact_phone_key" UNIQUE ("company_id", "contact_phone");
+
+
+
+ALTER TABLE ONLY "public"."privileged_contacts"
+    ADD CONSTRAINT "privileged_contacts_pkey" PRIMARY KEY ("id");
 
 
 
@@ -4730,6 +5161,22 @@ CREATE INDEX "idx_activity_logs_user_date" ON "public"."activity_logs" USING "bt
 
 
 CREATE INDEX "idx_activity_logs_user_id" ON "public"."activity_logs" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "idx_ai_intent_log_company" ON "public"."ai_intent_log" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_ai_intent_log_created" ON "public"."ai_intent_log" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_ai_intent_log_intent" ON "public"."ai_intent_log" USING "btree" ("detected_intent");
+
+
+
+CREATE INDEX "idx_ai_intent_log_session" ON "public"."ai_intent_log" USING "btree" ("session_id");
 
 
 
@@ -5193,7 +5640,15 @@ CREATE INDEX "idx_messages_sender" ON "public"."whatsapp_messages" USING "btree"
 
 
 
+CREATE INDEX "idx_messages_session_created" ON "public"."whatsapp_messages" USING "btree" ("session_id", "created_at" DESC);
+
+
+
 CREATE INDEX "idx_messages_session_time" ON "public"."whatsapp_messages" USING "btree" ("session_id", "created_at" DESC);
+
+
+
+CREATE INDEX "idx_messages_user_created" ON "public"."whatsapp_messages" USING "btree" ("user_id", "created_at" DESC);
 
 
 
@@ -5294,6 +5749,14 @@ CREATE INDEX "idx_photos_tags" ON "public"."photos" USING "gin" ("tags");
 
 
 CREATE INDEX "idx_photos_whatsapp" ON "public"."photos" USING "btree" ("whatsapp_session_id");
+
+
+
+CREATE INDEX "idx_privileged_contacts_company" ON "public"."privileged_contacts" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_privileged_contacts_phone" ON "public"."privileged_contacts" USING "btree" ("contact_phone");
 
 
 
@@ -5429,31 +5892,27 @@ CREATE INDEX "idx_sessions_last_message_time" ON "public"."whatsapp_sessions" US
 
 
 
+CREATE INDEX "idx_sheets_cache_company" ON "public"."sheets_data_cache" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_sheets_cache_expires" ON "public"."sheets_data_cache" USING "btree" ("expires_at");
+
+
+
+CREATE INDEX "idx_sheets_cache_key" ON "public"."sheets_data_cache" USING "btree" ("cache_key");
+
+
+
+CREATE UNIQUE INDEX "idx_sheets_cache_unique" ON "public"."sheets_data_cache" USING "btree" ("sheets_instance_id", "worksheet_name");
+
+
+
 CREATE INDEX "idx_sheets_columns_mapping_company" ON "public"."sheets_columns_mapping" USING "btree" ("company_id");
 
 
 
 CREATE INDEX "idx_sheets_columns_mapping_sheet" ON "public"."sheets_columns_mapping" USING "btree" ("worksheet_name");
-
-
-
-CREATE INDEX "idx_sheets_data_cache_company" ON "public"."sheets_data_cache" USING "btree" ("company_id");
-
-
-
-CREATE INDEX "idx_sheets_data_cache_data" ON "public"."sheets_data_cache" USING "gin" ("data_json");
-
-
-
-CREATE INDEX "idx_sheets_data_cache_search" ON "public"."sheets_data_cache" USING "gin" ("search_vector");
-
-
-
-CREATE INDEX "idx_sheets_data_cache_text_search" ON "public"."sheets_data_cache" USING "gin" ("to_tsvector"('"turkish"'::"regconfig", "data_text"));
-
-
-
-CREATE INDEX "idx_sheets_data_cache_worksheet" ON "public"."sheets_data_cache" USING "btree" ("worksheet_name");
 
 
 
@@ -6093,6 +6552,10 @@ CREATE OR REPLACE TRIGGER "system_settings_updated_at" BEFORE UPDATE ON "public"
 
 
 
+CREATE OR REPLACE TRIGGER "trigger_auto_populate_ai_settings" BEFORE INSERT ON "public"."whatsapp_instances" FOR EACH ROW EXECUTE FUNCTION "public"."auto_populate_ai_settings"();
+
+
+
 CREATE OR REPLACE TRIGGER "trigger_calculate_ticket_times" BEFORE UPDATE ON "public"."support_tickets" FOR EACH ROW EXECUTE FUNCTION "public"."calculate_ticket_times"();
 
 
@@ -6494,11 +6957,6 @@ ALTER TABLE ONLY "public"."sheets_columns_mapping"
 
 
 
-ALTER TABLE ONLY "public"."sheets_data_cache"
-    ADD CONSTRAINT "fk_sheets_data_cache_company" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
-
-
-
 ALTER TABLE ONLY "public"."sheets_instances"
     ADD CONSTRAINT "fk_sheets_instances_company" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
 
@@ -6719,6 +7177,11 @@ ALTER TABLE ONLY "public"."photos"
 
 
 
+ALTER TABLE ONLY "public"."privileged_contacts"
+    ADD CONSTRAINT "privileged_contacts_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."profiles"
     ADD CONSTRAINT "profiles_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
 
@@ -6811,11 +7274,6 @@ ALTER TABLE ONLY "public"."sheets_access_log"
 
 ALTER TABLE ONLY "public"."sheets_columns_mapping"
     ADD CONSTRAINT "sheets_columns_mapping_sheets_instance_id_fkey" FOREIGN KEY ("sheets_instance_id") REFERENCES "public"."sheets_instances"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."sheets_data_cache"
-    ADD CONSTRAINT "sheets_data_cache_sheets_instance_id_fkey" FOREIGN KEY ("sheets_instance_id") REFERENCES "public"."sheets_instances"("id") ON DELETE CASCADE;
 
 
 
@@ -7970,9 +8428,6 @@ ALTER TABLE "public"."sheets_access_log" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."sheets_columns_mapping" ENABLE ROW LEVEL SECURITY;
 
 
-ALTER TABLE "public"."sheets_data_cache" ENABLE ROW LEVEL SECURITY;
-
-
 ALTER TABLE "public"."sheets_instances" ENABLE ROW LEVEL SECURITY;
 
 
@@ -8487,6 +8942,12 @@ GRANT ALL ON FUNCTION "public"."auto_create_company_service"() TO "service_role"
 
 
 
+GRANT ALL ON FUNCTION "public"."auto_populate_ai_settings"() TO "anon";
+GRANT ALL ON FUNCTION "public"."auto_populate_ai_settings"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."auto_populate_ai_settings"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."calculate_invoice_totals"() TO "anon";
 GRANT ALL ON FUNCTION "public"."calculate_invoice_totals"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."calculate_invoice_totals"() TO "service_role";
@@ -8505,9 +8966,21 @@ GRANT ALL ON FUNCTION "public"."calculate_usage_percentage"("p_company_id" "uuid
 
 
 
+GRANT ALL ON FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."check_sla_violations"() TO "anon";
 GRANT ALL ON FUNCTION "public"."check_sla_violations"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."check_sla_violations"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."cleanup_expired_sheets_cache"() TO "anon";
+GRANT ALL ON FUNCTION "public"."cleanup_expired_sheets_cache"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."cleanup_expired_sheets_cache"() TO "service_role";
 
 
 
@@ -8571,9 +9044,33 @@ GRANT ALL ON FUNCTION "public"."get_company_service_pricing"("p_company_id" "uui
 
 
 
+GRANT ALL ON FUNCTION "public"."get_conversation_history"("p_session_id" "uuid", "p_limit" integer) TO "anon";
+GRANT ALL ON FUNCTION "public"."get_conversation_history"("p_session_id" "uuid", "p_limit" integer) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_conversation_history"("p_session_id" "uuid", "p_limit" integer) TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_default_ai_settings"() TO "anon";
+GRANT ALL ON FUNCTION "public"."get_default_ai_settings"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_default_ai_settings"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") TO "service_role";
 
 
 
@@ -8993,6 +9490,12 @@ GRANT ALL ON TABLE "public"."activity_logs" TO "service_role";
 
 
 
+GRANT ALL ON TABLE "public"."ai_intent_log" TO "anon";
+GRANT ALL ON TABLE "public"."ai_intent_log" TO "authenticated";
+GRANT ALL ON TABLE "public"."ai_intent_log" TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."appointment_actions_log" TO "anon";
 GRANT ALL ON TABLE "public"."appointment_actions_log" TO "authenticated";
 GRANT ALL ON TABLE "public"."appointment_actions_log" TO "service_role";
@@ -9038,6 +9541,24 @@ GRANT ALL ON TABLE "public"."calendar_instances" TO "service_role";
 GRANT ALL ON TABLE "public"."calendar_staff" TO "anon";
 GRANT ALL ON TABLE "public"."calendar_staff" TO "authenticated";
 GRANT ALL ON TABLE "public"."calendar_staff" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."sheets_instances" TO "anon";
+GRANT ALL ON TABLE "public"."sheets_instances" TO "authenticated";
+GRANT ALL ON TABLE "public"."sheets_instances" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."whatsapp_instances" TO "anon";
+GRANT ALL ON TABLE "public"."whatsapp_instances" TO "authenticated";
+GRANT ALL ON TABLE "public"."whatsapp_instances" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."company_ai_config" TO "anon";
+GRANT ALL ON TABLE "public"."company_ai_config" TO "authenticated";
+GRANT ALL ON TABLE "public"."company_ai_config" TO "service_role";
 
 
 
@@ -9239,6 +9760,12 @@ GRANT ALL ON TABLE "public"."instagram_user_profiles" TO "service_role";
 
 
 
+GRANT ALL ON TABLE "public"."intent_analytics" TO "anon";
+GRANT ALL ON TABLE "public"."intent_analytics" TO "authenticated";
+GRANT ALL ON TABLE "public"."intent_analytics" TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."invoice_items" TO "anon";
 GRANT ALL ON TABLE "public"."invoice_items" TO "authenticated";
 GRANT ALL ON TABLE "public"."invoice_items" TO "service_role";
@@ -9311,6 +9838,12 @@ GRANT ALL ON TABLE "public"."photos_metrics" TO "service_role";
 
 
 
+GRANT ALL ON TABLE "public"."privileged_contacts" TO "anon";
+GRANT ALL ON TABLE "public"."privileged_contacts" TO "authenticated";
+GRANT ALL ON TABLE "public"."privileged_contacts" TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."project_media" TO "anon";
 GRANT ALL ON TABLE "public"."project_media" TO "authenticated";
 GRANT ALL ON TABLE "public"."project_media" TO "service_role";
@@ -9374,12 +9907,6 @@ GRANT ALL ON TABLE "public"."sheets_columns_mapping" TO "service_role";
 GRANT ALL ON TABLE "public"."sheets_data_cache" TO "anon";
 GRANT ALL ON TABLE "public"."sheets_data_cache" TO "authenticated";
 GRANT ALL ON TABLE "public"."sheets_data_cache" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."sheets_instances" TO "anon";
-GRANT ALL ON TABLE "public"."sheets_instances" TO "authenticated";
-GRANT ALL ON TABLE "public"."sheets_instances" TO "service_role";
 
 
 
@@ -9560,12 +10087,6 @@ GRANT ALL ON TABLE "public"."whatsapp_errors" TO "service_role";
 GRANT ALL ON TABLE "public"."whatsapp_hourly_metrics" TO "anon";
 GRANT ALL ON TABLE "public"."whatsapp_hourly_metrics" TO "authenticated";
 GRANT ALL ON TABLE "public"."whatsapp_hourly_metrics" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."whatsapp_instances" TO "anon";
-GRANT ALL ON TABLE "public"."whatsapp_instances" TO "authenticated";
-GRANT ALL ON TABLE "public"."whatsapp_instances" TO "service_role";
 
 
 

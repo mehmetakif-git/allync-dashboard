@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageCircle, ArrowLeft, Loader2, Plus, Settings as SettingsIcon, Users as UsersIcon, Mail, AlertTriangle, Download, X } from 'lucide-react';
+import { MessageCircle, ArrowLeft, Loader2, Plus, Settings as SettingsIcon, Users as UsersIcon, Mail, AlertTriangle, Download, X, Calendar, FileSpreadsheet, Edit, CheckCircle, XCircle, Star, Shield, Phone } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { useNavigate } from 'react-router-dom';
 import { OverallTab, CompaniesTab, ServiceContentTab } from '../../../components/admin/ServiceManagementTabs';
@@ -11,15 +11,22 @@ import { getAllUserProfilesWithDetails } from '../../../lib/api/whatsappUserProf
 import { getAllMessagesWithDetails, getMessagesBySession } from '../../../lib/api/whatsappMessages';
 import { getAllErrorsWithDetails } from '../../../lib/api/whatsappErrors';
 import { getSessionsByCompany } from '../../../lib/api/whatsappSessions';
+import { getAllIntegrationLogs, createIntegrationLog, type IntegrationLog } from '../../../lib/api/integrationLogs';
+import { getAllCalendarInstances, updateCalendarStatus, type CalendarInstance } from '../../../lib/api/calendarInstances';
+import { getAllSheetsInstances, updateSheetStatus, type SheetsInstance } from '../../../lib/api/sheetsInstances';
+import { getAllPrivilegedContacts, togglePrivilegedContactStatus, type PrivilegedContact } from '../../../lib/api/privilegedContacts';
 import { useAuth } from '../../../contexts/AuthContext';
 import WhatsAppInstanceModal from '../../../components/modals/WhatsAppInstanceModal';
 import WhatsAppDetailModal from '../../../components/modals/WhatsAppDetailModal';
+import CalendarInstanceModal from '../../../components/modals/CalendarInstanceModal';
+import SheetsInstanceModal from '../../../components/modals/SheetsInstanceModal';
+import PrivilegedContactModal from '../../../components/modals/PrivilegedContactModal';
 import { WhatsAppInstance } from '../../../types/whatsapp';
 
 export default function WhatsAppServiceManagement() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overall' | 'companies' | 'conversations' | 'users' | 'errors' | 'content'>('overall');
+  const [activeTab, setActiveTab] = useState<'overall' | 'companies' | 'conversations' | 'users' | 'errors' | 'content' | 'integrations'>('overall');
   const [loading, setLoading] = useState(true);
   const [serviceData, setServiceData] = useState<any>(null);
   const [companies, setCompanies] = useState<any[]>([]);
@@ -34,6 +41,25 @@ export default function WhatsAppServiceManagement() {
   const [allErrors, setAllErrors] = useState<any[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingErrors, setLoadingErrors] = useState(false);
+
+  // Integration logs state
+  const [integrationLogs, setIntegrationLogs] = useState<IntegrationLog[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+
+  // Integration management state
+  const [integrationSubTab, setIntegrationSubTab] = useState<'management' | 'logs' | 'privileged'>('management');
+  const [allCalendarInstances, setAllCalendarInstances] = useState<CalendarInstance[]>([]);
+  const [allSheetsInstances, setAllSheetsInstances] = useState<SheetsInstance[]>([]);
+  const [allPrivilegedContacts, setAllPrivilegedContacts] = useState<PrivilegedContact[]>([]);
+  const [loadingIntegrations, setLoadingIntegrations] = useState(false);
+  const [loadingPrivileged, setLoadingPrivileged] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [showSheetsModal, setShowSheetsModal] = useState(false);
+  const [showPrivilegedModal, setShowPrivilegedModal] = useState(false);
+  const [selectedCalendar, setSelectedCalendar] = useState<CalendarInstance | null>(null);
+  const [selectedSheet, setSelectedSheet] = useState<SheetsInstance | null>(null);
+  const [selectedContact, setSelectedContact] = useState<PrivilegedContact | null>(null);
+  const [selectedCompanyForModal, setSelectedCompanyForModal] = useState<string>('');
 
   // Company filter states
   const [selectedCompanyFilter, setSelectedCompanyFilter] = useState<string>('all');
@@ -245,6 +271,27 @@ export default function WhatsAppServiceManagement() {
     }
   }, [activeTab]);
 
+  // Load integration logs when Integrations tab is active
+  useEffect(() => {
+    if (activeTab === 'integrations' && integrationLogs.length === 0 && !loadingLogs) {
+      loadIntegrationLogs();
+    }
+  }, [activeTab]);
+
+  // Load all integrations when Integrations tab Management sub-tab is active
+  useEffect(() => {
+    if (activeTab === 'integrations' && integrationSubTab === 'management' && allCalendarInstances.length === 0 && allSheetsInstances.length === 0 && !loadingIntegrations) {
+      loadAllIntegrations();
+    }
+  }, [activeTab, integrationSubTab]);
+
+  // Load all privileged contacts when Integrations tab Privileged sub-tab is active
+  useEffect(() => {
+    if (activeTab === 'integrations' && integrationSubTab === 'privileged' && allPrivilegedContacts.length === 0 && !loadingPrivileged) {
+      loadAllPrivilegedContacts();
+    }
+  }, [activeTab, integrationSubTab]);
+
   const loadUsers = async () => {
     try {
       setLoadingUsers(true);
@@ -279,6 +326,222 @@ export default function WhatsAppServiceManagement() {
     } finally {
       setLoadingErrors(false);
     }
+  };
+
+  const loadIntegrationLogs = async () => {
+    try {
+      setLoadingLogs(true);
+      console.log('📡 Loading integration logs...');
+      const logsData = await getAllIntegrationLogs(200);
+      setIntegrationLogs(logsData);
+
+      // Extract unique companies
+      extractCompanies(logsData);
+
+      console.log('✅ Loaded', logsData.length, 'integration logs');
+    } catch (error) {
+      console.error('❌ Error loading integration logs:', error);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  const loadAllIntegrations = async () => {
+    try {
+      setLoadingIntegrations(true);
+      console.log('📡 Loading all calendar and sheets integrations...');
+
+      const [calendarsData, sheetsData] = await Promise.all([
+        getAllCalendarInstances(),
+        getAllSheetsInstances()
+      ]);
+
+      setAllCalendarInstances(calendarsData);
+      setAllSheetsInstances(sheetsData);
+
+      console.log('✅ Loaded', calendarsData.length, 'calendars and', sheetsData.length, 'sheets');
+    } catch (error) {
+      console.error('❌ Error loading integrations:', error);
+    } finally {
+      setLoadingIntegrations(false);
+    }
+  };
+
+  // Handle calendar status toggle
+  const handleToggleCalendarStatus = async (calendar: CalendarInstance) => {
+    try {
+      const newStatus = calendar.status === 'active' ? 'inactive' : 'active';
+      console.log('🔄 Toggling calendar status:', calendar.id, 'to', newStatus);
+
+      await updateCalendarStatus(calendar.id, newStatus);
+
+      // Create activity log
+      await createIntegrationLog({
+        company_id: calendar.company_id,
+        user_id: user?.id || null,
+        action: 'update',
+        entity_type: 'calendar_instance',
+        entity_id: calendar.id,
+        description: `Super admin ${newStatus === 'active' ? 'activated' : 'deactivated'} calendar: ${calendar.instance_name}`,
+        details: {
+          calendar_name: calendar.calendar_name,
+          previous_status: calendar.status,
+          new_status: newStatus,
+        },
+        changed_data: {
+          old: { status: calendar.status },
+          new: { status: newStatus },
+        },
+      });
+
+      // Refresh integrations
+      await loadAllIntegrations();
+
+      console.log('✅ Calendar status updated successfully');
+    } catch (error) {
+      console.error('❌ Error toggling calendar status:', error);
+      alert('Failed to update calendar status. Please try again.');
+    }
+  };
+
+  // Handle sheet status toggle
+  const handleToggleSheetStatus = async (sheet: SheetsInstance) => {
+    try {
+      const newStatus = sheet.status === 'active' ? 'inactive' : 'active';
+      console.log('🔄 Toggling sheet status:', sheet.id, 'to', newStatus);
+
+      await updateSheetStatus(sheet.id, newStatus);
+
+      // Create activity log
+      await createIntegrationLog({
+        company_id: sheet.company_id,
+        user_id: user?.id || null,
+        action: 'update',
+        entity_type: 'sheets_instance',
+        entity_id: sheet.id,
+        description: `Super admin ${newStatus === 'active' ? 'activated' : 'deactivated'} sheet: ${sheet.google_sheet_name}`,
+        details: {
+          sheet_name: sheet.google_sheet_name,
+          previous_status: sheet.status,
+          new_status: newStatus,
+        },
+        changed_data: {
+          old: { status: sheet.status },
+          new: { status: newStatus },
+        },
+      });
+
+      // Refresh integrations
+      await loadAllIntegrations();
+
+      console.log('✅ Sheet status updated successfully');
+    } catch (error) {
+      console.error('❌ Error toggling sheet status:', error);
+      alert('Failed to update sheet status. Please try again.');
+    }
+  };
+
+  // Handle edit calendar
+  const handleEditCalendar = (calendar: CalendarInstance) => {
+    setSelectedCalendar(calendar);
+    setSelectedCompanyForModal(calendar.company_id);
+    setShowCalendarModal(true);
+  };
+
+  // Handle edit sheet
+  const handleEditSheet = (sheet: SheetsInstance) => {
+    setSelectedSheet(sheet);
+    setSelectedCompanyForModal(sheet.company_id);
+    setShowSheetsModal(true);
+  };
+
+  // Handle calendar modal success
+  const handleCalendarModalSuccess = async () => {
+    setShowCalendarModal(false);
+    setSelectedCalendar(null);
+    setSelectedCompanyForModal('');
+    await loadAllIntegrations();
+    await loadIntegrationLogs(); // Refresh logs too
+  };
+
+  // Handle sheet modal success
+  const handleSheetModalSuccess = async () => {
+    setShowSheetsModal(false);
+    setSelectedSheet(null);
+    setSelectedCompanyForModal('');
+    await loadAllIntegrations();
+    await loadIntegrationLogs(); // Refresh logs too
+  };
+
+  // Load all privileged contacts
+  const loadAllPrivilegedContacts = async () => {
+    try {
+      setLoadingPrivileged(true);
+      console.log('📡 Loading all privileged contacts...');
+
+      const contactsData = await getAllPrivilegedContacts();
+      setAllPrivilegedContacts(contactsData);
+
+      console.log('✅ Loaded', contactsData.length, 'privileged contacts');
+    } catch (error) {
+      console.error('❌ Error loading privileged contacts:', error);
+    } finally {
+      setLoadingPrivileged(false);
+    }
+  };
+
+  // Handle privileged contact status toggle
+  const handleToggleContactStatus = async (contact: PrivilegedContact) => {
+    try {
+      const newStatus = !contact.is_active;
+      console.log('🔄 Toggling contact status:', contact.id, 'to', newStatus ? 'active' : 'inactive');
+
+      await togglePrivilegedContactStatus(contact.id);
+
+      // Create activity log
+      await createIntegrationLog({
+        company_id: contact.company_id,
+        user_id: user?.id || null,
+        action: 'update',
+        entity_type: 'privileged_contact' as any,
+        entity_id: contact.id,
+        description: `Super admin ${newStatus ? 'activated' : 'deactivated'} privileged contact: ${contact.contact_name}`,
+        details: {
+          contact_name: contact.contact_name,
+          contact_phone: contact.contact_phone,
+          previous_status: contact.is_active,
+          new_status: newStatus,
+        },
+        changed_data: {
+          old: { is_active: contact.is_active },
+          new: { is_active: newStatus },
+        },
+      });
+
+      // Refresh privileged contacts
+      await loadAllPrivilegedContacts();
+
+      console.log('✅ Contact status updated successfully');
+    } catch (error) {
+      console.error('❌ Error toggling contact status:', error);
+      alert('Failed to update contact status. Please try again.');
+    }
+  };
+
+  // Handle edit privileged contact
+  const handleEditContact = (contact: PrivilegedContact) => {
+    setSelectedContact(contact);
+    setSelectedCompanyForModal(contact.company_id);
+    setShowPrivilegedModal(true);
+  };
+
+  // Handle privileged contact modal success
+  const handlePrivilegedModalSuccess = async () => {
+    setShowPrivilegedModal(false);
+    setSelectedContact(null);
+    setSelectedCompanyForModal('');
+    await loadAllPrivilegedContacts();
+    await loadIntegrationLogs(); // Refresh logs too
   };
 
   // Extract unique companies from data
@@ -708,6 +971,18 @@ export default function WhatsAppServiceManagement() {
             )}
           </button>
           <button
+            onClick={() => setActiveTab('integrations')}
+            className={`pb-3 px-4 font-medium transition-colors relative whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'integrations' ? 'text-purple-400' : 'text-muted hover:text-secondary'
+            }`}
+          >
+            <Calendar className="w-4 h-4" />
+            Integrations ({integrationLogs.length})
+            {activeTab === 'integrations' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
+            )}
+          </button>
+          <button
             onClick={() => setActiveTab('content')}
             className={`pb-3 px-4 font-medium transition-colors relative whitespace-nowrap ${
               activeTab === 'content' ? 'text-green-400' : 'text-muted hover:text-secondary'
@@ -934,6 +1209,572 @@ export default function WhatsAppServiceManagement() {
               </div>
             </div>
           </div>
+          </div>
+        )}
+
+        {/* ========== INTEGRATIONS TAB ========== */}
+        {activeTab === 'integrations' && (
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
+            {/* Sub-tabs Navigation */}
+            <div className="flex gap-4 border-b border-secondary/50 px-6 pt-6">
+              <button
+                onClick={() => setIntegrationSubTab('management')}
+                className={`pb-3 px-4 font-medium transition-colors relative whitespace-nowrap flex items-center gap-2 ${
+                  integrationSubTab === 'management' ? 'text-purple-400' : 'text-muted hover:text-secondary'
+                }`}
+              >
+                <SettingsIcon className="w-4 h-4" />
+                Integration Management
+                {integrationSubTab === 'management' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
+                )}
+              </button>
+              <button
+                onClick={() => setIntegrationSubTab('logs')}
+                className={`pb-3 px-4 font-medium transition-colors relative whitespace-nowrap flex items-center gap-2 ${
+                  integrationSubTab === 'logs' ? 'text-purple-400' : 'text-muted hover:text-secondary'
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
+                Activity Logs ({integrationLogs.length})
+                {integrationSubTab === 'logs' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
+                )}
+              </button>
+              <button
+                onClick={() => setIntegrationSubTab('privileged')}
+                className={`pb-3 px-4 font-medium transition-colors relative whitespace-nowrap flex items-center gap-2 ${
+                  integrationSubTab === 'privileged' ? 'text-amber-400' : 'text-muted hover:text-secondary'
+                }`}
+              >
+                <Star className="w-4 h-4" />
+                Privileged Contacts ({allPrivilegedContacts.length})
+                {integrationSubTab === 'privileged' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-400" />
+                )}
+              </button>
+            </div>
+
+            {/* Integration Management Sub-tab */}
+            {integrationSubTab === 'management' && (
+              <div>
+                <div className="p-6 border-b border-secondary/50">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
+                    <SettingsIcon className="w-6 h-6 text-purple-400" />
+                    Manage All Integrations
+                  </h3>
+                  <p className="text-sm text-muted">
+                    View, edit, and control all calendar and sheets integrations across all companies
+                  </p>
+
+                  {/* Stats Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                    <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-blue-400" />
+                        <p className="text-sm text-blue-300 font-medium">Total Calendars</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">{allCalendarInstances.length}</p>
+                      <p className="text-xs text-muted mt-1">
+                        {allCalendarInstances.filter(c => c.status === 'active').length} active
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileSpreadsheet className="w-4 h-4 text-green-400" />
+                        <p className="text-sm text-green-300 font-medium">Total Sheets</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">{allSheetsInstances.length}</p>
+                      <p className="text-xs text-muted mt-1">
+                        {allSheetsInstances.filter(s => s.status === 'active').length} active
+                      </p>
+                    </div>
+                    <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <SettingsIcon className="w-4 h-4 text-purple-400" />
+                        <p className="text-sm text-purple-300 font-medium">Total Integrations</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">
+                        {allCalendarInstances.length + allSheetsInstances.length}
+                      </p>
+                      <p className="text-xs text-muted mt-1">Across all companies</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Integrations Table */}
+                <div className="overflow-x-auto">
+                  {loadingIntegrations ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                    </div>
+                  ) : allCalendarInstances.length === 0 && allSheetsInstances.length === 0 ? (
+                    <div className="text-center py-12">
+                      <SettingsIcon className="w-16 h-16 text-muted mx-auto mb-3 opacity-50" />
+                      <p className="text-muted">No integrations found</p>
+                    </div>
+                  ) : (
+                    <table className="w-full">
+                      <thead className="bg-white/5 border-b border-white/10">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Company
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Integration Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Type
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Purpose
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {/* Calendar Instances */}
+                        {allCalendarInstances.map((calendar: any) => (
+                          <tr key={`calendar-${calendar.id}`} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-xs font-bold text-white">
+                                  {calendar.company?.name?.charAt(0) || 'C'}
+                                </div>
+                                <span className="text-white font-medium">{calendar.company?.name || 'Unknown'}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-white">
+                              {calendar.instance_name || calendar.calendar_name || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className="flex items-center gap-1 text-blue-400">
+                                <Calendar className="w-3.5 h-3.5" />
+                                Calendar
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                              {calendar.purpose || 'general'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <button
+                                onClick={() => handleToggleCalendarStatus(calendar)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+                                  calendar.status === 'active'
+                                    ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                    : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+                                }`}
+                              >
+                                {calendar.status === 'active' ? (
+                                  <>
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                    Active
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle className="w-3.5 h-3.5" />
+                                    Inactive
+                                  </>
+                                )}
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <button
+                                onClick={() => handleEditCalendar(calendar)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 rounded-lg font-medium transition-all"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+
+                        {/* Sheets Instances */}
+                        {allSheetsInstances.map((sheet: any) => (
+                          <tr key={`sheet-${sheet.id}`} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xs font-bold text-white">
+                                  {sheet.company?.name?.charAt(0) || 'C'}
+                                </div>
+                                <span className="text-white font-medium">{sheet.company?.name || 'Unknown'}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-white">
+                              {sheet.google_sheet_name || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className="flex items-center gap-1 text-green-400">
+                                <FileSpreadsheet className="w-3.5 h-3.5" />
+                                Sheets
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                              {sheet.purpose || 'general'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <button
+                                onClick={() => handleToggleSheetStatus(sheet)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+                                  sheet.status === 'active'
+                                    ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                    : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+                                }`}
+                              >
+                                {sheet.status === 'active' ? (
+                                  <>
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                    Active
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle className="w-3.5 h-3.5" />
+                                    Inactive
+                                  </>
+                                )}
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <button
+                                onClick={() => handleEditSheet(sheet)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 rounded-lg font-medium transition-all"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Activity Logs Sub-tab */}
+            {integrationSubTab === 'logs' && (
+              <div>
+                <div className="p-6 border-b border-secondary/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <Calendar className="w-6 h-6 text-purple-400" />
+                      Integration Activity Logs
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">
+                        Total: <span className="text-white font-semibold">{integrationLogs.length}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Stats Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-blue-400" />
+                        <p className="text-sm text-blue-300 font-medium">Calendar Integrations</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">
+                        {integrationLogs.filter(log => log.entity_type === 'calendar_instance').length}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileSpreadsheet className="w-4 h-4 text-green-400" />
+                        <p className="text-sm text-green-300 font-medium">Sheets Integrations</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">
+                        {integrationLogs.filter(log => log.entity_type === 'sheets_instance').length}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <AlertTriangle className="w-4 h-4 text-red-400" />
+                        <p className="text-sm text-red-300 font-medium">Failed Operations</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">
+                        {integrationLogs.filter(log => log.status === 'failed').length}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Logs Table */}
+                <div className="overflow-x-auto">
+                  {loadingLogs ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                    </div>
+                  ) : integrationLogs.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Calendar className="w-16 h-16 text-muted mx-auto mb-3 opacity-50" />
+                      <p className="text-muted">No integration logs found</p>
+                    </div>
+                  ) : (
+                    <table className="w-full">
+                      <thead className="bg-white/5 border-b border-white/10">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Timestamp
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Company
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Type
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Action
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Description
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            User
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {integrationLogs.map((log) => (
+                          <tr key={log.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                              {new Date(log.created_at).toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                              {log.company?.name || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              {log.entity_type === 'calendar_instance' ? (
+                                <span className="flex items-center gap-1 text-blue-400">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  Calendar
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-green-400">
+                                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                                  Sheets
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                log.action === 'create' ? 'bg-green-500/20 text-green-400' :
+                                log.action === 'update' ? 'bg-blue-500/20 text-blue-400' :
+                                'bg-red-500/20 text-red-400'
+                              }`}>
+                                {log.action.toUpperCase()}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-300 max-w-md truncate">
+                              {log.description}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                              {log.user?.full_name || log.user?.email || 'System'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                log.status === 'success' ? 'bg-green-500/20 text-green-400' :
+                                'bg-red-500/20 text-red-400'
+                              }`}>
+                                {log.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Privileged Contacts Sub-tab */}
+            {integrationSubTab === 'privileged' && (
+              <div>
+                <div className="p-6 border-b border-secondary/50">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-4">
+                    <Star className="w-6 h-6 text-amber-400" />
+                    Privileged Contacts Management
+                  </h3>
+                  <p className="text-sm text-muted mb-6">
+                    View, edit, and control privileged contacts across all companies (Max 2 per company)
+                  </p>
+
+                  {/* Stats Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Star className="w-4 h-4 text-amber-400" />
+                        <p className="text-sm text-amber-300 font-medium">Total Contacts</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">{allPrivilegedContacts.length}</p>
+                      <p className="text-xs text-muted mt-1">
+                        {allPrivilegedContacts.filter(c => c.is_active).length} active
+                      </p>
+                    </div>
+                    <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Shield className="w-4 h-4 text-purple-400" />
+                        <p className="text-sm text-purple-300 font-medium">Owners & Managers</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">
+                        {allPrivilegedContacts.filter(c => c.privilege_level === 'owner' || c.privilege_level === 'manager').length}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <UsersIcon className="w-4 h-4 text-blue-400" />
+                        <p className="text-sm text-blue-300 font-medium">VIP Customers</p>
+                      </div>
+                      <p className="text-2xl font-bold text-white">
+                        {allPrivilegedContacts.filter(c => c.privilege_level === 'vip_customer').length}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Privileged Contacts Table */}
+                <div className="overflow-x-auto">
+                  {loadingPrivileged ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                    </div>
+                  ) : allPrivilegedContacts.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Star className="w-16 h-16 text-muted mx-auto mb-3 opacity-50" />
+                      <p className="text-muted">No privileged contacts found</p>
+                    </div>
+                  ) : (
+                    <table className="w-full">
+                      <thead className="bg-white/5 border-b border-white/10">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Company
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Phone
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Privilege Level
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Features
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {allPrivilegedContacts.map((contact: any) => (
+                          <tr key={contact.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-xs font-bold text-white">
+                                  {contact.company?.name?.charAt(0) || 'C'}
+                                </div>
+                                <span className="text-white font-medium">{contact.company?.name || 'Unknown'}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-white">
+                              {contact.contact_name}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-300">
+                              <div className="flex items-center gap-1">
+                                <Phone className="w-3.5 h-3.5" />
+                                {contact.contact_phone}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <span className={`flex items-center gap-1 ${
+                                contact.privilege_level === 'owner' ? 'text-amber-400' :
+                                contact.privilege_level === 'manager' ? 'text-purple-400' :
+                                contact.privilege_level === 'employee' ? 'text-blue-400' :
+                                'text-pink-400'
+                              }`}>
+                                {contact.privilege_level === 'owner' ? '👑 Owner' :
+                                 contact.privilege_level === 'manager' ? '👔 Manager' :
+                                 contact.privilege_level === 'employee' ? '👷 Employee' :
+                                 '⭐ VIP'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <div className="flex flex-wrap gap-1">
+                                {contact.allowed_features.view_stock && (
+                                  <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">📦</span>
+                                )}
+                                {contact.allowed_features.export_data && (
+                                  <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">📤</span>
+                                )}
+                                {contact.allowed_features.view_reports && (
+                                  <span className="px-1.5 py-0.5 bg-green-500/20 text-green-400 text-xs rounded">📊</span>
+                                )}
+                                {contact.allowed_features.modify_appointments && (
+                                  <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded">📅</span>
+                                )}
+                                {contact.allowed_features.access_customer_data && (
+                                  <span className="px-1.5 py-0.5 bg-pink-500/20 text-pink-400 text-xs rounded">👥</span>
+                                )}
+                                {contact.allowed_features.view_all_appointments && (
+                                  <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-400 text-xs rounded">🗓️</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <button
+                                onClick={() => handleToggleContactStatus(contact)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+                                  contact.is_active
+                                    ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                    : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+                                }`}
+                              >
+                                {contact.is_active ? (
+                                  <>
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                    Active
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle className="w-3.5 h-3.5" />
+                                    Inactive
+                                  </>
+                                )}
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <button
+                                onClick={() => handleEditContact(contact)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded-lg font-medium transition-all"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1193,6 +2034,45 @@ export default function WhatsAppServiceManagement() {
         onClose={handleCloseDetailModal}
         type={detailModalType}
         data={detailModalData}
+      />
+
+      {/* Calendar Instance Modal */}
+      <CalendarInstanceModal
+        isOpen={showCalendarModal}
+        onClose={() => {
+          setShowCalendarModal(false);
+          setSelectedCalendar(null);
+          setSelectedCompanyForModal('');
+        }}
+        onSuccess={handleCalendarModalSuccess}
+        companyId={selectedCompanyForModal}
+        instance={selectedCalendar}
+      />
+
+      {/* Sheets Instance Modal */}
+      <SheetsInstanceModal
+        isOpen={showSheetsModal}
+        onClose={() => {
+          setShowSheetsModal(false);
+          setSelectedSheet(null);
+          setSelectedCompanyForModal('');
+        }}
+        onSuccess={handleSheetModalSuccess}
+        companyId={selectedCompanyForModal}
+        instance={selectedSheet}
+      />
+
+      {/* Privileged Contact Modal */}
+      <PrivilegedContactModal
+        isOpen={showPrivilegedModal}
+        onClose={() => {
+          setShowPrivilegedModal(false);
+          setSelectedContact(null);
+          setSelectedCompanyForModal('');
+        }}
+        onSuccess={handlePrivilegedModalSuccess}
+        companyId={selectedCompanyForModal}
+        contact={selectedContact}
       />
 
       {/* Export Modal */}

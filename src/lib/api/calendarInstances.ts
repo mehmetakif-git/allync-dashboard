@@ -5,6 +5,8 @@ export interface CalendarInstance {
   company_id: string;
   google_calendar_id: string | null;
   calendar_name: string | null;
+  purpose?: string; // 'appointment' | 'meeting' | 'support' | 'general'
+  is_primary?: boolean;
   timezone: string;
   business_hours: any;
   auto_approve_appointments: boolean;
@@ -64,4 +66,101 @@ export async function getActiveCalendarInstances(
 
   if (error) throw error;
   return data || [];
+}
+
+/**
+ * Get primary calendar for a specific purpose
+ */
+export async function getPrimaryCalendarForPurpose(
+  companyId: string,
+  purpose: string
+): Promise<CalendarInstance | null> {
+  const { data, error } = await supabase
+    .from('calendar_instances')
+    .select('*')
+    .eq('company_id', companyId)
+    .eq('purpose', purpose)
+    .eq('is_primary', true)
+    .eq('status', 'active')
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error;
+  return data || null;
+}
+
+/**
+ * Get calendars by purpose
+ */
+export async function getCalendarsByPurpose(
+  companyId: string,
+  purpose: string
+): Promise<CalendarInstance[]> {
+  const { data, error } = await supabase
+    .from('calendar_instances')
+    .select('*')
+    .eq('company_id', companyId)
+    .eq('purpose', purpose)
+    .eq('status', 'active')
+    .order('is_primary', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+/**
+ * Set a calendar as primary for its purpose (unsets other primary calendars)
+ */
+export async function setPrimaryCalendar(
+  calendarId: string,
+  companyId: string,
+  purpose: string
+): Promise<void> {
+  // First, unset all primary calendars for this purpose
+  const { error: unsetError } = await supabase
+    .from('calendar_instances')
+    .update({ is_primary: false })
+    .eq('company_id', companyId)
+    .eq('purpose', purpose);
+
+  if (unsetError) throw unsetError;
+
+  // Then, set the specified calendar as primary
+  const { error: setPrimaryError } = await supabase
+    .from('calendar_instances')
+    .update({ is_primary: true })
+    .eq('id', calendarId);
+
+  if (setPrimaryError) throw setPrimaryError;
+}
+
+/**
+ * Get all calendar instances across all companies (for super admin)
+ */
+export async function getAllCalendarInstances(): Promise<CalendarInstance[]> {
+  const { data, error } = await supabase
+    .from('calendar_instances')
+    .select(`
+      *,
+      company:companies(id, name)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+/**
+ * Update calendar status (for super admin)
+ */
+export async function updateCalendarStatus(
+  calendarId: string,
+  status: 'active' | 'inactive'
+): Promise<void> {
+  const { error } = await supabase
+    .from('calendar_instances')
+    .update({ status })
+    .eq('id', calendarId);
+
+  if (error) throw error;
 }

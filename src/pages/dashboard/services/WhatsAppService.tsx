@@ -17,6 +17,10 @@ import {
   FileSpreadsheet,
   Link as LinkIcon,
   ExternalLink,
+  Star,
+  Shield,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
@@ -27,14 +31,24 @@ import { getErrors, type WhatsAppError } from '../../../lib/api/whatsappErrors';
 import { getCalendarInstances, type CalendarInstance } from '../../../lib/api/calendarInstances';
 import { getSheetsWithWhatsAppIntegration, type SheetsInstance } from '../../../lib/api/sheetsInstances';
 import { getCompanyServices } from '../../../lib/api/companyServices';
+import { createIntegrationLog } from '../../../lib/api/integrationLogs';
 import type { WhatsAppInstance, WhatsAppSession } from '../../../types/whatsapp';
 import ConversationDetail from '../../../components/whatsapp/ConversationDetail';
 import AnalyticsDashboard from '../../../components/whatsapp/AnalyticsDashboard';
 import { formatPhoneNumber, formatMessageTime } from '../../../lib/utils/whatsappFormatters';
 import * as XLSX from 'xlsx';
-import { Wrench } from 'lucide-react';
+import { Wrench, Edit, Trash2 } from 'lucide-react';
+import SheetsInstanceModal from '../../../components/modals/SheetsInstanceModal';
+import CalendarInstanceModal from '../../../components/modals/CalendarInstanceModal';
+import PrivilegedContactModal from '../../../components/modals/PrivilegedContactModal';
+import {
+  getPrivilegedContacts,
+  deletePrivilegedContact,
+  togglePrivilegedContactStatus,
+  type PrivilegedContact
+} from '../../../lib/api/privilegedContacts';
 
-type TabType = 'conversations' | 'analytics' | 'users' | 'integrations' | 'errors' | 'settings';
+type TabType = 'conversations' | 'analytics' | 'users' | 'integrations' | 'privileged' | 'errors' | 'settings';
 type ConversationFilter = 'all' | 'active' | 'closed';
 type ErrorFilter = 'all' | 'unresolved' | 'critical';
 
@@ -72,6 +86,23 @@ export default function WhatsAppService() {
   const [calendarInstances, setCalendarInstances] = useState<CalendarInstance[]>([]);
   const [sheetsInstances, setSheetsInstances] = useState<SheetsInstance[]>([]);
   const [loadingIntegrations, setLoadingIntegrations] = useState(false);
+
+  // Privileged Contacts state
+  const [privilegedContacts, setPrivilegedContacts] = useState<PrivilegedContact[]>([]);
+  const [loadingPrivileged, setLoadingPrivileged] = useState(false);
+
+  // Modal states for integrations
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [showSheetsModal, setShowSheetsModal] = useState(false);
+  const [editingCalendar, setEditingCalendar] = useState<CalendarInstance | null>(null);
+  const [editingSheet, setEditingSheet] = useState<SheetsInstance | null>(null);
+  const [deletingCalendar, setDeletingCalendar] = useState<string | null>(null);
+  const [deletingSheet, setDeletingSheet] = useState<string | null>(null);
+
+  // Modal state for privileged contacts
+  const [showPrivilegedModal, setShowPrivilegedModal] = useState(false);
+  const [editingContact, setEditingContact] = useState<PrivilegedContact | null>(null);
+  const [deletingContact, setDeletingContact] = useState<string | null>(null);
 
   // Refresh states
   const [refreshingConversations, setRefreshingConversations] = useState(false);
@@ -154,6 +185,266 @@ export default function WhatsAppService() {
       console.error('❌ Error refreshing integrations:', err);
     } finally {
       setRefreshingIntegrations(false);
+    }
+  };
+
+  // Handlers for Calendar CRUD
+  const handleOpenCalendarModal = (calendar?: CalendarInstance) => {
+    setEditingCalendar(calendar || null);
+    setShowCalendarModal(true);
+  };
+
+  const handleCloseCalendarModal = () => {
+    setShowCalendarModal(false);
+    setEditingCalendar(null);
+  };
+
+  const handleCalendarSaved = () => {
+    handleCloseCalendarModal();
+    fetchIntegrations();
+  };
+
+  const handleDeleteCalendar = async (calendarId: string) => {
+    if (!confirm('Are you sure you want to delete this calendar integration? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setDeletingCalendar(calendarId);
+
+      // Get calendar details before deleting
+      const { data: calendar } = await supabase
+        .from('calendar_instances')
+        .select('*')
+        .eq('id', calendarId)
+        .single();
+
+      const { error } = await supabase
+        .from('calendar_instances')
+        .delete()
+        .eq('id', calendarId);
+
+      if (error) throw error;
+
+      console.log('✅ Calendar deleted successfully');
+
+      // Log the deletion
+      if (calendar && user?.company_id) {
+        try {
+          await createIntegrationLog({
+            company_id: user.company_id,
+            user_id: user?.id || null,
+            action: 'delete',
+            entity_type: 'calendar_instance',
+            entity_id: calendarId,
+            description: `Deleted appointment calendar: ${calendar.instance_name || calendar.calendar_name}`,
+            details: {
+              calendar_name: calendar.calendar_name,
+              purpose: calendar.purpose,
+              google_calendar_id: calendar.google_calendar_id,
+            },
+            changed_data: {
+              deleted: calendar,
+            },
+          });
+        } catch (logError) {
+          console.warn('Failed to create activity log:', logError);
+        }
+      }
+
+      fetchIntegrations();
+    } catch (err) {
+      console.error('❌ Error deleting calendar:', err);
+      alert('Failed to delete calendar. Please try again.');
+    } finally {
+      setDeletingCalendar(null);
+    }
+  };
+
+  // Handlers for Sheets CRUD
+  const handleOpenSheetsModal = (sheet?: SheetsInstance) => {
+    setEditingSheet(sheet || null);
+    setShowSheetsModal(true);
+  };
+
+  const handleCloseSheetsModal = () => {
+    setShowSheetsModal(false);
+    setEditingSheet(null);
+  };
+
+  const handleSheetSaved = () => {
+    handleCloseSheetsModal();
+    fetchIntegrations();
+  };
+
+  const handleDeleteSheet = async (sheetId: string) => {
+    if (!confirm('Are you sure you want to delete this product catalog? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setDeletingSheet(sheetId);
+
+      // Get sheet details before deleting
+      const { data: sheet } = await supabase
+        .from('sheets_instances')
+        .select('*')
+        .eq('id', sheetId)
+        .single();
+
+      const { error } = await supabase
+        .from('sheets_instances')
+        .delete()
+        .eq('id', sheetId);
+
+      if (error) throw error;
+
+      console.log('✅ Sheet deleted successfully');
+
+      // Log the deletion
+      if (sheet && user?.company_id) {
+        try {
+          await createIntegrationLog({
+            company_id: user.company_id,
+            user_id: user?.id || null,
+            action: 'delete',
+            entity_type: 'sheets_instance',
+            entity_id: sheetId,
+            description: `Deleted product catalog: ${sheet.google_sheet_name}`,
+            details: {
+              sheet_name: sheet.google_sheet_name,
+              worksheet_name: sheet.worksheet_name,
+              purpose: sheet.purpose,
+              supported_intents: sheet.supported_intents,
+              google_sheet_id: sheet.google_sheet_id,
+            },
+            changed_data: {
+              deleted: sheet,
+            },
+          });
+        } catch (logError) {
+          console.warn('Failed to create activity log:', logError);
+        }
+      }
+
+      fetchIntegrations();
+    } catch (err) {
+      console.error('❌ Error deleting sheet:', err);
+      alert('Failed to delete product catalog. Please try again.');
+    } finally {
+      setDeletingSheet(null);
+    }
+  };
+
+  // Fetch privileged contacts
+  const fetchPrivilegedContacts = async () => {
+    if (!user?.company_id) return;
+    try {
+      setLoadingPrivileged(true);
+      const contacts = await getPrivilegedContacts(user.company_id);
+      setPrivilegedContacts(contacts);
+      console.log('✅ Privileged contacts loaded:', contacts.length);
+    } catch (err) {
+      console.error('❌ Error loading privileged contacts:', err);
+    } finally {
+      setLoadingPrivileged(false);
+    }
+  };
+
+  // Handlers for Privileged Contacts CRUD
+  const handleOpenPrivilegedModal = (contact?: PrivilegedContact) => {
+    setEditingContact(contact || null);
+    setShowPrivilegedModal(true);
+  };
+
+  const handleClosePrivilegedModal = () => {
+    setShowPrivilegedModal(false);
+    setEditingContact(null);
+  };
+
+  const handlePrivilegedContactSaved = () => {
+    handleClosePrivilegedModal();
+    fetchPrivilegedContacts();
+  };
+
+  const handleToggleContactStatus = async (contactId: string) => {
+    try {
+      await togglePrivilegedContactStatus(contactId);
+      console.log('✅ Contact status toggled');
+
+      // Log the status change
+      const contact = privilegedContacts.find(c => c.id === contactId);
+      if (contact && user?.company_id) {
+        try {
+          await createIntegrationLog({
+            company_id: user.company_id,
+            user_id: user?.id || null,
+            action: 'update',
+            entity_type: 'privileged_contact' as any,
+            entity_id: contactId,
+            description: `Toggled privileged contact status: ${contact.contact_name}`,
+            details: {
+              contact_name: contact.contact_name,
+              previous_status: contact.is_active,
+              new_status: !contact.is_active,
+            },
+          });
+        } catch (logError) {
+          console.warn('Failed to create activity log:', logError);
+        }
+      }
+
+      fetchPrivilegedContacts();
+    } catch (err) {
+      console.error('❌ Error toggling contact status:', err);
+      alert('Failed to toggle contact status. Please try again.');
+    }
+  };
+
+  const handleDeleteContact = async (contactId: string) => {
+    if (!confirm('Bu yetkili kişiyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')) {
+      return;
+    }
+
+    try {
+      setDeletingContact(contactId);
+
+      // Get contact details before deleting
+      const contact = privilegedContacts.find(c => c.id === contactId);
+
+      await deletePrivilegedContact(contactId);
+      console.log('✅ Privileged contact deleted successfully');
+
+      // Log the deletion
+      if (contact && user?.company_id) {
+        try {
+          await createIntegrationLog({
+            company_id: user.company_id,
+            user_id: user?.id || null,
+            action: 'delete',
+            entity_type: 'privileged_contact' as any,
+            entity_id: contactId,
+            description: `Deleted privileged contact: ${contact.contact_name}`,
+            details: {
+              contact_name: contact.contact_name,
+              contact_phone: contact.contact_phone,
+              privilege_level: contact.privilege_level,
+            },
+            changed_data: {
+              deleted: contact,
+            },
+          });
+        } catch (logError) {
+          console.warn('Failed to create activity log:', logError);
+        }
+      }
+
+      fetchPrivilegedContacts();
+    } catch (err) {
+      console.error('❌ Error deleting privileged contact:', err);
+      alert('Failed to delete privileged contact. Please try again.');
+    } finally {
+      setDeletingContact(null);
     }
   };
 
@@ -346,6 +637,13 @@ export default function WhatsAppService() {
     if (activeTab === 'integrations' && user?.company_id) {
       setLoadingIntegrations(true);
       fetchIntegrations().finally(() => setLoadingIntegrations(false));
+    }
+  }, [activeTab, user?.company_id]);
+
+  // Fetch privileged contacts when privileged tab is active
+  useEffect(() => {
+    if (activeTab === 'privileged' && user?.company_id) {
+      fetchPrivilegedContacts();
     }
   }, [activeTab, user?.company_id]);
 
@@ -656,6 +954,24 @@ export default function WhatsAppService() {
           >
             <LinkIcon className="w-4 h-4" />
             Integrations
+          </button>
+          <button
+            onClick={() => setActiveTab('privileged')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all ${
+              activeTab === 'privileged'
+                ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg shadow-amber-500/50'
+                : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/20'
+            }`}
+          >
+            <Star className="w-4 h-4" />
+            Özel Numaralar
+            <span className={`px-1.5 py-0.5 text-xs font-bold rounded-full ${
+              privilegedContacts.length >= 2
+                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+            }`}>
+              {privilegedContacts.length}/2
+            </span>
           </button>
           <button
             onClick={() => setActiveTab('errors')}
@@ -1303,33 +1619,47 @@ export default function WhatsAppService() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {/* Google Calendar Section */}
+                  {/* Appointment Calendars Section */}
                   <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Calendar className="w-5 h-5 text-blue-400" />
-                      <h4 className="text-white font-semibold">Google Calendar Instances</h4>
-                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-medium rounded-full">
-                        {calendarInstances.length}
-                      </span>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-blue-400" />
+                        <h4 className="text-white font-semibold">📅 Appointment Calendars</h4>
+                        <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-medium rounded-full">
+                          {calendarInstances.length}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleOpenCalendarModal()}
+                        className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        + Yeni Ekle
+                      </button>
                     </div>
 
                     {calendarInstances.length === 0 ? (
                       <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
                         <Calendar className="w-12 h-12 text-muted mx-auto mb-3 opacity-50" />
-                        <p className="text-sm text-muted">No calendar integrations found</p>
+                        <p className="text-sm text-muted">No appointment calendars found</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {calendarInstances.map((calendar) => (
+                        {calendarInstances.map((calendar: any) => (
                           <div
                             key={calendar.id}
                             className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-blue-500/30 transition-colors"
                           >
-                            <div className="flex items-start justify-between">
+                            <div className="flex items-start justify-between gap-4">
                               <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                  {calendar.is_primary && (
+                                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-md flex items-center gap-1">
+                                      ⭐ Ana
+                                    </span>
+                                  )}
                                   <h5 className="text-white font-medium">
-                                    {calendar.instance_name || calendar.calendar_name || 'Unnamed Calendar'}
+                                    📆 {calendar.instance_name || calendar.calendar_name || 'Unnamed Calendar'}
                                   </h5>
                                   <span
                                     className={`px-2 py-0.5 text-xs font-medium rounded-md ${
@@ -1338,13 +1668,33 @@ export default function WhatsAppService() {
                                         : 'bg-gray-500/20 text-gray-400'
                                     }`}
                                   >
-                                    {calendar.status}
+                                    {calendar.status === 'active' ? '✅ Aktif' : '⛔ İnaktif'}
                                   </span>
                                 </div>
                                 <div className="space-y-1 text-sm text-muted">
-                                  {calendar.calendar_name && (
+                                  {calendar.purpose && (
                                     <p>
-                                      <span className="font-medium">Calendar:</span> {calendar.calendar_name}
+                                      <span className="font-medium">Intent:</span>{' '}
+                                      <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${
+                                        calendar.purpose === 'appointment' ? 'bg-blue-500/20 text-blue-400' :
+                                        calendar.purpose === 'meeting' ? 'bg-purple-500/20 text-purple-400' :
+                                        calendar.purpose === 'support' ? 'bg-orange-500/20 text-orange-400' :
+                                        'bg-gray-500/20 text-gray-400'
+                                      }`}>
+                                        {calendar.purpose === 'appointment' ? 'Randevu' :
+                                         calendar.purpose === 'meeting' ? 'Toplantı' :
+                                         calendar.purpose === 'support' ? 'Destek' : 'Genel'}
+                                      </span>
+                                    </p>
+                                  )}
+                                  <p>
+                                    <span className="font-medium">Calendar ID:</span>{' '}
+                                    <span className="font-mono text-xs">{calendar.google_calendar_id || 'N/A'}</span>
+                                  </p>
+                                  {calendar.settings?.default_duration_minutes && (
+                                    <p>
+                                      <span className="font-medium">Varsayılan Süre:</span>{' '}
+                                      <span className="text-blue-400">{calendar.settings.default_duration_minutes} dakika</span>
                                     </p>
                                   )}
                                   <p>
@@ -1358,25 +1708,42 @@ export default function WhatsAppService() {
                                       <span className="text-gray-400">Disabled</span>
                                     )}
                                   </p>
-                                  {calendar.n8n_workflow_id && (
-                                    <p>
-                                      <span className="font-medium">Workflow ID:</span>{' '}
-                                      <span className="font-mono text-xs">{calendar.n8n_workflow_id}</span>
-                                    </p>
-                                  )}
                                 </div>
                               </div>
-                              {calendar.google_calendar_id && (
-                                <a
-                                  href={`https://calendar.google.com/calendar/u/0/r?cid=${calendar.google_calendar_id}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors"
-                                  title="Open in Google Calendar"
+                              <div className="flex flex-col gap-2">
+                                {calendar.google_calendar_id && (
+                                  <a
+                                    href={`https://calendar.google.com/calendar/u/0/r?cid=${calendar.google_calendar_id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors"
+                                    title="Open in Google Calendar"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                  </a>
+                                )}
+                                <button
+                                  onClick={() => handleOpenCalendarModal(calendar)}
+                                  className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
+                                  title="Düzenle"
                                 >
-                                  <ExternalLink className="w-4 h-4" />
-                                </a>
-                              )}
+                                  <Edit className="w-3.5 h-3.5" />
+                                  Düzenle
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCalendar(calendar.id)}
+                                  disabled={deletingCalendar === calendar.id}
+                                  className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Sil"
+                                >
+                                  {deletingCalendar === calendar.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  )}
+                                  Sil
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1384,33 +1751,47 @@ export default function WhatsAppService() {
                     )}
                   </div>
 
-                  {/* Google Sheets Section */}
+                  {/* Product Catalogs Section */}
                   <div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <FileSpreadsheet className="w-5 h-5 text-green-400" />
-                      <h4 className="text-white font-semibold">Google Sheets Instances</h4>
-                      <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
-                        {sheetsInstances.length}
-                      </span>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <FileSpreadsheet className="w-5 h-5 text-green-400" />
+                        <h4 className="text-white font-semibold">📊 Product Catalogs</h4>
+                        <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
+                          {sheetsInstances.length}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleOpenSheetsModal()}
+                        className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+                      >
+                        <FileSpreadsheet className="w-4 h-4" />
+                        + Yeni Ekle
+                      </button>
                     </div>
 
                     {sheetsInstances.length === 0 ? (
                       <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
                         <FileSpreadsheet className="w-12 h-12 text-muted mx-auto mb-3 opacity-50" />
-                        <p className="text-sm text-muted">No sheets integrations with WhatsApp enabled</p>
+                        <p className="text-sm text-muted">No product catalogs with WhatsApp integration</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {sheetsInstances.map((sheet) => (
+                        {sheetsInstances.map((sheet: any) => (
                           <div
                             key={sheet.id}
                             className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-green-500/30 transition-colors"
                           >
-                            <div className="flex items-start justify-between">
+                            <div className="flex items-start justify-between gap-4">
                               <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                  {sheet.is_primary && (
+                                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-md flex items-center gap-1">
+                                      ⭐ Ana
+                                    </span>
+                                  )}
                                   <h5 className="text-white font-medium">
-                                    {sheet.google_sheet_name || 'Unnamed Sheet'}
+                                    📗 {sheet.google_sheet_name || 'Unnamed Sheet'}
                                   </h5>
                                   <span
                                     className={`px-2 py-0.5 text-xs font-medium rounded-md ${
@@ -1419,19 +1800,49 @@ export default function WhatsAppService() {
                                         : 'bg-gray-500/20 text-gray-400'
                                     }`}
                                   >
-                                    {sheet.status}
+                                    {sheet.status === 'active' ? '✅ Aktif' : '⛔ İnaktif'}
                                   </span>
-                                  {sheet.whatsapp_integration_enabled && (
-                                    <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-medium rounded-md">
-                                      WhatsApp Enabled
-                                    </span>
-                                  )}
                                 </div>
                                 <div className="space-y-1 text-sm text-muted">
+                                  {sheet.purpose && (
+                                    <p>
+                                      <span className="font-medium">Intent:</span>{' '}
+                                      <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${
+                                        sheet.purpose === 'price_list' ? 'bg-green-500/20 text-green-400' :
+                                        sheet.purpose === 'product_catalog' ? 'bg-purple-500/20 text-purple-400' :
+                                        sheet.purpose === 'stock_tracking' ? 'bg-orange-500/20 text-orange-400' :
+                                        'bg-gray-500/20 text-gray-400'
+                                      }`}>
+                                        {sheet.purpose === 'price_list' ? 'Fiyat Listesi' :
+                                         sheet.purpose === 'product_catalog' ? 'Ürün Kataloğu' :
+                                         sheet.purpose === 'stock_tracking' ? 'Stok Takibi' : 'Genel'}
+                                      </span>
+                                    </p>
+                                  )}
                                   <p>
                                     <span className="font-medium">Sheet ID:</span>{' '}
                                     <span className="font-mono text-xs">{sheet.google_sheet_id}</span>
                                   </p>
+                                  {sheet.worksheet_name && (
+                                    <p>
+                                      <span className="font-medium">Worksheet:</span>{' '}
+                                      <span className="text-blue-400">{sheet.worksheet_name}</span>
+                                    </p>
+                                  )}
+                                  {sheet.supported_intents && sheet.supported_intents.length > 0 && (
+                                    <p>
+                                      <span className="font-medium">Supported Intents:</span>{' '}
+                                      <span className="flex flex-wrap gap-1 mt-1">
+                                        {sheet.supported_intents.map((intent: string, idx: number) => (
+                                          <span key={idx} className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-md">
+                                            {intent === 'price_query' ? 'Fiyat Sorgusu' :
+                                             intent === 'stock_check' ? 'Stok Kontrolü' :
+                                             intent === 'product_info' ? 'Ürün Bilgisi' : intent}
+                                          </span>
+                                        ))}
+                                      </span>
+                                    </p>
+                                  )}
                                   <p>
                                     <span className="font-medium">Auto Sync:</span>{' '}
                                     {sheet.auto_sync_enabled ? (
@@ -1448,25 +1859,42 @@ export default function WhatsAppService() {
                                       {new Date(sheet.last_sync_at).toLocaleString()}
                                     </p>
                                   )}
-                                  {sheet.n8n_workflow_id && (
-                                    <p>
-                                      <span className="font-medium">Workflow ID:</span>{' '}
-                                      <span className="font-mono text-xs">{sheet.n8n_workflow_id}</span>
-                                    </p>
-                                  )}
                                 </div>
                               </div>
-                              {sheet.google_sheet_url && (
-                                <a
-                                  href={sheet.google_sheet_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="p-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
-                                  title="Open Google Sheet"
+                              <div className="flex flex-col gap-2">
+                                {sheet.google_sheet_url && (
+                                  <a
+                                    href={sheet.google_sheet_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
+                                    title="Open Google Sheet"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                  </a>
+                                )}
+                                <button
+                                  onClick={() => handleOpenSheetsModal(sheet)}
+                                  className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
+                                  title="Düzenle"
                                 >
-                                  <ExternalLink className="w-4 h-4" />
-                                </a>
-                              )}
+                                  <Edit className="w-3.5 h-3.5" />
+                                  Düzenle
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteSheet(sheet.id)}
+                                  disabled={deletingSheet === sheet.id}
+                                  className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Sil"
+                                >
+                                  {deletingSheet === sheet.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  )}
+                                  Sil
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1492,6 +1920,226 @@ export default function WhatsAppService() {
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ========== PRIVILEGED CONTACTS TAB ========== */}
+        {activeTab === 'privileged' && (
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-[20px] overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-secondary/50">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-amber-400" />
+                    Özel Numaralar
+                  </h3>
+                  <p className="text-sm text-muted">
+                    Maksimum 2 yetkili kişi ekleyebilirsiniz ({privilegedContacts.length}/2)
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleOpenPrivilegedModal()}
+                  disabled={privilegedContacts.length >= 2}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                    privilegedContacts.length >= 2
+                      ? 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white'
+                  }`}
+                  title={privilegedContacts.length >= 2 ? 'Maksimum 2 yetkili kişi ekleyebilirsiniz' : 'Yeni yetkili kişi ekle'}
+                >
+                  <Star className="w-4 h-4" />
+                  Yeni Ekle
+                </button>
+              </div>
+
+              {/* Limit Warning */}
+              {privilegedContacts.length >= 2 && (
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-amber-400">
+                    <AlertCircle className="w-4 h-4" />
+                    <p className="text-sm">
+                      Maksimum 2 yetkili kişi limitine ulaştınız. Yeni kişi eklemek için mevcut birini silin.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {loadingPrivileged ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                </div>
+              ) : privilegedContacts.length === 0 ? (
+                <div className="text-center py-12">
+                  <Star className="w-16 h-16 text-muted mx-auto mb-3 opacity-50" />
+                  <p className="text-muted mb-2">Henüz özel numara eklenmemiş</p>
+                  <p className="text-sm text-muted/70 mb-4">
+                    Özel numaralar WhatsApp botunda ekstra yetkilerle erişim sağlar
+                  </p>
+                  <button
+                    onClick={() => handleOpenPrivilegedModal()}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-medium transition-all"
+                  >
+                    <Star className="w-4 h-4" />
+                    İlk Özel Numarayı Ekle
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {privilegedContacts.map((contact) => (
+                    <div
+                      key={contact.id}
+                      className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start gap-3 flex-1">
+                          {/* Icon based on privilege level */}
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${
+                            contact.privilege_level === 'owner'
+                              ? 'bg-amber-500/20 text-amber-400'
+                              : contact.privilege_level === 'manager'
+                              ? 'bg-purple-500/20 text-purple-400'
+                              : contact.privilege_level === 'employee'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-pink-500/20 text-pink-400'
+                          }`}>
+                            {contact.privilege_level === 'owner'
+                              ? '👑'
+                              : contact.privilege_level === 'manager'
+                              ? '👔'
+                              : contact.privilege_level === 'employee'
+                              ? '👷'
+                              : '⭐'}
+                          </div>
+
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="text-white font-semibold">{contact.contact_name}</h4>
+                              <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${
+                                contact.is_active
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-gray-500/20 text-gray-400'
+                              }`}>
+                                {contact.is_active ? 'Aktif' : 'İnaktif'}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
+                              <div className="flex items-center gap-1">
+                                <Phone className="w-3.5 h-3.5" />
+                                {contact.contact_phone}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Shield className="w-3.5 h-3.5" />
+                                {contact.privilege_level === 'owner'
+                                  ? 'Firma Sahibi'
+                                  : contact.privilege_level === 'manager'
+                                  ? 'Yönetici'
+                                  : contact.privilege_level === 'employee'
+                                  ? 'Çalışan'
+                                  : 'VIP Müşteri'}
+                              </div>
+                            </div>
+
+                            {/* Features */}
+                            <div className="flex flex-wrap gap-2">
+                              {contact.allowed_features.view_stock && (
+                                <span className="px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded-md border border-blue-500/30">
+                                  📦 Stok
+                                </span>
+                              )}
+                              {contact.allowed_features.export_data && (
+                                <span className="px-2 py-1 bg-purple-500/10 text-purple-400 text-xs rounded-md border border-purple-500/30">
+                                  📤 Export
+                                </span>
+                              )}
+                              {contact.allowed_features.view_reports && (
+                                <span className="px-2 py-1 bg-green-500/10 text-green-400 text-xs rounded-md border border-green-500/30">
+                                  📊 Raporlar
+                                </span>
+                              )}
+                              {contact.allowed_features.modify_appointments && (
+                                <span className="px-2 py-1 bg-amber-500/10 text-amber-400 text-xs rounded-md border border-amber-500/30">
+                                  📅 Randevu
+                                </span>
+                              )}
+                              {contact.allowed_features.access_customer_data && (
+                                <span className="px-2 py-1 bg-pink-500/10 text-pink-400 text-xs rounded-md border border-pink-500/30">
+                                  👥 Müşteri
+                                </span>
+                              )}
+                              {contact.allowed_features.view_all_appointments && (
+                                <span className="px-2 py-1 bg-cyan-500/10 text-cyan-400 text-xs rounded-md border border-cyan-500/30">
+                                  🗓️ Tüm Randevular
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Personalization */}
+                            {(contact.greeting_name || contact.response_style !== 'formal') && (
+                              <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                                {contact.greeting_name && (
+                                  <span>👋 Selamlama: "{contact.greeting_name}"</span>
+                                )}
+                                <span>
+                                  💬 Yanıt:{' '}
+                                  {contact.response_style === 'formal'
+                                    ? 'Resmi'
+                                    : contact.response_style === 'casual'
+                                    ? 'Rahat'
+                                    : 'Samimi'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 ml-4">
+                          <button
+                            onClick={() => handleToggleContactStatus(contact.id)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              contact.is_active
+                                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+                            }`}
+                            title={contact.is_active ? 'Deaktive Et' : 'Aktive Et'}
+                          >
+                            {contact.is_active ? (
+                              <CheckCircle className="w-4 h-4" />
+                            ) : (
+                              <XCircle className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleOpenPrivilegedModal(contact)}
+                            className="p-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded-lg transition-colors"
+                            title="Düzenle"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteContact(contact.id)}
+                            disabled={!!deletingContact}
+                            className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors disabled:opacity-50"
+                            title="Sil"
+                          >
+                            {deletingContact === contact.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -1868,6 +2516,39 @@ export default function WhatsAppService() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Calendar Instance Modal */}
+      {showCalendarModal && user?.company_id && (
+        <CalendarInstanceModal
+          isOpen={showCalendarModal}
+          onClose={handleCloseCalendarModal}
+          onSuccess={handleCalendarSaved}
+          companyId={user.company_id}
+          instance={editingCalendar}
+        />
+      )}
+
+      {/* Sheets Instance Modal */}
+      {showSheetsModal && user?.company_id && (
+        <SheetsInstanceModal
+          isOpen={showSheetsModal}
+          onClose={handleCloseSheetsModal}
+          onSuccess={handleSheetSaved}
+          companyId={user.company_id}
+          instance={editingSheet}
+        />
+      )}
+
+      {/* Privileged Contact Modal */}
+      {showPrivilegedModal && user?.company_id && (
+        <PrivilegedContactModal
+          isOpen={showPrivilegedModal}
+          onClose={handleClosePrivilegedModal}
+          onSuccess={handlePrivilegedContactSaved}
+          companyId={user.company_id}
+          contact={editingContact}
+        />
       )}
     </div>
   );
