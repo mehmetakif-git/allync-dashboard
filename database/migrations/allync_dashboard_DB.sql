@@ -2161,6 +2161,50 @@ COMMENT ON COLUMN "public"."company_service_pricing"."notes" IS 'Internal notes 
 
 
 
+CREATE TABLE IF NOT EXISTS "public"."conversation_analytics" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "date" "date" NOT NULL,
+    "total_messages" integer DEFAULT 0,
+    "user_messages" integer DEFAULT 0,
+    "bot_messages" integer DEFAULT 0,
+    "unique_users" integer DEFAULT 0,
+    "intent_general_chat" integer DEFAULT 0,
+    "intent_price_query" integer DEFAULT 0,
+    "intent_appointment" integer DEFAULT 0,
+    "intent_product_info" integer DEFAULT 0,
+    "intent_complaint" integer DEFAULT 0,
+    "sheets_queries" integer DEFAULT 0,
+    "sheets_success" integer DEFAULT 0,
+    "calendar_bookings" integer DEFAULT 0,
+    "calendar_success" integer DEFAULT 0,
+    "avg_response_time_ms" integer,
+    "gemini_errors" integer DEFAULT 0,
+    "sheets_errors" integer DEFAULT 0,
+    "calendar_errors" integer DEFAULT 0,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."conversation_analytics" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."conversation_ratings" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "session_id" "uuid" NOT NULL,
+    "user_id" "uuid",
+    "rating" integer NOT NULL,
+    "feedback" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "conversation_ratings_rating_check" CHECK ((("rating" >= 1) AND ("rating" <= 5)))
+);
+
+
+ALTER TABLE "public"."conversation_ratings" OWNER TO "postgres";
+
+
 CREATE OR REPLACE VIEW "public"."dashboard_overview" AS
  SELECT "c"."id" AS "company_id",
     "c"."name" AS "company_name",
@@ -2432,6 +2476,25 @@ CREATE TABLE IF NOT EXISTS "public"."drive_requests" (
 
 
 ALTER TABLE "public"."drive_requests" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."failed_intents" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "session_id" "uuid",
+    "user_message" "text" NOT NULL,
+    "detected_intent" "text",
+    "confidence" numeric(3,2),
+    "gemini_response" "jsonb",
+    "human_review_needed" boolean DEFAULT true,
+    "resolved" boolean DEFAULT false,
+    "correct_intent" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "resolved_at" timestamp with time zone
+);
+
+
+ALTER TABLE "public"."failed_intents" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."generated_documents" (
@@ -2860,6 +2923,25 @@ ALTER TABLE "public"."instagram_user_profiles" OWNER TO "postgres";
 
 COMMENT ON TABLE "public"."instagram_user_profiles" IS 'Instagram user profiles who interacted with company';
 
+
+
+CREATE TABLE IF NOT EXISTS "public"."integration_logs" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "user_id" "uuid",
+    "action" "text" NOT NULL,
+    "entity_type" "text" NOT NULL,
+    "entity_id" "uuid",
+    "description" "text" NOT NULL,
+    "details" "jsonb" DEFAULT '{}'::"jsonb",
+    "changed_data" "jsonb",
+    "status" "text" DEFAULT 'success'::"text",
+    "error_message" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."integration_logs" OWNER TO "postgres";
 
 
 CREATE OR REPLACE VIEW "public"."intent_analytics" AS
@@ -3292,6 +3374,23 @@ COMMENT ON COLUMN "public"."push_notifications_log"."ticket_id" IS 'Expo push no
 
 COMMENT ON COLUMN "public"."push_notifications_log"."receipt_id" IS 'Expo push notification receipt ID';
 
+
+
+CREATE TABLE IF NOT EXISTS "public"."rate_limits" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "company_id" "uuid" NOT NULL,
+    "user_phone" "text" NOT NULL,
+    "message_count" integer DEFAULT 0,
+    "window_start" timestamp with time zone DEFAULT "now"(),
+    "is_blocked" boolean DEFAULT false,
+    "block_reason" "text",
+    "blocked_until" timestamp with time zone,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."rate_limits" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."revenue_metrics" (
@@ -4531,6 +4630,21 @@ ALTER TABLE ONLY "public"."company_services"
 
 
 
+ALTER TABLE ONLY "public"."conversation_analytics"
+    ADD CONSTRAINT "conversation_analytics_company_id_date_key" UNIQUE ("company_id", "date");
+
+
+
+ALTER TABLE ONLY "public"."conversation_analytics"
+    ADD CONSTRAINT "conversation_analytics_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."conversation_ratings"
+    ADD CONSTRAINT "conversation_ratings_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."docs_instances"
     ADD CONSTRAINT "docs_instances_pkey" PRIMARY KEY ("id");
 
@@ -4593,6 +4707,11 @@ ALTER TABLE ONLY "public"."drive_metrics"
 
 ALTER TABLE ONLY "public"."drive_requests"
     ADD CONSTRAINT "drive_requests_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."failed_intents"
+    ADD CONSTRAINT "failed_intents_pkey" PRIMARY KEY ("id");
 
 
 
@@ -4711,6 +4830,11 @@ ALTER TABLE ONLY "public"."instagram_user_profiles"
 
 
 
+ALTER TABLE ONLY "public"."integration_logs"
+    ADD CONSTRAINT "integration_logs_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."invoice_items"
     ADD CONSTRAINT "invoice_items_pkey" PRIMARY KEY ("id");
 
@@ -4808,6 +4932,16 @@ ALTER TABLE ONLY "public"."project_media"
 
 ALTER TABLE ONLY "public"."push_notifications_log"
     ADD CONSTRAINT "push_notifications_log_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."rate_limits"
+    ADD CONSTRAINT "rate_limits_company_id_user_phone_window_start_key" UNIQUE ("company_id", "user_phone", "window_start");
+
+
+
+ALTER TABLE ONLY "public"."rate_limits"
+    ADD CONSTRAINT "rate_limits_pkey" PRIMARY KEY ("id");
 
 
 
@@ -5386,6 +5520,26 @@ CREATE INDEX "idx_company_services_status" ON "public"."company_services" USING 
 
 
 
+CREATE INDEX "idx_conversation_analytics_company_date" ON "public"."conversation_analytics" USING "btree" ("company_id", "date" DESC);
+
+
+
+CREATE INDEX "idx_conversation_analytics_date" ON "public"."conversation_analytics" USING "btree" ("date" DESC);
+
+
+
+CREATE INDEX "idx_conversation_ratings_company_id" ON "public"."conversation_ratings" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_conversation_ratings_created_at" ON "public"."conversation_ratings" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_conversation_ratings_session_id" ON "public"."conversation_ratings" USING "btree" ("session_id");
+
+
+
 CREATE INDEX "idx_docs_instances_company" ON "public"."docs_instances" USING "btree" ("company_id");
 
 
@@ -5427,6 +5581,18 @@ CREATE INDEX "idx_errors_created" ON "public"."whatsapp_errors" USING "btree" ("
 
 
 CREATE INDEX "idx_errors_instance" ON "public"."whatsapp_errors" USING "btree" ("instance_id");
+
+
+
+CREATE INDEX "idx_failed_intents_company_id" ON "public"."failed_intents" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_failed_intents_created_at" ON "public"."failed_intents" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_failed_intents_resolved" ON "public"."failed_intents" USING "btree" ("resolved") WHERE ("resolved" = false);
 
 
 
@@ -5619,6 +5785,26 @@ CREATE INDEX "idx_instagram_user_profiles_last_interaction" ON "public"."instagr
 
 
 CREATE INDEX "idx_instagram_user_profiles_username" ON "public"."instagram_user_profiles" USING "btree" ("username");
+
+
+
+CREATE INDEX "idx_integration_logs_action" ON "public"."integration_logs" USING "btree" ("action");
+
+
+
+CREATE INDEX "idx_integration_logs_company_id" ON "public"."integration_logs" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_integration_logs_created_at" ON "public"."integration_logs" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "idx_integration_logs_entity_type" ON "public"."integration_logs" USING "btree" ("entity_type");
+
+
+
+CREATE INDEX "idx_integration_logs_user_id" ON "public"."integration_logs" USING "btree" ("user_id");
 
 
 
@@ -5895,6 +6081,18 @@ CREATE INDEX "idx_push_log_status" ON "public"."push_notifications_log" USING "b
 
 
 CREATE INDEX "idx_push_log_user_id" ON "public"."push_notifications_log" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "idx_rate_limits_company_phone" ON "public"."rate_limits" USING "btree" ("company_id", "user_phone");
+
+
+
+CREATE INDEX "idx_rate_limits_is_blocked" ON "public"."rate_limits" USING "btree" ("is_blocked") WHERE ("is_blocked" = true);
+
+
+
+CREATE INDEX "idx_rate_limits_window_start" ON "public"."rate_limits" USING "btree" ("window_start" DESC);
 
 
 
@@ -6841,6 +7039,26 @@ COMMENT ON CONSTRAINT "company_services_service_type_id_fkey" ON "public"."compa
 
 
 
+ALTER TABLE ONLY "public"."conversation_analytics"
+    ADD CONSTRAINT "conversation_analytics_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."conversation_ratings"
+    ADD CONSTRAINT "conversation_ratings_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."conversation_ratings"
+    ADD CONSTRAINT "conversation_ratings_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "public"."whatsapp_sessions"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."conversation_ratings"
+    ADD CONSTRAINT "conversation_ratings_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."whatsapp_user_profiles"("id") ON DELETE SET NULL;
+
+
+
 ALTER TABLE ONLY "public"."document_actions_log"
     ADD CONSTRAINT "document_actions_log_document_id_fkey" FOREIGN KEY ("document_id") REFERENCES "public"."generated_documents"("id");
 
@@ -6878,6 +7096,16 @@ ALTER TABLE ONLY "public"."drive_requests"
 
 ALTER TABLE ONLY "public"."drive_requests"
     ADD CONSTRAINT "drive_requests_uploaded_file_id_fkey" FOREIGN KEY ("uploaded_file_id") REFERENCES "public"."drive_files"("id");
+
+
+
+ALTER TABLE ONLY "public"."failed_intents"
+    ADD CONSTRAINT "failed_intents_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."failed_intents"
+    ADD CONSTRAINT "failed_intents_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "public"."whatsapp_sessions"("id") ON DELETE CASCADE;
 
 
 
@@ -7191,6 +7419,16 @@ ALTER TABLE ONLY "public"."instagram_user_profiles"
 
 
 
+ALTER TABLE ONLY "public"."integration_logs"
+    ADD CONSTRAINT "integration_logs_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."integration_logs"
+    ADD CONSTRAINT "integration_logs_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE SET NULL;
+
+
+
 ALTER TABLE ONLY "public"."invoice_items"
     ADD CONSTRAINT "invoice_items_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices"("id") ON DELETE CASCADE;
 
@@ -7308,6 +7546,11 @@ ALTER TABLE ONLY "public"."push_notifications_log"
 
 ALTER TABLE ONLY "public"."push_notifications_log"
     ADD CONSTRAINT "push_notifications_log_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."rate_limits"
+    ADD CONSTRAINT "rate_limits_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE CASCADE;
 
 
 
@@ -7744,6 +7987,30 @@ CREATE POLICY "Company users can create tickets for their company" ON "public"."
 
 
 
+CREATE POLICY "Company users can view own analytics" ON "public"."conversation_analytics" FOR SELECT USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Company users can view own failed intents" ON "public"."failed_intents" FOR SELECT USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Company users can view own logs" ON "public"."integration_logs" FOR SELECT USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "Company users can view own ratings" ON "public"."conversation_ratings" FOR SELECT USING (("company_id" IN ( SELECT "profiles"."company_id"
+   FROM "public"."profiles"
+  WHERE ("profiles"."id" = "auth"."uid"()))));
+
+
+
 CREATE POLICY "Company users can view their company tickets" ON "public"."support_tickets" FOR SELECT TO "authenticated" USING (("company_id" IN ( SELECT "profiles"."company_id"
    FROM "public"."profiles"
   WHERE ("profiles"."id" = "auth"."uid"()))));
@@ -8050,6 +8317,12 @@ CREATE POLICY "Super admins can view all activity logs" ON "public"."activity_lo
 
 
 
+CREATE POLICY "Super admins can view all analytics" ON "public"."conversation_analytics" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
 CREATE POLICY "Super admins can view all consents" ON "public"."user_service_consents" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "auth"."users"
   WHERE (("users"."id" = "auth"."uid"()) AND (("users"."raw_user_meta_data" ->> 'role'::"text") = 'super_admin'::"text")))));
@@ -8062,7 +8335,19 @@ CREATE POLICY "Super admins can view all customers" ON "public"."whatsapp_user_p
 
 
 
+CREATE POLICY "Super admins can view all failed intents" ON "public"."failed_intents" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
 CREATE POLICY "Super admins can view all logs" ON "public"."activity_logs" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+CREATE POLICY "Super admins can view all logs" ON "public"."integration_logs" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."profiles"
   WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
 
@@ -8093,6 +8378,12 @@ CREATE POLICY "Super admins can view all metrics" ON "public"."whatsapp_metrics"
 
 
 CREATE POLICY "Super admins can view all payment sessions" ON "public"."payment_sessions" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles"
+  WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+CREATE POLICY "Super admins can view all ratings" ON "public"."conversation_ratings" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."profiles"
   WHERE (("profiles"."id" = "auth"."uid"()) AND ("profiles"."role" = 'super_admin'::"text")))));
 
@@ -8155,6 +8446,14 @@ CREATE POLICY "Super admins full access" ON "public"."service_suspension_history
 CREATE POLICY "Super admins have full access to company_service_pricing" ON "public"."company_service_pricing" USING ((EXISTS ( SELECT 1
    FROM "public"."profiles"
   WHERE (("auth"."uid"() = "profiles"."id") AND ("profiles"."role" = 'super_admin'::"text")))));
+
+
+
+CREATE POLICY "System can insert logs" ON "public"."integration_logs" FOR INSERT WITH CHECK (true);
+
+
+
+CREATE POLICY "System can manage rate limits" ON "public"."rate_limits" USING (true) WITH CHECK (true);
 
 
 
@@ -8380,6 +8679,12 @@ CREATE POLICY "company_user_select_own" ON "public"."support_ticket_messages" FO
 
 
 
+ALTER TABLE "public"."conversation_analytics" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."conversation_ratings" ENABLE ROW LEVEL SECURITY;
+
+
 ALTER TABLE "public"."docs_instances" ENABLE ROW LEVEL SECURITY;
 
 
@@ -8411,6 +8716,9 @@ ALTER TABLE "public"."drive_metrics" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."drive_requests" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."failed_intents" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."generated_documents" ENABLE ROW LEVEL SECURITY;
@@ -8456,6 +8764,9 @@ ALTER TABLE "public"."instagram_posts" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."instagram_user_profiles" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."integration_logs" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."invoice_items" ENABLE ROW LEVEL SECURITY;
@@ -8510,6 +8821,9 @@ CREATE POLICY "push_logs_user_select" ON "public"."push_notifications_log" FOR S
 
 
 ALTER TABLE "public"."push_notifications_log" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."rate_limits" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."revenue_metrics" ENABLE ROW LEVEL SECURITY;
@@ -9715,6 +10029,18 @@ GRANT ALL ON TABLE "public"."company_service_pricing" TO "service_role";
 
 
 
+GRANT ALL ON TABLE "public"."conversation_analytics" TO "anon";
+GRANT ALL ON TABLE "public"."conversation_analytics" TO "authenticated";
+GRANT ALL ON TABLE "public"."conversation_analytics" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."conversation_ratings" TO "anon";
+GRANT ALL ON TABLE "public"."conversation_ratings" TO "authenticated";
+GRANT ALL ON TABLE "public"."conversation_ratings" TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."dashboard_overview" TO "anon";
 GRANT ALL ON TABLE "public"."dashboard_overview" TO "authenticated";
 GRANT ALL ON TABLE "public"."dashboard_overview" TO "service_role";
@@ -9784,6 +10110,12 @@ GRANT ALL ON TABLE "public"."drive_metrics" TO "service_role";
 GRANT ALL ON TABLE "public"."drive_requests" TO "anon";
 GRANT ALL ON TABLE "public"."drive_requests" TO "authenticated";
 GRANT ALL ON TABLE "public"."drive_requests" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."failed_intents" TO "anon";
+GRANT ALL ON TABLE "public"."failed_intents" TO "authenticated";
+GRANT ALL ON TABLE "public"."failed_intents" TO "service_role";
 
 
 
@@ -9874,6 +10206,12 @@ GRANT ALL ON TABLE "public"."instagram_posts" TO "service_role";
 GRANT ALL ON TABLE "public"."instagram_user_profiles" TO "anon";
 GRANT ALL ON TABLE "public"."instagram_user_profiles" TO "authenticated";
 GRANT ALL ON TABLE "public"."instagram_user_profiles" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."integration_logs" TO "anon";
+GRANT ALL ON TABLE "public"."integration_logs" TO "authenticated";
+GRANT ALL ON TABLE "public"."integration_logs" TO "service_role";
 
 
 
@@ -9970,6 +10308,12 @@ GRANT ALL ON TABLE "public"."project_media" TO "service_role";
 GRANT ALL ON TABLE "public"."push_notifications_log" TO "anon";
 GRANT ALL ON TABLE "public"."push_notifications_log" TO "authenticated";
 GRANT ALL ON TABLE "public"."push_notifications_log" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."rate_limits" TO "anon";
+GRANT ALL ON TABLE "public"."rate_limits" TO "authenticated";
+GRANT ALL ON TABLE "public"."rate_limits" TO "service_role";
 
 
 
