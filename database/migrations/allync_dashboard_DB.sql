@@ -217,6 +217,24 @@ $$;
 ALTER FUNCTION "public"."calculate_usage_percentage"("p_company_id" "uuid", "p_service_type_id" "uuid", "p_current_usage" integer) OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."check_calendar_enabled"("p_company_id" "uuid") RETURNS boolean
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1
+    FROM calendar_instances
+    WHERE company_id = p_company_id
+      AND status = 'active'
+      AND is_primary = true
+  );
+END;
+$$;
+
+
+ALTER FUNCTION "public"."check_calendar_enabled"("p_company_id" "uuid") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") RETURNS TABLE("is_privileged" boolean, "privilege_level" "text", "greeting_name" "text", "allowed_features" "jsonb")
     LANGUAGE "plpgsql"
     AS $$
@@ -247,6 +265,24 @@ $$;
 
 
 ALTER FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."check_sheets_enabled"("p_company_id" "uuid") RETURNS boolean
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1
+    FROM sheets_instances
+    WHERE company_id = p_company_id
+      AND status = 'active'
+      AND is_primary = true
+  );
+END;
+$$;
+
+
+ALTER FUNCTION "public"."check_sheets_enabled"("p_company_id" "uuid") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."check_sla_violations"() RETURNS "void"
@@ -719,6 +755,31 @@ $$;
 ALTER FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."get_primary_calendar_for_intent"("p_company_id" "uuid", "p_intent" "text") RETURNS TABLE("calendar_id" "uuid", "google_calendar_id" "text", "calendar_name" "text", "timezone" "text", "business_hours" "jsonb", "auto_approve_appointments" boolean)
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    id as calendar_id,
+    ci.google_calendar_id,
+    ci.calendar_name,
+    ci.timezone,
+    ci.business_hours,
+    ci.auto_approve_appointments
+  FROM calendar_instances ci
+  WHERE ci.company_id = p_company_id
+    AND p_intent = ANY(ci.appointment_types)  -- ARRAY içinde ara
+    AND ci.is_primary = true
+    AND ci.status = 'active'
+  LIMIT 1;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_primary_calendar_for_intent"("p_company_id" "uuid", "p_intent" "text") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uuid", "p_appointment_type" "text" DEFAULT 'general'::"text") RETURNS TABLE("calendar_id" "uuid", "calendar_name" "text", "google_calendar_id" "text", "auto_approve" boolean)
     LANGUAGE "plpgsql"
     AS $$
@@ -750,25 +811,21 @@ COMMENT ON FUNCTION "public"."get_primary_calendar_for_type"("p_company_id" "uui
 
 
 
-CREATE OR REPLACE FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") RETURNS TABLE("sheet_id" "uuid", "sheet_name" "text", "google_sheet_id" "text", "priority" integer, "worksheet_name" "text")
-    LANGUAGE "plpgsql"
+CREATE OR REPLACE FUNCTION "public"."get_primary_sheet_for_intent"("p_company_id" "uuid", "p_intent" "text") RETURNS TABLE("sheet_id" "uuid", "google_sheet_id" "text", "worksheet_name" "text", "instance_name" "text")
+    LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
 BEGIN
   RETURN QUERY
   SELECT 
-    si.id,
-    si.instance_name,
+    id as sheet_id,
     si.google_sheet_id,
-    si.search_priority,
-    si.default_worksheet_name
+    si.worksheet_name,
+    si.instance_name
   FROM sheets_instances si
   WHERE si.company_id = p_company_id
+    AND p_intent = ANY(si.supported_intents)  -- ARRAY içinde ara
+    AND si.is_primary = true
     AND si.status = 'active'
-    AND si.whatsapp_integration_enabled = true
-    AND p_intent = ANY(si.supported_intents)
-  ORDER BY 
-    si.is_primary DESC,
-    si.search_priority ASC
   LIMIT 1;
 END;
 $$;
@@ -1624,7 +1681,10 @@ CREATE TABLE IF NOT EXISTS "public"."appointment_requests" (
     "completed_at" timestamp with time zone,
     "cancelled_at" timestamp with time zone,
     "created_at" timestamp with time zone DEFAULT "now"(),
-    "updated_at" timestamp with time zone DEFAULT "now"()
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    "calendar_instance_id" "uuid",
+    "created_via" "text" DEFAULT 'whatsapp'::"text",
+    CONSTRAINT "appointment_requests_created_via_check" CHECK (("created_via" = ANY (ARRAY['whatsapp'::"text", 'web'::"text", 'manual'::"text", 'api'::"text"])))
 );
 
 
@@ -1754,22 +1814,24 @@ CREATE TABLE IF NOT EXISTS "public"."sheets_instances" (
     "search_priority" integer DEFAULT 1,
     "default_language" "text" DEFAULT 'tr'::"text",
     "worksheet_index" integer DEFAULT 0,
-    "worksheet_gid" "text" DEFAULT '0'::"text"
+    "worksheet_gid" "text" DEFAULT '0'::"text",
+    "worksheet_name" "text" DEFAULT 'Sheet1'::"text",
+    "google_service_account_email" "text" DEFAULT 'allync-bot@allync-platform.iam.gserviceaccount.com'::"text"
 );
 
 
 ALTER TABLE "public"."sheets_instances" OWNER TO "postgres";
 
 
-COMMENT ON COLUMN "public"."sheets_instances"."purpose" IS 'Sheet kullanım amacı: price_list, product_catalog, stock_tracking, general';
+COMMENT ON COLUMN "public"."sheets_instances"."purpose" IS 'Purpose of this sheet: price_list, product_catalog, stock_tracking, general';
 
 
 
-COMMENT ON COLUMN "public"."sheets_instances"."supported_intents" IS 'Bu sheet hangi intent''ler için kullanılacak';
+COMMENT ON COLUMN "public"."sheets_instances"."supported_intents" IS 'Array of AI intents this sheet supports: price_query, stock_check, product_info';
 
 
 
-COMMENT ON COLUMN "public"."sheets_instances"."is_primary" IS 'Bu intent için birincil sheet mi?';
+COMMENT ON COLUMN "public"."sheets_instances"."is_primary" IS 'Whether this is the primary sheet for its intent/purpose';
 
 
 
@@ -1782,6 +1844,14 @@ COMMENT ON COLUMN "public"."sheets_instances"."worksheet_index" IS 'Worksheet s�
 
 
 COMMENT ON COLUMN "public"."sheets_instances"."worksheet_gid" IS 'Google Sheets worksheet GID';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."worksheet_name" IS 'Specific worksheet/tab name within the Google Sheet (e.g., Sheet1, Products)';
+
+
+
+COMMENT ON COLUMN "public"."sheets_instances"."google_service_account_email" IS 'Service account email that should have access to this sheet';
 
 
 
@@ -5216,6 +5286,18 @@ CREATE INDEX "idx_appointment_types_company" ON "public"."appointment_types" USI
 
 
 
+CREATE INDEX "idx_appointments_calendar" ON "public"."appointment_requests" USING "btree" ("calendar_instance_id");
+
+
+
+CREATE INDEX "idx_appointments_company_date" ON "public"."appointment_requests" USING "btree" ("company_id", "requested_date");
+
+
+
+CREATE INDEX "idx_appointments_status" ON "public"."appointment_requests" USING "btree" ("status");
+
+
+
 CREATE INDEX "idx_blocked_slots_company_date" ON "public"."blocked_time_slots" USING "btree" ("company_id", "blocked_date");
 
 
@@ -5917,6 +5999,18 @@ CREATE INDEX "idx_sheets_columns_mapping_sheet" ON "public"."sheets_columns_mapp
 
 
 CREATE INDEX "idx_sheets_instances_company" ON "public"."sheets_instances" USING "btree" ("company_id");
+
+
+
+CREATE INDEX "idx_sheets_instances_company_purpose" ON "public"."sheets_instances" USING "btree" ("company_id", "purpose");
+
+
+
+CREATE INDEX "idx_sheets_instances_is_primary" ON "public"."sheets_instances" USING "btree" ("is_primary") WHERE ("is_primary" = true);
+
+
+
+CREATE INDEX "idx_sheets_instances_purpose" ON "public"."sheets_instances" USING "btree" ("purpose");
 
 
 
@@ -6701,6 +6795,11 @@ ALTER TABLE ONLY "public"."appointment_actions_log"
 
 ALTER TABLE ONLY "public"."appointment_reminders"
     ADD CONSTRAINT "appointment_reminders_appointment_id_fkey" FOREIGN KEY ("appointment_id") REFERENCES "public"."appointment_requests"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."appointment_requests"
+    ADD CONSTRAINT "appointment_requests_calendar_instance_id_fkey" FOREIGN KEY ("calendar_instance_id") REFERENCES "public"."calendar_instances"("id") ON DELETE SET NULL;
 
 
 
@@ -8966,9 +9065,21 @@ GRANT ALL ON FUNCTION "public"."calculate_usage_percentage"("p_company_id" "uuid
 
 
 
+GRANT ALL ON FUNCTION "public"."check_calendar_enabled"("p_company_id" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."check_calendar_enabled"("p_company_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."check_calendar_enabled"("p_company_id" "uuid") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."check_privileged_user"("p_company_id" "uuid", "p_phone_number" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."check_sheets_enabled"("p_company_id" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."check_sheets_enabled"("p_company_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."check_sheets_enabled"("p_company_id" "uuid") TO "service_role";
 
 
 
@@ -9059,6 +9170,12 @@ GRANT ALL ON FUNCTION "public"."get_default_ai_settings"() TO "service_role";
 GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_display_price"("usd_amount" numeric, "target_currency" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_primary_calendar_for_intent"("p_company_id" "uuid", "p_intent" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_primary_calendar_for_intent"("p_company_id" "uuid", "p_intent" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_primary_calendar_for_intent"("p_company_id" "uuid", "p_intent" "text") TO "service_role";
 
 
 
