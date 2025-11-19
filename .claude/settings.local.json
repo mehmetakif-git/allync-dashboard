@@ -64,7 +64,8 @@
       "Bash(C:/Users/akifa/AppData/Local/Android/Sdk/platform-tools/adb.exe uninstall com.allyncai.mobile)",
       "Bash(npm run android:*)",
       "Bash(.gradlew.bat:*)",
-      "Bash(C:/Users/akifa/AppData/Local/Android/Sdk/platform-tools/adb.exe install -r \"E:/allync/dashboard-allync/allync-mobile/android/app/build/outputs/apk/debug/app-debug.apk\")"
+      "Bash(C:/Users/akifa/AppData/Local/Android/Sdk/platform-tools/adb.exe install -r \"E:/allync/dashboard-allync/allync-mobile/android/app/build/outputs/apk/debug/app-debug.apk\")",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

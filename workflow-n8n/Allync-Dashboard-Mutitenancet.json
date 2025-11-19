@@ -1,0 +1,3592 @@
+{
+  "name": "Allync-Dashboard-Mutitenancet",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "evolution-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -928,
+        -16
+      ],
+      "id": "3f75bc40-5921-4fa3-9fc7-afb6af27ede8",
+      "name": "Webhook_Listener",
+      "webhookId": "9a9680a2-ae60-47bb-8823-5de4eedaa6b2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3b4dc488-9f5f-4107-9574-9a91bd356948",
+              "leftValue": "={{ $json.body.data?.message?.conversation?.trim() || $json.body.data?.message?.extendedTextMessage?.text?.trim() || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5480ac58-4871-4153-abf9-65e97678127e",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        -16
+      ],
+      "id": "015e5d2f-fd44-45e5-a70d-d75ea0d3b386",
+      "name": "FILTER"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e7e745fa-fc53-4c69-8a00-44ee46cda8d6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "86ae1c1e-4c43-40c8-a978-0515036b2a39",
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "62aa50ef-cf16-457c-af64-26089bc4c71a",
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio/Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b11cc410-488a-486a-b59a-a1839177f897",
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Document"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        240,
+        -64
+      ],
+      "id": "3acd0eb1-9bcf-454e-bcc9-d9159a515dc3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "68e56cf7-271f-4abb-a155-40e746286bef",
+              "leftValue": "={{ $json.userCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        -528
+      ],
+      "id": "f1ffac16-4b8e-4f85-9985-02072ec6aa09",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_user_profiles",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('DATA FORMATTER').item.json.company_id }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $('DATA FORMATTER').item.json.phone_number }}"
+            },
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('DATA FORMATTER').item.json.sender_name }}"
+            },
+            {
+              "fieldId": "last_seen",
+              "fieldValue": "={{ $('DATA FORMATTER').item.json.timestamp }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $('DATA FORMATTER').item.json.timestamp }}"
+            },
+            {
+              "fieldId": "customer_status",
+              "fieldValue": "new"
+            },
+            {
+              "fieldId": "total_messages",
+              "fieldValue": "1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -368
+      ],
+      "id": "813cff20-b200-4547-9591-ba514bac8614",
+      "name": "Create User",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2304,
+        -528
+      ],
+      "id": "3a3ea539-4000-4e77-ba8a-cd95aff4a6a5",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const sessions = $input.all();\nconst now = new Date();\nconst thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);\n\n// Prepare Session Check'ten gelen veriler\nconst userData = $('Prepare Session Check').first().json;\n\n// Check Active Session'dan gelen veri yapısını kontrol et\nif (sessions && sessions.length > 0 && sessions[0].json) {\n    const sessionData = Array.isArray(sessions[0].json) ? sessions[0].json : [sessions[0].json];\n    \n    // sessionData boş array olabilir\n    if (sessionData.length > 0 && sessionData[0] && sessionData[0].id) {\n        const session = sessionData[0];\n        \n        // updated_at kontrolü\n        const lastUpdate = new Date(session.updated_at || session.session_start);\n        \n        // 30 dakika kontrolü\n        if (lastUpdate.getTime() > thirtyMinutesAgo.getTime()) {\n            return [{\n                json: {\n                    ...userData,\n                    has_active_session: true,\n                    session_id: session.id,\n                    session_data: session,\n                    sender: userData.phone_number,\n                    \n                    // ✅ YENİ: Session state bilgileri\n                    conversation_state: session.conversation_state || 'idle',\n                    state_data: session.state_data || {},\n                    collected_data: session.collected_data || {},\n                    last_intent: session.last_intent || null\n                }\n            }];\n        }\n    }\n}\n\n// Aktif session yok\nreturn [{\n    json: {\n        ...userData,\n        has_active_session: false,\n        session_id: null,\n        sender: userData.phone_number,\n        \n        // ✅ YENİ: Varsayılan state (yeni session)\n        conversation_state: 'idle',\n        state_data: {},\n        collected_data: {},\n        last_intent: null\n    }\n}];\n\n// Mevcut koda EKLE (en sona)\n\n// ============================================================\n// CHECK INTEGRATIONS (YENİ)\n// ============================================================\n\nconst sheetsEnabled = await $supabase\n  .rpc('check_sheets_enabled', { p_company_id: companyId })\n  .single();\n\nconst calendarEnabled = await $supabase\n  .rpc('check_calendar_enabled', { p_company_id: companyId })\n  .single();\n\nreturn {\n  json: {\n    ...data,\n    sheets_enabled: sheetsEnabled?.data || false,\n    calendar_enabled: calendarEnabled?.data || false\n  }\n};\n// ============================================================\n// CHECK INTEGRATIONS (SHEETS & CALENDAR)\n// ============================================================\n\nconst checkSheets = await $supabase\n  .from('sheets_instances')\n  .select('id')\n  .eq('company_id', companyId)\n  .eq('status', 'active')\n  .eq('is_primary', true)\n  .limit(1);\n\nconst checkCalendar = await $supabase\n  .from('calendar_instances')\n  .select('id')\n  .eq('company_id', companyId)\n  .eq('status', 'active')\n  .eq('is_primary', true)\n  .limit(1);\n\nreturn {\n  json: {\n    ...normalizedData,\n    sheets_enabled: (checkSheets.data && checkSheets.data.length > 0),\n    calendar_enabled: (checkCalendar.data && checkCalendar.data.length > 0)\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3328,
+        -528
+      ],
+      "id": "1ad7bba4-adca-4904-94f9-439edc42a8bc",
+      "name": "Session Validator"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_sessions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Prepare Session Check').item.json.company_id }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $('IF2').item.json.user_id }}"
+            },
+            {
+              "fieldId": "sender",
+              "fieldValue": "={{ $('IF2').item.json.phone_number }}"
+            },
+            {
+              "fieldId": "customer_name",
+              "fieldValue": "={{ $('IF2').item.json.name }}"
+            },
+            {
+              "fieldId": "customer_phone",
+              "fieldValue": "={{ $('IF2').item.json.phone_number }}"
+            },
+            {
+              "fieldId": "session_start",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "is_active",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "context",
+              "fieldValue": "={{ JSON.stringify({ messages: [], user_name: $('IF2').item.json.sender_name }) }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "active"
+            },
+            {
+              "fieldId": "message_count",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "unread_count",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "conversation_state",
+              "fieldValue": "idle"
+            },
+            {
+              "fieldId": "state_data",
+              "fieldValue": "={{ JSON.stringify({}) }}"
+            },
+            {
+              "fieldId": "collected_data",
+              "fieldValue": "={{ JSON.stringify({}) }}"
+            },
+            {
+              "fieldId": "last_intent",
+              "fieldValue": "\"\""
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4208,
+        -336
+      ],
+      "id": "13e89e96-3697-4e80-825d-0fd7f7782e23",
+      "name": "Create New Session",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4672,
+        -528
+      ],
+      "id": "d5de176e-b564-4fd3-9756-7abb535bef0d",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "whatsapp_messages",
+        "limit": 20,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "company_id",
+              "condition": "eq",
+              "keyValue": "={{ $('DATA FORMATTER').item.json.company_id }}"
+            },
+            {
+              "keyName": "session_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.session_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        5440,
+        -544
+      ],
+      "id": "ba1845d3-61e0-4072-a7e9-0871600579ee",
+      "name": "Get Last Messages",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Context Builder - PROFESYONEL VERSİYON + AI SETTINGS + VIP USER + STATE MANAGEMENT\n// İlk mesaj veya conversation history fark etmez, her durumda çalışır\nconst input = $input.first().json;\n\n// ============================================================\n// TEMEL BİLGİLER\n// ============================================================\n\nconst currentMessage = input.message_body || '';\nconst senderName = input.sender_name || 'User';\nconst phoneNumber = input.phone_number || '';\nconst instanceId = input.instance_id || '';\nconst userId = input.user_id || '';\nconst sessionId = input.session_id || '';\nconst companyId = input.company_id || '';\n\n// ============================================================\n// API KEYS & CONFIG (MULTI-TENANT)\n// ============================================================\n\nconst geminiApiKey = input.gemini_api_key || '';\nconst aiSystemPrompt = input.ai_system_prompt || '';\nconst evolutionApiUrl = input.evolution_api_url || '';\nconst evolutionApiKey = input.evolution_api_key || '';\nconst instanceName = input.instance_name || '';\n\n// ============================================================\n// USER STATS\n// ============================================================\n\nconst totalMessages = input.total_messages || 0;\nconst customerStatus = input.customer_status || 'new';\n\n// ============================================================\n// TARİH VE ZAMAN\n// ============================================================\n\nconst now = new Date();\nconst year = now.getFullYear();\nconst month = now.toLocaleDateString('tr-TR', { month: 'long' });\nconst day = now.getDate();\nconst dayOfWeek = now.toLocaleDateString('tr-TR', { weekday: 'long' });\nconst hour = now.getHours();\nconst minute = String(now.getMinutes()).padStart(2, '0');\nconst fullDate = `${day} ${month} ${year}`;\nconst fullDateTime = `${day} ${month} ${year} ${dayOfWeek} ${hour}:${minute}`;\n\nlet timeOfDay = '';\nif (hour >= 6 && hour < 12) timeOfDay = 'Sabah';\nelse if (hour >= 12 && hour < 17) timeOfDay = 'Öğleden sonra';\nelse if (hour >= 17 && hour < 21) timeOfDay = 'Akşam';\nelse timeOfDay = 'Gece';\n\n// ============================================================\n// CONVERSATION CONTEXT\n// ============================================================\n\nconst conversationHistory = input.conversationHistory || [];\nlet contextLines = [];\n\n// Eğer geçmiş varsa\nif (conversationHistory.length > 0) {\n    // Son 10 mesajı al ve formatla\n    const recent = conversationHistory.slice(-10);\n    \n    for (const msg of recent) {\n        const owner = msg.message_owner === 'bot' \n            ? 'Allync AI' \n            : (msg.sender_name || 'User');\n        \n        const prefix = msg.message_owner === 'bot' ? '🤖' : '👤';\n        contextLines.push(`${prefix} ${owner}: ${msg.message_body}`);\n    }\n}\n\n// Şu anki mesajı context'e ekle\ncontextLines.push(`👤 ${senderName}: ${currentMessage}`);\n\n// Final context\nconst finalContext = contextLines.join('\\n');\n\n// ============================================================\n// AI SETTINGS PARSE\n// ============================================================\n\nconst aiSettings = input.ai_settings || {};\n\n// Şirket kimliği\nconst companyIdentity = aiSettings.company_identity || {};\nconst companyName = companyIdentity.name || input.company_name || 'Bilinmiyor';\nconst greeting = companyIdentity.greeting || 'Merhaba! Size nasıl yardımcı olabilirim?';\nconst farewell = companyIdentity.farewell || 'İyi günler dilerim!';\nconst personality = companyIdentity.personality || 'friendly';\n\n// İzin verilen özellikler\nconst allowedFeatures = aiSettings.allowed_features || {\n  general_chat: true,\n  price_query: true,\n  appointment: true,\n  product_info: true,\n  stock_check: false,\n  document_request: false,\n  complaint_handling: true\n};\n\n// Dil ayarları\nconst languageSettings = aiSettings.language_detection || {\n  enabled: true,\n  supported: ['tr', 'en', 'ar'],\n  default: 'tr',\n  respond_in_detected_language: true\n};\n\n// Kısıtlamalar\nconst restrictions = aiSettings.restrictions || {\n  stay_on_topic: false,\n  block_offensive_words: true,\n  allowed_topics: [],\n  blocked_topics: []\n};\n\n// Response style\nconst responseStyle = aiSettings.response_style || {\n  tone: 'friendly',\n  max_length: 300,\n  use_emojis: true,\n  formality_level: 'casual'\n};\n\n// Intent handling\nconst intentHandling = aiSettings.intent_handling || {\n  confidence_threshold: 0.7,\n  fallback_to_human: false,\n  max_retries: 2\n};\n\n// Sheets integration\nconst sheetsIntegration = aiSettings.sheets_integration || {\n  enabled: true,\n  default_sheet_id: null,\n  max_results: 5\n};\n\n// Calendar integration\nconst calendarIntegration = aiSettings.calendar_integration || {\n  enabled: true,\n  default_calendar_id: null,\n  require_confirmation: true\n};\n\n// ============================================================\n// VIP/PRIVILEGED USER BİLGİLERİ\n// ============================================================\n\nconst isPrivilegedUser = input.is_privileged || false;\nconst privilegeLevel = input.privilege_level || 'customer';\nconst greetingName = input.greeting_name || null;\nconst privilegedFeatures = input.privileged_allowed_features || {};\n\n// ============================================================\n// CONVERSATION STATE (Multi-turn conversation desteği)\n// ============================================================\n\nconst conversationState = input.conversation_state || 'idle';\nconst stateData = input.state_data || {};\nconst collectedData = input.collected_data || {};\nconst lastIntent = input.last_intent || null;\n\n// ============================================================\n// OUTPUT - RETURN DATA\n// ============================================================\n\nreturn [{\n    json: {\n        // ============================================================\n        // CONTEXT & MESSAGE\n        // ============================================================\n        context: finalContext,\n        current_message: currentMessage,\n        \n        // ============================================================\n        // USER INFO\n        // ============================================================\n        sender_name: senderName,\n        phone_number: phoneNumber,\n        user_id: userId,\n        total_messages: totalMessages,\n        customer_status: customerStatus,\n        \n        // ============================================================\n        // SESSION INFO\n        // ============================================================\n        session_id: sessionId,\n        instance_id: instanceId,\n        company_id: companyId,\n        \n        // ============================================================\n        // MESSAGE STATS\n        // ============================================================\n        message_count: conversationHistory.length,\n        has_history: conversationHistory.length > 0,\n        \n        // ============================================================\n        // TARİH BİLGİLERİ\n        // ============================================================\n        current_date: fullDate,\n        current_datetime: fullDateTime,\n        day_of_week: dayOfWeek,\n        time_of_day: timeOfDay,\n        current_hour: hour,\n        current_minute: minute,\n        year: year,\n        month: month,\n        day: day,\n        \n        // ============================================================\n        // API KEYS & CONFIG (DYNAMIC MULTI-TENANT)\n        // ============================================================\n        gemini_api_key: geminiApiKey,\n        ai_system_prompt: aiSystemPrompt,\n        evolution_api_url: evolutionApiUrl,\n        evolution_api_key: evolutionApiKey,\n        instance_name: instanceName,\n        \n        // ============================================================\n        // COMPANY IDENTITY\n        // ============================================================\n        company_name: companyName,\n        company_greeting: greeting,\n        company_farewell: farewell,\n        personality: personality,\n        \n        // ============================================================\n        // ALLOWED FEATURES\n        // ============================================================\n        allowed_features: allowedFeatures,\n        feature_general_chat: allowedFeatures.general_chat,\n        feature_price_query: allowedFeatures.price_query,\n        feature_appointment: allowedFeatures.appointment,\n        feature_product_info: allowedFeatures.product_info,\n        feature_stock_check: allowedFeatures.stock_check,\n        feature_document_request: allowedFeatures.document_request,\n        feature_complaint_handling: allowedFeatures.complaint_handling,\n        \n        // ============================================================\n        // LANGUAGE SETTINGS\n        // ============================================================\n        language_settings: languageSettings,\n        supported_languages: languageSettings.supported,\n        default_language: languageSettings.default,\n        respond_in_detected_language: languageSettings.respond_in_detected_language,\n        \n        // ============================================================\n        // RESTRICTIONS\n        // ============================================================\n        restrictions: restrictions,\n        stay_on_topic: restrictions.stay_on_topic,\n        block_offensive_words: restrictions.block_offensive_words,\n        allowed_topics: restrictions.allowed_topics,\n        blocked_topics: restrictions.blocked_topics,\n        \n        // ============================================================\n        // RESPONSE STYLE\n        // ============================================================\n        response_style: responseStyle,\n        response_tone: responseStyle.tone,\n        use_emojis: responseStyle.use_emojis,\n        max_response_length: responseStyle.max_length,\n        formality_level: responseStyle.formality_level,\n        \n        // ============================================================\n        // INTENT HANDLING\n        // ============================================================\n        intent_confidence_threshold: intentHandling.confidence_threshold,\n        fallback_to_human: intentHandling.fallback_to_human,\n        max_retries: intentHandling.max_retries,\n        \n        // ============================================================\n        // INTEGRATIONS\n        // ============================================================\n        sheets_enabled: sheetsIntegration.enabled,\n        sheets_default_id: sheetsIntegration.default_sheet_id,\n        sheets_max_results: sheetsIntegration.max_results,\n        \n        calendar_enabled: calendarIntegration.enabled,\n        calendar_default_id: calendarIntegration.default_calendar_id,\n        calendar_require_confirmation: calendarIntegration.require_confirmation,\n        \n        // ============================================================\n        // VIP/PRIVILEGED USER\n        // ============================================================\n        is_privileged_user: isPrivilegedUser,\n        privilege_level: privilegeLevel,\n        greeting_name: greetingName,\n        privileged_allowed_features: privilegedFeatures,\n        \n        // ============================================================\n        // CONVERSATION STATE (Multi-turn conversation)\n        // ============================================================\n        conversation_state: conversationState,\n        state_data: stateData,\n        collected_data: collectedData,\n        last_intent: lastIntent,\n        \n        // ============================================================\n        // FULL AI SETTINGS (BACKUP)\n        // ============================================================\n        ai_settings: aiSettings,\n        // ✅ YENİ: Entegrasyon durumları\n        sheets_enabled: input.sheets_enabled || false,\n        calendar_enabled: input.calendar_enabled || false\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5872,
+        -544
+      ],
+      "id": "924d0f05-65b2-47c8-a735-b1a0efe1462e",
+      "name": "Context Builder"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3496b8ba-dc66-4013-97ea-69be22e08c11",
+              "name": "ai_response",
+              "value": "={{ $json.bot_response }}",
+              "type": "string"
+            },
+            {
+              "id": "d6335c8e-1a33-4ea4-b2f6-db695ce0f170",
+              "name": "user_message_id",
+              "value": "={{ $now.toString() + '_user' }}",
+              "type": "string"
+            },
+            {
+              "id": "563f9ad1-3340-4acc-bca8-8c1303980c7e",
+              "name": "bot_message_id",
+              "value": "={{ $now.toString() + '_bot' }}",
+              "type": "string"
+            },
+            {
+              "id": "12465fea-3f17-4a80-bcc6-14bd00452a5e",
+              "name": "session_id",
+              "value": "={{ $('Context Builder').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0ea4fe37-37b8-4c84-b6ef-4a635d4fc152",
+              "name": "user_id",
+              "value": "={{ $('Context Builder').item.json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5501e043-a657-4b8f-9b70-10640aa8720f",
+              "name": "instance_id",
+              "value": "={{ $('Context Builder').item.json.instance_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b438e2fe-088e-4bd1-a18a-b8d46ff46187",
+              "name": "phone_number",
+              "value": "={{ $('Context Builder').item.json.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7152,
+        224
+      ],
+      "id": "ebe52ee1-89ee-4159-9c39-a954be36fc19",
+      "name": "Format Response"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "=customer"
+            },
+            {
+              "fieldId": "message_body",
+              "fieldValue": "={{ $('Session Validator').item.json.message_body }}"
+            },
+            {
+              "fieldId": "message_owner",
+              "fieldValue": "user"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $('Merge2').item.json.instance_id }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id }}"
+            },
+            {
+              "fieldId": "sender_name",
+              "fieldValue": "={{ $json.sender_name }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('DATA FORMATTER').item.json.company_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        5136,
+        -528
+      ],
+      "id": "bb2ce717-e2ba-4879-a563-f98362ccc298",
+      "name": "Save User Message",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "=bot"
+            },
+            {
+              "fieldId": "sender_name",
+              "fieldValue": "agent"
+            },
+            {
+              "fieldId": "message_body",
+              "fieldValue": "={{ $json.ai_response }}"
+            },
+            {
+              "fieldId": "message_owner",
+              "fieldValue": "bot"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.instance_id }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id.toString() }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id.toString() }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Inject IDs').item.json.company_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        7424,
+        224
+      ],
+      "id": "30f0638b-cd84-4247-ad68-70c09674bd17",
+      "name": "Save Bot Response",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "user_profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone_number",
+              "condition": "eq",
+              "keyValue": "={{ $('Context Builder').item.json.phone_number }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "last_seen",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "total_messages",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) + 1 }}"
+            },
+            {
+              "fieldId": "customer_status",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) >= 4 ? \"old\" : \"new\" }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        7936,
+        208
+      ],
+      "id": "9b41f1d7-88e0-4006-87ff-812deff0a362",
+      "name": "Update User Stats",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YWr0zYtmMCKrbiNV",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "whatsapp_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Context Builder').item.json.session_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "conversation_state",
+              "fieldValue": "={{ $('Parse Gemini Response').item.json.next_state }}"
+            },
+            {
+              "fieldId": "collected_data",
+              "fieldValue": "={{ JSON.stringify($('Parse Gemini Response').item.json.collected_data) }}"
+            },
+            {
+              "fieldId": "last_intent",
+              "fieldValue": "={{ $('Parse Gemini Response').item.json.detected_intent }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8224,
+        192
+      ],
+      "id": "ba41ac2c-3a80-462c-be75-c08c7f9daa54",
+      "name": "Update Session",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// CHECK USER'dan gelen user verisi\nconst checkUserData = $('CHECK USER').first().json;\n\n// Check Privileged User'dan gelen VIP verisi\nconst privilegedData = $('Check Privileged User').first().json[0] || {\n  is_privileged: false,\n  privilege_level: 'customer',\n  greeting_name: null,\n  allowed_features: {}\n};\n\n// User count hesapla\nlet userCount = 0;\nlet userData = {};\n\nif (Array.isArray(checkUserData) && checkUserData.length > 0) {\n    userCount = checkUserData.length;\n    userData = checkUserData[0];\n} else if (checkUserData.id) {\n    userCount = 1;\n    userData = checkUserData;\n}\n\n// DATA FORMATTER'dan gelen orijinal veriyi al\nconst originalData = $input.item.json;\n\n// HEPSİNİ BİRLEŞTİR\nreturn [{\n    json: {\n        ...originalData,      // Orijinal veri (phone, company_id, etc.)\n        ...userData,          // User profili (id, total_messages, etc.)\n        userCount: userCount, // User var mı kontrolü\n        \n        // ✅ YENİ: Privileged user bilgileri\n        is_privileged: privilegedData.is_privileged,\n        privilege_level: privilegedData.privilege_level,\n        greeting_name: privilegedData.greeting_name,\n        privileged_allowed_features: privilegedData.allowed_features\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -528
+      ],
+      "id": "eeeb2aea-1806-42d4-ae13-afc2752a37b7",
+      "name": "Code: Count_Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fc7a929d-4724-4fe6-a0d9-f37a76610d25",
+              "name": "user_id",
+              "value": "={{ $('Merge').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "665ac50c-7221-4162-8184-2bb529fc0454",
+              "name": "phone_number",
+              "value": "={{ $('DATA FORMATTER').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "5a3c06c9-8123-4e9a-9794-c732ef70a867",
+              "name": "sender_name",
+              "value": "={{ $('DATA FORMATTER').item.json.sender_name }}",
+              "type": "string"
+            },
+            {
+              "id": "2bfdcada-088a-4d74-943f-d244aa632263",
+              "name": "instance_id",
+              "value": "={{ $('DATA FORMATTER').item.json.instance_id }}",
+              "type": "string"
+            },
+            {
+              "id": "804b0eb5-512c-4296-87ee-ecd15a7abf01",
+              "name": "message_body",
+              "value": "={{ $('DATA FORMATTER').item.json.message_body }}",
+              "type": "string"
+            },
+            {
+              "id": "c3584bd3-91da-44f4-bfdd-ab7d79049908",
+              "name": "total_messages",
+              "value": "={{ $('Merge').item.json.total_messages || 0 }}",
+              "type": "string"
+            },
+            {
+              "id": "93e7d6a1-2fa6-4d79-8d30-0e8ca75af50e",
+              "name": "customer_status",
+              "value": "={{ $('Merge').item.json.customer_status || 'new' }}",
+              "type": "string"
+            },
+            {
+              "id": "41379ff8-cdbd-47d7-be24-088209f4ac98",
+              "name": "gemini_api_key",
+              "value": "={{ $('DATA FORMATTER').item.json.gemini_api_key }}",
+              "type": "string"
+            },
+            {
+              "id": "8c24842e-61ed-4ee7-a01d-d5fe610fb9db",
+              "name": "evolution_api_url",
+              "value": "={{ $('DATA FORMATTER').item.json.evolution_api_url }}",
+              "type": "string"
+            },
+            {
+              "id": "d8d38e9f-d2a7-4034-9627-aedd6ef0dfd6",
+              "name": "evolution_api_key",
+              "value": "={{ $('DATA FORMATTER').item.json.evolution_api_key }}",
+              "type": "string"
+            },
+            {
+              "id": "302ef7af-a203-4ebb-9808-ebccf3d2c0c0",
+              "name": "instance_name",
+              "value": "={{ $('DATA FORMATTER').item.json.instance_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2512,
+        -528
+      ],
+      "id": "6dd90ee9-bbde-405c-892d-8a1cb7594596",
+      "name": "Prepare Session Check"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "13f82a80-3d10-4786-835e-7c6b9f0a17e1",
+              "leftValue": "={{ $json.has_active_session }}",
+              "rightValue": "=true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3520,
+        -528
+      ],
+      "id": "c8eca5f6-cb8a-48e2-b53e-d3567ae043c8",
+      "name": "IF2"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2064,
+        -368
+      ],
+      "id": "a7664437-e6fb-4f55-a38a-556137340abb",
+      "name": "Wait",
+      "webhookId": "1d558743-000c-40b1-843d-c0e0e5e2c7f5"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        8480,
+        176
+      ],
+      "id": "db13e564-8808-4bb7-9835-b83de372ade8",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "whatsapp_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "company_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare Session Check').item.json.company_id }}"
+            },
+            {
+              "keyName": "is_active",
+              "condition": "eq",
+              "keyValue": "true"
+            },
+            {
+              "keyName": "user_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.user_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "is_active",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "session_end",
+              "fieldValue": "=={{ $now }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "closed"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "=={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3872,
+        -336
+      ],
+      "id": "d7729cd7-a854-4664-91bd-2ba03a458750",
+      "name": "Close Old Sessions",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "29a58bf0-d5f4-4129-b4a2-120325843b62",
+              "name": "session_id",
+              "value": "={{ $json.session_id || $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d9994e4a-d677-4efc-8676-20742a52e959",
+              "name": "total_messages",
+              "value": "={{ $('Session Validator').item.json.total_messages }}",
+              "type": "string"
+            },
+            {
+              "id": "4dc23dca-fabc-422d-8c8d-2f3ce6efe173",
+              "name": "customer_status",
+              "value": "={{ $('Session Validator').item.json.customer_status }}",
+              "type": "string"
+            },
+            {
+              "id": "b71f3d4f-e192-4fc9-b9cd-cea32e306cd8",
+              "name": "sender_name",
+              "value": "={{ $('Session Validator').item.json.sender_name }}",
+              "type": "string"
+            },
+            {
+              "id": "b29138bb-6de1-47f3-b3d4-aaf9e8b76179",
+              "name": "sender",
+              "value": "={{ $json.sender }}",
+              "type": "string"
+            },
+            {
+              "id": "e3877656-a217-4e1d-8499-8b9ddb3b7219",
+              "name": "message_body",
+              "value": "={{ $('Session Validator').item.json.message_body }}",
+              "type": "string"
+            },
+            {
+              "id": "f79be6c4-5ba3-4c66-82d8-747bc956eb2f",
+              "name": "gemini_api_key",
+              "value": "={{ $('DATA FORMATTER').item.json.gemini_api_key }}",
+              "type": "string"
+            },
+            {
+              "id": "89015936-5d8a-4e12-9b65-723c120ea7a7",
+              "name": "ai_system_prompt",
+              "value": "={{ $('DATA FORMATTER').item.json.ai_system_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "4f5dfaa0-9b53-4433-8b59-7685656db3e8",
+              "name": "company_id",
+              "value": "={{ $('DATA FORMATTER').item.json.company_id }}",
+              "type": "string"
+            },
+            {
+              "id": "60527d9c-1bfe-4fb5-9301-a6997dfd0663",
+              "name": "conversation_state",
+              "value": "={{ $json.conversation_state || 'idle' }}",
+              "type": "string"
+            },
+            {
+              "id": "ba44d7e5-7a0c-4f3c-9c1c-39e7f22e6b88",
+              "name": "state_data",
+              "value": "={{ $json.state_data || {} }}",
+              "type": "object"
+            },
+            {
+              "id": "60079ff0-ede2-4e0c-9be1-999a23440667",
+              "name": "collected_data",
+              "value": "={{ $json.collected_data || {} }}",
+              "type": "object"
+            },
+            {
+              "id": "5b7ee9f9-5c78-4189-9f2f-8002ff06e518",
+              "name": "last_intent",
+              "value": "={{ $json.last_intent || null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4896,
+        -528
+      ],
+      "id": "9e431db6-cbde-43ec-b440-b57672e1769d",
+      "name": "Normalize Session ID"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\n\nconsole.log('=== CHECK ACTIVE SESSION INPUT ===');\nconsole.log('Phone Number:', item.phone_number);\nconsole.log('User ID:', item.user_id);\nconsole.log('Sender Name:', item.sender_name);\nconsole.log('Execution:', $execution.id);\nconsole.log('Timestamp:', new Date().toISOString());\nconsole.log('================================\\n');\n\nreturn [$input.item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2704,
+        -528
+      ],
+      "id": "83e142ae-bc48-4a01-8912-644f3e573fd0",
+      "name": "Debug Session Input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const sessionResult = $input.item.json;\nconst prepareData = $('Prepare Session Check').item.json;\n\nconsole.log('=== CHECK ACTIVE SESSION OUTPUT ===');\nconsole.log('Input phone_number:', prepareData.phone_number);\nconsole.log('Input user_id:', prepareData.user_id);\nconsole.log('---');\n\nif (Array.isArray(sessionResult)) {\n    console.log('Found sessions:', sessionResult.length);\n    sessionResult.forEach((session, i) => {\n        console.log(`Session ${i}:`, {\n            id: session.id,\n            sender: session.sender,\n            user_id: session.user_id,\n            is_active: session.is_active\n        });\n    });\n} else if (sessionResult.id) {\n    console.log('Found 1 session:', {\n        id: sessionResult.id,\n        sender: sessionResult.sender,\n        user_id: sessionResult.user_id\n    });\n} else {\n    console.log('NO SESSIONS FOUND (should create new)');\n}\nconsole.log('===================================\\n');\n\nreturn [$input.item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        -528
+      ],
+      "id": "309826f4-9482-4fa3-b902-525d0e7dae13",
+      "name": "Debug Session output"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "whatsapp_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "company_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare Session Check').item.json.company_id }}"
+            },
+            {
+              "keyName": "user_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare Session Check').item.json.user_id }}"
+            },
+            {
+              "keyName": "sender",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare Session Check').item.json.phone_number }}"
+            },
+            {
+              "keyName": "is_active",
+              "condition": "eq",
+              "keyValue": "true"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2912,
+        -528
+      ],
+      "id": "489fd223-bd26-4e8c-997d-91aeb1e50985",
+      "name": "Check Active Session",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Inject IDs - FİNAL VERSİYON (Tüm Dynamic Fieldlar)\n\nconst normalizedData = $('Normalize Session ID').item.json;\nconst savedMessage = $('Save User Message').item.json;\nconst currentMessageId = savedMessage.id;\nconst allMessages = $input.all();\n\n// ✅ DATA FORMATTER'dan direkt al\nconst companyId = $('DATA FORMATTER').item.json.company_id;\nconst evolutionApiUrl = $('DATA FORMATTER').item.json.evolution_api_url;\nconst evolutionApiKey = $('DATA FORMATTER').item.json.evolution_api_key;\nconst instanceName = $('DATA FORMATTER').item.json.instance_name;\n\nconst baseData = {\n    // Core IDs\n    company_id: companyId,\n    user_id: savedMessage.user_id,\n    session_id: savedMessage.session_id,\n    \n    // User Info\n    phone_number: normalizedData.sender,\n    sender_name: normalizedData.sender_name,\n    instance_id: normalizedData.instance_id,\n    message_body: normalizedData.message_body,\n    total_messages: normalizedData.total_messages || 0,\n    customer_status: normalizedData.customer_status || 'new',\n    \n    // API Keys & Config\n    gemini_api_key: normalizedData.gemini_api_key,\n    ai_system_prompt: normalizedData.ai_system_prompt,\n    evolution_api_url: evolutionApiUrl,\n    evolution_api_key: evolutionApiKey,\n    instance_name: instanceName\n};\n\nconst conversationHistory = allMessages\n    .filter(item => \n        item.json && \n        item.json.id && \n        item.json.id !== currentMessageId && \n        item.json.message_body\n    )\n    .map(item => ({\n        id: item.json.id,\n        sender: item.json.sender,\n        sender_name: item.json.sender_name || 'Unknown',\n        message_body: item.json.message_body,\n        message_owner: item.json.message_owner,\n        created_at: item.json.created_at\n    }));\n\nreturn [{\n    json: {\n        ...baseData,\n        conversationHistory: conversationHistory,\n        has_history: conversationHistory.length > 0,\n        current_message_id: currentMessageId,\n        sheets_enabled: normalizedData.sheets_enabled || false,\n        calendar_enabled: normalizedData.calendar_enabled || false\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5664,
+        -544
+      ],
+      "id": "3503033a-a4e4-486e-8e2f-fbf0454f1e3f",
+      "name": "Inject IDs"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "whatsapp_instances",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "instance_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.instance }}"
+            },
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "active"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -32
+      ],
+      "id": "86daf57d-0283-4bdf-84be-398af4079a3f",
+      "name": "Get Company & Instance",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get webhook data by node name\nconst webhook = $('Webhook_Listener').first().json;\nconst eventData = webhook.body.data;\n\n// Get company data from previous node\nconst companyData = $input.first().json;\n\n// Extract phone number\nconst remoteJid = eventData.key.remoteJid;\nconst phoneNumber = remoteJid.replace('@s.whatsapp.net', '');\n\n// ✅ Extract sender name (pushName)\nconst senderName = eventData.pushName || phoneNumber;  // Yoksa telefon kullan\n\n// Extract message\nconst messageBody = eventData.message?.conversation || \n                   eventData.message?.extendedTextMessage?.text || \n                   'No message';\n\n// Determine message type\nlet messageType = 'text';\nif (eventData.message?.imageMessage) {\n  messageType = 'image';\n} else if (eventData.message?.audioMessage) {\n  messageType = 'audio';\n} else if (eventData.message?.documentMessage) {\n  messageType = 'document';\n}\n\n// Format output with company_id\nreturn [{\n  json: {\n    // Company Info\n    company_id: companyData.company_id,\n    instance_id: companyData.instance_id,\n    instance_name: companyData.instance_name,\n    \n    // User Info\n    phone_number: phoneNumber,\n    remote_jid: remoteJid,\n    sender_name: senderName,  // ✅ YENİ EKLENEN\n    \n    // Message Info\n    message_body: messageBody,\n    message_type: messageType,\n    message_id: eventData.key.id,\n    from_me: eventData.key.fromMe,\n    timestamp: new Date().toISOString(),\n    \n    // API Keys\n    evolution_api_url: companyData.evolution_api_url,\n    evolution_api_key: companyData.evolution_api_key,\n    gemini_api_key: companyData.gemini_api_key,\n    ai_system_prompt: companyData.ai_system_prompt\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        -32
+      ],
+      "id": "ae4a6f1c-3b9b-442c-b1ec-c8beaa8e29ac",
+      "name": "DATA FORMATTER"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "whatsapp_user_profiles",
+        "limit": 1,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "=company_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.company_id }}"
+            },
+            {
+              "keyName": "=phone_number",
+              "condition": "eq",
+              "keyValue": "={{ $json.phone_number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -512
+      ],
+      "id": "88a42a9f-d3d7-4611-be10-8ee128fa8769",
+      "name": "CHECK USER",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={{ $json.gemini_api_key }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"contents\": [{\n      \"role\": \"user\",\n      \"parts\": [{\n        \"text\": $json.gemini_prompt\n      }]\n    }],\n    \"generationConfig\": {\n      \"temperature\": 0.7,\n      \"maxOutputTokens\": 2048,\n      \"topP\": 0.95,\n      \"topK\": 40,\n      \"responseMimeType\": \"application/json\"\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6352,
+        -544
+      ],
+      "id": "ec00c3ad-ca88-4f34-a591-e38efd474cdb",
+      "name": "Gemini API (Dynamic)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Context Builder').item.json.evolution_api_url }}message/sendText/{{ $('Context Builder').item.json.instance_name }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Context Builder').item.json.evolution_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Format Response').item.json.phone_number }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Format Response').item.json.ai_response }}"
+            },
+            {
+              "name": "delay",
+              "value": "={{ 1000 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7680,
+        208
+      ],
+      "id": "7bf054d8-2ee9-4971-a8a0-245cf457dd20",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const geminiResponse = $input.first().json;\n\ntry {\n  // Gemini'nin cevabını parse et\n  const responseText = geminiResponse.candidates[0].content.parts[0].text;\n  \n  // JSON'a çevir\n  let aiResponse;\n  try {\n    aiResponse = JSON.parse(responseText);\n  } catch (e) {\n    // Eğer JSON değilse, fallback\n    aiResponse = {\n      detected_language: 'tr',\n      detected_intent: 'general_chat',\n      confidence: 0.5,\n      action: 'general_response',\n      next_state: 'idle',\n      response: responseText,\n      needs_sheets_query: false,\n      needs_calendar_check: false,\n      ready_to_execute: false,\n      collected_data: {},\n      metadata: {}\n    };\n  }\n  \n  // Önceki verileri koru (Context Builder'dan gelen)\n  const previousData = $('Context Builder').first().json;\n  \n  // ============================================================\n  // YENİ VERİ YAPISI\n  // ============================================================\n  \n  return {\n    json: {\n      ...previousData,\n      \n      // AI Response (tam)\n      ai_response: aiResponse,\n      \n      // Intent Detection\n      detected_intent: aiResponse.detected_intent,\n      detected_language: aiResponse.detected_language,\n      intent_confidence: aiResponse.confidence,\n      action: aiResponse.action,\n      \n      // Response\n      bot_response: aiResponse.response || '', // Boş olabilir!\n      \n      // Metadata\n      intent_metadata: aiResponse.metadata || {},\n      \n      // ============================================================\n      // YENİ: CONVERSATION STATE MANAGEMENT\n      // ============================================================\n      \n      next_state: aiResponse.next_state || 'idle',\n      needs_sheets_query: aiResponse.needs_sheets_query || false,\n      needs_calendar_check: aiResponse.needs_calendar_check || false,\n      ready_to_execute: aiResponse.ready_to_execute || false,\n      \n      // Collected data (merge with existing)\n      collected_data: {\n        ...previousData.collected_data,\n        ...aiResponse.collected_data\n      },\n      \n      // ============================================================\n      // GEMINI RAW RESPONSE (DEBUG)\n      // ============================================================\n      gemini_raw_response: geminiResponse\n    }\n  };\n  \n} catch (error) {\n  // Error handling\n  const previousData = $('Context Builder').first().json;\n  \n  return {\n    json: {\n      ...previousData,\n      error: true,\n      error_message: error.message,\n      error_type: 'gemini_parse_error',\n      detected_intent: 'general_chat',\n      next_state: 'idle',\n      bot_response: 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.'\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6608,
+        -544
+      ],
+      "id": "8004210b-e339-47bf-83df-17eb5ca6045c",
+      "name": "Parse Gemini Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rlrnurzpeanloppntldg.supabase.co/rest/v1/rpc/get_primary_sheet_for_intent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "p_company_id",
+              "value": "={{ $('Parse Gemini Response').item.json.company_id }}"
+            },
+            {
+              "name": "p_intent",
+              "value": "price_query"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7216,
+        -1168
+      ],
+      "id": "7723f9cb-1fc4-400f-8366-24a3ca472c14",
+      "name": "Get Primary Sheet"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a90dd80a-3e2c-4e2e-b736-2a3ae87fa47e",
+              "leftValue": "={{ $json[0].sheet_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7520,
+        -1168
+      ],
+      "id": "78b0bf7d-241f-491b-b5e0-0c5f07361e3a",
+      "name": "Check Sheet Exists"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Get Primary Sheet').first().json[0].google_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=={{ $('Get Primary Sheet').first().json[0].worksheet_name }}",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        7856,
+        -1184
+      ],
+      "id": "429992e6-0c22-46c0-b3cb-63644d275032",
+      "name": "Get Sheet Data",
+      "credentials": {
+        "googleApi": {
+          "id": "d9uNsv6UUdhTsb6Z",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aranacak query (AI'dan gelen)\nconst searchQuery = $('Parse Gemini Response').first().json.intent_metadata?.query || '';\nconst sheetData = $('Get Sheet Data').first().json; // Tüm sheet verisi\nconst previousData = $('Parse Gemini Response').first().json;\n\n// Sheet verisi array olarak gelir\nconst rows = Array.isArray(sheetData) ? sheetData : [sheetData];\n\n// Basit arama (case-insensitive)\nconst searchLower = searchQuery.toLowerCase();\n\n// Tüm satırlarda ara\nconst results = rows.filter(row => {\n  // Her kolonun değerini kontrol et\n  return Object.values(row).some(value => {\n    if (value && typeof value === 'string') {\n      return value.toLowerCase().includes(searchLower);\n    }\n    return false;\n  });\n}).slice(0, 5); // İlk 5 sonucu al\n\n// Sonuçları formatla\nlet responseText = '';\nif (results.length > 0) {\n  responseText = `🔍 *${searchQuery}* için ${results.length} sonuç bulundu:\\n\\n`;\n  \n  results.forEach((item, index) => {\n    responseText += `${index + 1}. `;\n    \n    // Tüm kolonları göster (null/undefined olanları atla)\n    Object.entries(item).forEach(([key, value]) => {\n      if (value && key !== 'id') {\n        responseText += `*${key}:* ${value}\\n`;\n      }\n    });\n    \n    responseText += '\\n';\n  });\n} else {\n  responseText = `Üzgünüm, *${searchQuery}* için sonuç bulunamadı. Farklı bir arama terimi dener misiniz?`;\n}\n\nreturn {\n  json: {\n    ...previousData,\n    sheets_results: results,\n    sheets_results_count: results.length,\n    search_query: searchQuery,\n    bot_response: responseText\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8096,
+        -1184
+      ],
+      "id": "9ca9ab84-3fba-40b1-8fe4-57660bdafca4",
+      "name": "Search in Sheets"
+    },
+    {
+      "parameters": {
+        "tableId": "sheets_query_log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $json.company_id }}"
+            },
+            {
+              "fieldId": "sheets_instance_id",
+              "fieldValue": "={{ $('Get Primary Sheet').first().json[0].sheet_id }}"
+            },
+            {
+              "fieldId": "customer_phone",
+              "fieldValue": "={{ $json.phone_number }}"
+            },
+            {
+              "fieldId": "customer_name",
+              "fieldValue": "={{ $json.sender_name }}"
+            },
+            {
+              "fieldId": "query_text",
+              "fieldValue": "={{ $json.search_query }}"
+            },
+            {
+              "fieldId": "query_intent",
+              "fieldValue": "price_query"
+            },
+            {
+              "fieldId": "query_language",
+              "fieldValue": "={{ $json.detected_language }}"
+            },
+            {
+              "fieldId": "results_count",
+              "fieldValue": "={{ $json.sheets_results_count }}"
+            },
+            {
+              "fieldId": "bot_response",
+              "fieldValue": "={{ $json.bot_response }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "completed"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8368,
+        -1184
+      ],
+      "id": "2eff4ee7-1851-4639-9c53-4436a1649548",
+      "name": "Log Sheets Query",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3496b8ba-dc66-4013-97ea-69be22e08c11",
+              "name": "ai_response",
+              "value": "={{ $json.bot_response }}",
+              "type": "string"
+            },
+            {
+              "id": "d6335c8e-1a33-4ea4-b2f6-db695ce0f170",
+              "name": "user_message_id",
+              "value": "={{ $now.toString() + '_user' }}",
+              "type": "string"
+            },
+            {
+              "id": "563f9ad1-3340-4acc-bca8-8c1303980c7e",
+              "name": "bot_message_id",
+              "value": "={{ $now.toString() + '_bot' }}",
+              "type": "string"
+            },
+            {
+              "id": "12465fea-3f17-4a80-bcc6-14bd00452a5e",
+              "name": "session_id",
+              "value": "={{ $('Context Builder').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0ea4fe37-37b8-4c84-b6ef-4a635d4fc152",
+              "name": "user_id",
+              "value": "={{ $('Context Builder').item.json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5501e043-a657-4b8f-9b70-10640aa8720f",
+              "name": "instance_id",
+              "value": "={{ $('Context Builder').item.json.instance_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b438e2fe-088e-4bd1-a18a-b8d46ff46187",
+              "name": "phone_number",
+              "value": "={{ $('Context Builder').item.json.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8608,
+        -1184
+      ],
+      "id": "f924a89c-4328-4640-9fd4-38b8f34c71c6",
+      "name": "Format Response2"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "=bot"
+            },
+            {
+              "fieldId": "sender_name",
+              "fieldValue": "agent"
+            },
+            {
+              "fieldId": "message_body",
+              "fieldValue": "={{ $json.ai_response }}"
+            },
+            {
+              "fieldId": "message_owner",
+              "fieldValue": "bot"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.instance_id }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id.toString() }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id.toString() }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Inject IDs').item.json.company_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8880,
+        -1184
+      ],
+      "id": "2ef8ffb6-e866-4b30-9ad1-f65ba3e3fee6",
+      "name": "Save Bot Response2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "user_profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone_number",
+              "condition": "eq",
+              "keyValue": "={{ $('Context Builder').item.json.phone_number }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "last_seen",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "total_messages",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) + 1 }}"
+            },
+            {
+              "fieldId": "customer_status",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) >= 4 ? \"old\" : \"new\" }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        9392,
+        -1200
+      ],
+      "id": "2658ce3a-4da9-4236-be6d-ffa30581dbee",
+      "name": "Update User Stats2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YWr0zYtmMCKrbiNV",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        9936,
+        -1232
+      ],
+      "id": "79813ef0-dac1-4ed2-85cd-bd28d9530a67",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Context Builder').item.json.evolution_api_url }}message/sendText/{{ $('Context Builder').item.json.instance_name }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Context Builder').item.json.evolution_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Format Response2').item.json.phone_number }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Format Response2').item.json.ai_response }}"
+            },
+            {
+              "name": "delay",
+              "value": "={{ 1000 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        9136,
+        -1200
+      ],
+      "id": "56e5f8fd-7138-48e8-bcd4-09bd8bca941a",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Olası yedek mesajlar (Çeşitlilik artırıldı)\nconst fallbackMessages = [\n    \"Şu an teknik bir yoğunluk nedeniyle yanıtlar biraz gecikebilir. Mesajınız bize ulaştı, size en kısa sürede özel bir yanıtla döneceğim. Anlayışınız için teşekkürler! 🙏\",\n    \"Sistemlerimizde anlık bir kesinti meydana geldi. Bu durum sadece birkaç dakikalık, hemen çözüyoruz! Lütfen biraz bekleyin, size detaylı cevapla geri döneceğim. 🛠️\",\n    \"Allync AI şu an kapasitesinin üstünde çalışıyor! 😅 Mesajınız işleniyor, lütfen birkaç dakika içinde tekrar deneyin. Yoğunluktan dolayı özür dileriz.\",\n    \"Beklenmedik bir sunucu hatasıyla karşılaştık. Sorun tamamen bizden kaynaklanıyor. Lütfen mesajınızı tekrarlayın veya 5 dakika sonra tekrar yazın. Sabrınız için teşekkür ederiz. 😔\",\n    \"Mesajınız başarıyla kaydedildi ancak yapay zeka beynimiz şu an güncelleniyor. 😉 Bu kısa aradan sonra, sorunuza hemen geri döneceğiz!\",\n    \"Ah, teknik bir aksaklık oldu! Konuşmaya kaldığınız yerden devam edebiliriz ama lütfen mesajınızı tekrar gönderin. Hemen çözüme odaklanıyorum. ✨\",\n    \"İletişimde kısa bir kopukluk yaşadık. Lütfen mesajınızın ana hatlarını tekrar yazın, bu sefer kaçırmayacağım! Tekrar denediğiniz için teşekkürler.\",\n    \"Bazen en iyi yapay zekalar bile mola vermek zorunda kalır! ☕️ Size birkaç saniye içinde çok daha net ve faydalı bir yanıt verebilmek için çalışıyorum. Beklettiğim için kusura bakmayın.\",\n    \"Güvenlik duvarlarımızda geçici bir kontrol var. Bu, yanıtımın size ulaşmasını kısa süreliğine engelliyor. Lütfen en geç 1-2 dakika içinde size döneceğimizi bilin.\",\n    \"Sistemsel bir hata nedeniyle isteğinizi şu an tamamlayamıyoruz. Sorunu gidermek için acil müdahale ekibimiz çalışıyor. Lütfen kısa bir süre sonra tekrar deneyiniz. 🚀\"\n  \"İsteğiniz yüksek öncelikli olarak işaretlendi, ancak sistemlerimizde anlık bir yüklenme söz konusu. Bu nedenle yanıt biraz gecikiyor. Lütfen sabrınızı rica ediyoruz. 🙏\",\n    \"Gelişmiş AI motorumuz, isteğinizi daha derinlemesine analiz ediyor ve bu durum kısa bir gecikmeye neden oldu. Size mümkün olan en doğru ve kapsamlı yanıtı getirmek üzereyiz!\",\n    \"Allync AI olarak, size kesintisiz hizmet vermeyi hedefliyoruz ancak şu an kritik bir optimizasyon sürecindeyiz. En yakın zamanda size geri dönüş yapacağız. Kısa bekleyişiniz için teşekkürler. 🛠️\",\n    \"İletişim kanallarımızda beklenmedik bir tıkanıklık oluştu. Teknik ekibimiz bu durumu anında çözmek için çalışıyor. Lütfen kısa bir süre sonra tekrar yazınız. Size hızla ulaşacağız. 🚀\",\n    \"Mesajınızı aldık! Ne yazık ki, anlık teknik aksaklık nedeniyle yanıtı hemen oluşturamıyoruz. Konuşma kaydınız güvende, lütfen yakında tekrar kontrol edin.\",\n    \"Bize ulaştığınız için teşekkürler. Şu anda bir dizi taleple ilgileniyoruz, bu yüzden yanıt süremiz normalin biraz üzerinde. Anlayışınız için minnettarız. 🤗\",\n    \"Olası bir hizmet kesintisini önlemek amacıyla sistemlerimizi kontrol ediyoruz. Bu geçici bir durumdur. Mesajınız bize ulaştı, lütfen beklemede kalın.\",\n    \"Size özel bir yanıt hazırlamak üzereydim ki bir sunucu hatası yaşadık. Başınızdan geçen bu aksaklık için özür dileriz. Lütfen mesajınızı tekrar gönderin, bu sefer kesin yanıt alacaksınız!\",\n    \"Talebiniz çok detaylı! AI beynimiz bu veriyi işlerken kısa bir takılma yaşadı. 😊 Bu esnada bir nefes alın, biz sorununuzu çözmek için yeniden başlatıyoruz.\",\n    \"Dikkat! 🚦 Şu an tüm AI kaynaklarımız sınırda çalışıyor. Mesajınızı sisteme aldık ve sıraya koyduk. Birazdan önceliğinizle ilgilenmeye başlayacağız.\"\n\n];\n\n// Rastgele bir mesaj seçme\nconst randomIndex = Math.floor(Math.random() * fallbackMessages.length);\nconst aiResponse = fallbackMessages[randomIndex];\n\n// Veriyi Gemini'den gelmiş gibi formatla (Format Response düğmesine uyması için)\n// Mevcut verileri koruyun ve sadece ai_response alanını ekleyin\nreturn [{\n    json: {\n        ...$input.item.json,\n        // Format Response düğümünün $json.content.parts[0].text ifadesini okuyabilmesi için gerekli yapı\n        content: { \n            parts: [{\n                text: aiResponse\n            }]\n        }\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7856,
+        -992
+      ],
+      "id": "e1528a69-7abc-4301-bb44-8b8f904876ac",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3496b8ba-dc66-4013-97ea-69be22e08c11",
+              "name": "ai_response",
+              "value": "={{ $json.content?.parts?.[0]?.text || $json.candidates?.[0]?.content?.parts?.[0]?.text }}",
+              "type": "string"
+            },
+            {
+              "id": "d6335c8e-1a33-4ea4-b2f6-db695ce0f170",
+              "name": "user_message_id",
+              "value": "={{ $now.toString() + '_user' }}",
+              "type": "string"
+            },
+            {
+              "id": "563f9ad1-3340-4acc-bca8-8c1303980c7e",
+              "name": "bot_message_id",
+              "value": "={{ $now.toString() + '_bot' }}",
+              "type": "string"
+            },
+            {
+              "id": "12465fea-3f17-4a80-bcc6-14bd00452a5e",
+              "name": "session_id",
+              "value": "={{ $('Context Builder').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0ea4fe37-37b8-4c84-b6ef-4a635d4fc152",
+              "name": "user_id",
+              "value": "={{ $('Context Builder').item.json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5501e043-a657-4b8f-9b70-10640aa8720f",
+              "name": "instance_id",
+              "value": "={{ $('Context Builder').item.json.instance_id }}",
+              "type": "string"
+            },
+            {
+              "id": "98282356-8207-4494-a5b1-4e1f531ca9fd",
+              "name": "sender",
+              "value": "={{ $('Normalize Session ID').item.json.sender }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8064,
+        -992
+      ],
+      "id": "343e6e23-904e-4742-98db-2f8273e73b1c",
+      "name": "Format Response3"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Allync-Whatsappweb",
+        "remoteJid": "={{ $json.sender }}",
+        "messageText": "={{ $('Format Response3').item.json.ai_response }}",
+        "options_message": {
+          "delay": 1000
+        }
+      },
+      "type": "n8n-nodes-evolution-api-en.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        8496,
+        -992
+      ],
+      "id": "e8e8973f-d63b-4f73-b60f-f62629b7469c",
+      "name": "Evolution API - Send Text",
+      "credentials": {
+        "evolutionApi": {
+          "id": "wFhBeMvsjPDX1CnA",
+          "name": "Allync-Qatar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "user_profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone_number",
+              "condition": "eq",
+              "keyValue": "={{ $('Context Builder').item.json.phone_number }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "last_seen",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "total_messages",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) + 1 }}"
+            },
+            {
+              "fieldId": "customer_status",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) >= 4 ? \"old\" : \"new\" }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8688,
+        -992
+      ],
+      "id": "d32b9a43-83dd-4222-b6d5-e2f0c7beca5e",
+      "name": "Update User Stats3",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YWr0zYtmMCKrbiNV",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "whatsapp_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Context Builder').item.json.session_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "conversation_state",
+              "fieldValue": "idle"
+            },
+            {
+              "fieldId": "collected_data",
+              "fieldValue": "={{ JSON.stringify({}) }}"
+            },
+            {
+              "fieldId": "last_intent",
+              "fieldValue": "error"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8896,
+        -992
+      ],
+      "id": "d143ae63-f834-4de4-a879-283ede34e831",
+      "name": "Update Session3",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        9104,
+        -992
+      ],
+      "id": "1577e88e-5ba8-49f9-8096-3091563697f2",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rlrnurzpeanloppntldg.supabase.co/rest/v1/rpc/check_privileged_user",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=={{\n  {\n    \"p_company_id\": $json.company_id,\n    \"p_phone_number\": $json.phone_number\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        -528
+      ],
+      "id": "a806abeb-0ad4-45b6-8a57-d5b5c3639caf",
+      "name": "Check Privileged User",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.needs_sheets_query }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "959a01a0-536e-4d6e-9374-47ae537bcf5b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sheets Query"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9e68b5e3-1e86-4922-8bb7-dda5c20cc25a",
+                    "leftValue": "={{ $json.needs_calendar_check }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Calendar Check"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bd380948-717d-4cbc-acb9-3b1808f51a97",
+                    "leftValue": "={{ $json.bot_response }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Direct Response"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        6864,
+        -560
+      ],
+      "id": "b3a3b25b-e44c-4879-8b20-c0d93e809cfb",
+      "name": "ACTION ROUTER"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "whatsapp_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "=={{ $('Context Builder').item.json.session_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "conversation_state",
+              "fieldValue": "={{ $('Parse Gemini Response').item.json.next_state }}"
+            },
+            {
+              "fieldId": "collected_data",
+              "fieldValue": "={{ JSON.stringify($('Parse Gemini Response').item.json.collected_data) }}"
+            },
+            {
+              "fieldId": "last_intent",
+              "fieldValue": "={{ $('Parse Gemini Response').item.json.detected_intent }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        9664,
+        -1216
+      ],
+      "id": "a27411cb-5ef3-49d4-b1b6-29f20fcfa452",
+      "name": "Update Session2",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "=bot"
+            },
+            {
+              "fieldId": "sender_name",
+              "fieldValue": "agent"
+            },
+            {
+              "fieldId": "message_body",
+              "fieldValue": "={{ $json.ai_response }}"
+            },
+            {
+              "fieldId": "message_owner",
+              "fieldValue": "bot"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.instance_id }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id.toString() }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id.toString() }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Inject IDs').item.json.company_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8272,
+        -992
+      ],
+      "id": "4a8f4207-1271-4cfd-8770-52b628b7e657",
+      "name": "Save Bot Response3",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// BUILD GEMINI PROMPT - PROFESYONEL VERSİYON + ENTEGRASYON KONTROLÜ\n// ============================================================\n\nconst data = $input.first().json;\n\n// ============================================================\n// ENTEGRASYON DURUM KONTROLÜ\n// ============================================================\n\nconst sheetsEnabled = data.sheets_enabled || false;\nconst calendarEnabled = data.calendar_enabled || false;\n\n// ============================================================\n// VIP USER KONTROLÜ\n// ============================================================\n\nlet userTypeSection = '';\n\nif (data.is_privileged_user) {\n  const vipFeatures = data.privileged_allowed_features || {};\n  \n  userTypeSection = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔐 YETKİLİ KULLANICI\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSeviye: ${data.privilege_level || 'owner'}\nHitap: ${data.greeting_name || 'Sayın Yetkili'}\n\nİZİN VERİLEN ÖZEL BİLGİLER:\n${vipFeatures.view_stock ? '✅' : '❌'} Stok bilgisi görebilir\n${vipFeatures.view_all_appointments ? '✅' : '❌'} Tüm randevuları görebilir\n${vipFeatures.view_reports ? '✅' : '❌'} Raporlara erişebilir\n${vipFeatures.access_customer_data ? '✅' : '❌'} Müşteri verilerine erişebilir\n\n⚠️ KRİTİK: Bu kullanıcıya DETAYLI bilgi ver!\nÖrnek: \"Evet ${data.greeting_name || 'Sayın Yetkili'}, iPhone 15'ten 10 adet stokumuz var.\"\n`;\n} else {\n  userTypeSection = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 NORMAL MÜŞTERİ\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n⚠️ KISITLAMALAR:\n❌ Stok adedi paylaşılmaz\n❌ Tüm randevu listesi gösterilmez\n❌ Hassas bilgiler gizlenir\n\nÖrnek: \"Stok bilgisi için lütfen mağazamızla iletişime geçebilirsiniz.\"\n`;\n}\n\n// ============================================================\n// ALLOWED FEATURES (ENTEGRASYON DURUMU DAHİL)\n// ============================================================\n\nconst features = data.allowed_features || {};\n\nconst featuresSection = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nİZİN VERİLEN ÖZELLİKLER VE ENTEGRASYON DURUMU\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n${features.general_chat ? '✅' : '❌'} Genel Sohbet\n${features.price_query && sheetsEnabled ? '✅' : features.price_query ? '⚠️' : '❌'} Fiyat Sorgusu ${!sheetsEnabled && features.price_query ? '(Google Sheets bağlı değil - manuel yönlendir!)' : sheetsEnabled ? '(Google Sheets aktif)' : ''}\n${features.appointment && calendarEnabled ? '✅' : features.appointment ? '⚠️' : '❌'} Randevu Alma ${!calendarEnabled && features.appointment ? '(Google Calendar bağlı değil - manuel yönlendir!)' : calendarEnabled ? '(Google Calendar aktif)' : ''}\n${features.product_info && sheetsEnabled ? '✅' : features.product_info ? '⚠️' : '❌'} Ürün Bilgisi ${!sheetsEnabled && features.product_info ? '(Google Sheets bağlı değil - manuel yönlendir!)' : sheetsEnabled ? '(Google Sheets aktif)' : ''}\n${features.stock_check && sheetsEnabled ? '✅' : features.stock_check ? '⚠️' : '❌'} Stok Kontrolü ${!sheetsEnabled && features.stock_check ? '(Google Sheets bağlı değil - manuel yönlendir!)' : ''}\n${features.complaint_handling ? '✅' : '❌'} Şikayet Yönetimi\n\n⚠️ KRİTİK ENTEGRASYON KURALLARI:\n${!sheetsEnabled ? '🔴 GOOGLE SHEETS BAĞLI DEĞİL! Fiyat/Stok/Ürün sorularında:\\n   → Kibarca reddet: \"Bu özellik şu an aktif değil, lütfen bizimle direkt iletişime geçin\"\\n   → needs_sheets_query: FALSE yap\\n   → response alanını DOLDUR' : ''}\n${!calendarEnabled ? '🔴 GOOGLE CALENDAR BAĞLI DEĞİL! Randevu taleplerinde:\\n   → Kibarca reddet: \"Randevu sistemi şu an aktif değil, lütfen bizimle direkt iletişime geçin\"\\n   → needs_calendar_check: FALSE yap\\n   → response alanını DOLDUR' : ''}\n\n${data.stay_on_topic ? '⚠️ SADECE İŞLE İLGİLİ KONULARA CEVAP VER!' : ''}\n`;\n\n// ============================================================\n// DİL AYARLARI\n// ============================================================\n\nconst languages = data.supported_languages || ['tr', 'en'];\n\nconst languageSection = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDİL AYARLARI\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nDesteklenen: ${languages.join(', ')}\nVarsayılan: ${data.default_language || 'tr'}\n\n⚠️ Kullanıcının dilini tespit et ve AYNI DİLDE cevap ver!\n`;\n\n// ============================================================\n// CONVERSATION STATE\n// ============================================================\n\nconst stateSection = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCONVERSATION STATE (MULTI-TURN)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nŞu Anki Durum: ${data.conversation_state || 'idle'}\nSon Intent: ${data.last_intent || 'yok'}\nToplanan Veriler: ${JSON.stringify(data.collected_data || {})}\n\nSTATE AÇIKLAMALARI:\n📌 \"idle\" → Normal konuşma, intent tespit et\n📌 \"awaiting_product_name\" → Kullanıcı ürün ismi veriyor\n📌 \"awaiting_appointment_date\" → Kullanıcı tarih veriyor\n📌 \"awaiting_appointment_time\" → Kullanıcı saat veriyor\n📌 \"awaiting_confirmation\" → Onay bekleniyor\n📌 \"collecting_appointment_details\" → İsim/sebep toplanıyor\n`;\n\n// ============================================================\n// INTENT TİPLERİ (ENTEGRASYON DURUMUNA GÖRE)\n// ============================================================\n\nconst intentSection = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nINTENT TİPLERİ VE DAVRANIŞLAR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📌 \"general_chat\": Normal sohbet, selamlaşma, teşekkür\n   → SEN DOĞRUDAN CEVAP VER\n   → next_state: \"idle\"\n   → needs_sheets_query: false\n   → needs_calendar_check: false\n\n📌 \"price_query\": Fiyat sorgusu\n   \n   ${!sheetsEnabled ? \n   `🔴 GOOGLE SHEETS YOK!\n   → response: \"Fiyat bilgisi için lütfen bizimle direkt iletişime geçebilirsiniz.\"\n   → needs_sheets_query: FALSE\n   → next_state: \"idle\"` \n   : \n   `✅ GOOGLE SHEETS AKTİF\n   \n   EĞER state=\"idle\" ve ürün adı YOK:\n   → response: \"Tabii, hangi ürün hakkında bilgi almak istersiniz?\"\n   → next_state: \"awaiting_product_name\"\n   → needs_sheets_query: FALSE\n   \n   EĞER state=\"awaiting_product_name\" VEYA ürün adı BELLİ:\n   → response: \"\" (BOŞ!)\n   → metadata.query: \"ürün adı\"\n   → needs_sheets_query: TRUE\n   → next_state: \"idle\"`\n   }\n\n📌 \"appointment\": Randevu talebi\n   \n   ${!calendarEnabled ? \n   `🔴 GOOGLE CALENDAR YOK!\n   → response: \"Randevu için lütfen bizimle direkt iletişime geçebilirsiniz.\"\n   → needs_calendar_check: FALSE\n   → next_state: \"idle\"` \n   : \n   `✅ GOOGLE CALENDAR AKTİF\n   \n   EĞER state=\"idle\" ve tarih/saat YOK:\n   → response: \"Tabii, hangi tarih ve saatte randevu almak istersiniz?\"\n   → next_state: \"awaiting_appointment_date\"\n   → needs_calendar_check: FALSE\n   \n   EĞER tarih VAR ama saat YOK:\n   → response: \"Hangi saatte randevu istersiniz?\"\n   → next_state: \"awaiting_appointment_time\"\n   → needs_calendar_check: FALSE\n   \n   EĞER hem tarih hem saat VAR:\n   → response: \"\" (BOŞ!)\n   → metadata.date: \"YYYY-MM-DD\"\n   → metadata.time: \"HH:MM\"\n   → needs_calendar_check: TRUE\n   → next_state: \"awaiting_confirmation\"`\n   }\n\n📌 \"product_info\": Ürün bilgisi\n   → price_query ile AYNI mantık\n\n📌 \"complaint\": Şikayet\n   → SEN DOĞRUDAN CEVAP VER\n   → Destek ekibine yönlendir\n   → next_state: \"idle\"\n`;\n\n// ============================================================\n// TAM PROMPT OLUŞTUR\n// ============================================================\n\nconst fullPrompt = `${data.ai_system_prompt || 'Sen yardımcı bir AI asistansın.'}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nŞİRKET BİLGİLERİ\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nŞirket: ${data.company_name || 'Bilinmiyor'}\nKarşılama: ${data.company_greeting || 'Merhaba!'}\nKişilik: ${data.personality || 'friendly'}\n\n${userTypeSection}\n\n${featuresSection}\n\n${languageSection}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTARİH VE ZAMAN\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nTarih: ${data.current_date || 'Bilinmiyor'}\nGün: ${data.day_of_week || 'Bilinmiyor'}\nSaat: ${data.current_hour || '?'}:${data.current_minute || '?'}\nZaman: ${data.time_of_day || 'Bilinmiyor'}\n\n${stateSection}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nKONUŞMA GEÇMİŞİ (SON 10 MESAJ)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n${data.context || '(Henüz mesaj yok)'}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSON KULLANICI MESAJI (CEVAP VERECEĞİN)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n${data.current_message}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTALİMATLAR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Kullanıcı mesajını analiz et\n2. Dili tespit et\n3. Conversation state'e dikkat et\n4. Intent'i belirle\n5. Entegrasyon durumuna göre davran\n\n${intentSection}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCEVAP FORMATI (SADECE JSON!)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n{\n  \"detected_language\": \"tr\",\n  \"detected_intent\": \"general_chat\",\n  \"confidence\": 0.85,\n  \"action\": \"general_response\",\n  \"next_state\": \"idle\",\n  \"response\": \"Kullanıcıya söylenecek (general_chat veya reddetme için DOLU, sheets/calendar için BOŞ)\",\n  \"needs_sheets_query\": false,\n  \"needs_calendar_check\": false,\n  \"ready_to_execute\": false,\n  \"collected_data\": {},\n  \"metadata\": {}\n}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nKRİTİK KURALLAR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n✅ SADECE JSON DÖNDÜR!\n✅ Sheets/Calendar yoksa needs_*_query=FALSE + kibarca reddet\n✅ VIP user'a detaylı bilgi ver\n✅ State'e göre davran\n✅ response: general_chat veya reddetme için DOLU, sistem çağrıları için BOŞ\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;\n\n// ============================================================\n// RETURN\n// ============================================================\n\nreturn {\n  json: {\n    ...data,\n    gemini_prompt: fullPrompt,\n    \n    // Debug bilgileri\n    sheets_enabled: sheetsEnabled,\n    calendar_enabled: calendarEnabled,\n    prompt_length: fullPrompt.length,\n    prompt_generated_at: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6080,
+        -544
+      ],
+      "id": "d909b617-4680-4015-acfd-e2d67a0dd5c6",
+      "name": "Build Gemini Prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rlrnurzpeanloppntldg.supabase.co/rest/v1/rpc/get_primary_calendar_for_intent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "p_company_id",
+              "value": "={{ $('Parse Gemini Response').item.json.company_id }}"
+            },
+            {
+              "name": "p_intent",
+              "value": "appointment"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7200,
+        -544
+      ],
+      "id": "a4d86274-ab4f-43fd-ae91-816e93dc9e9e",
+      "name": "Get Primary Calendar"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a90dd80a-3e2c-4e2e-b736-2a3ae87fa47e",
+              "leftValue": "={{ $json[0].google_calendar_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7440,
+        -544
+      ],
+      "id": "b3c6986c-2764-4371-9851-2dfb4fc83f81",
+      "name": "Check Calendar Exists"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calendar bilgilerini parse et\nconst calendarData = $input.first().json[0];\nconst geminiData = $('Parse Gemini Response').first().json;\n\n// Kullanıcıdan toplanan bilgiler\nconst requestedDate = geminiData.intent_metadata?.date || geminiData.collected_data?.appointment_date;\nconst requestedTime = geminiData.intent_metadata?.time || geminiData.collected_data?.appointment_time;\nconst appointmentType = geminiData.intent_metadata?.appointment_type || 'appointment';\nconst customerName = geminiData.collected_data?.customer_name || geminiData.sender_name;\nconst reason = geminiData.collected_data?.reason || 'Randevu talebi';\n\n// Tarih ve saat formatla\nconst dateTime = `${requestedDate}T${requestedTime}:00`;\nconst startDateTime = new Date(dateTime).toISOString();\n\n// Bitiş zamanı (varsayılan 1 saat)\nconst endDateTime = new Date(new Date(dateTime).getTime() + 60 * 60 * 1000).toISOString();\n\nreturn {\n  json: {\n    ...geminiData,\n    \n    // Calendar bilgileri\n    calendar_id: calendarData.calendar_id,\n    google_calendar_id: calendarData.google_calendar_id,\n    calendar_name: calendarData.calendar_name,\n    timezone: calendarData.timezone || 'Europe/Istanbul',\n    \n    // Randevu bilgileri\n    requested_date: requestedDate,\n    requested_time: requestedTime,\n    start_datetime: startDateTime,\n    end_datetime: endDateTime,\n    appointment_type: appointmentType,\n    customer_name: customerName,\n    reason: reason,\n    \n    // Event için\n    event_summary: `${appointmentType}: ${customerName}`,\n    event_description: `Müşteri: ${customerName}\\nTelefon: ${geminiData.phone_number}\\nSebep: ${reason}`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7760,
+        -560
+      ],
+      "id": "a4d06b85-5af3-42ca-9379-f36a51bd5a1b",
+      "name": "Parse Calendar Info"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/calendar/v3/calendars/{{ encodeURIComponent($json.google_calendar_id) }}/events?timeMin={{ encodeURIComponent($json.start_datetime) }}&timeMax={{ encodeURIComponent($json.end_datetime) }}&singleEvents=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "timeMin",
+              "value": "={{ $json.start_datetime }}"
+            },
+            {
+              "name": "timeMax",
+              "value": "={{ $json.end_datetime }}"
+            },
+            {
+              "name": "SingleEvents",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        8016,
+        -560
+      ],
+      "id": "06cb6d58-d536-4a2a-be85-6c2ae09ea395",
+      "name": "Check Calendar Availability",
+      "credentials": {
+        "googleApi": {
+          "id": "d9uNsv6UUdhTsb6Z",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "84e6c59f-3ded-4b26-ba1b-5fd4f5b20729",
+              "leftValue": "={{ $json.items }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        8336,
+        -560
+      ],
+      "id": "58cfcba1-0d66-4375-8d97-3c32a4aa6114",
+      "name": "Is Available?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/calendar/v3/calendars/{{ encodeURIComponent($('Parse Calendar Info').item.json.google_calendar_id) }}/events",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"summary\": $('Parse Calendar Info').item.json.event_summary,\n    \"description\": $('Parse Calendar Info').item.json.event_description,\n    \"start\": {\n      \"dateTime\": $('Parse Calendar Info').item.json.start_datetime,\n      \"timeZone\": $('Parse Calendar Info').item.json.timezone\n    },\n    \"end\": {\n      \"dateTime\": $('Parse Calendar Info').item.json.end_datetime,\n      \"timeZone\": $('Parse Calendar Info').item.json.timezone\n    },\n    \"attendees\": [\n      {\n        \"email\": $('Parse Calendar Info').item.json.phone_number + \"@whatsapp.com\",\n        \"displayName\": $('Parse Calendar Info').item.json.customer_name\n      }\n    ],\n    \"reminders\": {\n      \"useDefault\": false,\n      \"overrides\": [\n        { \"method\": \"popup\", \"minutes\": 30 }\n      ]\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        8592,
+        -672
+      ],
+      "id": "26ca9572-78a3-4e3d-9380-57b27acbf072",
+      "name": "HTTP Request2",
+      "credentials": {
+        "googleApi": {
+          "id": "d9uNsv6UUdhTsb6Z",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "appointment_requests",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.company_id }}"
+            },
+            {
+              "fieldId": "customer_phone",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.phone_number }}"
+            },
+            {
+              "fieldId": "customer_name",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.customer_name }}"
+            },
+            {
+              "fieldId": "whatsapp_session_id",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.session_id }}"
+            },
+            {
+              "fieldId": "whatsapp_customer_id",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.user_id }}"
+            },
+            {
+              "fieldId": "requested_date",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.requested_date }}"
+            },
+            {
+              "fieldId": "requested_time",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.requested_time }}"
+            },
+            {
+              "fieldId": "appointment_type",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.appointment_type }}"
+            },
+            {
+              "fieldId": "appointment_reason",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.reason }}"
+            },
+            {
+              "fieldId": "duration_minutes",
+              "fieldValue": "=60"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "confirmed"
+            },
+            {
+              "fieldId": "google_event_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "calendar_instance_id",
+              "fieldValue": "={{ $('Parse Calendar Info').item.json.calendar_id }}"
+            },
+            {
+              "fieldId": "created_via",
+              "fieldValue": "whatsapp"
+            },
+            {
+              "fieldId": "ai_parsed_data",
+              "fieldValue": "={{ JSON.stringify($('Parse Calendar Info').item.json.collected_data) }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        8880,
+        -672
+      ],
+      "id": "ad9f860d-e57e-47d9-920f-e760482c54bc",
+      "name": "Save Appointment",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const calendarData = $('Parse Calendar Info').first().json;\nconst eventData = $('Create Calendar Event').first().json;\n\nconst date = new Date(calendarData.start_datetime);\nconst dateStr = date.toLocaleDateString('tr-TR', { \n  day: 'numeric', \n  month: 'long', \n  year: 'numeric' \n});\nconst timeStr = date.toLocaleTimeString('tr-TR', { \n  hour: '2-digit', \n  minute: '2-digit' \n});\n\nconst successMessage = `✅ Randevunuz oluşturuldu!\n\n📅 Tarih: ${dateStr}\n🕐 Saat: ${timeStr}\n📍 Randevu Türü: ${calendarData.appointment_type}\n\nRandevunuz onaylanmıştır. 30 dakika öncesinden hatırlatma alacaksınız.\n\nTeşekkür ederiz! 🙏`;\n\nreturn {\n  json: {\n    ...calendarData,\n    bot_response: successMessage,\n    event_id: eventData.id,\n    event_link: eventData.htmlLink\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9168,
+        -672
+      ],
+      "id": "a15c15b2-ff27-4bc4-ab0c-1b687fda9eec",
+      "name": "Format Success Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "const calendarData = $('Parse Calendar Info').first().json;\nconst busyEvents = $('Check Calendar Availability').first().json.items || [];\n\nconst date = new Date(calendarData.start_datetime);\nconst dateStr = date.toLocaleDateString('tr-TR', { \n  day: 'numeric', \n  month: 'long' \n});\nconst timeStr = date.toLocaleTimeString('tr-TR', { \n  hour: '2-digit', \n  minute: '2-digit' \n});\n\nconst unavailableMessage = `❌ Üzgünüm, ${dateStr} tarihinde saat ${timeStr} için randevu müsait değil.\n\nLütfen farklı bir tarih veya saat belirtin.\n\nÖrnek: \"Yarın saat 14:00\" veya \"20 Kasım saat 10:00\"`;\n\nreturn {\n  json: {\n    ...calendarData,\n    bot_response: unavailableMessage,\n    next_state: 'awaiting_appointment_date'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8608,
+        -432
+      ],
+      "id": "1626e655-7124-4281-b08b-faacd25dbe5c",
+      "name": "Slot Unavaiblable Response"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        9376,
+        -528
+      ],
+      "id": "4c7b3a31-38c6-4e87-82b5-d147b0296a30",
+      "name": "Merge Calendar Responses"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8689ffb-0baf-43bd-b430-ab58b9b0c89e",
+              "name": "ai_response",
+              "value": "={{ $json.bot_response }}",
+              "type": "string"
+            },
+            {
+              "id": "070fd0ff-8693-480f-8aa4-1592eead46a1",
+              "name": "user_message_id",
+              "value": "={{ $now.toString() + '_user' }}",
+              "type": "string"
+            },
+            {
+              "id": "ebf8a6af-f34e-41ce-a8ec-bff005182480",
+              "name": "bot_message_id",
+              "value": "={{ $now.toString() + '_bot' }}",
+              "type": "string"
+            },
+            {
+              "id": "e1d7c46b-91e9-49d4-b0b9-e507957ae72f",
+              "name": "session_id",
+              "value": "={{ $('Context Builder').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "4c7e5517-aac3-4a3f-bd83-1322fcdfa599",
+              "name": "user_id",
+              "value": "={{ $('Context Builder').item.json.user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "cf9769ee-1600-4f85-bc28-640a5e541afc",
+              "name": "instance_id",
+              "value": "={{ $('Context Builder').item.json.instance_id }}",
+              "type": "string"
+            },
+            {
+              "id": "05ef1d33-ef6e-4d9d-a096-01d8e4d2f35c",
+              "name": "phone_number",
+              "value": "={{ $('Context Builder').item.json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "b93cd87a-0916-416f-a3e7-3ed545b736fd",
+              "name": "company_id",
+              "value": "={{ $('Context Builder').item.json.company_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9584,
+        -528
+      ],
+      "id": "3bfa8c64-4dfd-4173-8c31-b7b354108dfd",
+      "name": "Format Calendar Response"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sender",
+              "fieldValue": "=bot"
+            },
+            {
+              "fieldId": "sender_name",
+              "fieldValue": "agent"
+            },
+            {
+              "fieldId": "message_body",
+              "fieldValue": "={{ $json.ai_response }}"
+            },
+            {
+              "fieldId": "message_owner",
+              "fieldValue": "bot"
+            },
+            {
+              "fieldId": "message_type",
+              "fieldValue": "text"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.instance_id }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.user_id.toString() }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id.toString() }}"
+            },
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Inject IDs').item.json.company_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        9792,
+        -528
+      ],
+      "id": "4b9e573a-b99e-4b8b-8182-4814a464fd9d",
+      "name": "Save Calendar Bot Response",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Context Builder').item.json.evolution_api_url }}message/sendText/{{ $('Context Builder').item.json.instance_name }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Context Builder').item.json.evolution_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Format Response2').item.json.phone_number }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Format Response2').item.json.ai_response }}"
+            },
+            {
+              "name": "delay",
+              "value": "={{ 1000 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10048,
+        -544
+      ],
+      "id": "58979999-58d6-4deb-94f1-c5d77785ee55",
+      "name": "Send Calendar Response"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "user_profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone_number",
+              "condition": "eq",
+              "keyValue": "={{ $('Context Builder').item.json.phone_number }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "last_seen",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "total_messages",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) + 1 }}"
+            },
+            {
+              "fieldId": "customer_status",
+              "fieldValue": "={{ parseInt($json.total_messages || 0) >= 4 ? \"old\" : \"new\" }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        10304,
+        -544
+      ],
+      "id": "06d8b9ed-019e-4e35-accf-0d7772e474b5",
+      "name": "Update Calendar User Stats",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YWr0zYtmMCKrbiNV",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        10848,
+        -576
+      ],
+      "id": "ac28e55c-3d7c-4540-9b48-3b3f863852ed",
+      "name": "Calendar Flow Complete"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "whatsapp_sessions",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "=={{ $('Context Builder').item.json.session_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "context",
+              "fieldValue": "={{ JSON.stringify({ last_message: $json.ai_response, user_name: $json.sender_name }) }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "is_active",
+              "fieldValue": "=true"
+            },
+            {
+              "fieldId": "session_end",
+              "fieldValue": "={{ new Date(Date.now() + 1800000).toISOString() }}"
+            },
+            {
+              "fieldId": "conversation_state",
+              "fieldValue": "={{ $('Format Calendar Response').item.json.next_state || 'idle' }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        10576,
+        -560
+      ],
+      "id": "bdf693d6-de1f-4883-8ffe-0b2015ffc0b1",
+      "name": "Update Calendar Session",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const geminiData = $('Parse Gemini Response').first().json;\n\nconst unavailableMessage = `Üzgünüm, randevu sistemi şu an aktif değil.\n\nRandevu almak için lütfen bizimle direkt iletişime geçebilirsiniz:\n📞 Telefon: [TELEFON]\n📧 Email: [EMAIL]\n\nSize yardımcı olmak için buradayız! 🙏`;\n\nreturn {\n  json: {\n    ...geminiData,\n    bot_response: unavailableMessage,\n    next_state: 'idle'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7920,
+        -224
+      ],
+      "id": "e98c6def-e1db-4a76-86b8-7de58191c256",
+      "name": "Calendar Not Available Reponse"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook_Listener": {
+      "main": [
+        [
+          {
+            "node": "FILTER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FILTER": {
+      "main": [
+        [
+          {
+            "node": "Get Company & Instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "CHECK USER",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create User": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Prepare Session Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session Validator": {
+      "main": [
+        [
+          {
+            "node": "IF2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Session": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        []
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Normalize Session ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Messages": {
+      "main": [
+        [
+          {
+            "node": "Inject IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Context Builder": {
+      "main": [
+        [
+          {
+            "node": "Build Gemini Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Save Bot Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save User Message": {
+      "main": [
+        [
+          {
+            "node": "Get Last Messages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Save Bot Response": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Update User Stats": {
+      "main": [
+        [
+          {
+            "node": "Update Session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Code: Count_Items": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Session Check": {
+      "main": [
+        [
+          {
+            "node": "Debug Session Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Close Old Sessions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Update Session": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Close Old Sessions": {
+      "main": [
+        [
+          {
+            "node": "Create New Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Session ID": {
+      "main": [
+        [
+          {
+            "node": "Save User Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug Session Input": {
+      "main": [
+        [
+          {
+            "node": "Check Active Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug Session output": {
+      "main": [
+        [
+          {
+            "node": "Session Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Active Session": {
+      "main": [
+        [
+          {
+            "node": "Debug Session output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inject IDs": {
+      "main": [
+        [
+          {
+            "node": "Context Builder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Company & Instance": {
+      "main": [
+        [
+          {
+            "node": "DATA FORMATTER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DATA FORMATTER": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CHECK USER": {
+      "main": [
+        [
+          {
+            "node": "Check Privileged User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Gemini API (Dynamic)": {
+      "main": [
+        [
+          {
+            "node": "Parse Gemini Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Update User Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Gemini Response": {
+      "main": [
+        [
+          {
+            "node": "ACTION ROUTER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Primary Sheet": {
+      "main": [
+        [
+          {
+            "node": "Check Sheet Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Sheet Exists": {
+      "main": [
+        [
+          {
+            "node": "Get Sheet Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Sheets": {
+      "main": [
+        [
+          {
+            "node": "Log Sheets Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Sheets Query": {
+      "main": [
+        [
+          {
+            "node": "Format Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Sheet Data": {
+      "main": [
+        [
+          {
+            "node": "Search in Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response2": {
+      "main": [
+        [
+          {
+            "node": "Save Bot Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Bot Response2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update User Stats2": {
+      "main": [
+        [
+          {
+            "node": "Update Session2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Update User Stats2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Format Response3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response3": {
+      "main": [
+        [
+          {
+            "node": "Save Bot Response3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API - Send Text": {
+      "main": [
+        [
+          {
+            "node": "Update User Stats3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update User Stats3": {
+      "main": [
+        [
+          {
+            "node": "Update Session3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Session3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Privileged User": {
+      "main": [
+        [
+          {
+            "node": "Code: Count_Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ACTION ROUTER": {
+      "main": [
+        [
+          {
+            "node": "Get Primary Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Primary Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Update Session2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Bot Response3": {
+      "main": [
+        [
+          {
+            "node": "Evolution API - Send Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Gemini Prompt": {
+      "main": [
+        [
+          {
+            "node": "Gemini API (Dynamic)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Primary Calendar": {
+      "main": [
+        [
+          {
+            "node": "Check Calendar Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Calendar Exists": {
+      "main": [
+        [
+          {
+            "node": "Parse Calendar Info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calendar Not Available Reponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Calendar Info": {
+      "main": [
+        [
+          {
+            "node": "Check Calendar Availability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Calendar Availability": {
+      "main": [
+        [
+          {
+            "node": "Is Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Available?": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slot Unavaiblable Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Save Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Appointment": {
+      "main": [
+        [
+          {
+            "node": "Format Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Success Response": {
+      "main": [
+        [
+          {
+            "node": "Merge Calendar Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slot Unavaiblable Response": {
+      "main": [
+        [
+          {
+            "node": "Merge Calendar Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Calendar Responses": {
+      "main": [
+        [
+          {
+            "node": "Format Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Calendar Response": {
+      "main": [
+        [
+          {
+            "node": "Save Calendar Bot Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Calendar Bot Response": {
+      "main": [
+        [
+          {
+            "node": "Send Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Calendar Response": {
+      "main": [
+        [
+          {
+            "node": "Update Calendar User Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Calendar User Stats": {
+      "main": [
+        [
+          {
+            "node": "Update Calendar Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Calendar Session": {
+      "main": [
+        [
+          {
+            "node": "Calendar Flow Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Not Available Reponse": {
+      "main": [
+        [
+          {
+            "node": "Format Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "28ee39da-c8d7-4acb-8aac-0c8708fb27f3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91b61f20b1f62ceb4a025525cffd2b8f60a63fe491bea802b772f51ff6d4bab9"
+  },
+  "id": "E6SeuSO9oifejqo1",
+  "tags": []
+}
