@@ -914,6 +914,48 @@ $$;
 ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."increment_analytics"("p_company_id" "uuid", "p_date" "date", "p_total_messages" integer DEFAULT 0, "p_user_messages" integer DEFAULT 0, "p_bot_messages" integer DEFAULT 0, "p_unique_users" integer DEFAULT 0, "p_intent_general_chat" integer DEFAULT 0, "p_intent_price_query" integer DEFAULT 0, "p_intent_appointment" integer DEFAULT 0, "p_intent_product_info" integer DEFAULT 0, "p_intent_complaint" integer DEFAULT 0, "p_sheets_queries" integer DEFAULT 0, "p_sheets_success" integer DEFAULT 0, "p_calendar_bookings" integer DEFAULT 0, "p_calendar_success" integer DEFAULT 0, "p_gemini_errors" integer DEFAULT 0, "p_sheets_errors" integer DEFAULT 0, "p_calendar_errors" integer DEFAULT 0) RETURNS "void"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+  INSERT INTO conversation_analytics (
+    company_id, date, total_messages, user_messages, bot_messages, unique_users,
+    intent_general_chat, intent_price_query, intent_appointment, intent_product_info, intent_complaint,
+    sheets_queries, sheets_success, calendar_bookings, calendar_success,
+    gemini_errors, sheets_errors, calendar_errors
+  )
+  VALUES (
+    p_company_id, p_date, p_total_messages, p_user_messages, p_bot_messages, p_unique_users,
+    p_intent_general_chat, p_intent_price_query, p_intent_appointment, p_intent_product_info, p_intent_complaint,
+    p_sheets_queries, p_sheets_success, p_calendar_bookings, p_calendar_success,
+    p_gemini_errors, p_sheets_errors, p_calendar_errors
+  )
+  ON CONFLICT (company_id, date)
+  DO UPDATE SET
+    total_messages = conversation_analytics.total_messages + EXCLUDED.total_messages,
+    user_messages = conversation_analytics.user_messages + EXCLUDED.user_messages,
+    bot_messages = conversation_analytics.bot_messages + EXCLUDED.bot_messages,
+    unique_users = GREATEST(conversation_analytics.unique_users, EXCLUDED.unique_users),
+    intent_general_chat = conversation_analytics.intent_general_chat + EXCLUDED.intent_general_chat,
+    intent_price_query = conversation_analytics.intent_price_query + EXCLUDED.intent_price_query,
+    intent_appointment = conversation_analytics.intent_appointment + EXCLUDED.intent_appointment,
+    intent_product_info = conversation_analytics.intent_product_info + EXCLUDED.intent_product_info,
+    intent_complaint = conversation_analytics.intent_complaint + EXCLUDED.intent_complaint,
+    sheets_queries = conversation_analytics.sheets_queries + EXCLUDED.sheets_queries,
+    sheets_success = conversation_analytics.sheets_success + EXCLUDED.sheets_success,
+    calendar_bookings = conversation_analytics.calendar_bookings + EXCLUDED.calendar_bookings,
+    calendar_success = conversation_analytics.calendar_success + EXCLUDED.calendar_success,
+    gemini_errors = conversation_analytics.gemini_errors + EXCLUDED.gemini_errors,
+    sheets_errors = conversation_analytics.sheets_errors + EXCLUDED.sheets_errors,
+    calendar_errors = conversation_analytics.calendar_errors + EXCLUDED.calendar_errors,
+    updated_at = NOW();
+END;
+$$;
+
+
+ALTER FUNCTION "public"."increment_analytics"("p_company_id" "uuid", "p_date" "date", "p_total_messages" integer, "p_user_messages" integer, "p_bot_messages" integer, "p_unique_users" integer, "p_intent_general_chat" integer, "p_intent_price_query" integer, "p_intent_appointment" integer, "p_intent_product_info" integer, "p_intent_complaint" integer, "p_sheets_queries" integer, "p_sheets_success" integer, "p_calendar_bookings" integer, "p_calendar_success" integer, "p_gemini_errors" integer, "p_sheets_errors" integer, "p_calendar_errors" integer) OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."is_maintenance_mode"() RETURNS boolean
     LANGUAGE "plpgsql"
     AS $$
@@ -9617,6 +9659,12 @@ GRANT ALL ON FUNCTION "public"."gtrgm_union"("internal", "internal") TO "service
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."increment_analytics"("p_company_id" "uuid", "p_date" "date", "p_total_messages" integer, "p_user_messages" integer, "p_bot_messages" integer, "p_unique_users" integer, "p_intent_general_chat" integer, "p_intent_price_query" integer, "p_intent_appointment" integer, "p_intent_product_info" integer, "p_intent_complaint" integer, "p_sheets_queries" integer, "p_sheets_success" integer, "p_calendar_bookings" integer, "p_calendar_success" integer, "p_gemini_errors" integer, "p_sheets_errors" integer, "p_calendar_errors" integer) TO "anon";
+GRANT ALL ON FUNCTION "public"."increment_analytics"("p_company_id" "uuid", "p_date" "date", "p_total_messages" integer, "p_user_messages" integer, "p_bot_messages" integer, "p_unique_users" integer, "p_intent_general_chat" integer, "p_intent_price_query" integer, "p_intent_appointment" integer, "p_intent_product_info" integer, "p_intent_complaint" integer, "p_sheets_queries" integer, "p_sheets_success" integer, "p_calendar_bookings" integer, "p_calendar_success" integer, "p_gemini_errors" integer, "p_sheets_errors" integer, "p_calendar_errors" integer) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."increment_analytics"("p_company_id" "uuid", "p_date" "date", "p_total_messages" integer, "p_user_messages" integer, "p_bot_messages" integer, "p_unique_users" integer, "p_intent_general_chat" integer, "p_intent_price_query" integer, "p_intent_appointment" integer, "p_intent_product_info" integer, "p_intent_complaint" integer, "p_sheets_queries" integer, "p_sheets_success" integer, "p_calendar_bookings" integer, "p_calendar_success" integer, "p_gemini_errors" integer, "p_sheets_errors" integer, "p_calendar_errors" integer) TO "service_role";
 
 
 

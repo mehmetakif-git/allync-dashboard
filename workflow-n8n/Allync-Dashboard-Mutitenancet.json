@@ -11,7 +11,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -928,
+        -2032,
         -16
       ],
       "id": "3f75bc40-5921-4fa3-9fc7-afb6af27ede8",
@@ -56,7 +56,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -640,
+        -1744,
         -16
       ],
       "id": "015e5d2f-fd44-45e5-a70d-d75ea0d3b386",
@@ -172,7 +172,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        240,
+        1072,
         -64
       ],
       "id": "3acd0eb1-9bcf-454e-bcc9-d9159a515dc3",
@@ -206,7 +206,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1600,
+        2432,
         -528
       ],
       "id": "f1ffac16-4b8e-4f85-9985-02072ec6aa09",
@@ -251,7 +251,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1856,
+        2688,
         -368
       ],
       "id": "813cff20-b200-4547-9591-ba514bac8614",
@@ -268,7 +268,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2304,
+        3136,
         -528
       ],
       "id": "3a3ea539-4000-4e77-ba8a-cd95aff4a6a5",
@@ -282,7 +282,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3328,
+        4160,
         -528
       ],
       "id": "1ad7bba4-adca-4904-94f9-439edc42a8bc",
@@ -367,7 +367,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        4208,
+        5040,
         -336
       ],
       "id": "13e89e96-3697-4e80-825d-0fd7f7782e23",
@@ -386,7 +386,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4672,
+        5504,
         -528
       ],
       "id": "d5de176e-b564-4fd3-9756-7abb535bef0d",
@@ -416,7 +416,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        5440,
+        6272,
         -544
       ],
       "id": "ba1845d3-61e0-4072-a7e9-0871600579ee",
@@ -436,7 +436,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5872,
+        6704,
         -544
       ],
       "id": "924d0f05-65b2-47c8-a735-b1a0efe1462e",
@@ -496,8 +496,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        7152,
-        224
+        8512,
+        384
       ],
       "id": "ebe52ee1-89ee-4159-9c39-a954be36fc19",
       "name": "Format Response"
@@ -553,7 +553,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        5136,
+        5968,
         -528
       ],
       "id": "bb2ce717-e2ba-4879-a563-f98362ccc298",
@@ -617,8 +617,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        7424,
-        224
+        8784,
+        384
       ],
       "id": "30f0638b-cd84-4247-ad68-70c09674bd17",
       "name": "Save Bot Response",
@@ -663,8 +663,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        7936,
-        208
+        9296,
+        368
       ],
       "id": "9b41f1d7-88e0-4006-87ff-812deff0a362",
       "name": "Update User Stats",
@@ -710,8 +710,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8224,
-        192
+        10400,
+        352
       ],
       "id": "ba41ac2c-3a80-462c-be75-c08c7f9daa54",
       "name": "Update Session",
@@ -731,7 +731,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1344,
+        2176,
         -528
       ],
       "id": "eeeb2aea-1806-42d4-ae13-afc2752a37b7",
@@ -815,7 +815,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2512,
+        3344,
         -528
       ],
       "id": "6dd90ee9-bbde-405c-892d-8a1cb7594596",
@@ -849,7 +849,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3520,
+        4352,
         -528
       ],
       "id": "c8eca5f6-cb8a-48e2-b53e-d3567ae043c8",
@@ -862,7 +862,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2064,
+        2896,
         -368
       ],
       "id": "a7664437-e6fb-4f55-a38a-556137340abb",
@@ -876,8 +876,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        8480,
-        176
+        10656,
+        336
       ],
       "id": "db13e564-8808-4bb7-9835-b83de372ade8",
       "name": "Respond to Webhook"
@@ -930,7 +930,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3872,
+        4704,
         -336
       ],
       "id": "d7729cd7-a854-4664-91bd-2ba03a458750",
@@ -1033,7 +1033,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4896,
+        5728,
         -528
       ],
       "id": "9e431db6-cbde-43ec-b440-b57672e1769d",
@@ -1046,7 +1046,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2704,
+        3536,
         -528
       ],
       "id": "83e142ae-bc48-4a01-8912-644f3e573fd0",
@@ -1059,7 +1059,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3120,
+        3952,
         -528
       ],
       "id": "309826f4-9482-4fa3-b902-525d0e7dae13",
@@ -1098,7 +1098,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        2912,
+        3744,
         -528
       ],
       "id": "489fd223-bd26-4e8c-997d-91aeb1e50985",
@@ -1118,7 +1118,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5664,
+        6496,
         -544
       ],
       "id": "3503033a-a4e4-486e-8e2f-fbf0454f1e3f",
@@ -1147,7 +1147,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -320,
+        512,
         -32
       ],
       "id": "86daf57d-0283-4bdf-84be-398af4079a3f",
@@ -1167,7 +1167,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -48,
+        784,
         -32
       ],
       "id": "ae4a6f1c-3b9b-442c-b1ec-c8beaa8e29ac",
@@ -1197,7 +1197,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        640,
+        1472,
         -512
       ],
       "id": "88a42a9f-d3d7-4611-be10-8ee128fa8769",
@@ -1232,11 +1232,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        6352,
+        7152,
         -544
       ],
       "id": "ec00c3ad-ca88-4f34-a591-e38efd474cdb",
-      "name": "Gemini API (Dynamic)"
+      "name": "Gemini API (Dynamic)",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1277,8 +1278,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        7680,
-        208
+        9040,
+        368
       ],
       "id": "7bf054d8-2ee9-4971-a8a0-245cf457dd20",
       "name": "HTTP Request"
@@ -1290,8 +1291,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6608,
-        -544
+        7584,
+        -560
       ],
       "id": "8004210b-e339-47bf-83df-17eb5ca6045c",
       "name": "Parse Gemini Response"
@@ -1335,8 +1336,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        7216,
-        -1168
+        8480,
+        -1360
       ],
       "id": "7723f9cb-1fc4-400f-8366-24a3ca472c14",
       "name": "Get Primary Sheet"
@@ -1369,8 +1370,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        7520,
-        -1168
+        8832,
+        -1360
       ],
       "id": "78b0bf7d-241f-491b-b5e0-0c5f07361e3a",
       "name": "Check Sheet Exists"
@@ -1393,8 +1394,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        7856,
-        -1184
+        9168,
+        -1536
       ],
       "id": "429992e6-0c22-46c0-b3cb-63644d275032",
       "name": "Get Sheet Data",
@@ -1403,7 +1404,8 @@
           "id": "d9uNsv6UUdhTsb6Z",
           "name": "Google Service Account account"
         }
-      }
+      },
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1412,8 +1414,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8096,
-        -1184
+        9408,
+        -1664
       ],
       "id": "9ca9ab84-3fba-40b1-8fe4-57660bdafca4",
       "name": "Search in Sheets"
@@ -1469,8 +1471,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8368,
-        -1184
+        9632,
+        -1664
       ],
       "id": "2eff4ee7-1851-4639-9c53-4436a1649548",
       "name": "Log Sheets Query",
@@ -1535,8 +1537,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        8608,
-        -1184
+        9920,
+        -1664
       ],
       "id": "f924a89c-4328-4640-9fd4-38b8f34c71c6",
       "name": "Format Response2"
@@ -1592,8 +1594,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8880,
-        -1184
+        10224,
+        -1664
       ],
       "id": "2ef8ffb6-e866-4b30-9ad1-f65ba3e3fee6",
       "name": "Save Bot Response2",
@@ -1638,8 +1640,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        9392,
-        -1200
+        11104,
+        -1680
       ],
       "id": "2658ce3a-4da9-4236-be6d-ffa30581dbee",
       "name": "Update User Stats2",
@@ -1658,8 +1660,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        9936,
-        -1232
+        11648,
+        -1712
       ],
       "id": "79813ef0-dac1-4ed2-85cd-bd28d9530a67",
       "name": "Respond to Webhook2"
@@ -1703,8 +1705,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        9136,
-        -1200
+        10480,
+        -1680
       ],
       "id": "56e5f8fd-7138-48e8-bcd4-09bd8bca941a",
       "name": "HTTP Request1"
@@ -1716,8 +1718,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7856,
-        -992
+        9168,
+        -1184
       ],
       "id": "e1528a69-7abc-4301-bb44-8b8f904876ac",
       "name": "Code in JavaScript1"
@@ -1776,8 +1778,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        8064,
-        -992
+        9376,
+        -1184
       ],
       "id": "343e6e23-904e-4742-98db-2f8273e73b1c",
       "name": "Format Response3"
@@ -1795,8 +1797,8 @@
       "type": "n8n-nodes-evolution-api-en.evolutionApi",
       "typeVersion": 1,
       "position": [
-        8496,
-        -992
+        9808,
+        -1184
       ],
       "id": "e8e8973f-d63b-4f73-b60f-f62629b7469c",
       "name": "Evolution API - Send Text",
@@ -1840,8 +1842,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8688,
-        -992
+        10000,
+        -1184
       ],
       "id": "d32b9a43-83dd-4222-b6d5-e2f0c7beca5e",
       "name": "Update User Stats3",
@@ -1886,8 +1888,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8896,
-        -992
+        10208,
+        -1184
       ],
       "id": "d143ae63-f834-4de4-a879-283ede34e831",
       "name": "Update Session3",
@@ -1906,8 +1908,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        9104,
-        -992
+        10416,
+        -1184
       ],
       "id": "1577e88e-5ba8-49f9-8096-3091563697f2",
       "name": "Respond to Webhook3"
@@ -1941,7 +1943,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        992,
+        1824,
         -528
       ],
       "id": "a806abeb-0ad4-45b6-8a57-d5b5c3639caf",
@@ -2034,8 +2036,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        6864,
-        -560
+        8144,
+        -592
       ],
       "id": "b3a3b25b-e44c-4879-8b20-c0d93e809cfb",
       "name": "ACTION ROUTER"
@@ -2074,8 +2076,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        9664,
-        -1216
+        11376,
+        -1696
       ],
       "id": "a27411cb-5ef3-49d4-b1b6-29f20fcfa452",
       "name": "Update Session2",
@@ -2139,8 +2141,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8272,
-        -992
+        9584,
+        -1184
       ],
       "id": "4a8f4207-1271-4cfd-8770-52b628b7e657",
       "name": "Save Bot Response3",
@@ -2159,7 +2161,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6080,
+        6912,
         -544
       ],
       "id": "d909b617-4680-4015-acfd-e2d67a0dd5c6",
@@ -2204,7 +2206,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        7200,
+        8448,
         -544
       ],
       "id": "a4d86274-ab4f-43fd-ae91-816e93dc9e9e",
@@ -2238,7 +2240,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        7440,
+        8688,
         -544
       ],
       "id": "b3c6986c-2764-4371-9851-2dfb4fc83f81",
@@ -2251,8 +2253,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7760,
-        -560
+        8992,
+        -752
       ],
       "id": "a4d06b85-5af3-42ca-9379-f36a51bd5a1b",
       "name": "Parse Calendar Info"
@@ -2284,8 +2286,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        8016,
-        -560
+        9248,
+        -752
       ],
       "id": "06cb6d58-d536-4a2a-be85-6c2ae09ea395",
       "name": "Check Calendar Availability",
@@ -2294,7 +2296,8 @@
           "id": "d9uNsv6UUdhTsb6Z",
           "name": "Google Service Account account"
         }
-      }
+      },
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -2324,8 +2327,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        8336,
-        -560
+        9728,
+        -768
       ],
       "id": "58cfcba1-0d66-4375-8d97-3c32a4aa6114",
       "name": "Is Available?"
@@ -2344,8 +2347,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        8592,
-        -672
+        10000,
+        -864
       ],
       "id": "26ca9572-78a3-4e3d-9380-57b27acbf072",
       "name": "HTTP Request2",
@@ -2427,8 +2430,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        8880,
-        -672
+        10288,
+        -864
       ],
       "id": "ad9f860d-e57e-47d9-920f-e760482c54bc",
       "name": "Save Appointment",
@@ -2446,8 +2449,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9168,
-        -672
+        10640,
+        -864
       ],
       "id": "a15c15b2-ff27-4bc4-ab0c-1b687fda9eec",
       "name": "Format Success Response"
@@ -2459,8 +2462,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8608,
-        -432
+        10480,
+        -640
       ],
       "id": "1626e655-7124-4281-b08b-faacd25dbe5c",
       "name": "Slot Unavaiblable Response"
@@ -2470,8 +2473,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        9376,
-        -528
+        11072,
+        -848
       ],
       "id": "4c7b3a31-38c6-4e87-82b5-d147b0296a30",
       "name": "Merge Calendar Responses"
@@ -2536,8 +2539,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        9584,
-        -528
+        11328,
+        -720
       ],
       "id": "3bfa8c64-4dfd-4173-8c31-b7b354108dfd",
       "name": "Format Calendar Response"
@@ -2593,8 +2596,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        9792,
-        -528
+        11504,
+        -720
       ],
       "id": "4b9e573a-b99e-4b8b-8182-4814a464fd9d",
       "name": "Save Calendar Bot Response",
@@ -2645,8 +2648,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        10048,
-        -544
+        11760,
+        -736
       ],
       "id": "58979999-58d6-4deb-94f1-c5d77785ee55",
       "name": "Send Calendar Response"
@@ -2684,8 +2687,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        10304,
-        -544
+        12400,
+        -736
       ],
       "id": "06d8b9ed-019e-4e35-accf-0d7772e474b5",
       "name": "Update Calendar User Stats",
@@ -2704,8 +2707,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        10848,
-        -576
+        13056,
+        -768
       ],
       "id": "ac28e55c-3d7c-4540-9b48-3b3f863852ed",
       "name": "Calendar Flow Complete"
@@ -2752,8 +2755,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        10576,
-        -560
+        12720,
+        -752
       ],
       "id": "bdf693d6-de1f-4883-8ffe-0b2015ffc0b1",
       "name": "Update Calendar Session",
@@ -2773,11 +2776,738 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        7920,
-        -224
+        9680,
+        -16
       ],
       "id": "e98c6def-e1db-4a76-86b8-7de58191c256",
       "name": "Calendar Not Available Reponse"
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\nconst contextData = $('Context Builder').first().json;\n\n// Error'u logla\nconst errorLog = {\n  company_id: contextData.company_id,\n  instance_id: contextData.instance_id,\n  error_type: 'gemini_api_error',\n  error_message: error.message || 'Gemini API failed',\n  error_details: JSON.stringify(error),\n  node_name: 'Gemini API (Dynamic)',\n  user_id: contextData.user_id,\n  session_id: contextData.session_id,\n  phone_number: contextData.phone_number,\n  severity: 'error'\n};\n\n// Fallback response\nconst fallbackResponse = {\n  detected_language: 'tr',\n  detected_intent: 'error',\n  confidence: 0,\n  next_state: 'idle',\n  bot_response: 'Üzgünüm, şu anda teknik bir sorun yaşıyorum. Lütfen birkaç saniye sonra tekrar deneyin.',\n  needs_sheets_query: false,\n  needs_calendar_check: false,\n  collected_data: {},\n  metadata: { error: true }\n};\n\nreturn [{\n  json: {\n    ...contextData,\n    error_log: errorLog,\n    gemini_fallback: true,\n    ai_response: fallbackResponse,\n    bot_response: fallbackResponse.bot_response,\n    detected_intent: 'error',\n    next_state: 'idle'\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7376,
+        112
+      ],
+      "id": "5a4c939a-dae4-4420-9af7-5cefb0fa8ab2",
+      "name": "Gemini Error Handler"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_errors",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $json.error_log.company_id }}"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.error_log.instance_id }}"
+            },
+            {
+              "fieldId": "error_type",
+              "fieldValue": "={{ $json.error_log.error_type }}"
+            },
+            {
+              "fieldId": "error_message",
+              "fieldValue": "={{ $json.error_log.error_message }}"
+            },
+            {
+              "fieldId": "error_details",
+              "fieldValue": "={{ $json.error_log.error_details }}"
+            },
+            {
+              "fieldId": "node_name",
+              "fieldValue": "={{ $json.error_log.node_name }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.error_log.user_id }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.error_log.session_id }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $json.error_log.phone_number }}"
+            },
+            {
+              "fieldId": "severity",
+              "fieldValue": "={{ $json.error_log.severity }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        7696,
+        112
+      ],
+      "id": "605ad316-ef89-423e-92e8-e4e9a318349c",
+      "name": "Log Gemini Error",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// Webhook'tan gelen data\nconst webhook = $('Webhook_Listener').first().json;\nconst remoteJid = webhook.body.data.key.remoteJid;\nconst phoneNumber = remoteJid.replace('@s.whatsapp.net', '');\nconst instanceId = webhook.body.instance;\n\n// Şu anki zaman\nconst now = new Date();\nconst oneMinuteAgo = new Date(now.getTime() - 60000); // 1 dakika önce\n\nreturn [{\n  json: {\n    phone_number: phoneNumber,\n    instance_id: instanceId,\n    check_time: now.toISOString(),\n    window_start: oneMinuteAgo.toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1424,
+        -32
+      ],
+      "id": "858a17a8-9c89-4839-bd2e-07de613b05cc",
+      "name": "Check Rate Limit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "310cd110-3685-4ef9-b3fd-c8f74adaad6e",
+              "leftValue": "={{ $json.length > 0 && ($json[0].message_count || 0) >= 10 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -800,
+        -32
+      ],
+      "id": "df5fe8cc-a834-4799-93dd-77070e3e3732",
+      "name": "Evaluate Rate Limit"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rateData = $input.first().json[0];\n\nreturn [{\n  json: {\n    is_spam: true,\n    phone_number: rateData.user_phone,\n    message_count: rateData.message_count,\n    bot_response: '⚠️ Çok hızlı mesaj gönderiyorsunuz. Lütfen 1 dakika bekleyip tekrar deneyin.',\n    block_until: new Date(Date.now() + 60000).toISOString() // 1 dakika block\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        -368
+      ],
+      "id": "f3c4c5e0-bb51-45dd-a95e-71b99e0f88f0",
+      "name": "Block User Response"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "rate_limits",
+        "returnAll": true,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_phone",
+              "condition": "eq",
+              "keyValue": "={{ $json.phone_number }}"
+            },
+            {
+              "keyName": "window_start",
+              "condition": "gte",
+              "keyValue": "={{ $json.window_start }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        -32
+      ],
+      "id": "d555ed96-fdad-43ce-b11d-baee73a48fb3",
+      "name": "Get Rate Limit1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "410afd0f-4956-4f82-9231-3b1cd1ec9310",
+              "leftValue": "={{ $json.length > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -512,
+        -16
+      ],
+      "id": "e07522ae-4342-4bcb-a2b4-1b9da63ddf74",
+      "name": "Rate Limit Exists?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "rate_limits",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_phone",
+              "condition": "eq",
+              "keyValue": "={{ $('Check Rate Limit').item.json.phone_number }}"
+            },
+            {
+              "keyName": "window_start",
+              "condition": "gte",
+              "keyValue": "={{ $('Check Rate Limit').item.json.window_start }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "message_count",
+              "fieldValue": "={{ $json[0].message_count + 1 }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -176
+      ],
+      "id": "34c900ac-885e-475e-a10b-75d5bd678b2d",
+      "name": "Update Rate Limit",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "rate_limits",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Get Company & Instance').first().json.company_id }}"
+            },
+            {
+              "fieldId": "user_phone",
+              "fieldValue": "={{ $('Check Rate Limit').item.json.phone_number }}"
+            },
+            {
+              "fieldId": "message_count",
+              "fieldValue": "1"
+            },
+            {
+              "fieldId": "window_start",
+              "fieldValue": "={{ $('Check Rate Limit').item.json.window_start }}"
+            },
+            {
+              "fieldId": "is_blocked",
+              "fieldValue": "false"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        176
+      ],
+      "id": "f0cc9ae4-dafb-4ba8-a844-f8932653e26c",
+      "name": "Create Rate Limit",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        -32
+      ],
+      "id": "5f100245-241c-4edb-8e61-642f17c6325a",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -352,
+        -368
+      ],
+      "id": "e45ff9bc-f73c-4fe6-be92-a2b37bbeb268",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fd5c5026-0de3-48f5-9c0d-3e03e4e52dec",
+              "leftValue": "={{ $json.intent_confidence >= 0.6 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7792,
+        -560
+      ],
+      "id": "f5f9c22f-0f34-4d21-b182-022fc2006696",
+      "name": "Check Intent Confidence"
+    },
+    {
+      "parameters": {
+        "tableId": "failed_intents",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $('Context Builder').item.json.company_id }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $('Context Builder').item.json.session_id }}"
+            },
+            {
+              "fieldId": "user_message",
+              "fieldValue": "={{ $('Context Builder').item.json.current_message }}"
+            },
+            {
+              "fieldId": "detected_intent",
+              "fieldValue": "={{ $json.detected_intent }}"
+            },
+            {
+              "fieldId": "confidence",
+              "fieldValue": "={{ $json.intent_confidence }}"
+            },
+            {
+              "fieldId": "gemini_response",
+              "fieldValue": "={{ JSON.stringify($json.ai_response) }}"
+            },
+            {
+              "fieldId": "human_review_needed",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "resolved",
+              "fieldValue": "false"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        7440,
+        -144
+      ],
+      "id": "0607cbff-634d-46e2-9239-89fdf3b5fcbe",
+      "name": "Log Failed Intent",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst contextData = $('Context Builder').first().json;\n\nreturn [{\n  json: {\n    ...contextData,\n    bot_response: 'Üzgünüm, tam anlayamadım. Size daha iyi yardımcı olmak için bir temsilcimizle görüşür müsünüz? 🙏',\n    ai_response: 'Üzgünüm, tam anlayamadım. Size daha iyi yardımcı olmak için bir temsilcimizle görüşür müsünüz? 🙏',\n    session_id: contextData.session_id,\n    user_id: contextData.user_id,\n    instance_id: contextData.instance_id,\n    phone_number: contextData.phone_number,\n    company_id: contextData.company_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7696,
+        -144
+      ],
+      "id": "54be8051-0d14-4bf3-9733-e15d988d2c76",
+      "name": "Human Fallback Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst geminiData = $('Parse Gemini Response').first().json;\nconst contextData = $('Context Builder').first().json;\n\n// Bugünün tarihi\nconst today = new Date().toISOString().split('T')[0];\n\n// Intent sayısını hesapla\nconst intentType = geminiData.detected_intent || 'general_chat';\nconst intentCounts = {\n  intent_general_chat: intentType === 'general_chat' ? 1 : 0,\n  intent_price_query: intentType === 'price_query' ? 1 : 0,\n  intent_appointment: intentType === 'appointment' ? 1 : 0,\n  intent_product_info: intentType === 'product_info' ? 1 : 0,\n  intent_complaint: intentType === 'complaint' ? 1 : 0\n};\n\n// Sheets/Calendar success mi?\nconst sheetsSuccess = geminiData.needs_sheets_query && !geminiData.error ? 1 : 0;\nconst calendarSuccess = geminiData.needs_calendar_check && !geminiData.error ? 1 : 0;\n\nreturn [{\n  json: {\n    ...data,\n    analytics: {\n      company_id: contextData.company_id,\n      date: today,\n      total_messages: 2, // 1 user + 1 bot\n      user_messages: 1,\n      bot_messages: 1,\n      unique_users: 1,\n      ...intentCounts,\n      sheets_queries: geminiData.needs_sheets_query ? 1 : 0,\n      sheets_success: sheetsSuccess,\n      calendar_bookings: geminiData.needs_calendar_check ? 1 : 0,\n      calendar_success: calendarSuccess,\n      gemini_errors: 0,\n      sheets_errors: 0,\n      calendar_errors: 0\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9680,
+        352
+      ],
+      "id": "ad18205a-e250-4947-ad8a-8d0932e6888c",
+      "name": "Log Analytics"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rlrnurzpeanloppntldg.supabase.co/rest/v1/rpc/increment_analytics",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.analytics }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10032,
+        352
+      ],
+      "id": "2e1aac69-c970-4a4f-8a57-dd1a7d949e5c",
+      "name": "Upsert Analytics",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\nconst contextData = $('Context Builder').first().json;\n\nconst errorLog = {\n  company_id: contextData.company_id,\n  instance_id: contextData.instance_id,\n  error_type: 'sheets_api_error',\n  error_message: error.message || 'Google Sheets API failed',\n  error_details: JSON.stringify(error),\n  node_name: 'Get Sheet Data',\n  user_id: contextData.user_id,\n  session_id: contextData.session_id,\n  phone_number: contextData.phone_number,\n  severity: 'error'\n};\n\nconst fallbackResponse = {\n  bot_response: 'Üzgünüm, ürün bilgilerini şu anda getiremiyorum. Lütfen birkaç saniye sonra tekrar deneyin.',\n  sheets_error: true\n};\n\nreturn [{\n  json: {\n    ...contextData,\n    error_log: errorLog,\n    bot_response: fallbackResponse.bot_response,\n    session_id: contextData.session_id,\n    user_id: contextData.user_id,\n    instance_id: contextData.instance_id,\n    phone_number: contextData.phone_number,\n    company_id: contextData.company_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9408,
+        -1408
+      ],
+      "id": "f5e97c6c-4935-4812-a602-9f503d73f3b8",
+      "name": "Sheets Error Handler"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_errors",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $json.error_log.company_id }}"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.error_log.instance_id }}"
+            },
+            {
+              "fieldId": "error_type",
+              "fieldValue": "={{ $json.error_log.error_type }}"
+            },
+            {
+              "fieldId": "error_message",
+              "fieldValue": "={{ $json.error_log.error_message }}"
+            },
+            {
+              "fieldId": "error_details",
+              "fieldValue": "={{ $json.error_log.error_details }}"
+            },
+            {
+              "fieldId": "node_name",
+              "fieldValue": "={{ $json.error_log.node_name }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.error_log.user_id }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.error_log.session_id }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $json.error_log.phone_number }}"
+            },
+            {
+              "fieldId": "severity",
+              "fieldValue": "={{ $json.error_log.severity }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        9632,
+        -1408
+      ],
+      "id": "b50c93c0-d57f-4a0e-8e2d-c1743fa6d51b",
+      "name": "Log Sheets Error",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\nconst contextData = $('Context Builder').first().json;\n\nconst errorLog = {\n  company_id: contextData.company_id,\n  instance_id: contextData.instance_id,\n  error_type: 'calendar_api_error',\n  error_message: error.message || 'Google Calendar API failed',\n  error_details: JSON.stringify(error),\n  node_name: 'Check Calendar Availability',\n  user_id: contextData.user_id,\n  session_id: contextData.session_id,\n  phone_number: contextData.phone_number,\n  severity: 'error'\n};\n\nconst fallbackResponse = {\n  bot_response: 'Üzgünüm, randevu sistemine şu anda erişemiyorum. Lütfen daha sonra tekrar deneyin veya bizimle direkt iletişime geçin.',\n  calendar_error: true\n};\n\nreturn [{\n  json: {\n    ...contextData,\n    error_log: errorLog,\n    bot_response: fallbackResponse.bot_response,\n    session_id: contextData.session_id,\n    user_id: contextData.user_id,\n    instance_id: contextData.instance_id,\n    phone_number: contextData.phone_number,\n    company_id: contextData.company_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9728,
+        -416
+      ],
+      "id": "e1ee0a56-ef2e-46fa-9839-8734b42253b3",
+      "name": "Calendar Error Handler"
+    },
+    {
+      "parameters": {
+        "tableId": "whatsapp_errors",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "company_id",
+              "fieldValue": "={{ $json.error_log.company_id }}"
+            },
+            {
+              "fieldId": "instance_id",
+              "fieldValue": "={{ $json.error_log.instance_id }}"
+            },
+            {
+              "fieldId": "error_type",
+              "fieldValue": "={{ $json.error_log.error_type }}"
+            },
+            {
+              "fieldId": "error_message",
+              "fieldValue": "={{ $json.error_log.error_message }}"
+            },
+            {
+              "fieldId": "error_details",
+              "fieldValue": "={{ $json.error_log.error_details }}"
+            },
+            {
+              "fieldId": "node_name",
+              "fieldValue": "={{ $json.error_log.node_name }}"
+            },
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.error_log.user_id }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.error_log.session_id }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $json.error_log.phone_number }}"
+            },
+            {
+              "fieldId": "severity",
+              "fieldValue": "={{ $json.error_log.severity }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        9920,
+        -416
+      ],
+      "id": "55fbe28d-6150-4c71-aec8-e36c18c720e2",
+      "name": "Log Calendar Error",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SYQY7Y5p1hnytb5L",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst geminiData = $('Parse Gemini Response').first().json;\nconst contextData = $('Context Builder').first().json;\nconst sheetsData = $('Search in Sheets').first().json;\n\n// Bugünün tarihi\nconst today = new Date().toISOString().split('T')[0];\n\n// Sheets success mi?\nconst sheetsSuccess = sheetsData.sheets_results_count > 0 ? 1 : 0;\n\nreturn [{\n  json: {\n    ...data,\n    analytics: {\n      company_id: contextData.company_id,\n      date: today,\n      total_messages: 2,\n      user_messages: 1,\n      bot_messages: 1,\n      unique_users: 1,\n      intent_general_chat: 0,\n      intent_price_query: 1,\n      intent_appointment: 0,\n      intent_product_info: 0,\n      intent_complaint: 0,\n      sheets_queries: 1,\n      sheets_success: sheetsSuccess,\n      calendar_bookings: 0,\n      calendar_success: 0,\n      gemini_errors: 0,\n      sheets_errors: 0,\n      calendar_errors: 0\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10704,
+        -1680
+      ],
+      "id": "78c6689c-5f53-45a6-90cf-16bcddbdc19c",
+      "name": "Log Sheets Analytics"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rlrnurzpeanloppntldg.supabase.co/rest/v1/rpc/increment_analytics",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.analytics }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10896,
+        -1680
+      ],
+      "id": "7a194863-69f3-4d29-bd30-c96bb1594f22",
+      "name": "Upsert Sheets Analytics",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst contextData = $('Context Builder').first().json;\nconst calendarData = $('Format Calendar Response').first().json;\n\n// Bugünün tarihi\nconst today = new Date().toISOString().split('T')[0];\n\n// Calendar success mi? (event_id varsa başarılı)\nconst calendarSuccess = calendarData.event_id ? 1 : 0;\n\nreturn [{\n  json: {\n    ...data,\n    analytics: {\n      company_id: contextData.company_id,\n      date: today,\n      total_messages: 2,\n      user_messages: 1,\n      bot_messages: 1,\n      unique_users: 1,\n      intent_general_chat: 0,\n      intent_price_query: 0,\n      intent_appointment: 1,\n      intent_product_info: 0,\n      intent_complaint: 0,\n      sheets_queries: 0,\n      sheets_success: 0,\n      calendar_bookings: 1,\n      calendar_success: calendarSuccess,\n      gemini_errors: 0,\n      sheets_errors: 0,\n      calendar_errors: 0\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11968,
+        -736
+      ],
+      "id": "6093ed68-1c54-4a9c-b97c-cb096515c4e7",
+      "name": "Log Calendar Analytics"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rlrnurzpeanloppntldg.supabase.co/rest/v1/rpc/increment_analytics",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscm51cnpwZWFubG9wcG50bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMDY5NTYsImV4cCI6MjA3NTc4Mjk1Nn0.d50ICp_1Rgg57c3kUCeZfTM86qZegaWXv56mQLAX6UQ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.analytics }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        12160,
+        -736
+      ],
+      "id": "7d17c1a6-40dd-436d-9d1c-c13b05e553ef",
+      "name": "Upsert Calendar Analytics",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -2797,7 +3527,7 @@
       "main": [
         [
           {
-            "node": "Get Company & Instance",
+            "node": "Check Rate Limit",
             "type": "main",
             "index": 0
           }
@@ -2951,7 +3681,7 @@
       "main": [
         [
           {
-            "node": "Update Session",
+            "node": "Log Analytics",
             "type": "main",
             "index": 0
           }
@@ -3130,6 +3860,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Gemini Error Handler",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -3148,7 +3885,7 @@
       "main": [
         [
           {
-            "node": "ACTION ROUTER",
+            "node": "Check Intent Confidence",
             "type": "main",
             "index": 0
           }
@@ -3214,6 +3951,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Sheets Error Handler",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -3254,7 +3998,7 @@
       "main": [
         [
           {
-            "node": "Update User Stats2",
+            "node": "Log Sheets Analytics",
             "type": "main",
             "index": 0
           }
@@ -3434,6 +4178,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Calendar Error Handler",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -3536,7 +4287,7 @@
       "main": [
         [
           {
-            "node": "Update Calendar User Stats",
+            "node": "Log Calendar Analytics",
             "type": "main",
             "index": 0
           }
@@ -3575,6 +4326,280 @@
           }
         ]
       ]
+    },
+    "Gemini Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Log Gemini Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Gemini Error": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "Get Rate Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "Block User Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rate Limit Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Block User Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Rate Limit1": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Rate Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Exists?": {
+      "main": [
+        [
+          {
+            "node": "Update Rate Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Rate Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Get Company & Instance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Intent Confidence": {
+      "main": [
+        [
+          {
+            "node": "ACTION ROUTER",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Failed Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Failed Intent": {
+      "main": [
+        [
+          {
+            "node": "Human Fallback Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human Fallback Response": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Analytics": {
+      "main": [
+        [
+          {
+            "node": "Upsert Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Analytics": {
+      "main": [
+        [
+          {
+            "node": "Update Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Log Sheets Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Sheets Error": {
+      "main": [
+        [
+          {
+            "node": "Format Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Log Calendar Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Calendar Error": {
+      "main": [
+        [
+          {
+            "node": "Format Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Sheets Analytics": {
+      "main": [
+        [
+          {
+            "node": "Upsert Sheets Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Sheets Analytics": {
+      "main": [
+        [
+          {
+            "node": "Update User Stats2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Calendar Analytics": {
+      "main": [
+        [
+          {
+            "node": "Upsert Calendar Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Calendar Analytics": {
+      "main": [
+        [
+          {
+            "node": "Update Calendar User Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -3582,7 +4607,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "28ee39da-c8d7-4acb-8aac-0c8708fb27f3",
+  "versionId": "27ee3f1f-44eb-436f-a300-8ca21a551a9c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "91b61f20b1f62ceb4a025525cffd2b8f60a63fe491bea802b772f51ff6d4bab9"
